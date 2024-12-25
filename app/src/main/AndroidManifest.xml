@@ -14,7 +14,7 @@
         android:theme="@style/Theme.Mypat"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name=".presentation.welcome.WelcomeActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.Mypat">
@@ -24,6 +24,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".MainActivity" />
+        <activity android:name=".presentation.main.MainBarActivity" />
+
     </application>
 
 </manifest>

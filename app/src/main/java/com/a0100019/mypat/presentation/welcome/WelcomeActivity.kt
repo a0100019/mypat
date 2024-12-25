@@ -1,4 +1,4 @@
-package com.a0100019.mypat
+package com.a0100019.mypat.presentation.welcome
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -8,20 +8,25 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.a0100019.mypat.presentation.main.MainNavHost
 import com.a0100019.mypat.ui.theme.MypatTheme
 import dagger.hilt.android.AndroidEntryPoint
 
-//엔트리 포인트 까먹지 말기
+//AppCompat 이랑 ComponentActivity 차이점 ??
+//엑티비티는 새로 만들면 메니페스트에 추가해야됨
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class WelcomeActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MypatTheme {
-                MainNavHost()
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    WelcomeNavHost()
+                }
             }
         }
     }
 }
-
