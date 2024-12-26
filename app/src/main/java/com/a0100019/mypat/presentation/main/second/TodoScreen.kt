@@ -6,21 +6,18 @@ package com.a0100019.mypat.presentation.main.second
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.data.room.Todo
-import com.a0100019.mypat.presentation.main.MainState
-import com.a0100019.mypat.presentation.main.MainViewModel
+import com.a0100019.mypat.presentation.main.TestState
+import com.a0100019.mypat.presentation.main.TestViewModel
 import com.a0100019.mypat.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 
@@ -28,12 +25,12 @@ import org.orbitmvi.orbit.compose.collectAsState
 @Composable
 fun TodoScreen(
     viewModel: TodoViewModel = hiltViewModel(),
-    viewModel2: MainViewModel = hiltViewModel()
+    viewModel2: TestViewModel = hiltViewModel()
 ) {
 
     //state 이용
     val state : TodoState = viewModel.collectAsState().value
-    val state2 : MainState = viewModel2.collectAsState().value
+    val state2 : TestState = viewModel2.collectAsState().value
 
     TodoScreen(
         todoText = state.todoText,

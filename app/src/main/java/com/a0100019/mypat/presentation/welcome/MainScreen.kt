@@ -2,38 +2,35 @@ package com.a0100019.mypat.presentation.welcome
 
 
 import android.content.Intent
-import android.widget.Space
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.MainActivity
+import com.a0100019.mypat.presentation.game.GameActivity
+import com.a0100019.mypat.presentation.index.IndexActivity
+import com.a0100019.mypat.presentation.store.StoreActivity
 import com.a0100019.mypat.ui.theme.MypatTheme
-import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 
 
 @Composable
-fun SelectScreen(
-    viewModel: SelectViewModel = hiltViewModel(),
+fun MainScreen(
+    viewModel: MainViewModel = hiltViewModel(),
 ) {
 
 
@@ -43,29 +40,52 @@ fun SelectScreen(
 
     viewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
-            is SelectSideEffect.Toast -> Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
-            SelectSideEffect.NavigateToMainActivity -> {
+            is MainSideEffect.Toast ->
+                Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
+
+            MainSideEffect.NavigateToDailyActivity -> {
                 context.startActivity(
-                    Intent(
-                        context, MainActivity::class.java
-                    ).apply {
-                        flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                    }
+                    Intent(context, MainActivity::class.java)
+                )
+            }
+
+            MainSideEffect.NavigateToStoreActivity -> {
+                context.startActivity(
+                    Intent(context, StoreActivity::class.java)
+                )
+            }
+
+            MainSideEffect.NavigateToGameActivity -> {
+                context.startActivity(
+                    Intent(context, GameActivity::class.java)
+                )
+            }
+
+            MainSideEffect.NavigateToIndexActivity -> {
+                context.startActivity(
+                    Intent(context, IndexActivity::class.java)
                 )
             }
         }
     }
 
 
-    SelectScreen(
-        onCalculatorClick = viewModel::onCalculatorClick
+
+    MainScreen(
+        onDailyNavigateClick = viewModel::onDailyNavigateClick,
+        onGameNavigateClick = viewModel::onGameNavigateClick,
+        onIndexNavigateClick = viewModel::onIndexNavigateClick,
+        onStoreNavigateClick = viewModel::onStoreNavigateClick
     )
 
 }
 
 @Composable
-fun SelectScreen(
-    onCalculatorClick: () -> Unit
+fun MainScreen(
+    onDailyNavigateClick: () -> Unit,
+    onStoreNavigateClick: () -> Unit,
+    onGameNavigateClick: () -> Unit,
+    onIndexNavigateClick: () -> Unit
 ) {
 
     Surface {
@@ -81,7 +101,7 @@ fun SelectScreen(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Button(
-                    onClick = {onCalculatorClick()}
+                    onClick = {}
                 ) {
                     Text("내 정보")
                 }
@@ -111,7 +131,7 @@ fun SelectScreen(
                     Button(
                         modifier = Modifier
                             .fillMaxWidth(0.5f),
-                        onClick = {}
+                        onClick = onDailyNavigateClick
                     ) {
                         Text("일일 루틴")
                     }
@@ -125,19 +145,19 @@ fun SelectScreen(
                 ) {
                     Button(
                         modifier = Modifier,
-                        onClick = {}
+                        onClick = onStoreNavigateClick
                     ) {
                         Text("상점")
                     }
                     Button(
                         modifier = Modifier,
-                        onClick = {}
+                        onClick = onGameNavigateClick
                     ) {
                         Text("게임")
                     }
                     Button(
                         modifier = Modifier,
-                        onClick = {}
+                        onClick = onIndexNavigateClick
                     ) {
                         Text("도감")
                     }
@@ -153,8 +173,11 @@ fun SelectScreen(
 @Composable
 fun SelectScreenPreview() {
     MypatTheme {
-        SelectScreen(
-            onCalculatorClick = { }
+        MainScreen(
+            onDailyNavigateClick = {},
+            onGameNavigateClick = {},
+            onIndexNavigateClick = {},
+            onStoreNavigateClick = {}
         )
     }
 }

@@ -14,7 +14,7 @@ class MainBarActivity : ComponentActivity() {
 
         setContent {
             MypatTheme {
-                MainScreen()
+                TestScreen()
             }
         }
     }

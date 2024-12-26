@@ -5,7 +5,6 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navOptions
 
 
 @Composable
@@ -34,7 +33,7 @@ fun WelcomeNavHost() {
 
         //이동의 대상이 되는 스크린도 작성
         composable(route = WelcomeRoute.SelectScreen.name) {
-            SelectScreen()
+            MainScreen()
         }
 //
 //        composable(route = LoginRoute.SignUpScreen.name) {

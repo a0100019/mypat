@@ -30,16 +30,16 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 
 
 @Composable
-fun MainScreen(
-    viewModel: MainViewModel = hiltViewModel(),
+fun TestScreen(
+    viewModel: TestViewModel = hiltViewModel(),
 ) {
-    val state : MainState = viewModel.collectAsState().value
+    val state : TestState = viewModel.collectAsState().value
 
     //나중에 사이드 이펙트 쓸때 씀
     val context = LocalContext.current
     viewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
-            is MainSideEffect.Toast -> Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
+            is TestSideEffect.Toast -> Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
 //            LoginSideEffect.NavigateToMainActivity -> {
 //                context.startActivity(
 //                    Intent(
@@ -52,7 +52,7 @@ fun MainScreen(
         }
     }
 
-    MainScreen(
+    TestScreen(
         firstNumber = state.firstNumber,
         secondNumber = state.secondNumber,
         onFirstNumberChange = viewModel::onFirstNumberChange,
@@ -67,7 +67,7 @@ fun MainScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(
+fun TestScreen(
     firstNumber: String,
     secondNumber: String,
     onFirstNumberChange: (String) -> Unit,
@@ -159,9 +159,9 @@ fun MainScreen(
 
 @Preview(showBackground = true)
 @Composable
-private fun MainScreenPreview() {
+private fun TestScreenPreview() {
     MypatTheme {
-        MainScreen(
+        TestScreen(
             firstNumber = "11",
             secondNumber = "22",
             onFirstNumberChange = { },

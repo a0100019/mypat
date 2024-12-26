@@ -16,7 +16,6 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
             android:theme="@style/Theme.Mypat">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,6 +25,11 @@
         </activity>
         <activity android:name=".presentation.main.MainBarActivity" />
         <activity android:name=".presentation.welcome.WelcomeActivity" />
+        <activity android:name=".presentation.daily.DailyActivity" />
+        <activity android:name=".presentation.game.GameActivity" />
+        <activity android:name=".presentation.index.IndexActivity" />
+        <activity android:name=".presentation.store.StoreActivity" />
+
 
     </application>
 

@@ -17,19 +17,19 @@ import org.orbitmvi.orbit.viewmodel.container
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor(
+class TestViewModel @Inject constructor(
     private val combineNumberUseCase: CombineNumberUseCase
-) : ViewModel(), ContainerHost<MainState, MainSideEffect> {
+) : ViewModel(), ContainerHost<TestState, TestSideEffect> {
 
     //sideEffect 는 토스트, 네비게이션과 같이 단발성 이벤트 처리하기 위함.
-    override val container: Container<MainState, MainSideEffect> =
+    override val container: Container<TestState, TestSideEffect> =
         container(
             //state 사용 하기 위한 것
-            initialState = MainState(),
+            initialState = TestState(),
             //toast 사용 하기 위한 것
             buildSettings = {
                 this.exceptionHandler = CoroutineExceptionHandler {_, throwable ->
-                    intent { postSideEffect(MainSideEffect.Toast(throwable.message.orEmpty())) }
+                    intent { postSideEffect(TestSideEffect.Toast(throwable.message.orEmpty())) }
                 }
             }
         )
@@ -71,14 +71,14 @@ class MainViewModel @Inject constructor(
         reduce {
             state.copy(result = combinedValue) // 결과를 상태에 저장
         }
-        postSideEffect(MainSideEffect.Toast(message = "계산 완료!"))
+        postSideEffect(TestSideEffect.Toast(message = "계산 완료!"))
     }
 
 }
 
 //뷰모델에서 관리할 텍스트들
 @Immutable
-data class MainState(
+data class TestState(
     val firstNumber:String = "",
     val secondNumber:String = "",
     val result:String = "",
@@ -86,8 +86,8 @@ data class MainState(
 )
 
 //상태와 관련없는 것
-sealed interface MainSideEffect{
-    class Toast(val message:String): MainSideEffect
+sealed interface TestSideEffect{
+    class Toast(val message:String): TestSideEffect
     //screen도 되고 엑티비티도 됨
 //    object NavigateToMainActivity:MainSideEffect
 }
