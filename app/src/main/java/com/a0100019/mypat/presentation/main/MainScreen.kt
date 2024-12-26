@@ -1,4 +1,4 @@
-package com.a0100019.mypat.presentation.welcome
+package com.a0100019.mypat.presentation.main
 
 
 import android.content.Intent
@@ -20,7 +20,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.a0100019.mypat.MainActivity
 import com.a0100019.mypat.presentation.game.GameActivity
 import com.a0100019.mypat.presentation.index.IndexActivity
 import com.a0100019.mypat.presentation.store.StoreActivity
