@@ -1,8 +1,8 @@
 package com.a0100019.mypat.presentation.loading
 
 import androidx.lifecycle.ViewModel
-import com.a0100019.mypat.data.room.Todo
-import com.a0100019.mypat.data.room.TodoDao
+import com.a0100019.mypat.data.room.User
+import com.a0100019.mypat.data.room.UserDao
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import org.orbitmvi.orbit.Container
@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoadingViewModel @Inject constructor(
-
+    private val userDao: UserDao
 ) : ViewModel(), ContainerHost<LoadingState, LoadingSideEffect> {
 
     override val container: Container<LoadingState, LoadingSideEffect> = container(
@@ -30,21 +30,23 @@ class LoadingViewModel @Inject constructor(
         }
     )
 
-//    // 뷰 모델 초기화 시 모든 Todo 데이터를 로드
-//    init {
-//        loadTodos()
-//    }
-//
-//    //room에서 데이터 가져옴
-//    private fun loadTodos() = intent {
-//        // Flow 데이터를 State로 업데이트
-//        todoDao.getAllTodos().collect { todos ->
-//            reduce {
-//                state.copy(todoList = todos)
-//            }
-//        }
-//    }
-//
+    // 뷰 모델 초기화 시 모든 user 데이터를 로드
+    init {
+        loadUserData()
+    }
+
+    //room에서 데이터 가져옴
+    private fun loadUserData() = intent {
+        // Flow 데이터를 State로 업데이트
+        userDao.getAllUserData().collect { userData ->
+            reduce {
+                state.copy(userData = userData)
+            }
+        }
+
+//        userDao.insert(User(id = "aa", value = "100"))
+    }
+
 //    fun onDailyNavigateClick() = intent {
 //        postSideEffect(MainSideEffect.NavigateToDailyActivity)
 //    }
@@ -56,7 +58,7 @@ class LoadingViewModel @Inject constructor(
 data class LoadingState(
     val id:String = "",
     val password:String = "",
-    val todoList: List<Todo> = emptyList()
+    val userData: List<User> = emptyList()
 )
 
 

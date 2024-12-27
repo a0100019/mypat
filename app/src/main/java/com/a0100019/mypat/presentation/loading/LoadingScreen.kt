@@ -34,16 +34,21 @@ import com.a0100019.mypat.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectSideEffect
 
 
-//@Composable
-//fun LoadingScreen(
-//
-//) {
-//
-//
-//}
+@Composable
+fun LoadingScreen(
+    viewModel: LoadingViewModel = hiltViewModel()
+
+) {
+
+    LoadingScreen(
+        value = "스크린 나누기"
+    )
+}
 
 @Composable
-fun LoadingScreen() {
+fun LoadingScreen(
+    value : String
+) {
     // Fullscreen container
     Box(
         modifier = Modifier
