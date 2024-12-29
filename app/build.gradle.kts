@@ -98,4 +98,6 @@ dependencies {
 
     // Coroutine (필수는 아니지만 권장)
     implementation(libs.kotlinx.coroutines.android)
+
+    implementation(libs.lottie.compose)
 }

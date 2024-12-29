@@ -20,9 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.a0100019.mypat.presentation.game.GameActivity
-import com.a0100019.mypat.presentation.index.IndexActivity
-import com.a0100019.mypat.presentation.store.StoreActivity
+import com.a0100019.mypat.presentation.image.DisplayKoreanIdiomImage
 import com.a0100019.mypat.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectSideEffect
 
@@ -30,6 +28,10 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 @Composable
 fun MainScreen(
     viewModel: MainViewModel = hiltViewModel(),
+    onDailyNavigateClick: () -> Unit,
+    onStoreNavigateClick: () -> Unit,
+    onGameNavigateClick: () -> Unit,
+    onIndexNavigateClick: () -> Unit
 ) {
 
 
@@ -42,39 +44,17 @@ fun MainScreen(
             is MainSideEffect.Toast ->
                 Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
 
-            MainSideEffect.NavigateToDailyActivity -> {
-                context.startActivity(
-                    Intent(context, MainActivity::class.java)
-                )
-            }
-
-            MainSideEffect.NavigateToStoreActivity -> {
-                context.startActivity(
-                    Intent(context, StoreActivity::class.java)
-                )
-            }
-
-            MainSideEffect.NavigateToGameActivity -> {
-                context.startActivity(
-                    Intent(context, GameActivity::class.java)
-                )
-            }
-
-            MainSideEffect.NavigateToIndexActivity -> {
-                context.startActivity(
-                    Intent(context, IndexActivity::class.java)
-                )
-            }
         }
     }
 
 
 
     MainScreen(
-        onDailyNavigateClick = viewModel::onDailyNavigateClick,
-        onGameNavigateClick = viewModel::onGameNavigateClick,
-        onIndexNavigateClick = viewModel::onIndexNavigateClick,
-        onStoreNavigateClick = viewModel::onStoreNavigateClick
+        onDailyNavigateClick = onDailyNavigateClick,
+        onGameNavigateClick = onGameNavigateClick,
+        onIndexNavigateClick = onIndexNavigateClick,
+        onStoreNavigateClick = onStoreNavigateClick,
+        test = ""
     )
 
 }
@@ -84,7 +64,8 @@ fun MainScreen(
     onDailyNavigateClick: () -> Unit,
     onStoreNavigateClick: () -> Unit,
     onGameNavigateClick: () -> Unit,
-    onIndexNavigateClick: () -> Unit
+    onIndexNavigateClick: () -> Unit,
+    test: String
 ) {
 
     Surface {
@@ -118,7 +99,8 @@ fun MainScreen(
                     .padding(10.dp), // padding 추가
                 color = Color.Gray
             ) {
-                // 여기서 추가적인 UI 요소를 배치할 수 있습니다
+                DisplayKoreanIdiomImage("koreanIdiomImage/jukmagow1.jpg")
+
             }
 
             Column {
@@ -176,7 +158,8 @@ fun SelectScreenPreview() {
             onDailyNavigateClick = {},
             onGameNavigateClick = {},
             onIndexNavigateClick = {},
-            onStoreNavigateClick = {}
+            onStoreNavigateClick = {},
+            test = ""
         )
     }
 }

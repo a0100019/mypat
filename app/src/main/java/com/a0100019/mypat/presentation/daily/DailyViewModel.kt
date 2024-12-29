@@ -1,7 +1,10 @@
-package com.a0100019.mypat.presentation.main
+package com.a0100019.mypat.presentation.daily
 
 
+import android.content.Context
+import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
+import com.a0100019.mypat.data.image.loadBitmapFromAssets
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,17 +19,16 @@ import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor(
-    private val userDao: UserDao
+class DailyViewModel @Inject constructor(
+    private val userDao: UserDao,
+) : ViewModel(), ContainerHost<DailyState, DailySideEffect> {
 
-) : ViewModel(), ContainerHost<MainState, MainSideEffect> {
-
-    override val container: Container<MainState, MainSideEffect> = container(
-        initialState = MainState(),
+    override val container: Container<DailyState, DailySideEffect> = container(
+        initialState = DailyState(),
         buildSettings = {
             this.exceptionHandler = CoroutineExceptionHandler { _ , throwable ->
                 intent {
-                    postSideEffect(MainSideEffect.Toast(message = throwable.message.orEmpty()))
+                    postSideEffect(DailySideEffect.Toast(message = throwable.message.orEmpty()))
                 }
             }
         }
@@ -46,16 +48,14 @@ class MainViewModel @Inject constructor(
             }
         }
 
-//        userDao.insert(User(id = "aa", value = "100"))
     }
-
 
 
 
 }
 
 @Immutable
-data class MainState(
+data class DailyState(
     val id:String = "",
     val password:String = "",
     val userData: List<User> = emptyList()
@@ -63,7 +63,7 @@ data class MainState(
 
 
 //상태와 관련없는 것
-sealed interface MainSideEffect{
-    class Toast(val message:String): MainSideEffect
+sealed interface DailySideEffect{
+    class Toast(val message:String): DailySideEffect
 
 }

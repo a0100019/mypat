@@ -1,4 +1,4 @@
-package com.a0100019.mypat.data.room
+package com.a0100019.mypat.data.room.walk
 
 import androidx.room.Dao
 import androidx.room.Delete

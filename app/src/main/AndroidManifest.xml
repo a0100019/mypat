@@ -14,7 +14,7 @@
         android:theme="@style/Theme.Mypat"
         tools:targetApi="31">
         <activity
-            android:name=".presentation.loading.LoadingActivity"
+            android:name=".presentation.main.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.Mypat">
             <intent-filter>
@@ -23,11 +23,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".presentation.main.MainActivity" />
-        <activity android:name=".presentation.daily.DailyActivity" />
-        <activity android:name=".presentation.game.GameActivity" />
-        <activity android:name=".presentation.index.IndexActivity" />
-        <activity android:name=".presentation.store.StoreActivity" />
+        <activity android:name=".presentation.loading.LoadingActivity" />
 
 
     </application>

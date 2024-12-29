@@ -4,10 +4,15 @@ import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.a0100019.mypat.data.room.WalkDao
-import com.a0100019.mypat.data.room.UserDao
+import com.a0100019.mypat.data.room.walk.WalkDao
+import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.Database
-import com.a0100019.mypat.data.room.getUserInitialData
+import com.a0100019.mypat.data.room.diary.DiaryDao
+import com.a0100019.mypat.data.room.english.EnglishDao
+import com.a0100019.mypat.data.room.english.getEnglishInitialData
+import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiomDao
+import com.a0100019.mypat.data.room.koreanIdiom.getKoreanIdiomInitialData
+import com.a0100019.mypat.data.room.user.getUserInitialData
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -36,9 +41,18 @@ object RoomModule {
                     // 데이터베이스가 처음 생성될 때 초기 데이터 삽입
                     CoroutineScope(Dispatchers.IO).launch {
 
+                        //data 삽입
                         val userDao = provideDatabase(context).userDao()
                         val userInitialData = getUserInitialData()
                         userDao.insertAll(userInitialData) // 대량 삽입
+
+                        val englishDao = provideDatabase(context).englishDao()
+                        val englishInitialData = getEnglishInitialData()
+                        englishDao.insertAll(englishInitialData) // 대량 삽입
+
+                        val koreanIdiomDao = provideDatabase(context).koreanIdiomDao()
+                        val koreanIdiomInitialData = getKoreanIdiomInitialData()
+                        koreanIdiomDao.insertAll(koreanIdiomInitialData) // 대량 삽입
 
                     }
                 }
@@ -68,7 +82,22 @@ object RoomModule {
     }
 
     @Provides
-    fun provideNoteDao(database: Database): WalkDao {
-        return database.walkDao()  // NoteDao 추가
+    fun provideWalkDao(database: Database): WalkDao {
+        return database.walkDao()
+    }
+
+    @Provides
+    fun provideDiaryDao(database: Database): DiaryDao {
+        return database.diaryDao()
+    }
+
+    @Provides
+    fun provideEnglishDao(database: Database): EnglishDao {
+        return database.englishDao()
+    }
+
+    @Provides
+    fun provideKoreanIdiomDao(database: Database): KoreanIdiomDao {
+        return database.koreanIdiomDao()
     }
 }

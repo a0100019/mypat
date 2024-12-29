@@ -1,8 +1,11 @@
 package com.a0100019.mypat.presentation.loading
 
+import android.content.Context
+import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
-import com.a0100019.mypat.data.room.User
-import com.a0100019.mypat.data.room.UserDao
+import com.a0100019.mypat.data.image.loadBitmapFromAssets
+import com.a0100019.mypat.data.room.user.User
+import com.a0100019.mypat.data.room.user.UserDao
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import org.orbitmvi.orbit.Container
@@ -16,7 +19,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoadingViewModel @Inject constructor(
-    private val userDao: UserDao
+    private val userDao: UserDao,
 ) : ViewModel(), ContainerHost<LoadingState, LoadingSideEffect> {
 
     override val container: Container<LoadingState, LoadingSideEffect> = container(
@@ -46,6 +49,11 @@ class LoadingViewModel @Inject constructor(
 
 //        userDao.insert(User(id = "aa", value = "100"))
     }
+
+//
+//    fun getBitmap(): Bitmap {
+//        return loadBitmapFromAssets(context, "koreanIdiomImage/jukmagow1.jpg")
+//    }
 
 //    fun onDailyNavigateClick() = intent {
 //        postSideEffect(MainSideEffect.NavigateToDailyActivity)
