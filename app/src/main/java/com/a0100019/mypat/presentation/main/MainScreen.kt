@@ -101,7 +101,6 @@ fun MainScreen(
                 color = Color.Gray
             ) {
                 DisplayKoreanIdiomImage("koreanIdiomImage/jukmagow1.jpg")
-
             }
 
             LottieCatAnimation()

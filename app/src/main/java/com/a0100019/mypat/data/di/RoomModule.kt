@@ -10,9 +10,12 @@ import com.a0100019.mypat.data.room.Database
 import com.a0100019.mypat.data.room.diary.DiaryDao
 import com.a0100019.mypat.data.room.english.EnglishDao
 import com.a0100019.mypat.data.room.english.getEnglishInitialData
-import com.a0100019.mypat.data.room.index.IndexDao
+import com.a0100019.mypat.data.room.item.ItemDao
+import com.a0100019.mypat.data.room.item.getItemInitialData
+import com.a0100019.mypat.data.room.pet.PatDao
 import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiomDao
 import com.a0100019.mypat.data.room.koreanIdiom.getKoreanIdiomInitialData
+import com.a0100019.mypat.data.room.pet.getPatInitialData
 import com.a0100019.mypat.data.room.user.getUserInitialData
 import com.a0100019.mypat.data.room.world.WorldDao
 import dagger.Module
@@ -55,6 +58,14 @@ object RoomModule {
                         val koreanIdiomDao = provideDatabase(context).koreanIdiomDao()
                         val koreanIdiomInitialData = getKoreanIdiomInitialData()
                         koreanIdiomDao.insertAll(koreanIdiomInitialData) // 대량 삽입
+
+                        val patDao = provideDatabase(context).patDao()
+                        val patInitialData = getPatInitialData()
+                        patDao.insertAll(patInitialData) // 대량 삽입
+
+                        val itemDao = provideDatabase(context).itemDao()
+                        val itemInitialData = getItemInitialData()
+                        itemDao.insertAll(itemInitialData) // 대량 삽입
 
                     }
                 }
@@ -104,8 +115,13 @@ object RoomModule {
     }
 
     @Provides
-    fun provideIndexDao(database: Database): IndexDao {
-        return database.indexDao()
+    fun providePatDao(database: Database): PatDao {
+        return database.patDao()
+    }
+
+    @Provides
+    fun provideItemDao(database: Database): ItemDao {
+        return database.itemDao()
     }
 
     @Provides

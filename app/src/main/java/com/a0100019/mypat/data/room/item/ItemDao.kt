@@ -1,24 +1,25 @@
-package com.a0100019.mypat.data.room.world
+package com.a0100019.mypat.data.room.item
 
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.a0100019.mypat.data.room.pet.Pat
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface WorldDao {
+interface ItemDao {
     @Insert
-    suspend fun insert(world: World)
+    suspend fun insert(item: Item)
 
     @Delete
-    suspend fun delete(world: World)
+    suspend fun delete(item: Item)
 
-    @Query("SELECT * FROM world_table ORDER BY id DESC")
-    fun getAllWorlds(): Flow<List<World>>
+    @Query("SELECT * FROM item_table ORDER BY id DESC")
+    fun getAllItems(): Flow<List<Item>>
 
     //초기에 데이터 한번에 넣기 위한 코드
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(users: List<World>)
+    suspend fun insertAll(users: List<Item>)
 }

@@ -1,5 +1,8 @@
 package com.a0100019.mypat.presentation.image
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,7 +16,12 @@ import com.a0100019.mypat.data.image.loadBitmapFromAssets
 @Composable
 fun DisplayKoreanIdiomImage(filePath: String) {
     val context = LocalContext.current
-    val bitmap = remember { loadBitmapFromAssets(context, filePath) } // Load the bitmap only once
+
+    // Load the bitmap from assets directly inside the composable
+    val bitmap = remember {
+        val inputStream = context.assets.open(filePath)
+        BitmapFactory.decodeStream(inputStream)
+    }
 
     Image(
         bitmap = bitmap.asImageBitmap(),
