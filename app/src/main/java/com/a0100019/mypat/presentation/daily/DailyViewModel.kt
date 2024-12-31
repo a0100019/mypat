@@ -4,7 +4,6 @@ package com.a0100019.mypat.presentation.daily
 import android.content.Context
 import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
-import com.a0100019.mypat.data.image.loadBitmapFromAssets
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import dagger.hilt.android.lifecycle.HiltViewModel

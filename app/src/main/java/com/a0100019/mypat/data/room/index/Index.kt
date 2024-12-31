@@ -11,8 +11,5 @@ data class Index(
     val memo: String,
     val url: String,
     val love: Int = 0,
-    val out: String = "0",
-    val x: Int = 0,
-    val y: Int = 0,
 
 )

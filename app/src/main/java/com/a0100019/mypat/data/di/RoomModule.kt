@@ -10,9 +10,11 @@ import com.a0100019.mypat.data.room.Database
 import com.a0100019.mypat.data.room.diary.DiaryDao
 import com.a0100019.mypat.data.room.english.EnglishDao
 import com.a0100019.mypat.data.room.english.getEnglishInitialData
+import com.a0100019.mypat.data.room.index.IndexDao
 import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiomDao
 import com.a0100019.mypat.data.room.koreanIdiom.getKoreanIdiomInitialData
 import com.a0100019.mypat.data.room.user.getUserInitialData
+import com.a0100019.mypat.data.room.world.WorldDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -100,4 +102,16 @@ object RoomModule {
     fun provideKoreanIdiomDao(database: Database): KoreanIdiomDao {
         return database.koreanIdiomDao()
     }
+
+    @Provides
+    fun provideIndexDao(database: Database): IndexDao {
+        return database.indexDao()
+    }
+
+    @Provides
+    fun provideWorldDao(database: Database): WorldDao {
+        return database.worldDao()
+    }
 }
+
+

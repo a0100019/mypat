@@ -21,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.presentation.image.DisplayKoreanIdiomImage
+import com.a0100019.mypat.presentation.image.LottieCatAnimation
 import com.a0100019.mypat.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectSideEffect
 
@@ -102,6 +103,8 @@ fun MainScreen(
                 DisplayKoreanIdiomImage("koreanIdiomImage/jukmagow1.jpg")
 
             }
+
+            LottieCatAnimation()
 
             Column {
                 Row(
