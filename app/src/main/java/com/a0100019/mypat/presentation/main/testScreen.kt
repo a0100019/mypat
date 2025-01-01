@@ -22,18 +22,34 @@ fun FullScreenWithContent() {
     ) {
         val screenWidth = maxWidth
         val screenHeight = maxHeight
-        val targetAspectRatio = 9 / 16f
+        val minAspectRatio = 9 / 22f // 최소 비율
+        val maxAspectRatio = 9 / 14f // 최대 비율
         val actualAspectRatio = screenWidth / screenHeight
 
         val contentWidth: Dp
         val contentHeight: Dp
 
-        if (actualAspectRatio > targetAspectRatio) {
-            contentHeight = screenHeight
-            contentWidth = screenHeight * targetAspectRatio
+        if (actualAspectRatio in minAspectRatio..maxAspectRatio) {
+            // 비율이 범위 내에 있는 경우
+            val targetAspectRatio = actualAspectRatio // 현재 비율 그대로 사용
+            if (actualAspectRatio > maxAspectRatio) {
+                contentHeight = screenHeight
+                contentWidth = screenHeight * targetAspectRatio
+            } else {
+                contentWidth = screenWidth
+                contentHeight = screenWidth / targetAspectRatio
+            }
         } else {
-            contentWidth = screenWidth
-            contentHeight = screenWidth / targetAspectRatio
+            // 비율이 범위를 벗어난 경우: 여백 추가
+            if (actualAspectRatio > maxAspectRatio) {
+                // 가로가 길어서 여백이 생기는 경우
+                contentHeight = screenHeight
+                contentWidth = screenHeight * maxAspectRatio
+            } else {
+                // 세로가 길어서 여백이 생기는 경우
+                contentWidth = screenWidth
+                contentHeight = screenWidth / minAspectRatio
+            }
         }
 
         // 중앙 콘텐츠

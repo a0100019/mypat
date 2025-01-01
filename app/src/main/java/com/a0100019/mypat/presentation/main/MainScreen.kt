@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,7 +22,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.presentation.image.DisplayKoreanIdiomImage
+import com.a0100019.mypat.presentation.image.DisplayMapImage
 import com.a0100019.mypat.presentation.image.LottieCatAnimation
+import com.a0100019.mypat.presentation.main.world.WorldScreen
 import com.a0100019.mypat.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectSideEffect
 
@@ -93,17 +96,7 @@ fun MainScreen(
                 }
             }
 
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth() // 가로 크기는 최대
-                    .fillMaxHeight(0.5f)
-                    .padding(10.dp), // padding 추가
-                color = Color.Gray
-            ) {
-                DisplayKoreanIdiomImage("koreanIdiomImage/jukmagow1.jpg")
-            }
-
-            LottieCatAnimation()
+            WorldScreen("")
 
             Column {
                 Row(
