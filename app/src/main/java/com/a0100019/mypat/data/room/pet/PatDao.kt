@@ -16,7 +16,7 @@ interface PatDao {
     suspend fun delete(pat: Pat)
 
     @Query("SELECT * FROM pat_table ORDER BY id DESC")
-    fun getAllIndexes(): Flow<List<Pat>>
+    fun getAllIndexData(): Flow<List<Pat>>
 
     //초기에 데이터 한번에 넣기 위한 코드
     @Insert(onConflict = OnConflictStrategy.REPLACE)

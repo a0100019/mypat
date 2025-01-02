@@ -7,10 +7,11 @@ import androidx.room.PrimaryKey
 data class Pat(
     @PrimaryKey(autoGenerate = true) val id: Int = 1,
     val date: String = "0",
-    val name: String,
-    val memo: String,
+    val name: String = "",
+    val memo: String = "",
     val url: String,
     val love: Int = 0,
+    val sizeFloat: Float = 0.5f,
     val category: String = "1"
 
 )

@@ -17,7 +17,7 @@ interface KoreanIdiomDao {
     suspend fun delete(koreanIdiom: KoreanIdiom)
 
     @Query("SELECT * FROM koreanIdiom_table ORDER BY id DESC")
-    fun getAllKoreanIdioms(): Flow<List<KoreanIdiom>>
+    fun getAllKoreanIdiomData(): Flow<List<KoreanIdiom>>
 
     //초기에 데이터 한번에 넣기 위한 코드
     @Insert(onConflict = OnConflictStrategy.REPLACE)

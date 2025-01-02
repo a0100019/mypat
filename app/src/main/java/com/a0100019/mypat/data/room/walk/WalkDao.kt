@@ -15,5 +15,5 @@ interface WalkDao {
     suspend fun delete(walk: Walk)
 
     @Query("SELECT * FROM walk_table ORDER BY id DESC")
-    fun getAllWalks(): Flow<List<Walk>>
+    fun getAllWalkData(): Flow<List<Walk>>
 }

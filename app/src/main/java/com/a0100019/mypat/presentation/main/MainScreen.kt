@@ -1,13 +1,10 @@
 package com.a0100019.mypat.presentation.main
 
 
-import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -16,22 +13,25 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.a0100019.mypat.presentation.image.DisplayKoreanIdiomImage
-import com.a0100019.mypat.presentation.image.DisplayMapImage
-import com.a0100019.mypat.presentation.image.LottieCatAnimation
+import com.a0100019.mypat.data.room.pet.Pat
+import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.presentation.main.world.WorldScreen
+import com.a0100019.mypat.presentation.main.world.WorldSideEffect
+import com.a0100019.mypat.presentation.main.world.WorldState
+import com.a0100019.mypat.presentation.main.world.WorldViewModel
 import com.a0100019.mypat.ui.theme.MypatTheme
+import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 
 
 @Composable
 fun MainScreen(
-    viewModel: MainViewModel = hiltViewModel(),
+    mainViewModel: MainViewModel = hiltViewModel(),
+    worldViewModel: WorldViewModel = hiltViewModel(),
     onDailyNavigateClick: () -> Unit,
     onStoreNavigateClick: () -> Unit,
     onGameNavigateClick: () -> Unit,
@@ -39,13 +39,22 @@ fun MainScreen(
 ) {
 
 
-//    val state : SelectState = viewModel.collectAsState().value
+    val mainState : MainState = mainViewModel.collectAsState().value
+    val worldState : WorldState = worldViewModel.collectAsState().value
 
     val context = LocalContext.current
 
-    viewModel.collectSideEffect { sideEffect ->
+    mainViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
             is MainSideEffect.Toast ->
+                Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
+
+        }
+    }
+
+    worldViewModel.collectSideEffect { sideEffect ->
+        when (sideEffect) {
+            is WorldSideEffect.Toast ->
                 Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
 
         }
@@ -58,7 +67,9 @@ fun MainScreen(
         onGameNavigateClick = onGameNavigateClick,
         onIndexNavigateClick = onIndexNavigateClick,
         onStoreNavigateClick = onStoreNavigateClick,
-        test = ""
+        mapUrl = worldState.mapData?.value ?: "map/loading.jpg",
+        firstPatData = worldState.firstPatData,
+        firstPatWorldData = worldState.firstPatWorldData
     )
 
 }
@@ -69,7 +80,9 @@ fun MainScreen(
     onStoreNavigateClick: () -> Unit,
     onGameNavigateClick: () -> Unit,
     onIndexNavigateClick: () -> Unit,
-    test: String
+    mapUrl: String,
+    firstPatData: Pat,
+    firstPatWorldData: World
 ) {
 
     Surface {
@@ -96,7 +109,11 @@ fun MainScreen(
                 }
             }
 
-            WorldScreen("")
+            WorldScreen(
+                mapUrl = mapUrl,
+                firstPatData = firstPatData,
+                firstPatWorldData = firstPatWorldData
+            )
 
             Column {
                 Row(
@@ -147,14 +164,16 @@ fun MainScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun SelectScreenPreview() {
+fun MainScreenPreview() {
     MypatTheme {
         MainScreen(
             onDailyNavigateClick = {},
             onGameNavigateClick = {},
             onIndexNavigateClick = {},
             onStoreNavigateClick = {},
-            test = ""
+            mapUrl = "map/forest.jpg",
+            firstPatData = Pat(url = "pat/cat.json"),
+            firstPatWorldData = World(id = "pat1")
         )
     }
 }

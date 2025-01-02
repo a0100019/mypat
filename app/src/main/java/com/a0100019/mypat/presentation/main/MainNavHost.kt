@@ -1,6 +1,7 @@
 package com.a0100019.mypat.presentation.main
 
 import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -13,6 +14,7 @@ import com.a0100019.mypat.presentation.daily.walk.WalkScreen
 import com.a0100019.mypat.presentation.game.GameScreen
 import com.a0100019.mypat.presentation.index.IndexScreen
 import com.a0100019.mypat.presentation.store.StoreScreen
+import dagger.hilt.android.lifecycle.HiltViewModel
 
 @Composable
 fun MainNavHost() {

@@ -15,5 +15,5 @@ interface DiaryDao {
     suspend fun delete(diary: Diary)
 
     @Query("SELECT * FROM diary_table ORDER BY id DESC")
-    fun getAllDiaries(): Flow<List<Diary>>
+    fun getAllDiaryData(): Flow<List<Diary>>
 }

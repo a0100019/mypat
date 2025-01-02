@@ -4,7 +4,7 @@ import com.a0100019.mypat.data.room.pet.Pat
 
 fun getWorldInitialData(): List<World> {
     return listOf(
-        World(id = "map"),
+        World(id = "map", value = "map/beach.jpg"),
         World(id = "pat1"),
         World(id = "pat2"),
         World(id = "pat3"),

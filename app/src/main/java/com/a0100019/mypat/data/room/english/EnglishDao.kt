@@ -17,7 +17,7 @@ interface EnglishDao {
     suspend fun delete(english: English)
 
     @Query("SELECT * FROM english_table ORDER BY id DESC")
-    fun getAllEnglishes(): Flow<List<English>>
+    fun getAllEnglishData(): Flow<List<English>>
 
     //초기에 데이터 한번에 넣기 위한 코드
     @Insert(onConflict = OnConflictStrategy.REPLACE)

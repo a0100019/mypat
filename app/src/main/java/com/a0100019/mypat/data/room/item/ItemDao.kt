@@ -17,7 +17,7 @@ interface ItemDao {
     suspend fun delete(item: Item)
 
     @Query("SELECT * FROM item_table ORDER BY id DESC")
-    fun getAllItems(): Flow<List<Item>>
+    fun getAllItemData(): Flow<List<Item>>
 
     //초기에 데이터 한번에 넣기 위한 코드
     @Insert(onConflict = OnConflictStrategy.REPLACE)
