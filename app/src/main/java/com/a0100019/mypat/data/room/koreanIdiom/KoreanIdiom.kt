@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "koreanIdiom_table")
 data class KoreanIdiom(
-    @PrimaryKey(autoGenerate = true) val id: Int = 1,
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val date: String = "0",
     val idiom: String,
     val korean: String,

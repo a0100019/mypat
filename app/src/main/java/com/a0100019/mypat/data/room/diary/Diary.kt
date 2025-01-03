@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 //객체 형태를 만드는 코드
 @Entity(tableName = "diary_table")
 data class Diary(
-    @PrimaryKey(autoGenerate = true) val id: Int = 1,
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val date: String,
     val mood: String,
     val title: String,

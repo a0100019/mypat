@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.a0100019.mypat.data.room.pet.Pat
+import com.a0100019.mypat.data.room.world.World
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -18,6 +19,9 @@ interface ItemDao {
 
     @Query("SELECT * FROM item_table ORDER BY id DESC")
     fun getAllItemData(): Flow<List<Item>>
+
+    @Query("SELECT * FROM item_table WHERE id = :id")
+    suspend fun getItemDataById(id: String): Item
 
     //초기에 데이터 한번에 넣기 위한 코드
     @Insert(onConflict = OnConflictStrategy.REPLACE)

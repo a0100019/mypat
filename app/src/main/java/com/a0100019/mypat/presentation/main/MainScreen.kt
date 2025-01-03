@@ -17,6 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pet.Pat
 import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.presentation.main.world.WorldScreen
@@ -69,7 +70,9 @@ fun MainScreen(
         onStoreNavigateClick = onStoreNavigateClick,
         mapUrl = worldState.mapData?.value ?: "map/loading.jpg",
         firstPatData = worldState.firstPatData,
-        firstPatWorldData = worldState.firstPatWorldData
+        firstPatWorldData = worldState.firstPatWorldData,
+        firstItemData = worldState.firstItemData,
+        firstItemWorldData = worldState.firstItemWorldData
     )
 
 }
@@ -82,7 +85,10 @@ fun MainScreen(
     onIndexNavigateClick: () -> Unit,
     mapUrl: String,
     firstPatData: Pat,
-    firstPatWorldData: World
+    firstPatWorldData: World,
+    firstItemData: Item,
+    firstItemWorldData: World
+
 ) {
 
     Surface {
@@ -112,7 +118,9 @@ fun MainScreen(
             WorldScreen(
                 mapUrl = mapUrl,
                 firstPatData = firstPatData,
-                firstPatWorldData = firstPatWorldData
+                firstPatWorldData = firstPatWorldData,
+                firstItemData = firstItemData,
+                firstItemWorldData = firstItemWorldData
             )
 
             Column {
@@ -173,7 +181,9 @@ fun MainScreenPreview() {
             onStoreNavigateClick = {},
             mapUrl = "map/forest.jpg",
             firstPatData = Pat(url = "pat/cat.json"),
-            firstPatWorldData = World(id = "pat1")
+            firstPatWorldData = World(id = "pat1"),
+            firstItemData = Item(url = "item/table.png"),
+            firstItemWorldData = World(id = "item1")
         )
     }
 }

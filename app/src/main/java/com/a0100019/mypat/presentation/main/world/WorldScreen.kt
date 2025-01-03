@@ -1,45 +1,29 @@
 package com.a0100019.mypat.presentation.main.world
 
-import android.widget.Toast
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.a0100019.mypat.R
+import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pet.Pat
 import com.a0100019.mypat.data.room.world.World
-import com.a0100019.mypat.presentation.image.DisplayKoreanIdiomImage
 import com.a0100019.mypat.presentation.image.DisplayMapImage
-import com.a0100019.mypat.presentation.image.Pat
-import com.a0100019.mypat.presentation.loading.LoadingViewModel
-import com.a0100019.mypat.presentation.main.MainSideEffect
-import com.a0100019.mypat.presentation.main.MainState
+import com.a0100019.mypat.presentation.image.DraggableImage
+import com.a0100019.mypat.presentation.image.DraggableItemImage
+import com.a0100019.mypat.presentation.image.ItemImage
+import com.a0100019.mypat.presentation.image.PatImage
 import com.a0100019.mypat.ui.theme.MypatTheme
-import org.orbitmvi.orbit.compose.collectAsState
-import org.orbitmvi.orbit.compose.collectSideEffect
 
 //@Composable
 //fun WorldScreen(
@@ -71,7 +55,9 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 fun WorldScreen(
     mapUrl : String,
     firstPatData : Pat,
-    firstPatWorldData : World
+    firstPatWorldData : World,
+    firstItemData : Item,
+    firstItemWorldData : World
 ) {
 
     Surface(
@@ -89,13 +75,7 @@ fun WorldScreen(
             contentAlignment = Alignment.Center // Center content
         ) {
             DisplayMapImage(mapUrl)
-            // Text in the center
-//            Text(
-//                text = "로딩 중",
-//                fontSize = 32.sp, // Large font size
-//                fontWeight = FontWeight.Bold, // Bold text
-//                color = Color.Black // Text color
-//            )
+
             BoxWithConstraints(
                 modifier = Modifier.fillMaxSize()
             ) {
@@ -108,15 +88,44 @@ fun WorldScreen(
                 val surfaceWidthDp = with(density) { surfaceWidth.toDp() }
                 val surfaceHeightDp = with(density) { surfaceHeight.toDp() }
 
+                ItemImage(
+                    itemUrl = firstItemData.url,
+                    surfaceWidthDp = surfaceWidthDp,
+                    surfaceHeightDp = surfaceHeightDp,
+                    xFloat = firstItemData.x,
+                    yFloat = firstItemData.y,
+                    sizeFloat = firstItemData.sizeFloat
+                )
 
-                Pat(
+                DraggableImage(
+                    itemUrl = "item/table.png",
+                    initialX = 100.dp,
+                    initialY = 100.dp,
+                    size = 20.dp
+                )
+
+//                DraggableItemImage(
+//                    itemUrl = "item/table.png",
+//                    surfaceWidthDp = 300.dp, // 예제 너비
+//                    surfaceHeightDp = 400.dp, // 예제 높이
+//                    initialXFloat = firstItemData.x,
+//                    initialYFloat = firstItemData.y,
+//                    sizeFloat = 0.2f
+//                ) { newX, newY ->
+//                    firstItemData.x = newX
+//                    firstItemData.y = newY
+//                }
+
+                PatImage(
                     patUrl = firstPatData.url,
                     surfaceWidthDp = surfaceWidthDp,
                     surfaceHeightDp = surfaceHeightDp,
-                    xFloat = firstPatWorldData.x,
-                    yFloat = firstPatWorldData.y,
+                    xFloat = firstPatData.x,
+                    yFloat = firstPatData.y,
                     sizeFloat = firstPatData.sizeFloat
                 )
+
+
 
             }
 
@@ -134,8 +143,10 @@ fun SelectScreenPreview() {
     MypatTheme {
         WorldScreen(
             mapUrl = "map/beach.jpg",
-            firstPatData = Pat(url = ""),
-            firstPatWorldData = World(id = "")
+            firstPatData = Pat(url = "pat/cat.json"),
+            firstPatWorldData = World(id = "pat1"),
+            firstItemData = Item(url = "item/table.png"),
+            firstItemWorldData = World(id = "item1")
         )
     }
 }
