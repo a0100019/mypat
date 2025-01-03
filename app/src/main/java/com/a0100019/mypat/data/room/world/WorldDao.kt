@@ -16,10 +16,13 @@ interface WorldDao {
     suspend fun delete(world: World)
 
     @Query("SELECT * FROM world_table ORDER BY id DESC")
-    fun getAllWorldData(): Flow<List<World>>
+    fun getAllFlowWorldData(): Flow<List<World>>
 
     @Query("SELECT * FROM world_table WHERE id = :id")
     suspend fun getWorldDataById(id: String): World
+
+    @Query("SELECT * FROM world_table WHERE type = :type AND open = :open")
+    suspend fun getWorldDataListByTypeOpen(type: String, open: String): List<World>
 
     //초기에 데이터 한번에 넣기 위한 코드
     @Insert(onConflict = OnConflictStrategy.REPLACE)

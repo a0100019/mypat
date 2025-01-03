@@ -3,6 +3,7 @@ package com.a0100019.mypat.data.room.item
 fun getItemInitialData(): List<Item> {
     return listOf(
         Item( name = "책상", memo = "책상.", url = "item/table.png", sizeFloat = 0.1f),
+        Item( name = "분수", memo = "분수.", url = "item/fountain.png", sizeFloat = 0.1f),
 
         Item( name = "해변", memo = "해변이다.", url = "map/beach.jpg", category = "map")
 

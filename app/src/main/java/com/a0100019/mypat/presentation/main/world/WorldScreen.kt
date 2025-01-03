@@ -3,61 +3,49 @@ package com.a0100019.mypat.presentation.main.world
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pet.Pat
 import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.presentation.image.DisplayMapImage
 import com.a0100019.mypat.presentation.image.DraggableImage
-import com.a0100019.mypat.presentation.image.DraggableItemImage
 import com.a0100019.mypat.presentation.image.ItemImage
 import com.a0100019.mypat.presentation.image.PatImage
 import com.a0100019.mypat.ui.theme.MypatTheme
-
-//@Composable
-//fun WorldScreen(
-//    viewModel: WorldViewModel? = null
-//
-//) {
-//
-//    val state : WorldState = viewModel?.collectAsState()!!.value
-//
-//    val context = LocalContext.current
-//
-//    viewModel.collectSideEffect { sideEffect ->
-//        when (sideEffect) {
-//            is WorldSideEffect.Toast ->
-//                Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
-//
-//        }
-//    }
-//
-//
-//    WorldScreen(
-//        value = "스크린 나누기"
-//    )
-//}
-
 
 
 @Composable
 fun WorldScreen(
     mapUrl : String,
-    firstPatData : Pat,
-    firstPatWorldData : World,
-    firstItemData : Item,
-    firstItemWorldData : World
+    patDataList : List<Pat>,
+    patWorldDataList : List<World>,
+    itemDataList : List<Item>,
+    itemWorldDataList : List<World>
 ) {
 
     Surface(
@@ -67,7 +55,6 @@ fun WorldScreen(
             .padding(10.dp), // padding 추가
         color = Color.Gray
     ) {
-
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -88,14 +75,31 @@ fun WorldScreen(
                 val surfaceWidthDp = with(density) { surfaceWidth.toDp() }
                 val surfaceHeightDp = with(density) { surfaceHeight.toDp() }
 
-                ItemImage(
-                    itemUrl = firstItemData.url,
-                    surfaceWidthDp = surfaceWidthDp,
-                    surfaceHeightDp = surfaceHeightDp,
-                    xFloat = firstItemData.x,
-                    yFloat = firstItemData.y,
-                    sizeFloat = firstItemData.sizeFloat
-                )
+                itemDataList.map { itemData ->
+                    ItemImage(
+                        itemUrl = itemData.url,
+                        surfaceWidthDp = surfaceWidthDp,
+                        surfaceHeightDp = surfaceHeightDp,
+                        xFloat = itemData.x,
+                        yFloat = itemData.y,
+                        sizeFloat = itemData.sizeFloat
+                    )
+                }
+
+                patDataList.map { patData ->
+                    PatImage(
+                        patUrl = patData.url,
+                        surfaceWidthDp = surfaceWidthDp,
+                        surfaceHeightDp = surfaceHeightDp,
+                        xFloat = patData.x,
+                        yFloat = patData.y,
+                        sizeFloat = patData.sizeFloat,
+                        onClick = {
+
+                        }
+                    )
+                }
+
 
                 DraggableImage(
                     itemUrl = "item/table.png",
@@ -116,17 +120,6 @@ fun WorldScreen(
 //                    firstItemData.y = newY
 //                }
 
-                PatImage(
-                    patUrl = firstPatData.url,
-                    surfaceWidthDp = surfaceWidthDp,
-                    surfaceHeightDp = surfaceHeightDp,
-                    xFloat = firstPatData.x,
-                    yFloat = firstPatData.y,
-                    sizeFloat = firstPatData.sizeFloat
-                )
-
-
-
             }
 
         }
@@ -143,10 +136,10 @@ fun SelectScreenPreview() {
     MypatTheme {
         WorldScreen(
             mapUrl = "map/beach.jpg",
-            firstPatData = Pat(url = "pat/cat.json"),
-            firstPatWorldData = World(id = "pat1"),
-            firstItemData = Item(url = "item/table.png"),
-            firstItemWorldData = World(id = "item1")
+            patDataList = listOf(Pat(url = "pat/cat.json")),
+            patWorldDataList = listOf(World(id = "pat1")),
+            itemDataList = listOf(Item(url = "item/table.png")),
+            itemWorldDataList = listOf(World(id = "item1"))
         )
     }
 }

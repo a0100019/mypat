@@ -6,7 +6,6 @@ import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.item.ItemDao
 import com.a0100019.mypat.data.room.pet.Pat
 import com.a0100019.mypat.data.room.pet.PatDao
-import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.data.room.world.WorldDao
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -62,32 +61,38 @@ class WorldViewModel @Inject constructor(
 
         viewModelScope.launch {
             // 첫 번째 데이터 가져오기
-            val patWorldData = worldDao.getWorldDataById("pat1")
+            val patWorldDataList = worldDao.getWorldDataListByTypeOpen(type = "pat", open = "1") ?: emptyList()
             reduce {
-                state.copy(firstPatWorldData = patWorldData)
+                state.copy(patWorldDataList = patWorldDataList)
             }
 
             // 두 번째 데이터 가져오기
-            val patData = patDao.getPatDataById(patWorldData.value)
+            val patDataList = patWorldDataList.mapNotNull { patWorldData ->
+                // 데이터가 없으면 null 반환
+                patDao.getPatDataById(patWorldData.value)
+            }
             reduce {
-                state.copy(firstPatData = patData)
+                state.copy(patDataList = patDataList)
             }
         }
+
+
 
         viewModelScope.launch {
             // 첫 번째 데이터 가져오기
-            val itemWorldData = worldDao.getWorldDataById("item1")
+            val itemWorldDataList = worldDao.getWorldDataListByTypeOpen(type = "item", open = "1") // 여러 데이터를 가져옴
             reduce {
-                state.copy(firstItemWorldData = itemWorldData)
+                state.copy(itemWorldDataList = itemWorldDataList)
             }
 
             // 두 번째 데이터 가져오기
-            val itemData = itemDao.getItemDataById(itemWorldData.value)
+            val itemDataList = itemWorldDataList.mapNotNull { itemWorldData ->
+                itemDao.getItemDataById(itemWorldData.value) // 각 value에 맞는 데이터 가져오기
+            }
             reduce {
-                state.copy(firstItemData = itemData)
+                state.copy(itemDataList = itemDataList)
             }
         }
-
 
 
     }
@@ -102,10 +107,10 @@ data class WorldState(
     val password:String = "",
     val worldData: List<World> = emptyList(),
     val mapData: World? = null,
-    val firstPatData: Pat = Pat(url = ""),
-    val firstPatWorldData: World = World(id = ""),
-    val firstItemData: Item = Item(url = ""),
-    val firstItemWorldData: World = World(id = "")
+    val patDataList: List<Pat> = emptyList(),
+    val patWorldDataList: List<World> = emptyList(),
+    val itemDataList: List<Item> = emptyList(),
+    val itemWorldDataList: List<World> = emptyList(),
     )
 
 

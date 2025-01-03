@@ -14,6 +14,7 @@ data class Item(
     var y: Float = 0.5f,
     val touch: Long? = null,
     val sizeFloat: Float = 0.2f,
-    val category: String = "item"
+    val category: String = "item",
+    val type: String = "image"
 
     )

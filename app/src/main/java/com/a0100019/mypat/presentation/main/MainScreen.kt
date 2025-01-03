@@ -24,6 +24,9 @@ import com.a0100019.mypat.presentation.main.world.WorldScreen
 import com.a0100019.mypat.presentation.main.world.WorldSideEffect
 import com.a0100019.mypat.presentation.main.world.WorldState
 import com.a0100019.mypat.presentation.main.world.WorldViewModel
+import com.a0100019.mypat.presentation.main.world.dialog.PatDialogSideEffect
+import com.a0100019.mypat.presentation.main.world.dialog.PatDialogState
+import com.a0100019.mypat.presentation.main.world.dialog.PatDialogViewModel
 import com.a0100019.mypat.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -33,6 +36,7 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 fun MainScreen(
     mainViewModel: MainViewModel = hiltViewModel(),
     worldViewModel: WorldViewModel = hiltViewModel(),
+    patDialogViewModel: PatDialogViewModel = hiltViewModel(),
     onDailyNavigateClick: () -> Unit,
     onStoreNavigateClick: () -> Unit,
     onGameNavigateClick: () -> Unit,
@@ -42,6 +46,7 @@ fun MainScreen(
 
     val mainState : MainState = mainViewModel.collectAsState().value
     val worldState : WorldState = worldViewModel.collectAsState().value
+    val patDialogState : PatDialogState = patDialogViewModel.collectAsState().value
 
     val context = LocalContext.current
 
@@ -61,6 +66,14 @@ fun MainScreen(
         }
     }
 
+    patDialogViewModel.collectSideEffect { sideEffect ->
+        when (sideEffect) {
+            is PatDialogSideEffect.Toast ->
+                Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
+
+        }
+    }
+
 
 
     MainScreen(
@@ -69,10 +82,10 @@ fun MainScreen(
         onIndexNavigateClick = onIndexNavigateClick,
         onStoreNavigateClick = onStoreNavigateClick,
         mapUrl = worldState.mapData?.value ?: "map/loading.jpg",
-        firstPatData = worldState.firstPatData,
-        firstPatWorldData = worldState.firstPatWorldData,
-        firstItemData = worldState.firstItemData,
-        firstItemWorldData = worldState.firstItemWorldData
+        patDataList = worldState.patDataList,
+        patWorldDataList = worldState.patWorldDataList,
+        itemDataList = worldState.itemDataList,
+        itemWorldDataList = worldState.itemWorldDataList
     )
 
 }
@@ -84,10 +97,10 @@ fun MainScreen(
     onGameNavigateClick: () -> Unit,
     onIndexNavigateClick: () -> Unit,
     mapUrl: String,
-    firstPatData: Pat,
-    firstPatWorldData: World,
-    firstItemData: Item,
-    firstItemWorldData: World
+    patDataList: List<Pat>,
+    patWorldDataList: List<World>,
+    itemDataList: List<Item>,
+    itemWorldDataList: List<World>
 
 ) {
 
@@ -117,10 +130,10 @@ fun MainScreen(
 
             WorldScreen(
                 mapUrl = mapUrl,
-                firstPatData = firstPatData,
-                firstPatWorldData = firstPatWorldData,
-                firstItemData = firstItemData,
-                firstItemWorldData = firstItemWorldData
+                patDataList = patDataList,
+                patWorldDataList = patWorldDataList,
+                itemDataList = itemDataList,
+                itemWorldDataList = itemWorldDataList
             )
 
             Column {
@@ -180,10 +193,10 @@ fun MainScreenPreview() {
             onIndexNavigateClick = {},
             onStoreNavigateClick = {},
             mapUrl = "map/forest.jpg",
-            firstPatData = Pat(url = "pat/cat.json"),
-            firstPatWorldData = World(id = "pat1"),
-            firstItemData = Item(url = "item/table.png"),
-            firstItemWorldData = World(id = "item1")
+            patDataList = listOf(Pat(url = "pat/cat.json")),
+            patWorldDataList = listOf(World(id = "pat1")),
+            itemDataList = listOf(Item(url = "item/table.png")),
+            itemWorldDataList = listOf(World(id = "item1"))
         )
     }
 }
