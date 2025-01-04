@@ -1,7 +1,6 @@
 package com.a0100019.mypat.presentation.main.world.dialog
 
 import androidx.lifecycle.ViewModel
-import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -41,26 +40,22 @@ class PatDialogViewModel @Inject constructor(
         // Flow 데이터를 State로 업데이트
 
 
-//        userDao.insert(User(id = "aa", value = "100"))
     }
 
-//
-//    fun getBitmap(): Bitmap {
-//        return loadBitmapFromAssets(context, "koreanIdiomImage/jukmagow1.jpg")
-//    }
 
-//    fun onDailyNavigateClick() = intent {
-//        postSideEffect(MainSideEffect.NavigateToDailyActivity)
-//    }
+
+    fun dialogPatIdChange(clickId : String) = intent {
+        reduce {
+            state.copy(dialogPatId = clickId)
+        }
+    }
 
 
 }
 
 @Immutable
 data class PatDialogState(
-    val id:String = "",
-    val password:String = "",
-    val userData: List<User> = emptyList()
+    val dialogPatId : String = "0"
 )
 
 

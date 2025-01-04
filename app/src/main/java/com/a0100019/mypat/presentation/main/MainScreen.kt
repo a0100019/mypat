@@ -85,7 +85,9 @@ fun MainScreen(
         patDataList = worldState.patDataList,
         patWorldDataList = worldState.patWorldDataList,
         itemDataList = worldState.itemDataList,
-        itemWorldDataList = worldState.itemWorldDataList
+        itemWorldDataList = worldState.itemWorldDataList,
+        dialogPatId = patDialogState.dialogPatId,
+        dialogPatIdChange = patDialogViewModel::dialogPatIdChange
     )
 
 }
@@ -100,7 +102,9 @@ fun MainScreen(
     patDataList: List<Pat>,
     patWorldDataList: List<World>,
     itemDataList: List<Item>,
-    itemWorldDataList: List<World>
+    itemWorldDataList: List<World>,
+    dialogPatId : String,
+    dialogPatIdChange : (String) -> Unit
 
 ) {
 
@@ -128,13 +132,35 @@ fun MainScreen(
                 }
             }
 
-            WorldScreen(
-                mapUrl = mapUrl,
-                patDataList = patDataList,
-                patWorldDataList = patWorldDataList,
-                itemDataList = itemDataList,
-                itemWorldDataList = itemWorldDataList
-            )
+            Column {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(end = 10.dp),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    Button(
+                        onClick = {}
+                    ) {
+                        Text("꾸미기 모드")
+                    }
+                    Button(
+                        onClick = {}
+                    ) {
+                        Text("사진 찍기")
+                    }
+                }
+
+                WorldScreen(
+                    mapUrl = mapUrl,
+                    patDataList = patDataList,
+                    patWorldDataList = patWorldDataList,
+                    itemDataList = itemDataList,
+                    itemWorldDataList = itemWorldDataList,
+                    dialogPatId = dialogPatId,
+                    dialogPatIdChange = dialogPatIdChange
+                )
+            }
 
             Column {
                 Row(
@@ -196,7 +222,9 @@ fun MainScreenPreview() {
             patDataList = listOf(Pat(url = "pat/cat.json")),
             patWorldDataList = listOf(World(id = "pat1")),
             itemDataList = listOf(Item(url = "item/table.png")),
-            itemWorldDataList = listOf(World(id = "item1"))
+            itemWorldDataList = listOf(World(id = "item1")),
+            dialogPatId = "0",
+            dialogPatIdChange = { }
         )
     }
 }

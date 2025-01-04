@@ -12,7 +12,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.a0100019.mypat.presentation.image.DisplayKoreanIdiomImage
 import com.a0100019.mypat.presentation.loading.LoadingViewModel
 import com.a0100019.mypat.ui.theme.MypatTheme
 

@@ -21,54 +21,34 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.a0100019.mypat.data.room.item.Item
+import com.a0100019.mypat.data.room.pet.Pat
+import com.a0100019.mypat.data.room.world.World
+import com.a0100019.mypat.presentation.image.DialogPatImage
+import com.a0100019.mypat.presentation.main.world.WorldScreen
+import com.a0100019.mypat.ui.theme.MypatTheme
 
-
-@Composable
-fun MainScreen1() {
-    var isDialogVisible by remember { mutableStateOf(false) }
-
-    Box(modifier = Modifier.fillMaxSize()) {
-        // 배경 콘텐츠
-        Button(
-            onClick = { isDialogVisible = true },
-            modifier = Modifier.align(Alignment.Center)
-        ) {
-            Text("Open Dialog with Screen")
-        }
-
-        // 다이얼로그 표시
-        if (isDialogVisible) {
-            Dialog(
-                onDismissRequest = { isDialogVisible = false }
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(0.6f) // 화면의 60%만 차지
-                        .background(Color.White, shape = RoundedCornerShape(16.dp))
-                        .padding(16.dp)
-                ) {
-                    Column {
-                        // 다이얼로그 안의 Screen
-                        DialogScreenContent(
-                            onClose = { isDialogVisible = false }
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
 
 @Composable
 fun DialogScreenContent(
-    onClose: () -> Unit
+    onClose: () -> Unit,
+    patData: Pat
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
+
+        Box(
+            modifier = Modifier
+                .fillMaxHeight(0.4f) // 화면의 60%만 차지
+                .background(Color.White, shape = RoundedCornerShape(16.dp))
+                .padding(16.dp)
+        ) {
+            DialogPatImage(patData.url)
+        }
         Text(
-            text = "1",
+            text = patData.name,
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(16.dp)
         )
@@ -90,5 +70,16 @@ fun DialogScreenContent(
         ) {
             Text("Perform Action")
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DialogScreenContentPreview() {
+    MypatTheme {
+        DialogScreenContent(
+            onClose = {},
+            patData = Pat(url = "pat/cat.json", name = "고양이")
+        )
     }
 }
