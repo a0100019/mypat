@@ -38,7 +38,10 @@ fun WorldScreen(
     itemDataList : List<Item>,
     itemWorldDataList : List<World>,
     dialogPatId : String,
-    dialogPatIdChange : (String) -> Unit
+    dialogPatIdChange : (String) -> Unit,
+    onFirstGameClick: () -> Unit,
+    onSecondGameClick: () -> Unit,
+    onThirdGameClick: () -> Unit
 ) {
 
     Surface(
@@ -56,7 +59,7 @@ fun WorldScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .fillMaxHeight(0.6f) // 화면의 60%만 차지
+                        .fillMaxHeight(0.8f)
                         .background(Color.White, shape = RoundedCornerShape(16.dp))
                         .padding(16.dp)
                 ) {
@@ -64,7 +67,10 @@ fun WorldScreen(
                         // 다이얼로그 안의 Screen
                         DialogScreenContent(
                             patData = patDataList.find { it.id.toString() == dialogPatId }!!,
-                            onClose = { dialogPatIdChange("0") }
+                            onClose = { dialogPatIdChange("0") },
+                            onFirstGameClick = onFirstGameClick,
+                            onSecondGameClick = onSecondGameClick,
+                            onThirdGameClick = onThirdGameClick
                         )
                     }
                 }
@@ -156,7 +162,10 @@ fun SelectScreenPreview() {
             itemDataList = listOf(Item(url = "item/table.png")),
             itemWorldDataList = listOf(World(id = "item1")),
             dialogPatId = "0",
-            dialogPatIdChange = { }
+            dialogPatIdChange = { },
+            onFirstGameClick = {  },
+            onSecondGameClick = {  },
+            onThirdGameClick = {  }
         )
     }
 }

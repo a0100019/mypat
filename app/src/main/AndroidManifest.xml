@@ -24,6 +24,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".presentation.loading.LoadingActivity" />
+        <activity android:name=".presentation.game.firstGame.FirstGameActivity" />
+        <activity android:name=".presentation.game.secondGame.SecondGameActivity" />
+        <activity android:name=".presentation.game.thirdGame.ThirdGameActivity" />
 
 
     </application>
