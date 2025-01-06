@@ -94,9 +94,25 @@ class WorldViewModel @Inject constructor(
             }
         }
 
-
     }
 
+    fun dialogPatIdChange(clickId : String) = intent {
+        reduce {
+            state.copy(dialogPatId = clickId)
+        }
+    }
+
+    fun onFirstGameClick() = intent {
+        postSideEffect(WorldSideEffect.FirstGameActivity)
+    }
+
+    fun onSecondGameClick() = intent {
+        postSideEffect(WorldSideEffect.SecondGameActivity)
+    }
+
+    fun onThirdGameClick() = intent {
+        postSideEffect(WorldSideEffect.ThirdGameActivity)
+    }
 
 
 
@@ -105,20 +121,21 @@ class WorldViewModel @Inject constructor(
 
 @Immutable
 data class WorldState(
-    val id:String = "",
-    val password:String = "",
     val worldData: List<World> = emptyList(),
     val mapData: World? = null,
     val patDataList: List<Pat> = emptyList(),
     val patWorldDataList: List<World> = emptyList(),
     val itemDataList: List<Item> = emptyList(),
     val itemWorldDataList: List<World> = emptyList(),
+    val dialogPatId : String = "0"
     )
 
 
 //상태와 관련없는 것
 sealed interface WorldSideEffect{
     class Toast(val message:String): WorldSideEffect
-//    data object NavigateToDailyActivity: WorldSideEffect
+    data object FirstGameActivity: WorldSideEffect
+    data object SecondGameActivity: WorldSideEffect
+    data object ThirdGameActivity: WorldSideEffect
 
 }
