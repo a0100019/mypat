@@ -134,10 +134,49 @@ class MainViewModel @Inject constructor(
         val index = updatedPatWorldDataList.indexOfFirst { it.value == patId }
         updatedPatWorldDataList[index] = updatedPatWorldDataList[index].copy(value = "0")
 
+        val updatedPatDataList = state.patDataList.filterNot { it.id.toString() == patId } // patId와 일치하는 데이터 삭제
+
         reduce {
-            state.copy(patWorldDataList = updatedPatWorldDataList)
+            state.copy(
+                patWorldDataList = updatedPatWorldDataList,
+                patDataList = updatedPatDataList
+            )
         }
     }
+
+
+
+    fun onPatSizeUpClick() = intent {
+        val targetPat = state.patDataList.find { it.id.toString() == state.dialogPatId }!!
+        val maxSize = targetPat.minFloat * 4 // 최대 크기 계산
+        val updatedSize = (targetPat.sizeFloat + 0.1f).coerceAtMost(maxSize) // 크기를 제한
+
+        val updatedPat = targetPat.copy(sizeFloat = updatedSize)
+        val updatedPatDataList = state.patDataList.toMutableList().apply {
+            set(indexOf(targetPat), updatedPat)
+        }
+
+        reduce {
+            state.copy(patDataList = updatedPatDataList)
+        }
+    }
+
+    fun onPatSizeDownClick() =  intent {
+            val targetPat = state.patDataList.find { it.id.toString() == state.dialogPatId }!!
+            val minSize = targetPat.minFloat // 최소 크기
+            val updatedSize = (targetPat.sizeFloat - 0.1f).coerceAtLeast(minSize) // 크기를 제한
+
+            val updatedPat = targetPat.copy(sizeFloat = updatedSize)
+            val updatedPatDataList = state.patDataList.toMutableList().apply {
+                set(indexOf(targetPat), updatedPat)
+            }
+
+            reduce {
+                state.copy(patDataList = updatedPatDataList)
+            }
+        }
+
+
 
 
     fun onFirstGameClick() = intent {

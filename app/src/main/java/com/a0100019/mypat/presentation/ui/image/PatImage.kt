@@ -36,7 +36,7 @@ fun PatImage(
             .size(imageSize)
             .offset(
                 x = (surfaceWidthDp * xFloat) - (imageSize / 2),
-                y = (surfaceHeightDp * (1f - yFloat)) - (imageSize / 2)
+                y = (surfaceHeightDp * yFloat) - (imageSize / 2)
             )
             .clickable { onClick() } // 클릭 이벤트 처리
     )

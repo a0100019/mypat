@@ -13,6 +13,7 @@ data class Pat(
     val x: Float = 0.5f,
     val y: Float = 0.5f,
     val touch: Long? = null,
+    val minFloat: Float = 0.1f,
     val sizeFloat: Float = 0.2f,
     val category: String = "1",
     val memo: String = "",

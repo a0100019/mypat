@@ -13,6 +13,7 @@ data class Item(
     var x: Float = 0.5f,
     var y: Float = 0.5f,
     val touch: Long? = null,
+    val minFloat: Float = 0.1f,
     val sizeFloat: Float = 0.2f,
     val category: String = "item",
     val type: String = "image"

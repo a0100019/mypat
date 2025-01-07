@@ -44,7 +44,7 @@ fun DraggableItemImage(
 
     // Current position in DP
     var xOffset by remember { mutableStateOf((surfaceWidthDp * xFloat) - (imageSize / 2)) }
-    var yOffset by remember { mutableStateOf((surfaceHeightDp * (1f - yFloat)) - (imageSize / 2)) }
+    var yOffset by remember { mutableStateOf((surfaceHeightDp * yFloat) - (imageSize / 2)) }
 
     // Load the bitmap whenever filePath changes
     LaunchedEffect(itemUrl) {
@@ -73,8 +73,8 @@ fun DraggableItemImage(
                         yOffset += dragAmount.y.toDp()
 
                         newFloat(
-                            with(LocalDensity) { xOffset.toPx() / surfaceWidthDp.toPx() },
-                            with(LocalDensity) { yOffset.toPx() / surfaceHeightDp.toPx() }
+                            with(LocalDensity) { (xOffset+(imageSize/2)).toPx() / surfaceWidthDp.toPx() },
+                            with(LocalDensity) { (yOffset+(imageSize/2)).toPx() / surfaceHeightDp.toPx() }
                             )
                     }
                 }

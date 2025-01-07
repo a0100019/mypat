@@ -73,6 +73,9 @@ fun MainScreen(
         onWorldSelectClick = mainViewModel::onWorldSelectClick,
         loadData = mainViewModel::loadData,
         patWorldDataDelete = mainViewModel::patWorldDataDelete,
+        onPatSizeUpClick = mainViewModel::onPatSizeUpClick,
+        onPatSizeDownClick = mainViewModel::onPatSizeDownClick,
+
 
         mapUrl = mainState.mapData?.value ?: "map/loading.jpg",
         patDataList = mainState.patDataList,
@@ -100,6 +103,8 @@ fun MainScreen(
     onWorldSelectClick: () -> Unit,
     loadData: () -> Unit,
     patWorldDataDelete: (String) -> Unit,
+    onPatSizeUpClick: () -> Unit,
+    onPatSizeDownClick: () -> Unit,
 
     mapUrl: String,
     patDataList: List<Pat>,
@@ -181,7 +186,9 @@ fun MainScreen(
                     onSecondGameClick = onSecondGameClick,
                     onThirdGameClick = onThirdGameClick,
                     worldChange = worldChange,
-                    patWorldDataDelete = patWorldDataDelete
+                    patWorldDataDelete = patWorldDataDelete,
+                    onPatSizeDownClick = onPatSizeDownClick,
+                    onPatSizeUpClick = onPatSizeUpClick
                 )
             }
 
@@ -294,7 +301,9 @@ fun MainScreenPreview() {
             worldChange = false,
             onWorldSelectClick = {},
             loadData = {},
-            patWorldDataDelete = {}
+            patWorldDataDelete = {},
+            onPatSizeUpClick = {},
+            onPatSizeDownClick = {}
 
         )
     }

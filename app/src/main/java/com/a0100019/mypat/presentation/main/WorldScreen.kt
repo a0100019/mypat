@@ -20,8 +20,8 @@ import com.a0100019.mypat.presentation.ui.image.DraggableItemImage
 import com.a0100019.mypat.presentation.ui.image.MapImage
 import com.a0100019.mypat.presentation.ui.image.ItemImage
 import com.a0100019.mypat.presentation.ui.image.PatImage
-import com.a0100019.mypat.presentation.ui.dialog.SimpleAlertDialog
 import com.a0100019.mypat.presentation.ui.dialog.PatDialog
+import com.a0100019.mypat.presentation.ui.dialog.PatSettingDialog
 import com.a0100019.mypat.ui.theme.MypatTheme
 
 
@@ -38,7 +38,9 @@ fun WorldScreen(
     onSecondGameClick: () -> Unit,
     onThirdGameClick: () -> Unit,
     worldChange: Boolean,
-    patWorldDataDelete: (String) -> Unit
+    patWorldDataDelete: (String) -> Unit,
+    onPatSizeUpClick: () -> Unit,
+    onPatSizeDownClick: () -> Unit
 ) {
 
     Surface(
@@ -60,12 +62,15 @@ fun WorldScreen(
         }
 
         if (worldChange && dialogPatId != "0") {
-            SimpleAlertDialog(
-                onConfirm = {
+            PatSettingDialog(
+                onDelete = {
                     patWorldDataDelete(dialogPatId)
                     dialogPatIdChange("0")
-                            },
-                onDismiss = { dialogPatIdChange("0") }
+                },
+                onDismiss = { dialogPatIdChange("0") },
+                onSizeUp = onPatSizeUpClick,
+                onSizeDown = onPatSizeDownClick,
+                patData = patDataList.find { it.id.toString() == dialogPatId }!!,
             )
         }
 
@@ -174,7 +179,9 @@ fun SelectScreenPreview() {
             onSecondGameClick = { },
             onThirdGameClick = { },
             worldChange = false,
-            patWorldDataDelete = {  },
+            patWorldDataDelete = { },
+            onPatSizeUpClick = {  },
+            onPatSizeDownClick = {  },
         )
     }
 }

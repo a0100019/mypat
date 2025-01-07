@@ -57,7 +57,7 @@ fun ItemImage(
                 .size(imageSize)
                 .offset(
                     x = (surfaceWidthDp * xFloat) - (imageSize / 2),
-                    y = (surfaceHeightDp * (1f - yFloat)) - (imageSize / 2)
+                    y = (surfaceHeightDp * yFloat) - (imageSize / 2)
                 )
         )
     } else {
