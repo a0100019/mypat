@@ -2,8 +2,11 @@ package com.a0100019.mypat.presentation.main
 
 
 import androidx.lifecycle.ViewModel
+import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
+import com.a0100019.mypat.presentation.main.world.WorldState
+import com.a0100019.mypat.presentation.main.world.WorldViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import org.orbitmvi.orbit.Container
@@ -17,7 +20,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val userDao: UserDao
+    private val userDao: UserDao,
 
 ) : ViewModel(), ContainerHost<MainState, MainSideEffect> {
 
@@ -46,18 +49,30 @@ class MainViewModel @Inject constructor(
             }
         }
 
-//        userDao.insert(User(id = "aa", value = "100"))
     }
 
+    fun onWorldChangeClick() = intent {
+        reduce {
+            state.copy(worldChange = !state.worldChange) // true/false 토글
+        }
+    }
 
+    fun onWorldAddClick() = intent {
+
+    }
+
+    fun updateWorldChange() = intent {
+        reduce {
+            state.copy(worldChange = !state.worldChange)
+        }
+    }
 
 }
 
 @Immutable
 data class MainState(
-    val id:String = "",
-    val password:String = "",
-    val userData: List<User> = emptyList()
+    val userData: List<User> = emptyList(),
+    val worldChange: Boolean = false,
 )
 
 

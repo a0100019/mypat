@@ -1,4 +1,4 @@
-package com.a0100019.mypat.presentation.main.world.dialog
+package com.a0100019.mypat.presentation.main.world.patDialog
 
 import androidx.lifecycle.ViewModel
 import com.a0100019.mypat.data.room.user.UserDao

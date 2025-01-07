@@ -27,5 +27,7 @@ interface PatDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(users: List<Pat>)
 
+
+
     //room 데이터를 실시간으로 감시하려면 flow나 livedata를 사용해야 한다.
 }
