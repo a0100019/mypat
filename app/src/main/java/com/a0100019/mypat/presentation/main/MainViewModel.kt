@@ -205,7 +205,9 @@ data class MainState(
     val patWorldDataList: List<World> = emptyList(),
     val itemDataList: List<Item> = emptyList(),
     val itemWorldDataList: List<World> = emptyList(),
-    val dialogPatId : String = "0"
+    val dialogPatId : String = "0",
+    val showWorldAddDialog: Boolean = false,
+
 )
 
 //상태와 관련없는 것

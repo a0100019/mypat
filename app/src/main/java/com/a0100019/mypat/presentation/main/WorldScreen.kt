@@ -19,7 +19,7 @@ import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.presentation.ui.image.DraggableItemImage
 import com.a0100019.mypat.presentation.ui.image.MapImage
 import com.a0100019.mypat.presentation.ui.image.ItemImage
-import com.a0100019.mypat.presentation.ui.image.PatImage
+import com.a0100019.mypat.presentation.ui.image.pat.PatImage
 import com.a0100019.mypat.presentation.ui.dialog.PatDialog
 import com.a0100019.mypat.presentation.ui.dialog.PatSettingDialog
 import com.a0100019.mypat.ui.theme.MypatTheme

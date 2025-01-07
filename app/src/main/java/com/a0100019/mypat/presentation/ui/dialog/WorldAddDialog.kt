@@ -1,5 +1,6 @@
 package com.a0100019.mypat.presentation.ui.dialog
 
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -12,7 +13,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -29,16 +31,15 @@ import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.pet.Pat
 import com.a0100019.mypat.presentation.ui.image.pat.DialogPatImage
 import com.a0100019.mypat.presentation.ui.image.HorizontalLineWithValue
+import com.a0100019.mypat.presentation.ui.image.pat.AddDialogPatImage
 import com.a0100019.mypat.ui.theme.MypatTheme
 
 
 @Composable
-fun PatDialog(
+fun WorldAddDialog(
     onClose: () -> Unit,
     patData: Pat,
-    onFirstGameClick: () -> Unit,
-    onSecondGameClick: () -> Unit,
-    onThirdGameClick: () -> Unit
+    allPatDataList: List<Pat>
 ) {
     Dialog(
         onDismissRequest = onClose
@@ -77,20 +78,16 @@ fun PatDialog(
                     color = Color.Black
                 )
 
-                LazyColumn(
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(5), // 한 줄에 5개씩 배치
                     modifier = Modifier
-                        .fillMaxHeight(0.3f)
-                        .fillMaxWidth()
-                        .background(Color.Gray, shape = RoundedCornerShape(16.dp))
-                        .padding(16.dp)
+                        .size(300.dp) // 부모 컨테이너 크기 설정 (선택 사항)
                 ) {
-                    item {
-                        Text(
-                            text = patData.memo,
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.padding(16.dp),
-
-                            )
+                    items(allPatDataList.size) { index ->
+                        AddDialogPatImage(
+                            patUrl = allPatDataList[index].url,
+                            onAddPatImageClick = {}
+                        )
                     }
                 }
 
@@ -99,26 +96,7 @@ fun PatDialog(
                 // 추가로 원하는 Composable 요소
                 Text("미니 게임")
 //        Spacer(modifier = Modifier.height(16.dp))
-                Button(
-                    onClick = onFirstGameClick,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("총 게임")
-                }
 
-                Button(
-                    onClick = onSecondGameClick,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("피하기 게임")
-                }
-
-                Button(
-                    onClick = onThirdGameClick,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("맞추기 게임")
-                }
 
                 Button(
                     onClick = onClose,
@@ -137,9 +115,9 @@ fun PatDialog(
 
 @Preview(showBackground = true)
 @Composable
-fun DialogScreenContentPreview() {
+fun WorldAddDialogPreview() {
     MypatTheme {
-        PatDialog(
+        WorldAddDialog(
             onClose = {},
             patData = Pat(
                 url = "pat/cat.json",
@@ -147,9 +125,7 @@ fun DialogScreenContentPreview() {
                 love = 1000,
                 memo = "귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다."
             ),
-            onFirstGameClick = {  },
-            onSecondGameClick = {  },
-            onThirdGameClick = {  },
+            allPatDataList = listOf(Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json")),
         )
     }
 }

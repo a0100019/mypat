@@ -1,4 +1,4 @@
-package com.a0100019.mypat.presentation.ui.image
+package com.a0100019.mypat.presentation.ui.image.pat
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.offset
