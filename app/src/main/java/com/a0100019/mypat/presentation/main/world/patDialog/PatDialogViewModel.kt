@@ -58,10 +58,3 @@ data class PatDialogState(
     val dialogPatId : String = "0"
 )
 
-
-//상태와 관련없는 것
-sealed interface PatDialogSideEffect{
-    class Toast(val message:String): PatDialogSideEffect
-//    data object NavigateToDailyActivity: PatDialogSideEffect
-
-}

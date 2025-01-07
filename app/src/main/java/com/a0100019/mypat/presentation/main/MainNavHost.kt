@@ -11,7 +11,6 @@ import com.a0100019.mypat.presentation.daily.diary.DiaryScreen
 import com.a0100019.mypat.presentation.daily.english.EnglishScreen
 import com.a0100019.mypat.presentation.daily.koreanIdiom.KoreanIdiomScreen
 import com.a0100019.mypat.presentation.daily.walk.WalkScreen
-import com.a0100019.mypat.presentation.game.GameScreen
 import com.a0100019.mypat.presentation.index.IndexScreen
 import com.a0100019.mypat.presentation.store.StoreScreen
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,9 +32,6 @@ fun MainNavHost() {
                 },
                 onStoreNavigateClick = {
                     navController.navigate(route = MainRoute.StoreScreen.name)
-                },
-                onGameNavigateClick = {
-                    navController.navigate(route = MainRoute.GameScreen.name)
                 },
                 onIndexNavigateClick = {
                     navController.navigate(route = MainRoute.IndexScreen.name)
@@ -63,10 +59,6 @@ fun MainNavHost() {
 
         composable(route = MainRoute.StoreScreen.name) {
             StoreScreen()
-        }
-
-        composable(route = MainRoute.GameScreen.name) {
-            GameScreen()
         }
 
         composable(route = MainRoute.IndexScreen.name) {

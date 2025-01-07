@@ -8,13 +8,13 @@ data class Pat(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val date: String = "0",
     val name: String = "",
-    val memo: String = "",
     val url: String,
     val love: Int = 0,
     val x: Float = 0.5f,
     val y: Float = 0.5f,
     val touch: Long? = null,
     val sizeFloat: Float = 0.2f,
-    val category: String = "1"
+    val category: String = "1",
+    val memo: String = "",
 
 )

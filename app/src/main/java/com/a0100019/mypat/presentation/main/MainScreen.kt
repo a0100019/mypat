@@ -1,6 +1,7 @@
 package com.a0100019.mypat.presentation.main
 
 
+import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,13 +21,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pet.Pat
 import com.a0100019.mypat.data.room.world.World
+import com.a0100019.mypat.presentation.game.firstGame.FirstGameActivity
+import com.a0100019.mypat.presentation.game.secondGame.SecondGameActivity
+import com.a0100019.mypat.presentation.game.thirdGame.ThirdGameActivity
 import com.a0100019.mypat.presentation.main.world.WorldScreen
 import com.a0100019.mypat.presentation.main.world.WorldSideEffect
 import com.a0100019.mypat.presentation.main.world.WorldState
 import com.a0100019.mypat.presentation.main.world.WorldViewModel
-import com.a0100019.mypat.presentation.main.world.dialog.PatDialogSideEffect
-import com.a0100019.mypat.presentation.main.world.dialog.PatDialogState
-import com.a0100019.mypat.presentation.main.world.dialog.PatDialogViewModel
 import com.a0100019.mypat.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -36,49 +37,44 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 fun MainScreen(
     mainViewModel: MainViewModel = hiltViewModel(),
     worldViewModel: WorldViewModel = hiltViewModel(),
-    patDialogViewModel: PatDialogViewModel = hiltViewModel(),
     onDailyNavigateClick: () -> Unit,
     onStoreNavigateClick: () -> Unit,
-    onGameNavigateClick: () -> Unit,
     onIndexNavigateClick: () -> Unit
 ) {
 
 
     val mainState : MainState = mainViewModel.collectAsState().value
     val worldState : WorldState = worldViewModel.collectAsState().value
-    val patDialogState : PatDialogState = patDialogViewModel.collectAsState().value
 
     val context = LocalContext.current
 
     mainViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
-            is MainSideEffect.Toast ->
-                Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
+            is MainSideEffect.Toast -> Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
 
         }
     }
 
     worldViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
-            is WorldSideEffect.Toast ->
-                Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
-
+            is WorldSideEffect.Toast -> Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
+            WorldSideEffect.FirstGameActivity -> {
+                context.startActivity(Intent(context, FirstGameActivity::class.java))
+            }
+            WorldSideEffect.SecondGameActivity -> {
+                context.startActivity(Intent(context, SecondGameActivity::class.java))
+            }
+            WorldSideEffect.ThirdGameActivity -> {
+                context.startActivity(Intent(context, ThirdGameActivity::class.java))
+            }
         }
     }
 
-    patDialogViewModel.collectSideEffect { sideEffect ->
-        when (sideEffect) {
-            is PatDialogSideEffect.Toast ->
-                Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
-
-        }
-    }
 
 
 
     MainScreen(
         onDailyNavigateClick = onDailyNavigateClick,
-        onGameNavigateClick = onGameNavigateClick,
         onIndexNavigateClick = onIndexNavigateClick,
         onStoreNavigateClick = onStoreNavigateClick,
         mapUrl = worldState.mapData?.value ?: "map/loading.jpg",
@@ -86,8 +82,12 @@ fun MainScreen(
         patWorldDataList = worldState.patWorldDataList,
         itemDataList = worldState.itemDataList,
         itemWorldDataList = worldState.itemWorldDataList,
-        dialogPatId = patDialogState.dialogPatId,
-        dialogPatIdChange = patDialogViewModel::dialogPatIdChange
+        dialogPatId = worldState.dialogPatId,
+        dialogPatIdChange = worldViewModel::dialogPatIdChange,
+        onFirstGameClick = worldViewModel::onFirstGameClick,
+        onSecondGameClick = worldViewModel::onSecondGameClick,
+        onThirdGameClick = worldViewModel::onThirdGameClick
+
     )
 
 }
@@ -96,7 +96,6 @@ fun MainScreen(
 fun MainScreen(
     onDailyNavigateClick: () -> Unit,
     onStoreNavigateClick: () -> Unit,
-    onGameNavigateClick: () -> Unit,
     onIndexNavigateClick: () -> Unit,
     mapUrl: String,
     patDataList: List<Pat>,
@@ -104,7 +103,10 @@ fun MainScreen(
     itemDataList: List<Item>,
     itemWorldDataList: List<World>,
     dialogPatId : String,
-    dialogPatIdChange : (String) -> Unit
+    dialogPatIdChange : (String) -> Unit,
+    onFirstGameClick: () -> Unit,
+    onSecondGameClick: () -> Unit,
+    onThirdGameClick: () -> Unit
 
 ) {
 
@@ -158,7 +160,10 @@ fun MainScreen(
                     itemDataList = itemDataList,
                     itemWorldDataList = itemWorldDataList,
                     dialogPatId = dialogPatId,
-                    dialogPatIdChange = dialogPatIdChange
+                    dialogPatIdChange = dialogPatIdChange,
+                    onFirstGameClick = onFirstGameClick,
+                    onSecondGameClick = onSecondGameClick,
+                    onThirdGameClick = onThirdGameClick
                 )
             }
 
@@ -191,12 +196,6 @@ fun MainScreen(
                     }
                     Button(
                         modifier = Modifier,
-                        onClick = onGameNavigateClick
-                    ) {
-                        Text("게임")
-                    }
-                    Button(
-                        modifier = Modifier,
                         onClick = onIndexNavigateClick
                     ) {
                         Text("도감")
@@ -215,7 +214,6 @@ fun MainScreenPreview() {
     MypatTheme {
         MainScreen(
             onDailyNavigateClick = {},
-            onGameNavigateClick = {},
             onIndexNavigateClick = {},
             onStoreNavigateClick = {},
             mapUrl = "map/forest.jpg",
@@ -224,7 +222,11 @@ fun MainScreenPreview() {
             itemDataList = listOf(Item(url = "item/table.png")),
             itemWorldDataList = listOf(World(id = "item1")),
             dialogPatId = "0",
-            dialogPatIdChange = { }
+            dialogPatIdChange = { },
+            onFirstGameClick = {},
+            onSecondGameClick = {},
+            onThirdGameClick = {}
+
         )
     }
 }
