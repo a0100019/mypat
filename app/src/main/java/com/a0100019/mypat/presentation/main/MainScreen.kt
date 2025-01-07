@@ -24,10 +24,6 @@ import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.presentation.game.firstGame.FirstGameActivity
 import com.a0100019.mypat.presentation.game.secondGame.SecondGameActivity
 import com.a0100019.mypat.presentation.game.thirdGame.ThirdGameActivity
-import com.a0100019.mypat.presentation.main.world.WorldScreen
-import com.a0100019.mypat.presentation.main.world.WorldSideEffect
-import com.a0100019.mypat.presentation.main.world.WorldState
-import com.a0100019.mypat.presentation.main.world.WorldViewModel
 import com.a0100019.mypat.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -36,7 +32,6 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 @Composable
 fun MainScreen(
     mainViewModel: MainViewModel = hiltViewModel(),
-    worldViewModel: WorldViewModel = hiltViewModel(),
     onDailyNavigateClick: () -> Unit,
     onStoreNavigateClick: () -> Unit,
     onIndexNavigateClick: () -> Unit
@@ -44,27 +39,19 @@ fun MainScreen(
 
 
     val mainState : MainState = mainViewModel.collectAsState().value
-    val worldState : WorldState = worldViewModel.collectAsState().value
 
     val context = LocalContext.current
 
     mainViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
             is MainSideEffect.Toast -> Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
-
-        }
-    }
-
-    worldViewModel.collectSideEffect { sideEffect ->
-        when (sideEffect) {
-            is WorldSideEffect.Toast -> Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
-            WorldSideEffect.FirstGameActivity -> {
+            MainSideEffect.FirstGameActivity -> {
                 context.startActivity(Intent(context, FirstGameActivity::class.java))
             }
-            WorldSideEffect.SecondGameActivity -> {
+            MainSideEffect.SecondGameActivity -> {
                 context.startActivity(Intent(context, SecondGameActivity::class.java))
             }
-            WorldSideEffect.ThirdGameActivity -> {
+            MainSideEffect.ThirdGameActivity -> {
                 context.startActivity(Intent(context, ThirdGameActivity::class.java))
             }
         }
@@ -77,16 +64,23 @@ fun MainScreen(
         onDailyNavigateClick = onDailyNavigateClick,
         onIndexNavigateClick = onIndexNavigateClick,
         onStoreNavigateClick = onStoreNavigateClick,
-        mapUrl = worldState.mapData?.value ?: "map/loading.jpg",
-        patDataList = worldState.patDataList,
-        patWorldDataList = worldState.patWorldDataList,
-        itemDataList = worldState.itemDataList,
-        itemWorldDataList = worldState.itemWorldDataList,
-        dialogPatId = worldState.dialogPatId,
-        dialogPatIdChange = worldViewModel::dialogPatIdChange,
-        onFirstGameClick = worldViewModel::onFirstGameClick,
-        onSecondGameClick = worldViewModel::onSecondGameClick,
-        onThirdGameClick = worldViewModel::onThirdGameClick
+
+        dialogPatIdChange = mainViewModel::dialogPatIdChange,
+        onFirstGameClick = mainViewModel::onFirstGameClick,
+        onSecondGameClick = mainViewModel::onSecondGameClick,
+        onThirdGameClick = mainViewModel::onThirdGameClick,
+        onWorldChangeClick = mainViewModel::onWorldChangeClick,
+        onWorldSelectClick = mainViewModel::onWorldSelectClick,
+        loadData = mainViewModel::loadData,
+        patWorldDataDelete = mainViewModel::patWorldDataDelete,
+
+        mapUrl = mainState.mapData?.value ?: "map/loading.jpg",
+        patDataList = mainState.patDataList,
+        patWorldDataList = mainState.patWorldDataList,
+        itemDataList = mainState.itemDataList,
+        itemWorldDataList = mainState.itemWorldDataList,
+        dialogPatId = mainState.dialogPatId,
+        worldChange = mainState.worldChange
 
     )
 
@@ -97,16 +91,23 @@ fun MainScreen(
     onDailyNavigateClick: () -> Unit,
     onStoreNavigateClick: () -> Unit,
     onIndexNavigateClick: () -> Unit,
+
+    dialogPatIdChange : (String) -> Unit,
+    onFirstGameClick: () -> Unit,
+    onSecondGameClick: () -> Unit,
+    onThirdGameClick: () -> Unit,
+    onWorldChangeClick: () -> Unit,
+    onWorldSelectClick: () -> Unit,
+    loadData: () -> Unit,
+    patWorldDataDelete: (String) -> Unit,
+
     mapUrl: String,
     patDataList: List<Pat>,
     patWorldDataList: List<World>,
     itemDataList: List<Item>,
     itemWorldDataList: List<World>,
     dialogPatId : String,
-    dialogPatIdChange : (String) -> Unit,
-    onFirstGameClick: () -> Unit,
-    onSecondGameClick: () -> Unit,
-    onThirdGameClick: () -> Unit
+    worldChange: Boolean
 
 ) {
 
@@ -116,40 +117,55 @@ fun MainScreen(
                 .fillMaxSize(),
             verticalArrangement = Arrangement.SpaceBetween
         ){
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(10.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Button(
-                    onClick = {}
-                ) {
-                    Text("내 정보")
-                }
-                Button(
-                    onClick = {}
-                ) {
-                    Text("설정")
-                }
-            }
-
-            Column {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(end = 10.dp),
-                    horizontalArrangement = Arrangement.End
-                ) {
+                if(!worldChange){
                     Button(
                         onClick = {}
                     ) {
-                        Text("꾸미기 모드")
+                        Text("내 정보")
                     }
                     Button(
                         onClick = {}
                     ) {
-                        Text("사진 찍기")
+                        Text("설정")
+                    }
+                }
+            }
+
+            Column {
+                if(worldChange) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(end = 10.dp),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        Text("Pat ${patWorldDataList.count { it.value != "0" }} / ${patWorldDataList.size}  " +
+                                "Item ${itemWorldDataList.count { it.value != "0" }} / ${itemWorldDataList.size}")
+                    }
+                } else {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(end = 10.dp),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        Button(
+                            onClick = onWorldChangeClick
+                        ) {
+                            Text("꾸미기 모드")
+                        }
+                        Button(
+                            onClick = {}
+                        ) {
+                            Text("사진 찍기")
+                        }
                     }
                 }
 
@@ -163,45 +179,93 @@ fun MainScreen(
                     dialogPatIdChange = dialogPatIdChange,
                     onFirstGameClick = onFirstGameClick,
                     onSecondGameClick = onSecondGameClick,
-                    onThirdGameClick = onThirdGameClick
+                    onThirdGameClick = onThirdGameClick,
+                    worldChange = worldChange,
+                    patWorldDataDelete = patWorldDataDelete
                 )
             }
 
-            Column {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Button(
+            if(worldChange) {
+                Column {
+                    Row(
                         modifier = Modifier
-                            .fillMaxWidth(0.5f),
-                        onClick = onDailyNavigateClick
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
                     ) {
-                        Text("일일 루틴")
+                        Button(
+                            modifier = Modifier
+                                .fillMaxWidth(0.5f),
+                            onClick = {  }
+                        ) {
+                            Text("추가 하기")
+                        }
                     }
-                }
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 10.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    Button(
-                        modifier = Modifier,
-                        onClick = onStoreNavigateClick
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 10.dp),
+                        horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        Text("상점")
+                        Button(
+                            modifier = Modifier,
+                            onClick = {
+                                onWorldChangeClick()
+                                loadData()
+                            }
+                        ) {
+                            Text("취소")
+                        }
+                        Button(
+                            modifier = Modifier,
+                            onClick = {
+                                onWorldSelectClick()
+                                onWorldChangeClick()
+                                loadData()
+                            }
+                        ) {
+                            Text("확인")
+                        }
                     }
-                    Button(
-                        modifier = Modifier,
-                        onClick = onIndexNavigateClick
-                    ) {
-                        Text("도감")
-                    }
-                }
 
+                }
+            } else {
+                Column {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Button(
+                            modifier = Modifier
+                                .fillMaxWidth(0.5f),
+                            onClick = onDailyNavigateClick
+                        ) {
+                            Text("일일 루틴")
+                        }
+                    }
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 10.dp),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        Button(
+                            modifier = Modifier,
+                            onClick = onStoreNavigateClick
+                        ) {
+                            Text("상점")
+                        }
+                        Button(
+                            modifier = Modifier,
+                            onClick = onIndexNavigateClick
+                        ) {
+                            Text("도감")
+                        }
+                    }
+
+                }
             }
 
         }
@@ -225,7 +289,12 @@ fun MainScreenPreview() {
             dialogPatIdChange = { },
             onFirstGameClick = {},
             onSecondGameClick = {},
-            onThirdGameClick = {}
+            onThirdGameClick = {},
+            onWorldChangeClick = {},
+            worldChange = false,
+            onWorldSelectClick = {},
+            loadData = {},
+            patWorldDataDelete = {}
 
         )
     }

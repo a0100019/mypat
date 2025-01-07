@@ -5,7 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.a0100019.mypat.data.room.world.World
+import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -15,6 +15,9 @@ interface PatDao {
 
     @Delete
     suspend fun delete(pat: Pat)
+
+    @Update
+    suspend fun update(item: Pat)
 
     @Query("SELECT * FROM pat_table ORDER BY id DESC")
     fun getAllIndexData(): Flow<List<Pat>>

@@ -1,4 +1,4 @@
-package com.a0100019.mypat.presentation.main
+package com.a0100019.mypat.presentation.main.management
 
 sealed class MainRoute(
     val name:String

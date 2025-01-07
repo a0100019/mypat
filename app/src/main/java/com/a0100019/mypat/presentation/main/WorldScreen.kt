@@ -1,15 +1,11 @@
-package com.a0100019.mypat.presentation.main.world
+package com.a0100019.mypat.presentation.main
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -17,16 +13,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pet.Pat
 import com.a0100019.mypat.data.room.world.World
-import com.a0100019.mypat.presentation.image.MapImage
-import com.a0100019.mypat.presentation.image.DraggableImage
-import com.a0100019.mypat.presentation.image.ItemImage
-import com.a0100019.mypat.presentation.image.PatImage
-import com.a0100019.mypat.presentation.main.world.dialog.DialogScreenContent
+import com.a0100019.mypat.presentation.ui.image.DraggableItemImage
+import com.a0100019.mypat.presentation.ui.image.MapImage
+import com.a0100019.mypat.presentation.ui.image.ItemImage
+import com.a0100019.mypat.presentation.ui.image.PatImage
+import com.a0100019.mypat.presentation.ui.dialog.SimpleAlertDialog
+import com.a0100019.mypat.presentation.ui.dialog.PatDialog
 import com.a0100019.mypat.ui.theme.MypatTheme
 
 
@@ -41,7 +36,9 @@ fun WorldScreen(
     dialogPatIdChange : (String) -> Unit,
     onFirstGameClick: () -> Unit,
     onSecondGameClick: () -> Unit,
-    onThirdGameClick: () -> Unit
+    onThirdGameClick: () -> Unit,
+    worldChange: Boolean,
+    patWorldDataDelete: (String) -> Unit
 ) {
 
     Surface(
@@ -52,30 +49,26 @@ fun WorldScreen(
     ) {
 
         // 다이얼로그 표시
-        if (dialogPatId != "0") {
-            Dialog(
-                onDismissRequest = { dialogPatIdChange("0") }
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(0.8f)
-                        .background(Color.White, shape = RoundedCornerShape(16.dp))
-                        .padding(16.dp)
-                ) {
-                    Column {
-                        // 다이얼로그 안의 Screen
-                        DialogScreenContent(
-                            patData = patDataList.find { it.id.toString() == dialogPatId }!!,
-                            onClose = { dialogPatIdChange("0") },
-                            onFirstGameClick = onFirstGameClick,
-                            onSecondGameClick = onSecondGameClick,
-                            onThirdGameClick = onThirdGameClick
-                        )
-                    }
-                }
-            }
+        if (!worldChange && dialogPatId != "0") {
+            PatDialog(
+                onClose = { dialogPatIdChange("0") },
+                patData = patDataList.find { it.id.toString() == dialogPatId }!!,
+                onFirstGameClick = onFirstGameClick,
+                onSecondGameClick = onSecondGameClick,
+                onThirdGameClick = onThirdGameClick
+            )
         }
+
+        if (worldChange && dialogPatId != "0") {
+            SimpleAlertDialog(
+                onConfirm = {
+                    patWorldDataDelete(dialogPatId)
+                    dialogPatIdChange("0")
+                            },
+                onDismiss = { dialogPatIdChange("0") }
+            )
+        }
+
 
         Box(
             modifier = Modifier
@@ -98,14 +91,28 @@ fun WorldScreen(
                 val surfaceHeightDp = with(density) { surfaceHeight.toDp() }
 
                 itemDataList.map { itemData ->
-                    ItemImage(
-                        itemUrl = itemData.url,
-                        surfaceWidthDp = surfaceWidthDp,
-                        surfaceHeightDp = surfaceHeightDp,
-                        xFloat = itemData.x,
-                        yFloat = itemData.y,
-                        sizeFloat = itemData.sizeFloat
-                    )
+                    if(worldChange) {
+                        DraggableItemImage(
+                            itemUrl = itemData.url,
+                            surfaceWidthDp = surfaceWidthDp,
+                            surfaceHeightDp = surfaceHeightDp,
+                            xFloat = itemData.x,
+                            yFloat = itemData.y,
+                            sizeFloat = itemData.sizeFloat
+                        ) { newXFloat, newYFloat ->
+                            itemData.x = newXFloat
+                            itemData.y = newYFloat
+                        }
+                    } else {
+                        ItemImage(
+                            itemUrl = itemData.url,
+                            surfaceWidthDp = surfaceWidthDp,
+                            surfaceHeightDp = surfaceHeightDp,
+                            xFloat = itemData.x,
+                            yFloat = itemData.y,
+                            sizeFloat = itemData.sizeFloat
+                        )
+                    }
                 }
 
                 patDataList.map { patData ->
@@ -122,12 +129,12 @@ fun WorldScreen(
 
 
 
-                DraggableImage(
-                    itemUrl = "item/table.png",
-                    initialX = 100.dp,
-                    initialY = 100.dp,
-                    size = 20.dp
-                )
+//                DraggableImage(
+//                    itemUrl = "item/table.png",
+//                    initialX = 100.dp,
+//                    initialY = 100.dp,
+//                    size = 20.dp
+//                )
 
 //                DraggableItemImage(
 //                    itemUrl = "item/table.png",
@@ -163,9 +170,11 @@ fun SelectScreenPreview() {
             itemWorldDataList = listOf(World(id = "item1")),
             dialogPatId = "0",
             dialogPatIdChange = { },
-            onFirstGameClick = {  },
-            onSecondGameClick = {  },
-            onThirdGameClick = {  }
+            onFirstGameClick = { },
+            onSecondGameClick = { },
+            onThirdGameClick = { },
+            worldChange = false,
+            patWorldDataDelete = {  },
         )
     }
 }

@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
 import com.a0100019.mypat.data.room.pet.Pat
 import com.a0100019.mypat.data.room.world.World
 import kotlinx.coroutines.flow.Flow
@@ -17,6 +18,9 @@ interface ItemDao {
 
     @Delete
     suspend fun delete(item: Item)
+
+    @Update
+    suspend fun update(item: Item)
 
     @Query("SELECT * FROM item_table ORDER BY id DESC")
     fun getAllItemData(): Flow<List<Item>>

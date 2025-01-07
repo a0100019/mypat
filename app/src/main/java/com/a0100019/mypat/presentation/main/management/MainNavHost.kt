@@ -1,19 +1,17 @@
-package com.a0100019.mypat.presentation.main
+package com.a0100019.mypat.presentation.main.management
 
 import androidx.compose.runtime.Composable
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navOptions
 import com.a0100019.mypat.presentation.daily.DailyScreen
 import com.a0100019.mypat.presentation.daily.diary.DiaryScreen
 import com.a0100019.mypat.presentation.daily.english.EnglishScreen
 import com.a0100019.mypat.presentation.daily.koreanIdiom.KoreanIdiomScreen
 import com.a0100019.mypat.presentation.daily.walk.WalkScreen
 import com.a0100019.mypat.presentation.index.IndexScreen
+import com.a0100019.mypat.presentation.main.MainScreen
 import com.a0100019.mypat.presentation.store.StoreScreen
-import dagger.hilt.android.lifecycle.HiltViewModel
 
 @Composable
 fun MainNavHost() {

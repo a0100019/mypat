@@ -1,4 +1,4 @@
-package com.a0100019.mypat.presentation.image
+package com.a0100019.mypat.presentation.ui.image
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
