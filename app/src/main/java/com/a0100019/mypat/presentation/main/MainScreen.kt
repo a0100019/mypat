@@ -24,6 +24,8 @@ import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.presentation.game.firstGame.FirstGameActivity
 import com.a0100019.mypat.presentation.game.secondGame.SecondGameActivity
 import com.a0100019.mypat.presentation.game.thirdGame.ThirdGameActivity
+import com.a0100019.mypat.presentation.ui.dialog.PatDialog
+import com.a0100019.mypat.presentation.ui.dialog.WorldAddDialog
 import com.a0100019.mypat.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -75,6 +77,7 @@ fun MainScreen(
         patWorldDataDelete = mainViewModel::patWorldDataDelete,
         onPatSizeUpClick = mainViewModel::onPatSizeUpClick,
         onPatSizeDownClick = mainViewModel::onPatSizeDownClick,
+        onShowAddDialogClick = mainViewModel::onShowAddDialogClick,
 
 
         mapUrl = mainState.mapData?.value ?: "map/loading.jpg",
@@ -83,7 +86,9 @@ fun MainScreen(
         itemDataList = mainState.itemDataList,
         itemWorldDataList = mainState.itemWorldDataList,
         dialogPatId = mainState.dialogPatId,
-        worldChange = mainState.worldChange
+        worldChange = mainState.worldChange,
+        showWorldAddDialog = mainState.showWorldAddDialog,
+        allPatDataList = mainState.allPatDataList
 
     )
 
@@ -105,6 +110,7 @@ fun MainScreen(
     patWorldDataDelete: (String) -> Unit,
     onPatSizeUpClick: () -> Unit,
     onPatSizeDownClick: () -> Unit,
+    onShowAddDialogClick: () -> Unit,
 
     mapUrl: String,
     patDataList: List<Pat>,
@@ -112,7 +118,9 @@ fun MainScreen(
     itemDataList: List<Item>,
     itemWorldDataList: List<World>,
     dialogPatId : String,
-    worldChange: Boolean
+    worldChange: Boolean,
+    showWorldAddDialog: Boolean,
+    allPatDataList: List<Pat>
 
 ) {
 
@@ -122,6 +130,14 @@ fun MainScreen(
                 .fillMaxSize(),
             verticalArrangement = Arrangement.SpaceBetween
         ){
+
+            // 다이얼로그 표시
+            if (showWorldAddDialog) {
+                WorldAddDialog(
+                    onClose = onShowAddDialogClick,
+                    allPatDataList = allPatDataList
+                )
+            }
 
             Row(
                 modifier = Modifier
@@ -188,7 +204,7 @@ fun MainScreen(
                     worldChange = worldChange,
                     patWorldDataDelete = patWorldDataDelete,
                     onPatSizeDownClick = onPatSizeDownClick,
-                    onPatSizeUpClick = onPatSizeUpClick
+                    onPatSizeUpClick = onPatSizeUpClick,
                 )
             }
 
@@ -202,7 +218,7 @@ fun MainScreen(
                         Button(
                             modifier = Modifier
                                 .fillMaxWidth(0.5f),
-                            onClick = {  }
+                            onClick = onShowAddDialogClick
                         ) {
                             Text("추가 하기")
                         }
@@ -303,7 +319,10 @@ fun MainScreenPreview() {
             loadData = {},
             patWorldDataDelete = {},
             onPatSizeUpClick = {},
-            onPatSizeDownClick = {}
+            onPatSizeDownClick = {},
+            showWorldAddDialog = false,
+            onShowAddDialogClick = {},
+            allPatDataList = listOf(Pat(url = "pat/cat.json")),
 
         )
     }

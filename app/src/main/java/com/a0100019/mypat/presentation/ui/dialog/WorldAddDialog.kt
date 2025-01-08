@@ -38,7 +38,6 @@ import com.a0100019.mypat.ui.theme.MypatTheme
 @Composable
 fun WorldAddDialog(
     onClose: () -> Unit,
-    patData: Pat,
     allPatDataList: List<Pat>
 ) {
     Dialog(
@@ -60,36 +59,21 @@ fun WorldAddDialog(
                         .background(Color.Gray, shape = RoundedCornerShape(16.dp))
                         .padding(16.dp)
                 ) {
-                    DialogPatImage(patData.url)
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Image(
-                            painter = painterResource(id = R.drawable.heart),
-                            contentDescription = "Sample Vector Image",
-                            modifier = Modifier.size(20.dp),
-                        )
-                        Text("애정도 ${patData.love/100}")
-                        HorizontalLineWithValue(patData.love)
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(5), // 한 줄에 5개씩 배치
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        items(allPatDataList.size) { index ->
+                            AddDialogPatImage(
+                                patUrl = allPatDataList[index].url,
+                                onAddPatImageClick = {}
+                            )
+                        }
                     }
                 }
-                Text(
-                    text = patData.name,
-                    style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.padding(16.dp),
-                    color = Color.Black
-                )
 
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(5), // 한 줄에 5개씩 배치
-                    modifier = Modifier
-                        .size(300.dp) // 부모 컨테이너 크기 설정 (선택 사항)
-                ) {
-                    items(allPatDataList.size) { index ->
-                        AddDialogPatImage(
-                            patUrl = allPatDataList[index].url,
-                            onAddPatImageClick = {}
-                        )
-                    }
-                }
+
+
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -119,12 +103,6 @@ fun WorldAddDialogPreview() {
     MypatTheme {
         WorldAddDialog(
             onClose = {},
-            patData = Pat(
-                url = "pat/cat.json",
-                name = "고양이",
-                love = 1000,
-                memo = "귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다."
-            ),
             allPatDataList = listOf(Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json")),
         )
     }

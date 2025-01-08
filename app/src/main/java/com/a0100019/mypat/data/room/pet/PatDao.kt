@@ -20,7 +20,7 @@ interface PatDao {
     suspend fun update(item: Pat)
 
     @Query("SELECT * FROM pat_table ORDER BY id DESC")
-    fun getAllIndexData(): Flow<List<Pat>>
+    suspend fun getAllPatData(): List<Pat>
 
     //flow 아닐 때 suspend함수 필수!!!
     @Query("SELECT * FROM pat_table WHERE id = :id")

@@ -13,7 +13,9 @@ import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.data.room.world.WorldDao
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.simple.intent
@@ -48,59 +50,58 @@ class MainViewModel @Inject constructor(
         loadData()
     }
 
-    //room에서 데이터 가져옴
     fun loadData() = intent {
+        // 병렬로 실행할 작업들을 viewModelScope.launch로 묶음
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                // 맵 데이터 가져오기
+                val mapData = worldDao.getWorldDataById("map")
 
-        // 데이터 실시간으로 받아오려면 collect 해야함
-        // 데이터 간의 의존관계가 있다면 collect문 안에 또 collect문 적기
-        // viewModelScope.launch { } 로 감싸면 병렬로 동시 진행
+                // 패트 월드 데이터 리스트 가져오기
+                val patWorldDataList = worldDao.getWorldDataListByType(type = "pat") ?: emptyList()
+                val patDataList = patWorldDataList.mapNotNull { patWorldData ->
+                    patDao.getPatDataById(patWorldData.value)
+                }
 
-        viewModelScope.launch {
-            val mapData = worldDao.getWorldDataById("map")
-            reduce {
-                state.copy(mapData = mapData)
+                // 아이템 월드 데이터 리스트 가져오기
+                val itemWorldDataList = worldDao.getWorldDataListByType(type = "item") ?: emptyList()
+                val itemDataList = itemWorldDataList.mapNotNull { itemWorldData ->
+                    itemDao.getItemDataById(itemWorldData.value)
+                }
+
+                // 모든 패트 데이터 가져오기
+                val allPatDataList = patDao.getAllPatData()
+
+                // UI 상태 업데이트 (Main Dispatcher에서 실행)
+                withContext(Dispatchers.Main) {
+                    reduce {
+                        state.copy(
+                            mapData = mapData,
+                            patWorldDataList = patWorldDataList,
+                            patDataList = patDataList,
+                            itemWorldDataList = itemWorldDataList,
+                            itemDataList = itemDataList,
+                            allPatDataList = allPatDataList
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                postSideEffect(MainSideEffect.Toast("데이터 로드 에러"))
             }
         }
-
-        viewModelScope.launch {
-            // 첫 번째 데이터 가져오기
-            val patWorldDataList = worldDao.getWorldDataListByType(type = "pat") ?: emptyList()
-            reduce {
-                state.copy(patWorldDataList = patWorldDataList)
-            }
-
-            // 두 번째 데이터 가져오기
-            val patDataList = patWorldDataList.mapNotNull { patWorldData ->
-                // 데이터가 없으면 null 반환
-                patDao.getPatDataById(patWorldData.value)
-            }
-            reduce {
-                state.copy(patDataList = patDataList)
-            }
-        }
-
-        viewModelScope.launch {
-            // 첫 번째 데이터 가져오기
-            val itemWorldDataList = worldDao.getWorldDataListByType(type = "item") // 여러 데이터를 가져옴
-            reduce {
-                state.copy(itemWorldDataList = itemWorldDataList)
-            }
-
-            // 두 번째 데이터 가져오기
-            val itemDataList = itemWorldDataList.mapNotNull { itemWorldData ->
-                itemDao.getItemDataById(itemWorldData.value) // 각 value에 맞는 데이터 가져오기
-            }
-            reduce {
-                state.copy(itemDataList = itemDataList)
-            }
-        }
-
     }
+
 
 
     fun onWorldChangeClick() = intent {
         reduce {
             state.copy(worldChange = !state.worldChange) // true/false 토글
+        }
+    }
+
+    fun onShowAddDialogClick() = intent {
+        reduce {
+            state.copy(showWorldAddDialog = !state.showWorldAddDialog) // true/false 토글
         }
     }
 
@@ -207,6 +208,7 @@ data class MainState(
     val itemWorldDataList: List<World> = emptyList(),
     val dialogPatId : String = "0",
     val showWorldAddDialog: Boolean = false,
+    val allPatDataList: List<Pat> = emptyList()
 
 )
 
