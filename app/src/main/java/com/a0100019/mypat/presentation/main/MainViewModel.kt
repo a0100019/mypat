@@ -57,7 +57,7 @@ class MainViewModel @Inject constructor(
                 // 맵 데이터 가져오기
                 val mapData = worldDao.getWorldDataById("map")
 
-                // 패트 월드 데이터 리스트 가져오기
+                // 펫 월드 데이터 리스트 가져오기
                 val patWorldDataList = worldDao.getWorldDataListByType(type = "pat") ?: emptyList()
                 val patDataList = patWorldDataList.mapNotNull { patWorldData ->
                     patDao.getPatDataById(patWorldData.value)
@@ -69,8 +69,10 @@ class MainViewModel @Inject constructor(
                     itemDao.getItemDataById(itemWorldData.value)
                 }
 
-                // 모든 패트 데이터 가져오기
+                // 모든 펫 데이터 가져오기
                 val allPatDataList = patDao.getAllPatData()
+
+                val userDataList = userDao.getAllUserData()
 
                 // UI 상태 업데이트 (Main Dispatcher에서 실행)
                 withContext(Dispatchers.Main) {
@@ -81,7 +83,8 @@ class MainViewModel @Inject constructor(
                             patDataList = patDataList,
                             itemWorldDataList = itemWorldDataList,
                             itemDataList = itemDataList,
-                            allPatDataList = allPatDataList
+                            allPatDataList = allPatDataList,
+                            userDataList = userDataList
                         )
                     }
                 }
@@ -105,6 +108,12 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun onShowUserInformationDialogClick() = intent {
+        reduce {
+            state.copy(showUserInformationDialog = !state.showUserInformationDialog) // true/false 토글
+        }
+    }
+
     fun dialogPatIdChange(clickId : String) = intent {
         reduce {
             state.copy(dialogPatId = clickId)
@@ -124,6 +133,7 @@ class MainViewModel @Inject constructor(
         state.patWorldDataList.forEach { world ->
             worldDao.update(world)
         }
+        loadData()
     }
 
     fun onWorldAddClick() = intent {
@@ -144,6 +154,7 @@ class MainViewModel @Inject constructor(
             )
         }
     }
+
 
 
 
@@ -178,6 +189,56 @@ class MainViewModel @Inject constructor(
         }
 
 
+    fun onAddPatImageClick(patId: String) = intent {
+        // 1. patWorldDataList에서 patId와 일치하는 value 값을 찾는다
+        val matchingIndex = state.patWorldDataList.indexOfFirst { it.value == patId }
+
+        val updatedState = if (matchingIndex != -1) {
+            // 1.1 일치하는 데이터가 있는 경우 ( 펫이 월드에 나와 있는 경우 펫 제거)
+            val updatedPatWorldDataList = state.patWorldDataList.mapIndexed { index, world ->
+                if (index == matchingIndex) world.copy(value = "0") else world
+            }
+
+            val updatedPatDataList = state.patDataList.filter { it.id != patId.toInt() }
+
+            // 새로운 상태 생성
+            state.copy(
+                patWorldDataList = updatedPatWorldDataList,
+                patDataList = updatedPatDataList
+            )
+        } else {
+            // 1.2 일치하는 데이터가 없는 경우 ( 월드에 펫이 없을 때 추가 )
+            val zeroIndex = state.patWorldDataList.indexOfFirst { it.value == "0" }
+            val openCount = state.patWorldDataList.count { it.open == "1" }
+
+            if (zeroIndex != -1 && zeroIndex < openCount) {
+                val updatedPatWorldDataList = state.patWorldDataList.mapIndexed { index, world ->
+                    if (index == zeroIndex) world.copy(value = patId) else world
+                }
+
+                val newPatData = state.allPatDataList.find { it.id == patId.toInt() }
+                val updatedPatDataList = if (newPatData != null) {
+                    state.patDataList + newPatData
+                } else {
+                    state.patDataList
+                }
+
+                // 새로운 상태 생성
+                state.copy(
+                    patWorldDataList = updatedPatWorldDataList,
+                    patDataList = updatedPatDataList
+                )
+            } else {
+                // "0"인 데이터가 없는 경우의 처리
+                println("No available slot in patWorldDataList to update with patId")
+                postSideEffect(MainSideEffect.Toast("공간이 부족합니다!"))
+                state // 상태 변경 없음
+            }
+        }
+
+        // 상태 업데이트
+        reduce { updatedState }
+    }
 
 
     fun onFirstGameClick() = intent {
@@ -198,7 +259,7 @@ class MainViewModel @Inject constructor(
 
 @Immutable
 data class MainState(
-    val userData: List<User> = emptyList(),
+    val userDataList: List<User> = emptyList(),
     val worldChange: Boolean = false,
     val worldData: List<World> = emptyList(),
     val mapData: World? = null,
@@ -208,7 +269,8 @@ data class MainState(
     val itemWorldDataList: List<World> = emptyList(),
     val dialogPatId : String = "0",
     val showWorldAddDialog: Boolean = false,
-    val allPatDataList: List<Pat> = emptyList()
+    val allPatDataList: List<Pat> = emptyList(),
+    val showUserInformationDialog: Boolean = false
 
 )
 

@@ -37,7 +37,7 @@ interface UserDao {
         FROM user_table
         ORDER BY id DESC
         """)
-    fun getAllUserData(): Flow<List<User>>
+    suspend fun getAllUserData(): List<User>
 
     //초기에 데이터 한번에 넣기 위한 코드
     @Insert(onConflict = OnConflictStrategy.REPLACE)

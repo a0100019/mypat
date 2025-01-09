@@ -40,12 +40,7 @@ class DailyViewModel @Inject constructor(
 
     //room에서 데이터 가져옴
     private fun loadUserData() = intent {
-        // Flow 데이터를 State로 업데이트
-        userDao.getAllUserData().collect { userData ->
-            reduce {
-                state.copy(userData = userData)
-            }
-        }
+
 
     }
 

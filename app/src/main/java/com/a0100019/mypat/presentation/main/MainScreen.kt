@@ -20,11 +20,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pet.Pat
+import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.presentation.game.firstGame.FirstGameActivity
 import com.a0100019.mypat.presentation.game.secondGame.SecondGameActivity
 import com.a0100019.mypat.presentation.game.thirdGame.ThirdGameActivity
-import com.a0100019.mypat.presentation.ui.dialog.PatDialog
+import com.a0100019.mypat.presentation.ui.dialog.UserInformationDialog
 import com.a0100019.mypat.presentation.ui.dialog.WorldAddDialog
 import com.a0100019.mypat.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
@@ -78,6 +79,8 @@ fun MainScreen(
         onPatSizeUpClick = mainViewModel::onPatSizeUpClick,
         onPatSizeDownClick = mainViewModel::onPatSizeDownClick,
         onShowAddDialogClick = mainViewModel::onShowAddDialogClick,
+        onAddPatImageClick = mainViewModel::onAddPatImageClick,
+        onShowUserInformationDialogClick = mainViewModel::onShowUserInformationDialogClick,
 
 
         mapUrl = mainState.mapData?.value ?: "map/loading.jpg",
@@ -88,7 +91,9 @@ fun MainScreen(
         dialogPatId = mainState.dialogPatId,
         worldChange = mainState.worldChange,
         showWorldAddDialog = mainState.showWorldAddDialog,
-        allPatDataList = mainState.allPatDataList
+        allPatDataList = mainState.allPatDataList,
+        userDataList = mainState.userDataList,
+        showUserInformationDialog = mainState.showUserInformationDialog
 
     )
 
@@ -111,6 +116,8 @@ fun MainScreen(
     onPatSizeUpClick: () -> Unit,
     onPatSizeDownClick: () -> Unit,
     onShowAddDialogClick: () -> Unit,
+    onAddPatImageClick: (String) -> Unit,
+    onShowUserInformationDialogClick: () -> Unit,
 
     mapUrl: String,
     patDataList: List<Pat>,
@@ -120,7 +127,9 @@ fun MainScreen(
     dialogPatId : String,
     worldChange: Boolean,
     showWorldAddDialog: Boolean,
-    allPatDataList: List<Pat>
+    allPatDataList: List<Pat>,
+    userDataList: List<User>,
+    showUserInformationDialog: Boolean
 
 ) {
 
@@ -135,7 +144,15 @@ fun MainScreen(
             if (showWorldAddDialog) {
                 WorldAddDialog(
                     onClose = onShowAddDialogClick,
-                    allPatDataList = allPatDataList
+                    allPatDataList = allPatDataList,
+                    patWorldDataList = patWorldDataList,
+                    onAddPatImageClick = onAddPatImageClick,
+                )
+            }
+
+            if (showUserInformationDialog) {
+                UserInformationDialog(
+                    onClose = onShowUserInformationDialogClick,
                 )
             }
 
@@ -147,10 +164,13 @@ fun MainScreen(
             ) {
                 if(!worldChange){
                     Button(
-                        onClick = {}
+                        onClick = onShowUserInformationDialogClick
                     ) {
                         Text("내 정보")
                     }
+
+                    Text("money : ${userDataList.find { it.id == "money" }?.value} | cash : ${userDataList.find { it.id == "cash" }?.value}")
+
                     Button(
                         onClick = {}
                     ) {
@@ -167,8 +187,8 @@ fun MainScreen(
                             .padding(end = 10.dp),
                         horizontalArrangement = Arrangement.End
                     ) {
-                        Text("Pat ${patWorldDataList.count { it.value != "0" }} / ${patWorldDataList.size}  " +
-                                "Item ${itemWorldDataList.count { it.value != "0" }} / ${itemWorldDataList.size}")
+                        Text("Pat ${patWorldDataList.count { it.value != "0" }} / ${patWorldDataList.count { it.open == "1" }}  " +
+                                "Item ${itemWorldDataList.count { it.value != "0" }} / ${itemWorldDataList.count { it.open == "1" }}")
                     }
                 } else {
                     Row(
@@ -323,6 +343,10 @@ fun MainScreenPreview() {
             showWorldAddDialog = false,
             onShowAddDialogClick = {},
             allPatDataList = listOf(Pat(url = "pat/cat.json")),
+            onAddPatImageClick = {},
+            userDataList = listOf(User(id = "money", value = "1000"), User(id = "cash", value = "100")),
+            onShowUserInformationDialogClick = {},
+            showUserInformationDialog = false
 
         )
     }

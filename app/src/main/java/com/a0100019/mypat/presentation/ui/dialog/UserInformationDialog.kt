@@ -1,6 +1,5 @@
 package com.a0100019.mypat.presentation.ui.dialog
 
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,15 +28,10 @@ import com.a0100019.mypat.ui.theme.MypatTheme
 
 
 @Composable
-fun WorldAddDialog(
+fun UserInformationDialog(
     onClose: () -> Unit,
-    allPatDataList: List<Pat>,
-    patWorldDataList: List<World>,
-    onAddPatImageClick: (String) -> Unit
 ) {
 
-    val patOpenCount = patWorldDataList.count { it.type == "pat" && it.open == "1" }
-    val patUseCount =  patWorldDataList.count { it.type == "pat" && it.value != "0" }
 
     Dialog(
         onDismissRequest = onClose
@@ -45,14 +39,13 @@ fun WorldAddDialog(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.8f)
+                .fillMaxHeight(0.6f)
                 .background(Color.White, shape = RoundedCornerShape(16.dp))
                 .padding(16.dp)
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
 
                 Text("Pat")
-                Text("${patUseCount}/${patOpenCount}")
                 Box(
                     modifier = Modifier
                         .weight(1f)
@@ -60,25 +53,7 @@ fun WorldAddDialog(
                         .background(Color.Gray, shape = RoundedCornerShape(16.dp))
                         .padding(16.dp)
                 ) {
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(4), // 한 줄에 5개씩 배치
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        items(allPatDataList.size) { index ->
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                AddDialogPatImage(
-                                    patData = allPatDataList[index],
-                                    onAddPatImageClick = onAddPatImageClick
-                                )
-                                if (patWorldDataList.any { it.value == allPatDataList[index].id.toString() && it.type == "pat"}) {
-                                    Text("마을")
-                                }
-                                Text(allPatDataList[index].name)
-                            }
-                        }
-                    }
+                    
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -100,13 +75,10 @@ fun WorldAddDialog(
 
 @Preview(showBackground = true)
 @Composable
-fun WorldAddDialogPreview() {
+fun UserInformationDialogPreview() {
     MypatTheme {
-        WorldAddDialog(
-            onClose = {},
-            allPatDataList = listOf(Pat(url = "pat/cat.json", name = "고양이"), Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json")),
-            patWorldDataList = listOf(World(id = "pat1", value = "1", open = "1", type = "pat"), World(id = "pat2", value = "2", open = "1", type = "pat"), World(id = "pat3", value = "0", open = "1", type = "pat")),
-            onAddPatImageClick = {}
+        UserInformationDialog(
+            onClose = {  }
         )
     }
 }
