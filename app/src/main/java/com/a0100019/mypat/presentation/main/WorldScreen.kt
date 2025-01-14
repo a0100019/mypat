@@ -16,12 +16,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pet.Pat
 import com.a0100019.mypat.data.room.world.World
-import com.a0100019.mypat.presentation.ui.image.DraggableItemImage
-import com.a0100019.mypat.presentation.ui.image.MapImage
-import com.a0100019.mypat.presentation.ui.image.ItemImage
-import com.a0100019.mypat.presentation.ui.image.pat.PatImage
+import com.a0100019.mypat.presentation.ui.dialog.ItemSettingDialog
+import com.a0100019.mypat.presentation.ui.image.item.DraggableItemImage
+import com.a0100019.mypat.presentation.ui.image.etc.MapImage
+import com.a0100019.mypat.presentation.ui.image.item.ItemImage
+import com.a0100019.mypat.presentation.ui.image.pat.DraggablePatImage
 import com.a0100019.mypat.presentation.ui.dialog.PatDialog
 import com.a0100019.mypat.presentation.ui.dialog.PatSettingDialog
+import com.a0100019.mypat.presentation.ui.image.pat.PatImage
 import com.a0100019.mypat.ui.theme.MypatTheme
 
 
@@ -33,14 +35,19 @@ fun WorldScreen(
     itemDataList : List<Item>,
     itemWorldDataList : List<World>,
     dialogPatId : String,
+    dialogItemId : String,
     dialogPatIdChange : (String) -> Unit,
+    dialogItemIdChange : (String) -> Unit,
     onFirstGameClick: () -> Unit,
     onSecondGameClick: () -> Unit,
     onThirdGameClick: () -> Unit,
     worldChange: Boolean,
     patWorldDataDelete: (String) -> Unit,
+    itemWorldDataDelete: (String) -> Unit,
     onPatSizeUpClick: () -> Unit,
-    onPatSizeDownClick: () -> Unit
+    onItemSizeUpClick: () -> Unit,
+    onPatSizeDownClick: () -> Unit,
+    onItemSizeDownClick: () -> Unit
 ) {
 
     Surface(
@@ -74,6 +81,19 @@ fun WorldScreen(
             )
         }
 
+        if (worldChange && dialogItemId != "0") {
+            ItemSettingDialog(
+                onDelete = {
+                    itemWorldDataDelete(dialogItemId)
+                    dialogItemIdChange("0")
+                },
+                onDismiss = { dialogItemIdChange("0") },
+                onSizeUp = onItemSizeUpClick,
+                onSizeDown = onItemSizeDownClick,
+                itemData = itemDataList.find { it.id.toString() == dialogItemId }!!,
+            )
+        }
+
 
         Box(
             modifier = Modifier
@@ -103,7 +123,8 @@ fun WorldScreen(
                             surfaceHeightDp = surfaceHeightDp,
                             xFloat = itemData.x,
                             yFloat = itemData.y,
-                            sizeFloat = itemData.sizeFloat
+                            sizeFloat = itemData.sizeFloat,
+                            onClick = { dialogItemIdChange(itemData.id.toString()) }
                         ) { newXFloat, newYFloat ->
                             itemData.x = newXFloat
                             itemData.y = newYFloat
@@ -121,37 +142,34 @@ fun WorldScreen(
                 }
 
                 patDataList.map { patData ->
-                    PatImage(
-                        patUrl = patData.url,
-                        surfaceWidthDp = surfaceWidthDp,
-                        surfaceHeightDp = surfaceHeightDp,
-                        xFloat = patData.x,
-                        yFloat = patData.y,
-                        sizeFloat = patData.sizeFloat,
-                        onClick = { dialogPatIdChange(patData.id.toString()) }
-                    )
+                    if(worldChange) {
+                        DraggablePatImage(
+                            patUrl = patData.url,
+                            surfaceWidthDp = surfaceWidthDp,
+                            surfaceHeightDp = surfaceHeightDp,
+                            xFloat = patData.x,
+                            yFloat = patData.y,
+                            sizeFloat = patData.sizeFloat,
+                            onClick = { dialogPatIdChange(patData.id.toString()) }
+                        ) { newXFloat, newYFloat ->
+                            patData.x = newXFloat
+                            patData.y = newYFloat
+                        }
+                    } else {
+                        PatImage(
+                            patUrl = patData.url,
+                            surfaceWidthDp = surfaceWidthDp,
+                            surfaceHeightDp = surfaceHeightDp,
+                            xFloat = patData.x,
+                            yFloat = patData.y,
+                            sizeFloat = patData.sizeFloat,
+                            onClick = { dialogPatIdChange(patData.id.toString()) }
+                        )
+                    }
                 }
 
 
 
-//                DraggableImage(
-//                    itemUrl = "item/table.png",
-//                    initialX = 100.dp,
-//                    initialY = 100.dp,
-//                    size = 20.dp
-//                )
-
-//                DraggableItemImage(
-//                    itemUrl = "item/table.png",
-//                    surfaceWidthDp = 300.dp, // 예제 너비
-//                    surfaceHeightDp = 400.dp, // 예제 높이
-//                    initialXFloat = firstItemData.x,
-//                    initialYFloat = firstItemData.y,
-//                    sizeFloat = 0.2f
-//                ) { newX, newY ->
-//                    firstItemData.x = newX
-//                    firstItemData.y = newY
-//                }
 
             }
 
@@ -174,14 +192,19 @@ fun SelectScreenPreview() {
             itemDataList = listOf(Item(url = "item/table.png")),
             itemWorldDataList = listOf(World(id = "item1")),
             dialogPatId = "0",
+            dialogItemId = "0",
             dialogPatIdChange = { },
+            dialogItemIdChange = {},
             onFirstGameClick = { },
             onSecondGameClick = { },
             onThirdGameClick = { },
             worldChange = false,
             patWorldDataDelete = { },
+            itemWorldDataDelete = {},
             onPatSizeUpClick = {  },
+            onItemSizeUpClick = {},
             onPatSizeDownClick = {  },
+            onItemSizeDownClick = {}
         )
     }
 }

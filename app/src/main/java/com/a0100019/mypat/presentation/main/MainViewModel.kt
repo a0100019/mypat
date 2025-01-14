@@ -120,6 +120,12 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun dialogItemIdChange(clickId : String) = intent {
+        reduce {
+            state.copy(dialogItemId = clickId)
+        }
+    }
+
     fun onWorldSelectClick() = intent {
         state.itemDataList.forEach { item ->
             itemDao.update(item)
@@ -155,8 +161,20 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun itemWorldDataDelete(itemId: String) = intent {
+        val updatedItemWorldDataList = state.itemWorldDataList.toMutableList()
+        val index = updatedItemWorldDataList.indexOfFirst { it.value == itemId }
+        updatedItemWorldDataList[index] = updatedItemWorldDataList[index].copy(value = "0")
 
+        val updatedItemDataList = state.itemDataList.filterNot { it.id.toString() == itemId }
 
+        reduce {
+            state.copy(
+                itemWorldDataList = updatedItemWorldDataList,
+                itemDataList = updatedItemDataList
+            )
+        }
+    }
 
     fun onPatSizeUpClick() = intent {
         val targetPat = state.patDataList.find { it.id.toString() == state.dialogPatId }!!
@@ -173,6 +191,23 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun onItemSizeUpClick() = intent {
+        val targetItem = state.itemDataList.find { it.id.toString() == state.dialogItemId }!!
+        val maxSize = targetItem.minFloat * 4 // 최대 크기 계산
+        val updatedSize = (targetItem.sizeFloat + 0.1f).coerceAtMost(maxSize) // 크기를 제한
+
+        val updatedItem = targetItem.copy(sizeFloat = updatedSize)
+        val updatedItemDataList = state.itemDataList.toMutableList().apply {
+            set(indexOf(targetItem), updatedItem)
+        }
+
+        reduce {
+            state.copy(itemDataList = updatedItemDataList)
+        }
+
+
+    }
+
     fun onPatSizeDownClick() =  intent {
             val targetPat = state.patDataList.find { it.id.toString() == state.dialogPatId }!!
             val minSize = targetPat.minFloat // 최소 크기
@@ -187,6 +222,21 @@ class MainViewModel @Inject constructor(
                 state.copy(patDataList = updatedPatDataList)
             }
         }
+
+    fun onItemSizeDownClick() =  intent {
+        val targetItem = state.itemDataList.find { it.id.toString() == state.dialogItemId }!!
+        val minSize = targetItem.minFloat // 최소 크기
+        val updatedSize = (targetItem.sizeFloat - 0.1f).coerceAtLeast(minSize) // 크기를 제한
+
+        val updatedItem = targetItem.copy(sizeFloat = updatedSize)
+        val updatedItemDataList = state.itemDataList.toMutableList().apply {
+            set(indexOf(targetItem), updatedItem)
+        }
+
+        reduce {
+            state.copy(itemDataList = updatedItemDataList)
+        }
+    }
 
 
     fun onAddPatImageClick(patId: String) = intent {
@@ -268,6 +318,7 @@ data class MainState(
     val itemDataList: List<Item> = emptyList(),
     val itemWorldDataList: List<World> = emptyList(),
     val dialogPatId : String = "0",
+    val dialogItemId : String = "0",
     val showWorldAddDialog: Boolean = false,
     val allPatDataList: List<Pat> = emptyList(),
     val showUserInformationDialog: Boolean = false

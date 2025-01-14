@@ -1,4 +1,4 @@
-package com.a0100019.mypat.presentation.ui.image
+package com.a0100019.mypat.presentation.ui.image.etc
 
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image

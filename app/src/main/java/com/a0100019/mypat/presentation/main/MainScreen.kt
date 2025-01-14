@@ -69,6 +69,7 @@ fun MainScreen(
         onStoreNavigateClick = onStoreNavigateClick,
 
         dialogPatIdChange = mainViewModel::dialogPatIdChange,
+        dialogItemIdChange = mainViewModel::dialogItemIdChange,
         onFirstGameClick = mainViewModel::onFirstGameClick,
         onSecondGameClick = mainViewModel::onSecondGameClick,
         onThirdGameClick = mainViewModel::onThirdGameClick,
@@ -76,8 +77,11 @@ fun MainScreen(
         onWorldSelectClick = mainViewModel::onWorldSelectClick,
         loadData = mainViewModel::loadData,
         patWorldDataDelete = mainViewModel::patWorldDataDelete,
+        itemWorldDataDelete = mainViewModel::itemWorldDataDelete,
         onPatSizeUpClick = mainViewModel::onPatSizeUpClick,
+        onItemSizeUpClick = mainViewModel::onItemSizeUpClick,
         onPatSizeDownClick = mainViewModel::onPatSizeDownClick,
+        onItemSizeDownClick = mainViewModel::onItemSizeDownClick,
         onShowAddDialogClick = mainViewModel::onShowAddDialogClick,
         onAddPatImageClick = mainViewModel::onAddPatImageClick,
         onShowUserInformationDialogClick = mainViewModel::onShowUserInformationDialogClick,
@@ -89,6 +93,7 @@ fun MainScreen(
         itemDataList = mainState.itemDataList,
         itemWorldDataList = mainState.itemWorldDataList,
         dialogPatId = mainState.dialogPatId,
+        dialogItemId = mainState.dialogItemId,
         worldChange = mainState.worldChange,
         showWorldAddDialog = mainState.showWorldAddDialog,
         allPatDataList = mainState.allPatDataList,
@@ -106,6 +111,7 @@ fun MainScreen(
     onIndexNavigateClick: () -> Unit,
 
     dialogPatIdChange : (String) -> Unit,
+    dialogItemIdChange : (String) -> Unit,
     onFirstGameClick: () -> Unit,
     onSecondGameClick: () -> Unit,
     onThirdGameClick: () -> Unit,
@@ -113,8 +119,11 @@ fun MainScreen(
     onWorldSelectClick: () -> Unit,
     loadData: () -> Unit,
     patWorldDataDelete: (String) -> Unit,
+    itemWorldDataDelete: (String) -> Unit,
     onPatSizeUpClick: () -> Unit,
+    onItemSizeUpClick: () -> Unit,
     onPatSizeDownClick: () -> Unit,
+    onItemSizeDownClick: () -> Unit,
     onShowAddDialogClick: () -> Unit,
     onAddPatImageClick: (String) -> Unit,
     onShowUserInformationDialogClick: () -> Unit,
@@ -125,6 +134,7 @@ fun MainScreen(
     itemDataList: List<Item>,
     itemWorldDataList: List<World>,
     dialogPatId : String,
+    dialogItemId : String,
     worldChange: Boolean,
     showWorldAddDialog: Boolean,
     allPatDataList: List<Pat>,
@@ -217,14 +227,19 @@ fun MainScreen(
                     itemDataList = itemDataList,
                     itemWorldDataList = itemWorldDataList,
                     dialogPatId = dialogPatId,
+                    dialogItemId = dialogItemId,
                     dialogPatIdChange = dialogPatIdChange,
+                    dialogItemIdChange = dialogItemIdChange,
                     onFirstGameClick = onFirstGameClick,
                     onSecondGameClick = onSecondGameClick,
                     onThirdGameClick = onThirdGameClick,
                     worldChange = worldChange,
                     patWorldDataDelete = patWorldDataDelete,
+                    itemWorldDataDelete = itemWorldDataDelete,
                     onPatSizeDownClick = onPatSizeDownClick,
+                    onItemSizeDownClick = onItemSizeDownClick,
                     onPatSizeUpClick = onPatSizeUpClick,
+                    onItemSizeUpClick = onItemSizeUpClick
                 )
             }
 
@@ -329,7 +344,9 @@ fun MainScreenPreview() {
             itemDataList = listOf(Item(url = "item/table.png")),
             itemWorldDataList = listOf(World(id = "item1")),
             dialogPatId = "0",
+            dialogItemId = "0",
             dialogPatIdChange = { },
+            dialogItemIdChange = {},
             onFirstGameClick = {},
             onSecondGameClick = {},
             onThirdGameClick = {},
@@ -338,7 +355,10 @@ fun MainScreenPreview() {
             onWorldSelectClick = {},
             loadData = {},
             patWorldDataDelete = {},
+            itemWorldDataDelete = {},
+            onItemSizeUpClick = {},
             onPatSizeUpClick = {},
+            onItemSizeDownClick = {},
             onPatSizeDownClick = {},
             showWorldAddDialog = false,
             onShowAddDialogClick = {},
@@ -346,7 +366,8 @@ fun MainScreenPreview() {
             onAddPatImageClick = {},
             userDataList = listOf(User(id = "money", value = "1000"), User(id = "cash", value = "100")),
             onShowUserInformationDialogClick = {},
-            showUserInformationDialog = false
+            showUserInformationDialog = false,
+
 
         )
     }

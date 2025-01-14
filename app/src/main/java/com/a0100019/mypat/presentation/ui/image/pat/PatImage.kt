@@ -11,6 +11,7 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
 
+
 @Composable
 fun PatImage(
     patUrl: String,
@@ -35,8 +36,8 @@ fun PatImage(
         modifier = Modifier
             .size(imageSize)
             .offset(
-                x = (surfaceWidthDp * xFloat) - (imageSize / 2),
-                y = (surfaceHeightDp * yFloat) - (imageSize / 2)
+                x = (surfaceWidthDp * xFloat),
+                y = (surfaceHeightDp * yFloat)
             )
             .clickable { onClick() } // 클릭 이벤트 처리
     )

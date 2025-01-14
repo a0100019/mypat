@@ -1,9 +1,8 @@
-package com.a0100019.mypat.presentation.ui.image
+package com.a0100019.mypat.presentation.ui.image.item
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
@@ -18,7 +17,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 
@@ -56,8 +54,8 @@ fun ItemImage(
             modifier = Modifier
                 .size(imageSize)
                 .offset(
-                    x = (surfaceWidthDp * xFloat) - (imageSize / 2),
-                    y = (surfaceHeightDp * yFloat) - (imageSize / 2)
+                    x = (surfaceWidthDp * xFloat),
+                    y = (surfaceHeightDp * yFloat)
                 )
         )
     } else {

@@ -1,11 +1,10 @@
-package com.a0100019.mypat.presentation.ui.image
+package com.a0100019.mypat.presentation.ui.image.etc
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 
 @Composable
