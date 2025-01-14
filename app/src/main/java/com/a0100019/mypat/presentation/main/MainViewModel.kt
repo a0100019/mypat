@@ -176,6 +176,21 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun onItemDrag(itemId: String, newX: Float, newY: Float) = intent {
+        val targetItem = state.itemDataList.find { it.id.toString() == itemId }
+        if (targetItem != null) {
+            val updatedItem = targetItem.copy(x = newX, y = newY)
+            val updatedItemDataList = state.itemDataList.toMutableList().apply {
+                set(indexOf(targetItem), updatedItem)
+            }
+
+            reduce {
+                state.copy(itemDataList = updatedItemDataList)
+            }
+        }
+    }
+
+
     fun onPatSizeUpClick() = intent {
         val targetPat = state.patDataList.find { it.id.toString() == state.dialogPatId }!!
         val maxSize = targetPat.minFloat * 4 // 최대 크기 계산

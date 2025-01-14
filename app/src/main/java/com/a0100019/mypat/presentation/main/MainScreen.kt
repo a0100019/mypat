@@ -85,6 +85,7 @@ fun MainScreen(
         onShowAddDialogClick = mainViewModel::onShowAddDialogClick,
         onAddPatImageClick = mainViewModel::onAddPatImageClick,
         onShowUserInformationDialogClick = mainViewModel::onShowUserInformationDialogClick,
+        onItemDrag = mainViewModel::onItemDrag,
 
 
         mapUrl = mainState.mapData?.value ?: "map/loading.jpg",
@@ -127,6 +128,7 @@ fun MainScreen(
     onShowAddDialogClick: () -> Unit,
     onAddPatImageClick: (String) -> Unit,
     onShowUserInformationDialogClick: () -> Unit,
+    onItemDrag: (String, Float, Float) -> Unit,
 
     mapUrl: String,
     patDataList: List<Pat>,
@@ -239,7 +241,8 @@ fun MainScreen(
                     onPatSizeDownClick = onPatSizeDownClick,
                     onItemSizeDownClick = onItemSizeDownClick,
                     onPatSizeUpClick = onPatSizeUpClick,
-                    onItemSizeUpClick = onItemSizeUpClick
+                    onItemSizeUpClick = onItemSizeUpClick,
+                    onItemDrag = onItemDrag
                 )
             }
 
@@ -367,7 +370,7 @@ fun MainScreenPreview() {
             userDataList = listOf(User(id = "money", value = "1000"), User(id = "cash", value = "100")),
             onShowUserInformationDialogClick = {},
             showUserInformationDialog = false,
-
+            onItemDrag = { id, newX, newY -> }
 
         )
     }

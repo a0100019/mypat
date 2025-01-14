@@ -47,7 +47,8 @@ fun WorldScreen(
     onPatSizeUpClick: () -> Unit,
     onItemSizeUpClick: () -> Unit,
     onPatSizeDownClick: () -> Unit,
-    onItemSizeDownClick: () -> Unit
+    onItemSizeDownClick: () -> Unit,
+    onItemDrag: (String, Float, Float) -> Unit
 ) {
 
     Surface(
@@ -126,8 +127,7 @@ fun WorldScreen(
                             sizeFloat = itemData.sizeFloat,
                             onClick = { dialogItemIdChange(itemData.id.toString()) }
                         ) { newXFloat, newYFloat ->
-                            itemData.x = newXFloat
-                            itemData.y = newYFloat
+                            onItemDrag(itemData.id.toString(), newXFloat, newYFloat)
                         }
                     } else {
                         ItemImage(
@@ -204,7 +204,8 @@ fun SelectScreenPreview() {
             onPatSizeUpClick = {  },
             onItemSizeUpClick = {},
             onPatSizeDownClick = {  },
-            onItemSizeDownClick = {}
+            onItemSizeDownClick = {},
+            onItemDrag = { id, newX, newY -> }
         )
     }
 }
