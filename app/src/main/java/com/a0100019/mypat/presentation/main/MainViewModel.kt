@@ -190,6 +190,21 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun onPatDrag(patId: String, newX: Float, newY: Float) = intent {
+        val targetPat = state.patDataList.find { it.id.toString() == patId }
+        if (targetPat != null) {
+            val updatedPat = targetPat.copy(x = newX, y = newY)
+            val updatedPatDataList = state.patDataList.toMutableList().apply {
+                set(indexOf(targetPat), updatedPat)
+            }
+
+            reduce {
+                state.copy(patDataList = updatedPatDataList)
+            }
+        }
+    }
+
+
 
     fun onPatSizeUpClick() = intent {
         val targetPat = state.patDataList.find { it.id.toString() == state.dialogPatId }!!

@@ -48,7 +48,8 @@ fun WorldScreen(
     onItemSizeUpClick: () -> Unit,
     onPatSizeDownClick: () -> Unit,
     onItemSizeDownClick: () -> Unit,
-    onItemDrag: (String, Float, Float) -> Unit
+    onItemDrag: (String, Float, Float) -> Unit,
+    onPatDrag: (String, Float, Float) -> Unit,
 ) {
 
     Surface(
@@ -152,8 +153,7 @@ fun WorldScreen(
                             sizeFloat = patData.sizeFloat,
                             onClick = { dialogPatIdChange(patData.id.toString()) }
                         ) { newXFloat, newYFloat ->
-                            patData.x = newXFloat
-                            patData.y = newYFloat
+                            onPatDrag(patData.id.toString(), newXFloat, newYFloat)
                         }
                     } else {
                         PatImage(
@@ -205,7 +205,8 @@ fun SelectScreenPreview() {
             onItemSizeUpClick = {},
             onPatSizeDownClick = {  },
             onItemSizeDownClick = {},
-            onItemDrag = { id, newX, newY -> }
+            onItemDrag = { id, newX, newY -> },
+            onPatDrag = { id, newX, newY -> }
         )
     }
 }
