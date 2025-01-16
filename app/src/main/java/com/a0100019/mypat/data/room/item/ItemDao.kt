@@ -23,7 +23,7 @@ interface ItemDao {
     suspend fun update(item: Item)
 
     @Query("SELECT * FROM item_table ORDER BY id DESC")
-    fun getAllItemData(): Flow<List<Item>>
+    suspend fun getAllItemData(): List<Item>
 
     @Query("SELECT * FROM item_table WHERE id = :id")
     suspend fun getItemDataById(id: String): Item

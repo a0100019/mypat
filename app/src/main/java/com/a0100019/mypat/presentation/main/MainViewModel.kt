@@ -71,6 +71,7 @@ class MainViewModel @Inject constructor(
 
                 // 모든 펫 데이터 가져오기
                 val allPatDataList = patDao.getAllPatData()
+                val allItemDataList = itemDao.getAllItemData()
 
                 val userDataList = userDao.getAllUserData()
 
@@ -84,7 +85,8 @@ class MainViewModel @Inject constructor(
                             itemWorldDataList = itemWorldDataList,
                             itemDataList = itemDataList,
                             allPatDataList = allPatDataList,
-                            userDataList = userDataList
+                            userDataList = userDataList,
+                            allItemDataList = allItemDataList
                         )
                     }
                 }
@@ -99,6 +101,12 @@ class MainViewModel @Inject constructor(
     fun onWorldChangeClick() = intent {
         reduce {
             state.copy(worldChange = !state.worldChange) // true/false 토글
+        }
+    }
+
+    fun onAddDialogChangeClick() = intent {
+        reduce {
+            state.copy(addDialogChange = !state.addDialogChange) // true/false 토글
         }
     }
 
@@ -320,6 +328,56 @@ class MainViewModel @Inject constructor(
         reduce { updatedState }
     }
 
+    fun onAddItemImageClick(itemId: String) = intent {
+        // 1. patWorldDataList에서 patId와 일치하는 value 값을 찾는다
+        val matchingIndex = state.itemWorldDataList.indexOfFirst { it.value == itemId }
+
+        val updatedState = if (matchingIndex != -1) {
+            // 1.1 일치하는 데이터가 있는 경우 ( 펫이 월드에 나와 있는 경우 펫 제거)
+            val updatedItemWorldDataList = state.itemWorldDataList.mapIndexed { index, world ->
+                if (index == matchingIndex) world.copy(value = "0") else world
+            }
+
+            val updatedItemDataList = state.itemDataList.filter { it.id != itemId.toInt() }
+
+            // 새로운 상태 생성
+            state.copy(
+                itemWorldDataList = updatedItemWorldDataList,
+                itemDataList = updatedItemDataList
+            )
+        } else {
+            // 1.2 일치하는 데이터가 없는 경우 ( 월드에 펫이 없을 때 추가 )
+            val zeroIndex = state.itemWorldDataList.indexOfFirst { it.value == "0" }
+            val openCount = state.itemWorldDataList.count { it.open == "1" }
+
+            if (zeroIndex != -1 && zeroIndex < openCount) {
+                val updatedItemWorldDataList = state.itemWorldDataList.mapIndexed { index, world ->
+                    if (index == zeroIndex) world.copy(value = itemId) else world
+                }
+
+                val newItemData = state.allItemDataList.find { it.id == itemId.toInt() }
+                val updatedItemDataList = if (newItemData != null) {
+                    state.itemDataList + newItemData
+                } else {
+                    state.itemDataList
+                }
+
+                // 새로운 상태 생성
+                state.copy(
+                    itemWorldDataList = updatedItemWorldDataList,
+                    itemDataList = updatedItemDataList
+                )
+            } else {
+                // "0"인 데이터가 없는 경우의 처리
+                postSideEffect(MainSideEffect.Toast("공간이 부족합니다!"))
+                state // 상태 변경 없음
+            }
+        }
+
+        // 상태 업데이트
+        reduce { updatedState }
+    }
+
 
     fun onFirstGameClick() = intent {
         postSideEffect(MainSideEffect.FirstGameActivity)
@@ -340,19 +398,21 @@ class MainViewModel @Inject constructor(
 @Immutable
 data class MainState(
     val userDataList: List<User> = emptyList(),
-    val worldChange: Boolean = false,
-    val worldData: List<World> = emptyList(),
-    val mapData: World? = null,
     val patDataList: List<Pat> = emptyList(),
     val patWorldDataList: List<World> = emptyList(),
     val itemDataList: List<Item> = emptyList(),
     val itemWorldDataList: List<World> = emptyList(),
+    val allPatDataList: List<Pat> = emptyList(),
+    val allItemDataList: List<Item> = emptyList(),
+
+    val worldData: List<World> = emptyList(),
+    val mapData: World? = null,
     val dialogPatId : String = "0",
     val dialogItemId : String = "0",
     val showWorldAddDialog: Boolean = false,
-    val allPatDataList: List<Pat> = emptyList(),
-    val showUserInformationDialog: Boolean = false
-
+    val showUserInformationDialog: Boolean = false,
+    val worldChange: Boolean = false,
+    val addDialogChange: Boolean = true
 )
 
 //상태와 관련없는 것

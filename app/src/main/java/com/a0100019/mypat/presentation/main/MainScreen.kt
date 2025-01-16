@@ -87,6 +87,8 @@ fun MainScreen(
         onShowUserInformationDialogClick = mainViewModel::onShowUserInformationDialogClick,
         onItemDrag = mainViewModel::onItemDrag,
         onPatDrag = mainViewModel::onPatDrag,
+        onAddDialogChangeClick = mainViewModel::onAddDialogChangeClick,
+        onAddItemImageClick = mainViewModel::onAddItemImageClick,
 
 
         mapUrl = mainState.mapData?.value ?: "map/loading.jpg",
@@ -99,8 +101,10 @@ fun MainScreen(
         worldChange = mainState.worldChange,
         showWorldAddDialog = mainState.showWorldAddDialog,
         allPatDataList = mainState.allPatDataList,
+        allItemDataList = mainState.allItemDataList,
         userDataList = mainState.userDataList,
-        showUserInformationDialog = mainState.showUserInformationDialog
+        showUserInformationDialog = mainState.showUserInformationDialog,
+        addDialogChange = mainState.addDialogChange
 
     )
 
@@ -131,6 +135,8 @@ fun MainScreen(
     onShowUserInformationDialogClick: () -> Unit,
     onItemDrag: (String, Float, Float) -> Unit,
     onPatDrag: (String, Float, Float) -> Unit,
+    onAddDialogChangeClick: () -> Unit,
+    onAddItemImageClick: (String) -> Unit,
 
     mapUrl: String,
     patDataList: List<Pat>,
@@ -142,8 +148,10 @@ fun MainScreen(
     worldChange: Boolean,
     showWorldAddDialog: Boolean,
     allPatDataList: List<Pat>,
+    allItemDataList: List<Item>,
     userDataList: List<User>,
-    showUserInformationDialog: Boolean
+    showUserInformationDialog: Boolean,
+    addDialogChange: Boolean
 
 ) {
 
@@ -160,7 +168,12 @@ fun MainScreen(
                     onClose = onShowAddDialogClick,
                     allPatDataList = allPatDataList,
                     patWorldDataList = patWorldDataList,
+                    allItemDataList = allItemDataList,
+                    itemWorldDataList = itemWorldDataList,
                     onAddPatImageClick = onAddPatImageClick,
+                    addDialogChange = addDialogChange,
+                    onAddDialogChangeClick = onAddDialogChangeClick,
+                    onAddItemImageClick = onAddItemImageClick
                 )
             }
 
@@ -374,7 +387,11 @@ fun MainScreenPreview() {
             onShowUserInformationDialogClick = {},
             showUserInformationDialog = false,
             onItemDrag = { id, newX, newY -> },
-            onPatDrag = { id, newX, newY -> }
+            onPatDrag = { id, newX, newY -> },
+            allItemDataList = listOf(Item(url = "item/table.png")),
+            onAddDialogChangeClick = {},
+            addDialogChange = true,
+            onAddItemImageClick = {}
 
         )
     }
