@@ -69,6 +69,6 @@ data class LoadingState(
 //상태와 관련없는 것
 sealed interface LoadingSideEffect{
     class Toast(val message:String): LoadingSideEffect
-    data object NavigateToDailyActivity: LoadingSideEffect
+//    data object NavigateToDailyActivity: LoadingSideEffect
 
 }

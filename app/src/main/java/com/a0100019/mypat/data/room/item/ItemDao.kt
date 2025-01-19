@@ -22,8 +22,11 @@ interface ItemDao {
     @Update
     suspend fun update(item: Item)
 
-    @Query("SELECT * FROM item_table ORDER BY id DESC")
+    @Query("SELECT * FROM item_table WHERE category != 'map' ORDER BY id DESC")
     suspend fun getAllItemData(): List<Item>
+
+    @Query("SELECT * FROM item_table WHERE category = 'map' ORDER BY id DESC")
+    suspend fun getAllMapData(): List<Item>
 
     @Query("SELECT * FROM item_table WHERE id = :id")
     suspend fun getItemDataById(id: String): Item

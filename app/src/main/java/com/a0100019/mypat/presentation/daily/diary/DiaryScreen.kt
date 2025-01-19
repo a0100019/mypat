@@ -2,7 +2,9 @@ package com.a0100019.mypat.presentation.daily.diary
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -33,19 +35,23 @@ fun DiaryScreen(
     value : String
 ) {
     // Fullscreen container
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White), // Optional: Set background color
-        contentAlignment = Alignment.Center // Center content
     ) {
         // Text in the center
         Text(
-            text = "DiaryScreen",
+            text = "안녕",
             fontSize = 32.sp, // Large font size
             fontWeight = FontWeight.Bold, // Bold text
             color = Color.Black // Text color
         )
+        Button(
+            onClick = {}
+        ) {
+            Text("바보")
+        }
     }
 }
 
