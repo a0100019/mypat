@@ -2,12 +2,19 @@ package com.a0100019.mypat.presentation.index
 
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -16,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.data.room.item.Item
@@ -46,7 +54,9 @@ fun IndexScreen(
     IndexScreen(
         allPatDataList = indexState.allPatDataList,
         allItemDataList = indexState.allItemDataList,
-        allMapDataList = indexState.allMapDataList
+        allMapDataList = indexState.allMapDataList,
+        onTypeChangeClick = indexViewModel::onTypeChangeClick,
+        typeChange = indexState.typeChange
     )
 }
 
@@ -56,17 +66,64 @@ fun IndexScreen(
 fun IndexScreen(
     allPatDataList: List<Pat>,
     allItemDataList: List<Item>,
-    allMapDataList: List<Item>
+    allMapDataList: List<Item>,
+    onTypeChangeClick: (String) -> Unit,
+    typeChange: String,
 ) {
     // Fullscreen container
     Column(modifier = Modifier.fillMaxSize()) {
-        Text("Pat")
+        Text("도감")
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Text(typeChange)
+            Text("10/100")
+        }
         LazyVerticalGrid(
             columns = GridCells.Fixed(4), // 한 줄에 5개씩 배치
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxWidth()
         ) {
+            items(allPatDataList.size) { index ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1f), // 정사각형 카드
+                    elevation = CardDefaults.cardElevation(4.dp)
+                ) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Text(text = "Item $index")
+                    }
+                }
+            }
+        }
+
+        Row {
+            Button(
+                onClick = { onTypeChangeClick("pat") }
+            ) {
+                Text("pat")
+            }
+
+            Button(
+                onClick = { onTypeChangeClick("item") }
+            ) {
+                Text("item")
+            }
+
+
+            Button(
+                onClick = { onTypeChangeClick("map") }
+            ) {
+                Text("map")
+            }
+
 
         }
+
     }
 }
 
@@ -78,6 +135,8 @@ fun IndexScreenPreview() {
             allPatDataList = listOf(Pat(url = "pat/cat.json")),
             allItemDataList = listOf(Item(url = "item/table.png")),
             allMapDataList = listOf(Item(url = "item/forest.png")),
+            onTypeChangeClick = {},
+            typeChange = "map"
         )
     }
 }

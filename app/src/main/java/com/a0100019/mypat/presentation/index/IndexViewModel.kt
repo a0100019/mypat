@@ -74,15 +74,9 @@ class IndexViewModel @Inject constructor(
         }
     }
 
-    fun onTypeChangeClick() = intent {
+    fun onTypeChangeClick(type: String) = intent {
         reduce {
-            val newTypeChange = when (state.typeChange) {
-                "pat" -> "item"
-                "item" -> "map"
-                "map" -> "pat"
-                else -> "pat" // 기본값 설정
-            }
-            state.copy(typeChange = newTypeChange)
+            state.copy(typeChange = type)
         }
     }
 
