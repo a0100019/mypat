@@ -1,4 +1,4 @@
-package com.a0100019.mypat.presentation.ui.dialog
+package com.a0100019.mypat.presentation.index
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -27,18 +27,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.pet.Pat
-import com.a0100019.mypat.presentation.ui.image.pat.DialogPatImage
 import com.a0100019.mypat.presentation.ui.image.etc.HorizontalLineWithValue
+import com.a0100019.mypat.presentation.ui.image.pat.DialogPatImage
 import com.a0100019.mypat.ui.theme.MypatTheme
 
 
 @Composable
-fun PatDialog(
+fun IndexPatDialog(
     onClose: () -> Unit,
     patData: Pat,
-    onFirstGameClick: () -> Unit,
-    onSecondGameClick: () -> Unit,
-    onThirdGameClick: () -> Unit
 ) {
     Dialog(
         onDismissRequest = onClose
@@ -97,28 +94,7 @@ fun PatDialog(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // 추가로 원하는 Composable 요소
-                Text("미니 게임")
-//        Spacer(modifier = Modifier.height(16.dp))
-                Button(
-                    onClick = onFirstGameClick,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("총 게임")
-                }
 
-                Button(
-                    onClick = onSecondGameClick,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("피하기 게임")
-                }
-
-                Button(
-                    onClick = onThirdGameClick,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("맞추기 게임")
-                }
 
                 Button(
                     onClick = onClose,
@@ -139,7 +115,7 @@ fun PatDialog(
 @Composable
 fun DialogScreenContentPreview() {
     MypatTheme {
-        PatDialog(
+        IndexPatDialog(
             onClose = {},
             patData = Pat(
                 url = "pat/cat.json",
@@ -147,9 +123,6 @@ fun DialogScreenContentPreview() {
                 love = 1000,
                 memo = "귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다."
             ),
-            onFirstGameClick = {  },
-            onSecondGameClick = {  },
-            onThirdGameClick = {  },
         )
     }
 }

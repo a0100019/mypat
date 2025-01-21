@@ -20,7 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 
 //맵 이미지 가져오는 코드
 @Composable
-fun MapImage(filePath: String) {
+fun JustImage(filePath: String) {
     val context = LocalContext.current
 
     // State to hold the bitmap

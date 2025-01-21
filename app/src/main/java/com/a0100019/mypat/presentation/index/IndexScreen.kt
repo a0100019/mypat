@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -34,7 +35,9 @@ import com.a0100019.mypat.data.room.pet.Pat
 import com.a0100019.mypat.presentation.loading.LoadingSideEffect
 import com.a0100019.mypat.presentation.loading.LoadingState
 import com.a0100019.mypat.presentation.loading.LoadingViewModel
+import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.image.pat.DialogPatImage
+import com.a0100019.mypat.presentation.ui.mainDialog.PatDialog
 import com.a0100019.mypat.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -59,8 +62,13 @@ fun IndexScreen(
         allPatDataList = indexState.allPatDataList,
         allItemDataList = indexState.allItemDataList,
         allMapDataList = indexState.allMapDataList,
+
         onTypeChangeClick = indexViewModel::onTypeChangeClick,
-        typeChange = indexState.typeChange
+        onCloseDialog = indexViewModel::onCloseDialog,
+        onPatClick = indexViewModel::onPatClick,
+
+        typeChange = indexState.typeChange,
+        dialogPatIndex = indexState.dialogPatIndex
     )
 }
 
@@ -71,9 +79,23 @@ fun IndexScreen(
     allPatDataList: List<Pat>,
     allItemDataList: List<Item>,
     allMapDataList: List<Item>,
+
     onTypeChangeClick: (String) -> Unit,
+    onCloseDialog: () -> Unit,
+    onPatClick: (Int) -> Unit,
+
     typeChange: String,
+    dialogPatIndex: Int,
 ) {
+
+    // 다이얼로그 표시
+    if (dialogPatIndex != -1) {
+        IndexPatDialog(
+            onClose = onCloseDialog,
+            patData = allPatDataList.getOrNull(dialogPatIndex)!!,
+        )
+    }
+
     // Fullscreen container
     Column(modifier = Modifier.fillMaxSize()) {
         Text("도감")
@@ -82,7 +104,7 @@ fun IndexScreen(
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(typeChange)
-            Text("10/100")
+            Text("${allPatDataList.count { it.date != "0"}}/${allPatDataList.size}")
         }
         LazyVerticalGrid(
             columns = GridCells.Fixed(4), // 한 줄에 5개씩 배치
@@ -94,8 +116,18 @@ fun IndexScreen(
                         .fillMaxWidth()
                         .aspectRatio(0.7f), // 카드 비율 설정
                     elevation = CardDefaults.cardElevation(4.dp),
-                    onClick = {}
+                    onClick = { onPatClick(index)}
                 ) {
+                    if(allPatDataList[index].date == "0") {
+                        Box(
+                            modifier = Modifier
+                                .size(30.dp) // 부모의 20% 크기
+                                .aspectRatio(1f)
+                                .padding(5.dp)
+                        ) {
+                            JustImage("etc/lock.png")
+                        }
+                    }
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
@@ -161,7 +193,10 @@ fun IndexScreenPreview() {
             allItemDataList = listOf(Item(url = "item/table.png")),
             allMapDataList = listOf(Item(url = "item/forest.png")),
             onTypeChangeClick = {},
-            typeChange = "map"
+            typeChange = "map",
+            dialogPatIndex = -1,
+            onCloseDialog = {},
+            onPatClick = {},
         )
     }
 }

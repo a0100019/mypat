@@ -80,6 +80,22 @@ class IndexViewModel @Inject constructor(
         }
     }
 
+    fun onPatClick(index: Int) = intent {
+        reduce {
+            state.copy(dialogPatIndex = index)
+        }
+    }
+
+    fun onCloseDialog() = intent {
+        reduce {
+            state.copy(
+                dialogPatIndex = -1,
+                dialogItemIndex = -1,
+                dialogMapIndex = -1
+            )
+        }
+    }
+
 
 
 
@@ -96,9 +112,9 @@ data class IndexState(
     val allMapDataList: List<Item> = emptyList(),
 
     val typeChange: String = "pat",
-    val patIndex: Int = -1,
-    val itemIndex: Int = -1,
-    val mapIndex: Int = -1
+    val dialogPatIndex: Int = -1,
+    val dialogItemIndex: Int = -1,
+    val dialogMapIndex: Int = -1,
 )
 
 

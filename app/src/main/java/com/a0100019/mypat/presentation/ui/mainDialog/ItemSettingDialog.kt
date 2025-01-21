@@ -1,4 +1,4 @@
-package com.a0100019.mypat.presentation.ui.dialog
+package com.a0100019.mypat.presentation.ui.mainDialog
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.AlertDialog

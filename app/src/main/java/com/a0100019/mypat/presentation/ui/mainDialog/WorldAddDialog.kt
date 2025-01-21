@@ -1,4 +1,4 @@
-package com.a0100019.mypat.presentation.ui.dialog
+package com.a0100019.mypat.presentation.ui.mainDialog
 
 
 import androidx.compose.foundation.background

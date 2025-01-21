@@ -16,13 +16,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pet.Pat
 import com.a0100019.mypat.data.room.world.World
-import com.a0100019.mypat.presentation.ui.dialog.ItemSettingDialog
+import com.a0100019.mypat.presentation.ui.mainDialog.ItemSettingDialog
 import com.a0100019.mypat.presentation.ui.image.item.DraggableItemImage
-import com.a0100019.mypat.presentation.ui.image.etc.MapImage
+import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.image.item.ItemImage
 import com.a0100019.mypat.presentation.ui.image.pat.DraggablePatImage
-import com.a0100019.mypat.presentation.ui.dialog.PatDialog
-import com.a0100019.mypat.presentation.ui.dialog.PatSettingDialog
+import com.a0100019.mypat.presentation.ui.mainDialog.PatDialog
+import com.a0100019.mypat.presentation.ui.mainDialog.PatSettingDialog
 import com.a0100019.mypat.presentation.ui.image.pat.PatImage
 import com.a0100019.mypat.ui.theme.MypatTheme
 
@@ -103,7 +103,7 @@ fun WorldScreen(
                 .background(Color.White), // Optional: Set background color
             contentAlignment = Alignment.Center // Center content
         ) {
-            MapImage(mapUrl)
+            JustImage(mapUrl)
 
             BoxWithConstraints(
                 modifier = Modifier.fillMaxSize()
