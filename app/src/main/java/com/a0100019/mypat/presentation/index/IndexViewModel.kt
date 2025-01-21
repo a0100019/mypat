@@ -81,6 +81,8 @@ class IndexViewModel @Inject constructor(
     }
 
 
+
+
 }
 
 
@@ -93,7 +95,10 @@ data class IndexState(
     val allItemDataList: List<Item> = emptyList(),
     val allMapDataList: List<Item> = emptyList(),
 
-    val typeChange: String = "pat"
+    val typeChange: String = "pat",
+    val patIndex: Int = -1,
+    val itemIndex: Int = -1,
+    val mapIndex: Int = -1
 )
 
 
