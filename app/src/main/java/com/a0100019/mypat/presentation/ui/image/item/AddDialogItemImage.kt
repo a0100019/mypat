@@ -32,6 +32,10 @@ fun AddDialogItemImage(
     itemData: Item,
     onAddItemImageClick: (String) -> Unit
 ) {
+
+
+
+
     val context = LocalContext.current
 
     // State to hold the bitmap

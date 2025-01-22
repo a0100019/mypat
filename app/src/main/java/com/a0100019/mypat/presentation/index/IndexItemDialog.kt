@@ -26,6 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.R
+import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pet.Pat
 import com.a0100019.mypat.presentation.ui.image.etc.HorizontalLineWithValue
 import com.a0100019.mypat.presentation.ui.image.pat.DialogPatImage
@@ -33,9 +34,9 @@ import com.a0100019.mypat.ui.theme.MypatTheme
 
 
 @Composable
-fun IndexPatDialog(
+fun IndexItemDialog(
     onClose: () -> Unit,
-    patData: Pat,
+    itemData: Item,
 ) {
     Dialog(
         onDismissRequest = onClose
@@ -56,15 +57,13 @@ fun IndexPatDialog(
                         .background(Color.Gray, shape = RoundedCornerShape(16.dp))
                         .padding(16.dp)
                 ) {
-                    DialogPatImage(patData.url)
+                    DialogPatImage(itemData.url)
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Image(
                             painter = painterResource(id = R.drawable.heart),
                             contentDescription = "Sample Vector Image",
                             modifier = Modifier.size(20.dp),
                         )
-                        Text("애정도 ${patData.love/100}")
-                        HorizontalLineWithValue(patData.love)
                     }
                 }
                 Text(
@@ -118,9 +117,9 @@ fun IndexPatDialog(
 
 @Preview(showBackground = true)
 @Composable
-fun IndexPatDialogPreview() {
+fun IndexItemDialogPreview() {
     MypatTheme {
-        IndexPatDialog(
+        IndexItemDialog(
             onClose = {},
             patData = Pat(
                 url = "pat/cat.json",
