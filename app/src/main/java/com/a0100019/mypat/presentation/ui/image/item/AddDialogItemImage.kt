@@ -33,40 +33,62 @@ fun AddDialogItemImage(
     onAddItemImageClick: (String) -> Unit
 ) {
 
+    if(itemData.url.takeLast(4) == "json") {
 
+        // `assets` 폴더에서 Lottie 파일 로드
+        val composition by rememberLottieComposition(
+            LottieCompositionSpec.Asset(itemData.url)
+        )
 
-
-    val context = LocalContext.current
-
-    // State to hold the bitmap
-    var bitmap by remember { mutableStateOf<Bitmap?>(null) }
-
-    // Load the bitmap whenever filePath changes
-    LaunchedEffect(itemData.url) {
-        bitmap = try {
-            val inputStream = context.assets.open(itemData.url)
-            BitmapFactory.decodeStream(inputStream)
-        } catch (e: Exception) {
-            null // Handle errors gracefully
-        }
-    }
-
-    if (bitmap != null) {
-        Image(
-            bitmap = bitmap!!.asImageBitmap(),
-            contentDescription = "Asset Image",
+        // LottieAnimation을 클릭 가능한 Modifier로 감쌉니다.
+        LottieAnimation(
+            composition = composition,
+            iterations = Int.MAX_VALUE,
             modifier = Modifier
+                .size(50.dp)
                 .clickable {
                     onAddItemImageClick(itemData.id.toString())
                 }
         )
+
     } else {
-        // Placeholder while loading or on error
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text("Loading...")
+
+        val context = LocalContext.current
+
+        // State to hold the bitmap
+        var bitmap by remember { mutableStateOf<Bitmap?>(null) }
+
+        // Load the bitmap whenever filePath changes
+        LaunchedEffect(itemData.url) {
+            bitmap = try {
+                val inputStream = context.assets.open(itemData.url)
+                BitmapFactory.decodeStream(inputStream)
+            } catch (e: Exception) {
+                null // Handle errors gracefully
+            }
         }
+
+        if (bitmap != null) {
+            Image(
+                bitmap = bitmap!!.asImageBitmap(),
+                contentDescription = "Asset Image",
+                modifier = Modifier
+                    .size(50.dp)
+                    .clickable {
+                        onAddItemImageClick(itemData.id.toString())
+                    }
+            )
+        } else {
+            // Placeholder while loading or on error
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("Loading...")
+            }
+        }
+
     }
+
+
 }

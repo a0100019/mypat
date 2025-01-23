@@ -67,7 +67,7 @@ fun IndexItemDialog(
                     }
                 }
                 Text(
-                    text = patData.name,
+                    text = itemData.name,
                     style = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier.padding(16.dp),
                     color = Color.Black
@@ -82,14 +82,14 @@ fun IndexItemDialog(
                 ) {
                     item {
                         Text(
-                            text = patData.memo,
+                            text = itemData.memo,
                             style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier.padding(16.dp),
 
                             )
                     }
                 }
-                Text("획득 날짜 : ${patData.date}")
+                Text("획득 날짜 : ${itemData.date}")
                 Text("애정도 : 1500")
                 Text("같이 플레이 한 게임 수 : 1000")
                 Text("총 게임 최고 기록 : 155,300")
@@ -121,10 +121,9 @@ fun IndexItemDialogPreview() {
     MypatTheme {
         IndexItemDialog(
             onClose = {},
-            patData = Pat(
+            itemData = Item(
                 url = "pat/cat.json",
                 name = "고양이",
-                love = 1000,
                 memo = "귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다."
             ),
         )
