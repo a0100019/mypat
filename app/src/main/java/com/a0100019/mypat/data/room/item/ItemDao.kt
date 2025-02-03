@@ -22,11 +22,17 @@ interface ItemDao {
     @Update
     suspend fun update(item: Item)
 
-    @Query("SELECT * FROM item_table WHERE category != 'map' ORDER BY id DESC")
+    @Query("SELECT * FROM item_table WHERE type != 'map' ORDER BY id DESC")
     suspend fun getAllItemData(): List<Item>
 
-    @Query("SELECT * FROM item_table WHERE category = 'map' ORDER BY id DESC")
+    @Query("SELECT * FROM item_table WHERE type != 'map' AND date != '0' ORDER BY id DESC")
+    suspend fun getAllOpenItemData(): List<Item>
+
+    @Query("SELECT * FROM item_table WHERE type = 'map' ORDER BY id DESC")
     suspend fun getAllMapData(): List<Item>
+
+    @Query("SELECT * FROM item_table WHERE type = 'map' AND date != '0' ORDER BY id DESC")
+    suspend fun getAllOpenMapData(): List<Item>
 
     @Query("SELECT * FROM item_table WHERE id = :id")
     suspend fun getItemDataById(id: String): Item

@@ -69,9 +69,10 @@ class MainViewModel @Inject constructor(
                     itemDao.getItemDataById(itemWorldData.value)
                 }
 
-                // 모든 펫 데이터 가져오기
-                val allPatDataList = patDao.getAllPatData()
-                val allItemDataList = itemDao.getAllItemData()
+                // 모든 오픈 된 데이터 가져오기
+                val allPatDataList = patDao.getAllOpenPatData()
+                val allItemDataList = itemDao.getAllOpenItemData()
+                val allMapDataList = itemDao.getAllOpenMapData()
 
                 val userDataList = userDao.getAllUserData()
 
@@ -86,7 +87,8 @@ class MainViewModel @Inject constructor(
                             itemDataList = itemDataList,
                             allPatDataList = allPatDataList,
                             userDataList = userDataList,
-                            allItemDataList = allItemDataList
+                            allItemDataList = allItemDataList,
+                            allMapDataList = allMapDataList
                         )
                     }
                 }
@@ -105,8 +107,13 @@ class MainViewModel @Inject constructor(
     }
 
     fun onAddDialogChangeClick() = intent {
+        val newValue = when(state.addDialogChange) {
+            "pat" -> "item"
+            "item" -> "map"
+            else -> "pat"
+        }
         reduce {
-            state.copy(addDialogChange = !state.addDialogChange) // true/false 토글
+            state.copy(addDialogChange = newValue) // true/false 토글
         }
     }
 
@@ -147,11 +154,8 @@ class MainViewModel @Inject constructor(
         state.patWorldDataList.forEach { world ->
             worldDao.update(world)
         }
+        state.mapData?.let { worldDao.update(it) }
         loadData()
-    }
-
-    fun onWorldAddClick() = intent {
-
     }
 
     fun patWorldDataDelete(patId: String) = intent {
@@ -378,6 +382,17 @@ class MainViewModel @Inject constructor(
         reduce { updatedState }
     }
 
+    fun onSelectMapImageClick(mapId: String) = intent {
+        val newUrl = state.allMapDataList.find { it.id == mapId.toInt() }?.url ?: ""
+
+        reduce {
+            state.copy(
+                mapData = state.mapData?.copy(value = newUrl) // 기존 객체를 유지하면서 value만 변경
+            )
+        }
+    }
+
+
 
     fun onFirstGameClick() = intent {
         postSideEffect(MainSideEffect.FirstGameActivity)
@@ -404,6 +419,7 @@ data class MainState(
     val itemWorldDataList: List<World> = emptyList(),
     val allPatDataList: List<Pat> = emptyList(),
     val allItemDataList: List<Item> = emptyList(),
+    val allMapDataList: List<Item> = emptyList(),
 
     val worldData: List<World> = emptyList(),
     val mapData: World? = null,
@@ -412,7 +428,8 @@ data class MainState(
     val showWorldAddDialog: Boolean = false,
     val showUserInformationDialog: Boolean = false,
     val worldChange: Boolean = false,
-    val addDialogChange: Boolean = true
+    val addDialogChange: String = "pat",
+
 )
 
 //상태와 관련없는 것

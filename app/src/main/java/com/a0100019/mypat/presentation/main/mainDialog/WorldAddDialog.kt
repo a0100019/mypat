@@ -39,25 +39,27 @@ fun WorldAddDialog(
     patWorldDataList: List<World>,
     allItemDataList: List<Item>,
     itemWorldDataList: List<World>,
+    allMapDataList: List<Item>,
+    mapWorldData: World,
     onAddPatImageClick: (String) -> Unit,
     onAddItemImageClick: (String) -> Unit,
+    onSelectMapImageClick: (String) -> Unit,
     onAddDialogChangeClick: () -> Unit,
-    addDialogChange: Boolean
+    addDialogChange: String
 ) {
 
-    val openCount = if(addDialogChange) {
-        patWorldDataList.count { it.type == "pat" && it.open == "1" }
-    } else {
-        itemWorldDataList.count { it.type == "item" && it.open == "1" }
+    val openCount = when (addDialogChange) {
+        "pat" -> patWorldDataList.count { it.type == "pat" && it.open == "1" }
+        "item" -> itemWorldDataList.count { it.type == "item" && it.open == "1" }
+        else -> itemWorldDataList.count { it.type == "map" && it.open == "1" }
     }
 
-    val useCount = if(addDialogChange) {
-        patWorldDataList.count { it.type == "pat" && it.value != "0" }
-    } else {
-        itemWorldDataList.count { it.type == "item" && it.value != "0" }
-    }
 
-    val title = if (addDialogChange) "pat" else "item"
+    val useCount = when (addDialogChange) {
+        "pat" -> patWorldDataList.count { it.type == "pat" && it.value != "0" }
+        "item" -> itemWorldDataList.count { it.type == "item" && it.value != "0" }
+        else -> itemWorldDataList.count { it.type == "map" && it.value != "0" }
+    }
 
     Dialog(
         onDismissRequest = onClose
@@ -71,7 +73,7 @@ fun WorldAddDialog(
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
 
-                Text(title)
+                Text(addDialogChange)
                 Text("${useCount}/${openCount}")
                 Box(
                     modifier = Modifier
@@ -84,34 +86,53 @@ fun WorldAddDialog(
                         columns = GridCells.Fixed(4), // 한 줄에 5개씩 배치
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        if(addDialogChange) {
-                            items(allPatDataList.size) { index ->
-                                Column(
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    AddDialogPatImage(
-                                        patData = allPatDataList[index],
-                                        onAddPatImageClick = onAddPatImageClick
-                                    )
-                                    if (patWorldDataList.any { it.value == allPatDataList[index].id.toString() && it.type == "pat"}) {
-                                        Text("마을")
+                        when (addDialogChange) {
+                            "pat" -> {
+                                items(allPatDataList.size) { index ->
+                                    Column(
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        AddDialogPatImage(
+                                            patData = allPatDataList[index],
+                                            onAddPatImageClick = onAddPatImageClick
+                                        )
+                                        if (patWorldDataList.any { it.value == allPatDataList[index].id.toString() && it.type == "pat" }) {
+                                            Text("선택")
+                                        }
+                                        Text(allPatDataList[index].name)
                                     }
-                                    Text(allPatDataList[index].name)
                                 }
                             }
-                        } else {
-                            items(allItemDataList.size) { index ->
-                                Column(
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    AddDialogItemImage(
-                                        itemData = allItemDataList[index],
-                                        onAddItemImageClick = onAddItemImageClick
-                                    )
-                                    if (itemWorldDataList.any { it.value == allItemDataList[index].id.toString() && it.type == "item"}) {
-                                        Text("마을")
+                            "item" -> {
+                                items(allItemDataList.size) { index ->
+                                    Column(
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        AddDialogItemImage(
+                                            itemData = allItemDataList[index],
+                                            onAddItemImageClick = onAddItemImageClick
+                                        )
+                                        if (itemWorldDataList.any { it.value == allItemDataList[index].id.toString() && it.type == "item"}) {
+                                            Text("선택")
+                                        }
+                                        Text(allItemDataList[index].name)
                                     }
-                                    Text(allItemDataList[index].name)
+                                }
+                            }
+                            else -> {
+                                items(allMapDataList.size) { index ->
+                                    Column(
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        AddDialogItemImage(
+                                            itemData = allMapDataList[index],
+                                            onAddItemImageClick = onSelectMapImageClick
+                                        )
+                                        if (mapWorldData.value == allMapDataList[index].url) {
+                                            Text("선택")
+                                        }
+                                        Text(allMapDataList[index].name)
+                                    }
                                 }
                             }
                         }
@@ -158,9 +179,12 @@ fun WorldAddDialogPreview() {
             onAddPatImageClick = {},
             allItemDataList = listOf(Item(url = "item/table.png", name = "책상")),
             itemWorldDataList = listOf(World(id = "item1", value = "1", open = "1", type = "item")),
-            addDialogChange = false,
+            addDialogChange = "pat",
             onAddDialogChangeClick = {},
-            onAddItemImageClick = {}
+            onAddItemImageClick = {},
+            allMapDataList = listOf(Item(url = "item/table.png")),
+            mapWorldData = World(id = "1"),
+            onSelectMapImageClick = {}
         )
     }
 }

@@ -15,7 +15,7 @@ data class Item(
     val touch: Long? = null,
     val minFloat: Float = 0.1f,
     val sizeFloat: Float = 0.2f,
-    val category: String = "item",
-    val type: String = "image"
+    val category: String = "1",
+    val type: String = "item"
 
     )

@@ -63,7 +63,8 @@ fun MainScreen(
 
 
 
-    MainScreen(
+    mainState.mapData?.let {
+        MainScreen(
         onDailyNavigateClick = onDailyNavigateClick,
         onIndexNavigateClick = onIndexNavigateClick,
         onStoreNavigateClick = onStoreNavigateClick,
@@ -89,9 +90,10 @@ fun MainScreen(
         onPatDrag = mainViewModel::onPatDrag,
         onAddDialogChangeClick = mainViewModel::onAddDialogChangeClick,
         onAddItemImageClick = mainViewModel::onAddItemImageClick,
+        onSelectMapImageClick = mainViewModel::onSelectMapImageClick,
 
 
-        mapUrl = mainState.mapData?.value ?: "map/loading.jpg",
+        mapUrl = mainState.mapData.value,
         patDataList = mainState.patDataList,
         patWorldDataList = mainState.patWorldDataList,
         itemDataList = mainState.itemDataList,
@@ -104,9 +106,12 @@ fun MainScreen(
         allItemDataList = mainState.allItemDataList,
         userDataList = mainState.userDataList,
         showUserInformationDialog = mainState.showUserInformationDialog,
-        addDialogChange = mainState.addDialogChange
+        addDialogChange = mainState.addDialogChange,
+        mapWorldData = it,
+        allMapDataList = mainState.allMapDataList
 
     )
+    }
 
 }
 
@@ -137,6 +142,7 @@ fun MainScreen(
     onPatDrag: (String, Float, Float) -> Unit,
     onAddDialogChangeClick: () -> Unit,
     onAddItemImageClick: (String) -> Unit,
+    onSelectMapImageClick: (String) -> Unit,
 
     mapUrl: String,
     patDataList: List<Pat>,
@@ -151,7 +157,9 @@ fun MainScreen(
     allItemDataList: List<Item>,
     userDataList: List<User>,
     showUserInformationDialog: Boolean,
-    addDialogChange: Boolean
+    addDialogChange: String,
+    mapWorldData: World,
+    allMapDataList: List<Item>
 
 ) {
 
@@ -173,7 +181,10 @@ fun MainScreen(
                     onAddPatImageClick = onAddPatImageClick,
                     addDialogChange = addDialogChange,
                     onAddDialogChangeClick = onAddDialogChangeClick,
-                    onAddItemImageClick = onAddItemImageClick
+                    onAddItemImageClick = onAddItemImageClick,
+                    onSelectMapImageClick = onSelectMapImageClick,
+                    mapWorldData = mapWorldData,
+                    allMapDataList = allMapDataList
                 )
             }
 
@@ -390,8 +401,11 @@ fun MainScreenPreview() {
             onPatDrag = { id, newX, newY -> },
             allItemDataList = listOf(Item(url = "item/table.png")),
             onAddDialogChangeClick = {},
-            addDialogChange = true,
-            onAddItemImageClick = {}
+            addDialogChange = "map",
+            onAddItemImageClick = {},
+            allMapDataList = listOf(Item(url = "item/table.png")),
+            mapWorldData = World(id = "1"),
+            onSelectMapImageClick = {}
 
         )
     }
