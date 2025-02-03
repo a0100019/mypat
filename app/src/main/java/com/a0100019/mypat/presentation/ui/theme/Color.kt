@@ -1,4 +1,4 @@
-package com.a0100019.mypat.ui.theme
+package com.a0100019.mypat.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

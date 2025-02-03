@@ -8,7 +8,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.a0100019.mypat.presentation.loading.LoadingScreen
-import com.a0100019.mypat.ui.theme.MypatTheme
+import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 

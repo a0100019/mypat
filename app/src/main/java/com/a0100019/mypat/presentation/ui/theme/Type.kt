@@ -1,11 +1,8 @@
-package com.a0100019.mypat.ui.theme
+package com.a0100019.mypat.presentation.ui.theme
 
 import androidx.compose.material3.Typography
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
 import com.a0100019.mypat.R
 
 private val pretendardFontFamily = FontFamily(Font(R.font.pretendard))

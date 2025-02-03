@@ -1,27 +1,27 @@
-package com.a0100019.mypat.presentation.ui.mainDialog
+package com.a0100019.mypat.presentation.main.mainDialog
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import com.a0100019.mypat.data.room.pet.Pat
+import com.a0100019.mypat.data.room.item.Item
 
 @Composable
-fun PatSettingDialog(
+fun ItemSettingDialog(
     onDelete: () -> Unit,
     onDismiss: () -> Unit,
     onSizeUp: () -> Unit,
     onSizeDown: () -> Unit,
-    patData: Pat
+    itemData: Item
 ) {
     AlertDialog(
         onDismissRequest = { onDismiss() },
         title = {
-            Text(text = patData.name)
+            Text(text = itemData.name)
         },
         text = {
-            Text("${patData.name}에 대한 크기 조정 및 삭제를 수행할 수 있습니다.\n 현재 크기 : ${patData.sizeFloat.toDouble()}")
+            Text("${itemData.name}에 대한 크기 조정 및 삭제를 수행할 수 있습니다.\n 현재 크기 : ${itemData.sizeFloat.toDouble()}")
         },
         confirmButton = {
             TextButton(onClick = { onDelete() }) {

@@ -1,6 +1,5 @@
-package com.a0100019.mypat.ui.theme
+package com.a0100019.mypat.presentation.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

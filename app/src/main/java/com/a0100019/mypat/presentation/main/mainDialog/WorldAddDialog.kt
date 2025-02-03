@@ -1,4 +1,4 @@
-package com.a0100019.mypat.presentation.ui.mainDialog
+package com.a0100019.mypat.presentation.main.mainDialog
 
 
 import androidx.compose.foundation.background
@@ -29,7 +29,7 @@ import com.a0100019.mypat.data.room.pet.Pat
 import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.presentation.ui.image.item.AddDialogItemImage
 import com.a0100019.mypat.presentation.ui.image.pat.AddDialogPatImage
-import com.a0100019.mypat.ui.theme.MypatTheme
+import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
 
 @Composable
@@ -48,16 +48,16 @@ fun WorldAddDialog(
     val openCount = if(addDialogChange) {
         patWorldDataList.count { it.type == "pat" && it.open == "1" }
     } else {
-        itemWorldDataList.count { it.type == "pat" && it.open == "1" }
+        itemWorldDataList.count { it.type == "item" && it.open == "1" }
     }
 
     val useCount = if(addDialogChange) {
         patWorldDataList.count { it.type == "pat" && it.value != "0" }
     } else {
-        itemWorldDataList.count { it.type == "pat" && it.value != "0" }
+        itemWorldDataList.count { it.type == "item" && it.value != "0" }
     }
 
-    val patItemText = if (addDialogChange) "pat" else "item"
+    val title = if (addDialogChange) "pat" else "item"
 
     Dialog(
         onDismissRequest = onClose
@@ -71,7 +71,7 @@ fun WorldAddDialog(
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
 
-                Text(patItemText)
+                Text(title)
                 Text("${useCount}/${openCount}")
                 Box(
                     modifier = Modifier

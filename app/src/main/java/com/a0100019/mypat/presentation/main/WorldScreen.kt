@@ -16,15 +16,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pet.Pat
 import com.a0100019.mypat.data.room.world.World
-import com.a0100019.mypat.presentation.ui.mainDialog.ItemSettingDialog
+import com.a0100019.mypat.presentation.main.mainDialog.ItemSettingDialog
 import com.a0100019.mypat.presentation.ui.image.item.DraggableItemImage
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.image.item.ItemImage
 import com.a0100019.mypat.presentation.ui.image.pat.DraggablePatImage
-import com.a0100019.mypat.presentation.ui.mainDialog.PatDialog
-import com.a0100019.mypat.presentation.ui.mainDialog.PatSettingDialog
+import com.a0100019.mypat.presentation.main.mainDialog.PatDialog
+import com.a0100019.mypat.presentation.main.mainDialog.PatSettingDialog
 import com.a0100019.mypat.presentation.ui.image.pat.PatImage
-import com.a0100019.mypat.ui.theme.MypatTheme
+import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
 
 @Composable

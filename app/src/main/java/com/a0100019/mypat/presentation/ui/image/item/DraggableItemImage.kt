@@ -23,6 +23,9 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.rememberLottieComposition
 
 
 @Composable
@@ -36,10 +39,7 @@ fun DraggableItemImage(
     onClick: () -> Unit,
     newFloat: (Float, Float) -> Unit
 ) {
-    val context = LocalContext.current
 
-    // State to hold the bitmap
-    var bitmap by remember { mutableStateOf<Bitmap?>(null) }
 
     val imageSize = surfaceWidthDp * sizeFloat // 이미지 크기를 Surface 너비의 비율로 설정
 
@@ -47,21 +47,17 @@ fun DraggableItemImage(
     var xOffset by remember { mutableStateOf(surfaceWidthDp * xFloat) }
     var yOffset by remember { mutableStateOf(surfaceHeightDp * yFloat) }
 
-    // Load the bitmap whenever filePath changes
-    LaunchedEffect(itemUrl) {
-        bitmap = try {
-            val inputStream = context.assets.open(itemUrl)
-            BitmapFactory.decodeStream(inputStream)
-        } catch (e: Exception) {
-            null // Handle errors gracefully
-        }
-    }
+    if(itemUrl.takeLast(4) == "json") {
 
+        // `assets` 폴더에서 Lottie 파일 로드
+        val composition by rememberLottieComposition(
+            LottieCompositionSpec.Asset(itemUrl)
+        )
 
-    if (bitmap != null) {
-        Image(
-            bitmap = bitmap!!.asImageBitmap(),
-            contentDescription = "Asset Image",
+        // LottieAnimation을 클릭 가능한 Modifier로 감쌉니다.
+        LottieAnimation(
+            composition = composition,
+            iterations = Int.MAX_VALUE,
             modifier = Modifier
                 .size(imageSize)
                 .offset(x = xOffset, y = yOffset)
@@ -77,17 +73,57 @@ fun DraggableItemImage(
                         newFloat(
                             with(LocalDensity) { (xOffset).toPx() / surfaceWidthDp.toPx() },
                             with(LocalDensity) { (yOffset).toPx() / surfaceHeightDp.toPx() }
-                            )
+                        )
                     }
                 }
         )
+
     } else {
-        // Placeholder while loading or on error
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text("Loading...")
+        val context = LocalContext.current
+
+        // State to hold the bitmap
+        var bitmap by remember { mutableStateOf<Bitmap?>(null) }
+
+        // Load the bitmap whenever filePath changes
+        LaunchedEffect(itemUrl) {
+            bitmap = try {
+                val inputStream = context.assets.open(itemUrl)
+                BitmapFactory.decodeStream(inputStream)
+            } catch (e: Exception) {
+                null // Handle errors gracefully
+            }
+        }
+
+        if (bitmap != null) {
+            Image(
+                bitmap = bitmap!!.asImageBitmap(),
+                contentDescription = "Asset Image",
+                modifier = Modifier
+                    .size(imageSize)
+                    .offset(x = xOffset, y = yOffset)
+                    .clickable { onClick() }
+                    .pointerInput(Unit) {
+                        detectDragGestures { change, dragAmount ->
+                            change.consume() // Consume the touch event
+
+                            // Update offsets by adding the drag amount
+                            xOffset += dragAmount.x.toDp()
+                            yOffset += dragAmount.y.toDp()
+
+                            newFloat(
+                                with(LocalDensity) { (xOffset).toPx() / surfaceWidthDp.toPx() },
+                                with(LocalDensity) { (yOffset).toPx() / surfaceHeightDp.toPx() }
+                            )
+                        }
+                    }
+            )
+        } else {
+            // Placeholder while loading or on error
+            Box(
+                contentAlignment = Alignment.Center
+            ) {
+                Text("Loading...")
+            }
         }
     }
 

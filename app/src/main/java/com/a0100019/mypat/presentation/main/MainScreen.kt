@@ -25,9 +25,9 @@ import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.presentation.game.firstGame.FirstGameActivity
 import com.a0100019.mypat.presentation.game.secondGame.SecondGameActivity
 import com.a0100019.mypat.presentation.game.thirdGame.ThirdGameActivity
-import com.a0100019.mypat.presentation.ui.mainDialog.UserInformationDialog
-import com.a0100019.mypat.presentation.ui.mainDialog.WorldAddDialog
-import com.a0100019.mypat.ui.theme.MypatTheme
+import com.a0100019.mypat.presentation.main.mainDialog.UserInformationDialog
+import com.a0100019.mypat.presentation.main.mainDialog.WorldAddDialog
+import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 

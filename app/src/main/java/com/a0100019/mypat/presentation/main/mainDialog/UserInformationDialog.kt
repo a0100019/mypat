@@ -1,4 +1,4 @@
-package com.a0100019.mypat.presentation.ui.mainDialog
+package com.a0100019.mypat.presentation.main.mainDialog
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -19,7 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.a0100019.mypat.ui.theme.MypatTheme
+import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
 
 @Composable

@@ -1,6 +1,5 @@
 package com.a0100019.mypat.presentation.loading
 
-import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -15,13 +14,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.a0100019.mypat.presentation.game.firstGame.FirstGameActivity
-import com.a0100019.mypat.presentation.game.secondGame.SecondGameActivity
-import com.a0100019.mypat.presentation.game.thirdGame.ThirdGameActivity
-import com.a0100019.mypat.presentation.main.MainSideEffect
-import com.a0100019.mypat.presentation.main.MainState
 import com.a0100019.mypat.presentation.ui.image.etc.KoreanIdiomImage
-import com.a0100019.mypat.ui.theme.MypatTheme
+import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 
