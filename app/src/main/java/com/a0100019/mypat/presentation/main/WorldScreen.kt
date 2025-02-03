@@ -19,7 +19,7 @@ import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.presentation.main.mainDialog.ItemSettingDialog
 import com.a0100019.mypat.presentation.ui.image.item.DraggableItemImage
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
-import com.a0100019.mypat.presentation.ui.image.item.ItemImage
+import com.a0100019.mypat.presentation.ui.image.item.WorldItemImage
 import com.a0100019.mypat.presentation.ui.image.pat.DraggablePatImage
 import com.a0100019.mypat.presentation.main.mainDialog.PatDialog
 import com.a0100019.mypat.presentation.main.mainDialog.PatSettingDialog
@@ -131,7 +131,7 @@ fun WorldScreen(
                             onItemDrag(itemData.id.toString(), newXFloat, newYFloat)
                         }
                     } else {
-                        ItemImage(
+                        WorldItemImage(
                             itemUrl = itemData.url,
                             surfaceWidthDp = surfaceWidthDp,
                             surfaceHeightDp = surfaceHeightDp,

@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.item.Item
+import com.a0100019.mypat.presentation.ui.image.item.ItemImage
 import com.a0100019.mypat.presentation.ui.image.pat.DialogPatImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
@@ -55,14 +56,7 @@ fun IndexItemDialog(
                         .background(Color.Gray, shape = RoundedCornerShape(16.dp))
                         .padding(16.dp)
                 ) {
-                    DialogPatImage(itemData.url)
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Image(
-                            painter = painterResource(id = R.drawable.heart),
-                            contentDescription = "Sample Vector Image",
-                            modifier = Modifier.size(20.dp),
-                        )
-                    }
+                    ItemImage(itemData.url)
                 }
                 Text(
                     text = itemData.name,
@@ -88,10 +82,6 @@ fun IndexItemDialog(
                     }
                 }
                 Text("획득 날짜 : ${itemData.date}")
-                Text("애정도 : 1500")
-                Text("같이 플레이 한 게임 수 : 1000")
-                Text("총 게임 최고 기록 : 155,300")
-                Text("퍼즐 게임 최고 기록 : 155,300")
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -120,8 +110,8 @@ fun IndexItemDialogPreview() {
         IndexItemDialog(
             onClose = {},
             itemData = Item(
-                url = "pat/cat.json",
-                name = "고양이",
+                url = "item/airPlane.json",
+                name = "비행기",
                 memo = "귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다."
             ),
         )

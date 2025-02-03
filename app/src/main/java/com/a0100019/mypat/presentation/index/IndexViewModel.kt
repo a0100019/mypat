@@ -7,7 +7,6 @@ import com.a0100019.mypat.data.room.item.ItemDao
 import com.a0100019.mypat.data.room.pet.Pat
 import com.a0100019.mypat.data.room.pet.PatDao
 import com.a0100019.mypat.data.room.world.WorldDao
-import com.a0100019.mypat.presentation.main.MainSideEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -75,14 +74,25 @@ class IndexViewModel @Inject constructor(
     }
 
     fun onTypeChangeClick(type: String) = intent {
+
         reduce {
             state.copy(typeChange = type)
         }
     }
 
-    fun onPatClick(index: Int) = intent {
+    fun onCardClick(index: Int) = intent {
         reduce {
-            state.copy(dialogPatIndex = index)
+            when (state.typeChange) {
+                "pat" -> {
+                    state.copy(dialogPatIndex = index)
+                }
+                "item" -> {
+                    state.copy(dialogItemIndex = index)
+                }
+                else -> {
+                    state.copy(dialogMapIndex = index)
+                }
+            }
         }
     }
 
@@ -95,9 +105,6 @@ class IndexViewModel @Inject constructor(
             )
         }
     }
-
-
-
 
 }
 

@@ -28,6 +28,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pet.Pat
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
+import com.a0100019.mypat.presentation.ui.image.item.ItemImage
 import com.a0100019.mypat.presentation.ui.image.pat.DialogPatImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
@@ -56,10 +57,12 @@ fun IndexScreen(
 
         onTypeChangeClick = indexViewModel::onTypeChangeClick,
         onCloseDialog = indexViewModel::onCloseDialog,
-        onPatClick = indexViewModel::onPatClick,
+        onCardClick = indexViewModel::onCardClick,
 
         typeChange = indexState.typeChange,
-        dialogPatIndex = indexState.dialogPatIndex
+        dialogPatIndex = indexState.dialogPatIndex,
+        dialogItemIndex = indexState.dialogItemIndex,
+        dialogMapIndex = indexState.dialogMapIndex
     )
 }
 
@@ -73,19 +76,32 @@ fun IndexScreen(
 
     onTypeChangeClick: (String) -> Unit,
     onCloseDialog: () -> Unit,
-    onPatClick: (Int) -> Unit,
+    onCardClick: (Int) -> Unit,
 
     typeChange: String,
     dialogPatIndex: Int,
+    dialogItemIndex: Int,
+    dialogMapIndex: Int
 ) {
 
     // 다이얼로그 표시
-    if (dialogPatIndex != -1) {
+    if (dialogPatIndex != -1 && typeChange == "pat") {
         IndexPatDialog(
             onClose = onCloseDialog,
             patData = allPatDataList.getOrNull(dialogPatIndex)!!,
         )
+    } else if(dialogItemIndex != -1 && typeChange == "item") {
+        IndexItemDialog(
+            onClose = onCloseDialog,
+            itemData = allItemDataList.getOrNull(dialogItemIndex)!!
+        )
+    } else if(dialogMapIndex != -1 && typeChange == "map") {
+        IndexMapDialog(
+            onClose = onCloseDialog,
+            mapData = allMapDataList.getOrNull(dialogMapIndex)!!
+        )
     }
+
 
     // Fullscreen container
     Column(modifier = Modifier.fillMaxSize()) {
@@ -95,59 +111,185 @@ fun IndexScreen(
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(typeChange)
-            Text("${allPatDataList.count { it.date != "0"}}/${allPatDataList.size}")
+            when (typeChange) {
+                "pat" -> {
+                    Text("${allPatDataList.count { it.date != "0"}}/${allPatDataList.size}")
+                }
+                "item" -> {
+                    Text("${allItemDataList.count {it.date != "0"}}/${allItemDataList.size}")
+                }
+                else -> {
+                    Text("${allMapDataList.count {it.date != "0"}}/${allMapDataList.size}")
+                }
+            }
+
         }
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(4), // 한 줄에 5개씩 배치
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            items(allPatDataList.size) { index ->
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(0.7f), // 카드 비율 설정
-                    elevation = CardDefaults.cardElevation(4.dp),
-                    onClick = { onPatClick(index)}
+
+        when (typeChange) {
+            "pat" -> {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(4), // 한 줄에 5개씩 배치
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    if(allPatDataList[index].date == "0") {
-                        Box(
+                    items(allPatDataList.size) { index ->
+                        Card(
                             modifier = Modifier
-                                .size(30.dp) // 부모의 20% 크기
-                                .aspectRatio(1f)
-                                .padding(5.dp)
+                                .fillMaxWidth()
+                                .aspectRatio(0.7f), // 카드 비율 설정
+                            elevation = CardDefaults.cardElevation(4.dp),
+                            onClick = { onCardClick(index)}
                         ) {
-                            JustImage("etc/lock.png")
+                            if(allPatDataList[index].date == "0") {
+                                Box(
+                                    modifier = Modifier
+                                        .size(30.dp) // 부모의 20% 크기
+                                        .aspectRatio(1f)
+                                        .padding(5.dp)
+                                ) {
+                                    JustImage("etc/lock.png")
+                                }
+                            }
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(8.dp), // 카드 안쪽 여백
+                                verticalArrangement = Arrangement.SpaceBetween, // 이미지와 텍스트를 상하로 배치
+                                horizontalAlignment = Alignment.CenterHorizontally // 가로 중앙 정렬
+                            ) {
+                                // 이미지
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f) // 이미지가 최대한 공간을 차지하도록
+                                        .fillMaxWidth(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    DialogPatImage(allPatDataList[index].url)
+                                }
+
+                                // 텍스트
+                                Text(
+                                    text = allPatDataList[index].name,
+                                    modifier = Modifier
+                                        .padding(top = 8.dp) // 이미지와의 간격 설정
+                                        .fillMaxWidth(),
+                                    textAlign = TextAlign.Center, // 텍스트 중앙 정렬
+                                    style = MaterialTheme.typography.bodySmall // 텍스트 스타일 적용
+                                )
+                            }
                         }
                     }
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(8.dp), // 카드 안쪽 여백
-                        verticalArrangement = Arrangement.SpaceBetween, // 이미지와 텍스트를 상하로 배치
-                        horizontalAlignment = Alignment.CenterHorizontally // 가로 중앙 정렬
-                    ) {
-                        // 이미지
-                        Box(
+                }
+            }
+            "item" -> {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(4),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    items(allItemDataList.size) { index ->
+                        Card(
                             modifier = Modifier
-                                .weight(1f) // 이미지가 최대한 공간을 차지하도록
                                 .fillMaxWidth()
+                                .aspectRatio(0.7f), // 카드 비율 설정
+                            elevation = CardDefaults.cardElevation(4.dp),
+                            onClick = { onCardClick(index)}
                         ) {
-                            DialogPatImage(allPatDataList[index].url)
-                        }
+                            if(allItemDataList[index].date == "0") {
+                                Box(
+                                    modifier = Modifier
+                                        .size(30.dp) // 부모의 20% 크기
+                                        .aspectRatio(1f)
+                                        .padding(5.dp)
+                                ) {
+                                    JustImage("etc/lock.png")
+                                }
+                            }
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(8.dp), // 카드 안쪽 여백
+                                verticalArrangement = Arrangement.SpaceBetween, // 이미지와 텍스트를 상하로 배치
+                                horizontalAlignment = Alignment.CenterHorizontally // 가로 중앙 정렬
+                            ) {
+                                // 이미지
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f) // 이미지가 최대한 공간을 차지하도록
+                                        .fillMaxWidth(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    ItemImage(allItemDataList[index].url)
+                                }
 
-                        // 텍스트
-                        Text(
-                            text = allPatDataList[index].name,
+                                // 텍스트
+                                Text(
+                                    text = allItemDataList[index].name,
+                                    modifier = Modifier
+                                        .padding(top = 8.dp) // 이미지와의 간격 설정
+                                        .fillMaxWidth(),
+                                    textAlign = TextAlign.Center, // 텍스트 중앙 정렬
+                                    style = MaterialTheme.typography.bodySmall // 텍스트 스타일 적용
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+            else -> {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(3), // 한 줄에 5개씩 배치
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    items(allMapDataList.size) { index ->
+                        Card(
                             modifier = Modifier
-                                .padding(top = 8.dp) // 이미지와의 간격 설정
-                                .fillMaxWidth(),
-                            textAlign = TextAlign.Center, // 텍스트 중앙 정렬
-                            style = MaterialTheme.typography.bodySmall // 텍스트 스타일 적용
-                        )
+                                .fillMaxWidth()
+                                .aspectRatio(0.7f), // 카드 비율 설정
+                            elevation = CardDefaults.cardElevation(4.dp),
+                            onClick = { onCardClick(index)}
+                        ) {
+                            if(allMapDataList[index].date == "0") {
+                                Box(
+                                    modifier = Modifier
+                                        .size(30.dp) // 부모의 20% 크기
+                                        .aspectRatio(1f)
+                                        .padding(5.dp)
+                                ) {
+                                    JustImage("etc/lock.png")
+                                }
+                            }
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(8.dp), // 카드 안쪽 여백
+                                verticalArrangement = Arrangement.SpaceBetween, // 이미지와 텍스트를 상하로 배치
+                                horizontalAlignment = Alignment.CenterHorizontally // 가로 중앙 정렬
+                            ) {
+                                // 이미지
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f) // 이미지가 최대한 공간을 차지하도록
+                                        .fillMaxWidth(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    ItemImage(allMapDataList[index].url)
+                                }
+
+                                // 텍스트
+                                Text(
+                                    text = allMapDataList[index].name,
+                                    modifier = Modifier
+                                        .padding(top = 8.dp) // 이미지와의 간격 설정
+                                        .fillMaxWidth(),
+                                    textAlign = TextAlign.Center, // 텍스트 중앙 정렬
+                                    style = MaterialTheme.typography.bodySmall // 텍스트 스타일 적용
+                                )
+                            }
+                        }
                     }
                 }
             }
         }
+
             Row {
                 Button(
                     onClick = { onTypeChangeClick("pat") }
@@ -184,10 +326,12 @@ fun IndexScreenPreview() {
             allItemDataList = listOf(Item(url = "item/table.png")),
             allMapDataList = listOf(Item(url = "item/forest.png")),
             onTypeChangeClick = {},
-            typeChange = "map",
+            typeChange = "pat",
             dialogPatIndex = -1,
             onCloseDialog = {},
-            onPatClick = {},
+            onCardClick = {},
+            dialogItemIndex = -1,
+            dialogMapIndex = -1,
         )
     }
 }
