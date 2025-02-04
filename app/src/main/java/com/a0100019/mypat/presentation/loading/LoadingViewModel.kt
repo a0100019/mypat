@@ -43,17 +43,7 @@ class LoadingViewModel @Inject constructor(
 
         }
 
-//        userDao.insert(User(id = "aa", value = "100"))
     }
-
-//
-//    fun getBitmap(): Bitmap {
-//        return loadBitmapFromAssets(context, "koreanIdiomImage/jukmagow1.jpg")
-//    }
-
-//    fun onDailyNavigateClick() = intent {
-//        postSideEffect(MainSideEffect.NavigateToDailyActivity)
-//    }
 
 
 

@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "pat_table")
 data class Pat(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val date: String = "0",
+    var date: String = "0",
     val name: String = "",
     val url: String,
     val love: Int = 0,

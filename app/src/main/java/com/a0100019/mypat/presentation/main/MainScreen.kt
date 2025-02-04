@@ -236,6 +236,11 @@ fun MainScreen(
                         horizontalArrangement = Arrangement.End
                     ) {
                         Button(
+                            onClick = {  }
+                        ) {
+                            Text("커뮤니티")
+                        }
+                        Button(
                             onClick = onWorldChangeClick
                         ) {
                             Text("꾸미기 모드")

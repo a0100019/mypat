@@ -25,6 +25,9 @@ interface PatDao {
     @Query("SELECT * FROM pat_table WHERE date != '0' ORDER BY id DESC")
     suspend fun getAllOpenPatData(): List<Pat>
 
+    @Query("SELECT * FROM pat_table WHERE date == '0' ORDER BY id DESC")
+    suspend fun getAllClosePatData(): List<Pat>
+
     //flow 아닐 때 suspend함수 필수!!!
     @Query("SELECT * FROM pat_table WHERE id = :id")
     suspend fun getPatDataById(id: String): Pat
