@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 data class User(
     @PrimaryKey(autoGenerate = false) val id: String,
     var value: String,
-    val value2: String = "0",
+    var value2: String = "0",
     val value3: String = "0",
 )
 

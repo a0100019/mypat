@@ -14,6 +14,8 @@ import com.a0100019.mypat.data.room.world.WorldDao
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.orbitmvi.orbit.Container
@@ -74,7 +76,7 @@ class MainViewModel @Inject constructor(
                 val allItemDataList = itemDao.getAllOpenItemData()
                 val allMapDataList = itemDao.getAllOpenMapData()
 
-                val userDataList = userDao.getAllUserData()
+                val userDataList = userDao.getAllUserDataFlow()
 
                 // UI 상태 업데이트 (Main Dispatcher에서 실행)
                 withContext(Dispatchers.Main) {
@@ -412,7 +414,7 @@ class MainViewModel @Inject constructor(
 
 @Immutable
 data class MainState(
-    val userDataList: List<User> = emptyList(),
+    val userDataList: Flow<List<User>> = flowOf(emptyList()),
     val patDataList: List<Pat> = emptyList(),
     val patWorldDataList: List<World> = emptyList(),
     val itemDataList: List<Item> = emptyList(),
@@ -423,14 +425,14 @@ data class MainState(
 
     val worldData: List<World> = emptyList(),
     val mapData: World? = null,
-    val dialogPatId : String = "0",
-    val dialogItemId : String = "0",
+    val dialogPatId: String = "0",
+    val dialogItemId: String = "0",
     val showWorldAddDialog: Boolean = false,
     val showUserInformationDialog: Boolean = false,
     val worldChange: Boolean = false,
     val addDialogChange: String = "pat",
 
-)
+    )
 
 //상태와 관련없는 것
 sealed interface MainSideEffect{

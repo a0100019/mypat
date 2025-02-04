@@ -31,13 +31,21 @@ interface UserDao {
     @Query("SELECT value FROM user_table WHERE id = :id")
     suspend fun getValueById(id: String): String
 
-    //Flow는 이미 계속 비동기로 상태를 관찰하기 때문에 비동기함수인 suspend를 붙히면 안됨
     @Query("""
         SELECT *
         FROM user_table
         ORDER BY id DESC
         """)
     suspend fun getAllUserData(): List<User>
+
+    //Flow는 이미 계속 비동기로 상태를 관찰하기 때문에 비동기함수인 suspend를 붙히면 안됨
+    @Query("""
+    SELECT *
+    FROM user_table
+    ORDER BY id DESC
+        """)
+    fun getAllUserDataFlow(): Flow<List<User>>
+
 
     //초기에 데이터 한번에 넣기 위한 코드
     @Insert(onConflict = OnConflictStrategy.REPLACE)

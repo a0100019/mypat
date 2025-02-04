@@ -40,9 +40,11 @@ fun StoreScreen(
     StoreScreen(
         onPatRandomClick = storeViewModel::onPatRandomClick,
         onDialogCloseClick = storeViewModel::onDialogCloseClick,
+        onPatRoomUpClick = storeViewModel::onPatRoomUpClick,
 
         newPat = storeState.newPat,
-        userData = storeState.userData
+        userData = storeState.userData,
+
     )
 }
 
@@ -52,9 +54,10 @@ fun StoreScreen(
 fun StoreScreen(
     onPatRandomClick: () -> Unit,
     onDialogCloseClick: () -> Unit,
+    onPatRoomUpClick: () -> Unit,
 
     newPat: Pat?,
-    userData: List<User>
+    userData: List<User>,
 ) {
 
     // 다이얼로그 표시
@@ -91,9 +94,9 @@ fun StoreScreen(
                 Text("맵 뽑기")
             }
             Button(
-                onClick = {}
+                onClick = onPatRoomUpClick
             ) {
-                Text("펫 칸 늘리기")
+                Text("펫 칸 늘리기 10cash")
             }
             Button(
                 onClick = {}
@@ -111,6 +114,7 @@ fun StoreScreenPreview() {
         StoreScreen(
             onPatRandomClick = {},
             onDialogCloseClick = {},
+            onPatRoomUpClick = {},
 
             newPat = null,
             userData = emptyList()

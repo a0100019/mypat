@@ -13,6 +13,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -28,6 +30,8 @@ import com.a0100019.mypat.presentation.game.thirdGame.ThirdGameActivity
 import com.a0100019.mypat.presentation.main.mainDialog.UserInformationDialog
 import com.a0100019.mypat.presentation.main.mainDialog.WorldAddDialog
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 
@@ -121,8 +125,8 @@ fun MainScreen(
     onStoreNavigateClick: () -> Unit,
     onIndexNavigateClick: () -> Unit,
 
-    dialogPatIdChange : (String) -> Unit,
-    dialogItemIdChange : (String) -> Unit,
+    dialogPatIdChange: (String) -> Unit,
+    dialogItemIdChange: (String) -> Unit,
     onFirstGameClick: () -> Unit,
     onSecondGameClick: () -> Unit,
     onThirdGameClick: () -> Unit,
@@ -149,13 +153,13 @@ fun MainScreen(
     patWorldDataList: List<World>,
     itemDataList: List<Item>,
     itemWorldDataList: List<World>,
-    dialogPatId : String,
-    dialogItemId : String,
+    dialogPatId: String,
+    dialogItemId: String,
     worldChange: Boolean,
     showWorldAddDialog: Boolean,
     allPatDataList: List<Pat>,
     allItemDataList: List<Item>,
-    userDataList: List<User>,
+    userDataList: Flow<List<User>>,
     showUserInformationDialog: Boolean,
     addDialogChange: String,
     mapWorldData: World,
@@ -207,7 +211,8 @@ fun MainScreen(
                         Text("내 정보")
                     }
 
-                    Text("money : ${userDataList.find { it.id == "money" }?.value} | cash : ${userDataList.find { it.id == "cash" }?.value}")
+                    val users by userDataList.collectAsState(initial = emptyList())
+                    Text("money : ${users.find { it.id == "money" }?.value} | cash : ${users.find { it.id == "cash" }?.value}")
 
                     Button(
                         onClick = {}
@@ -399,7 +404,7 @@ fun MainScreenPreview() {
             onShowAddDialogClick = {},
             allPatDataList = listOf(Pat(url = "pat/cat.json")),
             onAddPatImageClick = {},
-            userDataList = listOf(User(id = "money", value = "1000"), User(id = "cash", value = "100")),
+            userDataList = flowOf(listOf(User(id = "money", value = "1000"), User(id = "cash", value = "100"))),
             onShowUserInformationDialogClick = {},
             showUserInformationDialog = false,
             onItemDrag = { id, newX, newY -> },

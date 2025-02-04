@@ -8,6 +8,7 @@ import com.a0100019.mypat.data.room.pet.Pat
 import com.a0100019.mypat.data.room.pet.PatDao
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
+import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.data.room.world.WorldDao
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -62,6 +63,13 @@ class StoreViewModel @Inject constructor(
                 val allCloseItemDataList = itemDao.getAllCloseItemData()
                 val allCloseMapDataList = itemDao.getAllCloseMapData()
 
+                // 펫 월드 데이터 리스트 가져오기
+                val patWorldDataList = worldDao.getWorldDataListByType(type = "pat")
+
+                // 아이템 월드 데이터 리스트 가져오기
+                val itemWorldDataList = worldDao.getWorldDataListByType(type = "item")
+
+                // 유저 데이터 가져오기
                 val userDataList = userDao.getAllUserData()
 
                 // UI 상태 업데이트 (Main Dispatcher에서 실행)
@@ -71,7 +79,9 @@ class StoreViewModel @Inject constructor(
                             allCloseMapDataList = allCloseMapDataList,
                             allClosePatDataList = allClosePatDataList,
                             allCloseItemDataList = allCloseItemDataList,
-                            userData = userDataList
+                            patWorldDataList = patWorldDataList,
+                            itemWorldDataList = itemWorldDataList,
+                            userData = userDataList,
                         )
                     }
                 }
@@ -95,7 +105,9 @@ class StoreViewModel @Inject constructor(
             userDao.update(id = moneyField.id, value = moneyField.value)
             patDao.update(randomPat)
             reduce {
-                state.copy(newPat = randomPat)
+                state.copy(
+                    newPat = randomPat
+                )
             }
             loadData()
         } else {
@@ -110,6 +122,31 @@ class StoreViewModel @Inject constructor(
         }
     }
 
+    fun onPatRoomUpClick() = intent {
+        val cashField = state.userData.find { it.id == "cash" }
+        val patRoomField = state.userData.find { it.id == "pat" }
+        val firstField = state.patWorldDataList.find { it.open == "0" }
+
+        if(cashField!!.value.toInt() >= 10) {
+            if(patRoomField!!.value.toInt() > patRoomField.value2.toInt()) {
+                patRoomField.value2 = (patRoomField.value2.toInt() + 1).toString()
+                cashField.value = (cashField.value.toInt() - 10).toString()
+                firstField!!.open = "1"
+
+                userDao.update(id = patRoomField.id, value2 = patRoomField.value2)
+                userDao.update(id = cashField.id, value = cashField.value)
+                worldDao.update(firstField)
+                loadData()
+            } else {
+                postSideEffect(StoreSideEffect.Toast("더 이상 늘릴 수 없습니다!"))
+            }
+
+        } else {
+            postSideEffect(StoreSideEffect.Toast("돈이 부족합니다!"))
+        }
+
+    }
+
 
 
 }
@@ -122,6 +159,8 @@ data class StoreState(
     val allClosePatDataList: List<Pat> = emptyList(),
     val allCloseItemDataList: List<Item> = emptyList(),
     val allCloseMapDataList: List<Item> = emptyList(),
+    val patWorldDataList: List<World> = emptyList(),
+    val itemWorldDataList: List<World> = emptyList(),
 
     val newPat: Pat? = null,
 )
