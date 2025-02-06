@@ -118,7 +118,10 @@ class StoreViewModel @Inject constructor(
 
     fun onDialogCloseClick() = intent {
         reduce {
-            state.copy(newPat = null)
+            state.copy(
+                newPat = null,
+                showRoomUpDialog = ""
+            )
         }
     }
 
@@ -136,7 +139,13 @@ class StoreViewModel @Inject constructor(
                 userDao.update(id = patRoomField.id, value2 = patRoomField.value2)
                 userDao.update(id = cashField.id, value = cashField.value)
                 worldDao.update(firstField)
+                reduce {
+                    state.copy(
+                        showRoomUpDialog = "pat"
+                    )
+                }
                 loadData()
+
             } else {
                 postSideEffect(StoreSideEffect.Toast("더 이상 늘릴 수 없습니다!"))
             }
@@ -163,6 +172,7 @@ data class StoreState(
     val itemWorldDataList: List<World> = emptyList(),
 
     val newPat: Pat? = null,
+    val showRoomUpDialog: String = ""
 )
 
 

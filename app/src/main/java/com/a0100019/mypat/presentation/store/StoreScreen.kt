@@ -44,6 +44,7 @@ fun StoreScreen(
 
         newPat = storeState.newPat,
         userData = storeState.userData,
+        showRoomUpDialog = storeState.showRoomUpDialog
 
     )
 }
@@ -58,6 +59,7 @@ fun StoreScreen(
 
     newPat: Pat?,
     userData: List<User>,
+    showRoomUpDialog: String
 ) {
 
     // 다이얼로그 표시
@@ -65,6 +67,14 @@ fun StoreScreen(
         IndexPatDialog(
             onClose = onDialogCloseClick,
             patData = newPat,
+        )
+    }
+
+    if (showRoomUpDialog != "") {
+        RoomUpDialog(
+            onClose = onDialogCloseClick,
+            userData = userData,
+            showRoomUpDialog = showRoomUpDialog
         )
     }
 
@@ -117,7 +127,8 @@ fun StoreScreenPreview() {
             onPatRoomUpClick = {},
 
             newPat = null,
-            userData = emptyList()
+            userData = emptyList(),
+            showRoomUpDialog = ""
         )
     }
 }

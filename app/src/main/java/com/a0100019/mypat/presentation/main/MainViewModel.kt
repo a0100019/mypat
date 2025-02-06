@@ -106,6 +106,7 @@ class MainViewModel @Inject constructor(
         reduce {
             state.copy(worldChange = !state.worldChange) // true/false 토글
         }
+        loadData()
     }
 
     fun onAddDialogChangeClick() = intent {
