@@ -35,11 +35,11 @@ class LoadingViewModel @Inject constructor(
 
     // 뷰 모델 초기화 시 모든 user 데이터를 로드
     init {
-        loadUserData()
+        loadData()
     }
 
     //room에서 데이터 가져옴
-    private fun loadUserData() = intent {
+    private fun loadData() = intent {
 
         }
 

@@ -8,6 +8,7 @@ import com.a0100019.mypat.data.room.walk.WalkDao
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.Database
 import com.a0100019.mypat.data.room.diary.DiaryDao
+import com.a0100019.mypat.data.room.diary.getDiaryInitialData
 import com.a0100019.mypat.data.room.english.EnglishDao
 import com.a0100019.mypat.data.room.english.getEnglishInitialData
 import com.a0100019.mypat.data.room.item.ItemDao
@@ -51,6 +52,10 @@ object RoomModule {
                         val userDao = provideDatabase(context).userDao()
                         val userInitialData = getUserInitialData()
                         userDao.insertAll(userInitialData) // 대량 삽입
+
+                        val diaryDao = provideDatabase(context).diaryDao()
+                        val diaryInitialData = getDiaryInitialData()
+                        diaryDao.insertAll(diaryInitialData)
 
                         val englishDao = provideDatabase(context).englishDao()
                         val englishInitialData = getEnglishInitialData()
