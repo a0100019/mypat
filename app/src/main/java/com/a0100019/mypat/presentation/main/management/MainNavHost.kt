@@ -6,6 +6,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.a0100019.mypat.presentation.daily.DailyScreen
 import com.a0100019.mypat.presentation.daily.diary.DiaryScreen
+import com.a0100019.mypat.presentation.daily.diary.DiaryWriteScreen
 import com.a0100019.mypat.presentation.daily.english.EnglishScreen
 import com.a0100019.mypat.presentation.daily.koreanIdiom.KoreanIdiomScreen
 import com.a0100019.mypat.presentation.daily.walk.WalkScreen
@@ -64,7 +65,15 @@ fun MainNavHost() {
         }
 
         composable(route = MainRoute.DiaryScreen.name) {
-            DiaryScreen()
+            DiaryScreen(
+                onDiaryWriteNavigateClick = {
+                    navController.navigate(route = MainRoute.DiaryWriteScreen.name)
+                }
+            )
+        }
+
+        composable(route = MainRoute.DiaryWriteScreen.name) {
+            DiaryWriteScreen()
         }
 
         composable(route = MainRoute.EnglishScreen.name) {

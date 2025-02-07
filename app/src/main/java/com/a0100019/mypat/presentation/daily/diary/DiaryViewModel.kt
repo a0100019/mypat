@@ -6,7 +6,6 @@ import com.a0100019.mypat.data.room.diary.Diary
 import com.a0100019.mypat.data.room.diary.DiaryDao
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
-import com.a0100019.mypat.presentation.main.MainSideEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -57,8 +56,8 @@ class DiaryViewModel @Inject constructor(
                 withContext(Dispatchers.Main) {
                     reduce {
                         state.copy(
-                            userData = userDataList,
-                            diaryData = diaryDataList
+                            userDataList = userDataList,
+                            diaryDataList = diaryDataList
 
                         )
                     }
@@ -69,6 +68,30 @@ class DiaryViewModel @Inject constructor(
         }
     }
 
+    fun onDiaryClick(diaryData : Diary) = intent {
+        if(diaryData.title == "") {
+            val writeDiaryData = Diary(date = "", title = "", contents = "", mood = "")
+            reduce {
+                state.copy(
+                    writeDiaryData = writeDiaryData
+                )
+            }
+            postSideEffect(DiarySideEffect.NavigateToDiaryWriteScreen)
+        } else {
+            reduce {
+                state.copy(clickDiaryData = diaryData)
+            }
+        }
+    }
+
+    fun onCloseClick() = intent {
+        reduce {
+            state.copy(
+                clickDiaryData = null
+            )
+        }
+    }
+
 }
 
 
@@ -76,16 +99,16 @@ class DiaryViewModel @Inject constructor(
 
 @Immutable
 data class DiaryState(
-    val id:String = "",
-    val password:String = "",
-    val userData: List<User> = emptyList(),
-    val diaryData: List<Diary> = emptyList()
+    val userDataList: List<User> = emptyList(),
+    val diaryDataList: List<Diary> = emptyList(),
+    val clickDiaryData: Diary? = null,
+    val writeDiaryData: Diary? = null
 )
 
 
 //상태와 관련없는 것
 sealed interface DiarySideEffect{
     class Toast(val message:String): DiarySideEffect
-//    data object NavigateToDailyActivity: LoadingSideEffect
+    data object NavigateToDiaryWriteScreen: DiarySideEffect
 
 }

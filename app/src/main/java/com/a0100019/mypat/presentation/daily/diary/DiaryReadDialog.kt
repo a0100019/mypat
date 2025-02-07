@@ -3,6 +3,7 @@ package com.a0100019.mypat.presentation.daily.diary
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,11 +20,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.a0100019.mypat.data.room.diary.Diary
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
 @Composable
 fun DiaryReadDialog(
     onClose: () -> Unit,
+    diaryData: Diary
 ) {
 
 
@@ -33,33 +36,52 @@ fun DiaryReadDialog(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.6f)
+                .fillMaxHeight(0.9f)
                 .background(Color.White, shape = RoundedCornerShape(16.dp))
                 .padding(16.dp)
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
 
-                Text("Pat")
+                Text(diaryData.date)
                 Box(
                     modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
+                        .weight(0.2f)
+                        .fillMaxSize()
                         .background(Color.Gray, shape = RoundedCornerShape(16.dp))
                         .padding(16.dp)
                 ) {
-
+                    Text(diaryData.title)
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
-                Button(
-                    onClick = onClose,
+                Box(
                     modifier = Modifier
-                        .align(Alignment.End)
+                        .weight(1f)
+                        .fillMaxSize()
+                        .background(Color.Gray, shape = RoundedCornerShape(16.dp))
                         .padding(16.dp)
                 ) {
-                    Text("Close")
+                    Text(diaryData.contents)
                 }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Row {
+                    Button(
+                        onClick = {  },
+                        modifier = Modifier
+                    ) {
+                        Text("수정")
+                    }
+                    Button(
+                        onClick = onClose,
+                        modifier = Modifier
+                    ) {
+                        Text("Close")
+                    }
+                }
+
 
             }
         }
@@ -72,6 +94,7 @@ fun DiaryReadDialog(
 fun DiaryReadDialogPreview() {
     MypatTheme {
         DiaryReadDialog(
+            diaryData = Diary(date = "2024-04-02", mood = "happy", title = "제목", contents = "내용"),
             onClose = {  }
         )
     }

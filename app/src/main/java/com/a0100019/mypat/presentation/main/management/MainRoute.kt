@@ -8,14 +8,13 @@ sealed class MainRoute(
 
     object DailyScreen : MainRoute("DailyScreen")
 
-    object GameScreen : MainRoute("GameScreen")
-
     object StoreScreen : MainRoute("StoreScreen")
 
     object IndexScreen : MainRoute("IndexScreen")
 
 
     object DiaryScreen : MainRoute("DiaryScreen")
+    object DiaryWriteScreen : MainRoute("DiaryWriteScreen")
 
     object EnglishScreen : MainRoute("EnglishScreen")
 
