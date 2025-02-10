@@ -24,7 +24,6 @@ import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pet.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.world.World
-import com.a0100019.mypat.presentation.game.firstGame.FirstGameActivity
 import com.a0100019.mypat.presentation.game.secondGame.SecondGameActivity
 import com.a0100019.mypat.presentation.game.thirdGame.ThirdGameActivity
 import com.a0100019.mypat.presentation.main.mainDialog.UserInformationDialog
@@ -41,7 +40,8 @@ fun MainScreen(
     mainViewModel: MainViewModel = hiltViewModel(),
     onDailyNavigateClick: () -> Unit,
     onStoreNavigateClick: () -> Unit,
-    onIndexNavigateClick: () -> Unit
+    onIndexNavigateClick: () -> Unit,
+    onFirstGameNavigateClick: () -> Unit,
 ) {
 
 
@@ -52,9 +52,6 @@ fun MainScreen(
     mainViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
             is MainSideEffect.Toast -> Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
-            MainSideEffect.FirstGameActivity -> {
-                context.startActivity(Intent(context, FirstGameActivity::class.java))
-            }
             MainSideEffect.SecondGameActivity -> {
                 context.startActivity(Intent(context, SecondGameActivity::class.java))
             }
@@ -72,10 +69,10 @@ fun MainScreen(
         onDailyNavigateClick = onDailyNavigateClick,
         onIndexNavigateClick = onIndexNavigateClick,
         onStoreNavigateClick = onStoreNavigateClick,
+        onFirstGameNavigateClick = onFirstGameNavigateClick,
 
         dialogPatIdChange = mainViewModel::dialogPatIdChange,
         dialogItemIdChange = mainViewModel::dialogItemIdChange,
-        onFirstGameClick = mainViewModel::onFirstGameClick,
         onSecondGameClick = mainViewModel::onSecondGameClick,
         onThirdGameClick = mainViewModel::onThirdGameClick,
         onWorldChangeClick = mainViewModel::onWorldChangeClick,
@@ -124,10 +121,10 @@ fun MainScreen(
     onDailyNavigateClick: () -> Unit,
     onStoreNavigateClick: () -> Unit,
     onIndexNavigateClick: () -> Unit,
+    onFirstGameNavigateClick: () -> Unit,
 
     dialogPatIdChange: (String) -> Unit,
     dialogItemIdChange: (String) -> Unit,
-    onFirstGameClick: () -> Unit,
     onSecondGameClick: () -> Unit,
     onThirdGameClick: () -> Unit,
     onWorldChangeClick: () -> Unit,
@@ -268,7 +265,7 @@ fun MainScreen(
                     dialogItemId = dialogItemId,
                     dialogPatIdChange = dialogPatIdChange,
                     dialogItemIdChange = dialogItemIdChange,
-                    onFirstGameClick = onFirstGameClick,
+                    onFirstGameNavigateClick = onFirstGameNavigateClick,
                     onSecondGameClick = onSecondGameClick,
                     onThirdGameClick = onThirdGameClick,
                     worldChange = worldChange,
@@ -378,6 +375,7 @@ fun MainScreenPreview() {
             onDailyNavigateClick = {},
             onIndexNavigateClick = {},
             onStoreNavigateClick = {},
+            onFirstGameNavigateClick = {},
             mapUrl = "map/forest.jpg",
             patDataList = listOf(Pat(url = "pat/cat.json")),
             patWorldDataList = listOf(World(id = "pat1")),
@@ -387,7 +385,6 @@ fun MainScreenPreview() {
             dialogItemId = "0",
             dialogPatIdChange = { },
             dialogItemIdChange = {},
-            onFirstGameClick = {},
             onSecondGameClick = {},
             onThirdGameClick = {},
             onWorldChangeClick = {},
@@ -415,7 +412,8 @@ fun MainScreenPreview() {
             onAddItemImageClick = {},
             allMapDataList = listOf(Item(url = "item/table.png")),
             mapWorldData = World(id = "1"),
-            onSelectMapImageClick = {}
+            onSelectMapImageClick = {},
+
 
         )
     }

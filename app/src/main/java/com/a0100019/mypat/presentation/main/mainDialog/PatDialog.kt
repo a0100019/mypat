@@ -36,7 +36,7 @@ import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 fun PatDialog(
     onClose: () -> Unit,
     patData: Pat,
-    onFirstGameClick: () -> Unit,
+    onFirstGameNavigateClick: () -> Unit,
     onSecondGameClick: () -> Unit,
     onThirdGameClick: () -> Unit
 ) {
@@ -100,7 +100,7 @@ fun PatDialog(
                 Text("미니 게임")
 //        Spacer(modifier = Modifier.height(16.dp))
                 Button(
-                    onClick = onFirstGameClick,
+                    onClick = onFirstGameNavigateClick,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("총 게임")
@@ -147,7 +147,7 @@ fun DialogScreenContentPreview() {
                 love = 1000,
                 memo = "귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다."
             ),
-            onFirstGameClick = {  },
+            onFirstGameNavigateClick = {  },
             onSecondGameClick = {  },
             onThirdGameClick = {  },
         )

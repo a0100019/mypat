@@ -12,6 +12,7 @@ import com.a0100019.mypat.presentation.daily.diary.DiaryWriteScreen
 import com.a0100019.mypat.presentation.daily.english.EnglishScreen
 import com.a0100019.mypat.presentation.daily.koreanIdiom.KoreanIdiomScreen
 import com.a0100019.mypat.presentation.daily.walk.WalkScreen
+import com.a0100019.mypat.presentation.game.firstGame.FirstGameScreen
 import com.a0100019.mypat.presentation.index.IndexScreen
 import com.a0100019.mypat.presentation.main.MainScreen
 import com.a0100019.mypat.presentation.store.StoreScreen
@@ -39,6 +40,9 @@ fun MainNavHost() {
                 onIndexNavigateClick = {
                     navController.navigate(route = MainRoute.IndexScreen.name)
                 },
+                onFirstGameNavigateClick = {
+                    navController.navigate(route = MainRoute.FirstGameScreen.name)
+                }
             )
         }
 
@@ -66,6 +70,10 @@ fun MainNavHost() {
 
         composable(route = MainRoute.IndexScreen.name) {
             IndexScreen()
+        }
+
+        composable(route = MainRoute.FirstGameScreen.name) {
+            FirstGameScreen()
         }
 
         composable(route = MainRoute.DiaryScreen.name) {

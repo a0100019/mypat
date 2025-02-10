@@ -38,7 +38,7 @@ fun WorldScreen(
     dialogItemId : String,
     dialogPatIdChange : (String) -> Unit,
     dialogItemIdChange : (String) -> Unit,
-    onFirstGameClick: () -> Unit,
+    onFirstGameNavigateClick: () -> Unit,
     onSecondGameClick: () -> Unit,
     onThirdGameClick: () -> Unit,
     worldChange: Boolean,
@@ -64,7 +64,7 @@ fun WorldScreen(
             PatDialog(
                 onClose = { dialogPatIdChange("0") },
                 patData = patDataList.find { it.id.toString() == dialogPatId }!!,
-                onFirstGameClick = onFirstGameClick,
+                onFirstGameNavigateClick = onFirstGameNavigateClick,
                 onSecondGameClick = onSecondGameClick,
                 onThirdGameClick = onThirdGameClick
             )
@@ -195,7 +195,7 @@ fun SelectScreenPreview() {
             dialogItemId = "0",
             dialogPatIdChange = { },
             dialogItemIdChange = {},
-            onFirstGameClick = { },
+            onFirstGameNavigateClick = { },
             onSecondGameClick = { },
             onThirdGameClick = { },
             worldChange = false,
