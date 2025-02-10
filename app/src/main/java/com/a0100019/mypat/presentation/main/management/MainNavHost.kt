@@ -1,11 +1,13 @@
 package com.a0100019.mypat.presentation.main.management
 
 import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.a0100019.mypat.presentation.daily.DailyScreen
 import com.a0100019.mypat.presentation.daily.diary.DiaryScreen
+import com.a0100019.mypat.presentation.daily.diary.DiaryViewModel
 import com.a0100019.mypat.presentation.daily.diary.DiaryWriteScreen
 import com.a0100019.mypat.presentation.daily.english.EnglishScreen
 import com.a0100019.mypat.presentation.daily.koreanIdiom.KoreanIdiomScreen
@@ -16,10 +18,12 @@ import com.a0100019.mypat.presentation.store.StoreScreen
 
 @Composable
 fun MainNavHost() {
-
     // 엑티비티 전환은 네비호스트 사용안함!!
-
     val navController = rememberNavController()
+
+    //뷰모델 공유하고 싶으면 이렇게 하기
+    val diaryViewModel: DiaryViewModel = hiltViewModel()
+
     NavHost(
         navController = navController,
         startDestination = MainRoute.MainScreen.name,
@@ -66,14 +70,20 @@ fun MainNavHost() {
 
         composable(route = MainRoute.DiaryScreen.name) {
             DiaryScreen(
-                onDiaryWriteNavigateClick = {
+                diaryViewModel = diaryViewModel, // ViewModel을 전달
+                onDiaryClick = {
                     navController.navigate(route = MainRoute.DiaryWriteScreen.name)
                 }
             )
         }
 
         composable(route = MainRoute.DiaryWriteScreen.name) {
-            DiaryWriteScreen()
+            // 같은 ViewModel 사용
+            DiaryWriteScreen(
+                diaryViewModel = diaryViewModel,
+                //()가 있는 함수는 {} 안에 해야함
+                popBackStack = { navController.popBackStack() }
+            )
         }
 
         composable(route = MainRoute.EnglishScreen.name) {

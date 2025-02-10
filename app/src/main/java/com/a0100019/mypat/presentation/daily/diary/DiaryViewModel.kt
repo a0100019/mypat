@@ -13,6 +13,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
+import org.orbitmvi.orbit.annotation.OrbitExperimental
+import org.orbitmvi.orbit.syntax.simple.blockingIntent
 import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
@@ -70,7 +72,7 @@ class DiaryViewModel @Inject constructor(
 
     fun onDiaryClick(diaryData : Diary) = intent {
         if(diaryData.title == "") {
-            val writeDiaryData = Diary(date = "", title = "", contents = "", mood = "")
+            val writeDiaryData = Diary(date = diaryData.date, title = "", contents = "", mood = "")
             reduce {
                 state.copy(
                     writeDiaryData = writeDiaryData
@@ -84,25 +86,56 @@ class DiaryViewModel @Inject constructor(
         }
     }
 
+    fun onDiaryChangeClick() = intent {
+        reduce {
+            state.copy(
+                writeDiaryData = state.clickDiaryData!!
+            )
+        }
+        postSideEffect(DiarySideEffect.NavigateToDiaryWriteScreen)
+    }
+
     fun onCloseClick() = intent {
         reduce {
             state.copy(
-                clickDiaryData = null
+                clickDiaryData = null,
             )
         }
     }
 
+    fun onDiaryFinishClick() = intent {
+        diaryDao.update(state.writeDiaryData)
+        reduce {
+            state.copy(
+                clickDiaryData = null,
+            )
+        }
+        loadData()
+    }
+
+    //입력 가능하게 하는 코드
+    @OptIn(OrbitExperimental::class)
+    fun onTitleTextChange(titleText: String) = blockingIntent {
+        reduce {
+            state.copy(writeDiaryData = state.writeDiaryData.copy(title = titleText))
+        }
+    }
+
+    @OptIn(OrbitExperimental::class)
+    fun onContentsTextChange(contentsText: String) = blockingIntent {
+        reduce {
+            state.copy(writeDiaryData = state.writeDiaryData.copy(contents = contentsText))
+        }
+    }
+
 }
-
-
-
 
 @Immutable
 data class DiaryState(
     val userDataList: List<User> = emptyList(),
     val diaryDataList: List<Diary> = emptyList(),
     val clickDiaryData: Diary? = null,
-    val writeDiaryData: Diary? = null
+    val writeDiaryData: Diary = Diary(date = "", title = "", contents = "", mood = "")
 )
 
 

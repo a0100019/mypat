@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.a0100019.mypat.data.room.item.Item
 import kotlinx.coroutines.flow.Flow
 
@@ -15,6 +16,9 @@ interface DiaryDao {
 
     @Delete
     suspend fun delete(diary: Diary)
+
+    @Update
+    suspend fun update(diary: Diary)
 
     @Query("SELECT * FROM diary_table ORDER BY id DESC")
     suspend fun getAllDiaryData(): List<Diary>

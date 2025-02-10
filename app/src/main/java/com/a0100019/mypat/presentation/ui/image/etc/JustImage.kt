@@ -18,7 +18,6 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 
-//맵 이미지 가져오는 코드
 @Composable
 fun JustImage(filePath: String) {
     val context = LocalContext.current

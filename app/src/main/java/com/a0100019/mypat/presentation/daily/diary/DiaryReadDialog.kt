@@ -26,9 +26,9 @@ import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 @Composable
 fun DiaryReadDialog(
     onClose: () -> Unit,
+    onDiaryChangeClick: () -> Unit,
     diaryData: Diary
 ) {
-
 
     Dialog(
         onDismissRequest = onClose
@@ -69,7 +69,7 @@ fun DiaryReadDialog(
 
                 Row {
                     Button(
-                        onClick = {  },
+                        onClick = onDiaryChangeClick,
                         modifier = Modifier
                     ) {
                         Text("수정")
@@ -95,7 +95,8 @@ fun DiaryReadDialogPreview() {
     MypatTheme {
         DiaryReadDialog(
             diaryData = Diary(date = "2024-04-02", mood = "happy", title = "제목", contents = "내용"),
-            onClose = {  }
+            onClose = {  },
+            onDiaryChangeClick = {}
         )
     }
 }

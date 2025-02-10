@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -34,7 +33,7 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 fun DiaryScreen(
     diaryViewModel: DiaryViewModel = hiltViewModel(),
 
-    onDiaryWriteNavigateClick: () -> Unit,
+    onDiaryClick: () -> Unit,
 
     ) {
 
@@ -45,18 +44,18 @@ fun DiaryScreen(
     diaryViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
             is DiarySideEffect.Toast -> Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
+            DiarySideEffect.NavigateToDiaryWriteScreen -> onDiaryClick()
         }
     }
 
     DiaryScreen(
-        onDiaryWriteNavigateClick = onDiaryWriteNavigateClick,
-
         diaryDataList = diaryState.diaryDataList,
 
         clickDiaryData = diaryState.clickDiaryData,
 
         onDiaryClick = diaryViewModel::onDiaryClick,
-        onCloseClick = diaryViewModel::onCloseClick
+        onCloseClick = diaryViewModel::onCloseClick,
+        onDiaryChangeClick = diaryViewModel::onDiaryChangeClick
     )
 }
 
@@ -64,20 +63,20 @@ fun DiaryScreen(
 
 @Composable
 fun DiaryScreen(
-    onDiaryWriteNavigateClick: () -> Unit,
-
     diaryDataList: List<Diary>,
 
     clickDiaryData: Diary?,
 
     onDiaryClick: (Diary) -> Unit,
-    onCloseClick: () -> Unit
+    onCloseClick: () -> Unit,
+    onDiaryChangeClick: () -> Unit
 ) {
 
     if(clickDiaryData != null) {
         DiaryReadDialog(
             onClose = onCloseClick,
-            diaryData = clickDiaryData
+            diaryData = clickDiaryData,
+            onDiaryChangeClick = onDiaryChangeClick
         )
     }
     
@@ -140,6 +139,14 @@ fun DiaryScreen(
 fun DiaryScreenPreview() {
     MypatTheme {
         DiaryScreen(
+
+
+            clickDiaryData = null,
+
+            onDiaryClick = {},
+            onCloseClick = {},
+            onDiaryChangeClick = {},
+
             diaryDataList = listOf(
                 Diary(date = "2025-02-06", mood = "happy", title = "안녕", contents = "안녕안녕안녕"),
                 Diary(date = "2025-02-07", mood = "", title = "", contents = ""),
@@ -156,11 +163,6 @@ fun DiaryScreenPreview() {
                 Diary(date = "2025-01-06", mood = "happy", title = "안녕", contents = "안녕안녕안녕"),
                 Diary(date = "2025-02-07", mood = "", title = "", contents = "")
             ),
-
-            clickDiaryData = null,
-
-            onDiaryClick = {},
-            onCloseClick = {},
 
         )
     }
