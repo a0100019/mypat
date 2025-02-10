@@ -1,5 +1,7 @@
 package com.a0100019.mypat.presentation.game.firstGame
 
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
@@ -9,6 +11,7 @@ import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
+import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
@@ -40,6 +43,20 @@ class FirstGameViewModel @Inject constructor(
 
     }
 
+    fun onGameStartClick(surfaceWidthDp: Dp, surfaceHeightDp:Dp) = intent {
+        val snowballX = surfaceWidthDp * 0.5f - 15.dp // 가로의 50%
+        val snowballY = surfaceHeightDp * 0.9f - 15.dp // 세로의 90%
+
+        reduce {
+            state.copy(
+                snowballX = snowballX,
+                snowballY = snowballY,
+                surfaceWidthDp = surfaceWidthDp,
+                surfaceHeightDp = surfaceHeightDp
+            )
+        }
+    }
+
 }
 
 
@@ -49,7 +66,11 @@ class FirstGameViewModel @Inject constructor(
 data class FirstGameState(
     val id:String = "",
     val password:String = "",
-    val userData: List<User> = emptyList()
+    val userData: List<User> = emptyList(),
+    val snowballX: Dp = 0.dp,
+    val snowballY: Dp = 0.dp,
+    val surfaceWidthDp: Dp = 0.dp,
+    val surfaceHeightDp: Dp = 0.dp
 )
 
 

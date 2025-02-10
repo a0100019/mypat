@@ -1,23 +1,26 @@
 package com.a0100019.mypat.presentation.game.firstGame
 
 import android.widget.Toast
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.a0100019.mypat.presentation.loading.LoadingSideEffect
-import com.a0100019.mypat.presentation.loading.LoadingState
-import com.a0100019.mypat.presentation.loading.LoadingViewModel
-import com.a0100019.mypat.presentation.ui.image.etc.KoreanIdiomImage
+import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -40,7 +43,9 @@ fun FirstGameScreen(
     }
 
     FirstGameScreen(
-        value = "스크린 나누기"
+        snowballX = firstGameState.snowballX,
+        snowballY = firstGameState.snowballY,
+        onGameStartClick = firstGameViewModel::onGameStartClick
     )
 }
 
@@ -48,24 +53,84 @@ fun FirstGameScreen(
 
 @Composable
 fun FirstGameScreen(
-    value : String
+    snowballX : Dp,
+    snowballY : Dp,
+
+    onGameStartClick : (Dp, Dp) -> Unit
 ) {
-    // Fullscreen container
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White), // Optional: Set background color
-        contentAlignment = Alignment.Center // Center content
-    ) {
-        // Text in the center
-        Text(
-            text = "로딩 중",
-            fontSize = 32.sp, // Large font size
-            fontWeight = FontWeight.Bold, // Bold text
-            color = Color.Black // Text color
-        )
-        KoreanIdiomImage("koreanIdiomImage/jukmagow1.jpg")
+    Column {
+        Text("점수 : 170")
+        Text("최고 기록 : 10900")
+        Text("콤보 : X3")
+
+        BoxWithConstraints(
+            modifier = Modifier
+                .fillMaxHeight(0.7f)
+                .fillMaxWidth()
+//                .border(10.dp, Color.Black)
+                .padding(16.dp), // Optional: Set background color
+//            contentAlignment = Alignment.Center // Center content
+        ) {
+
+            val density = LocalDensity.current
+
+            // Surface 크기 가져오기 (px → dp 변환)
+            val surfaceWidth = constraints.maxWidth
+            val surfaceHeight = constraints.maxHeight
+
+            val surfaceWidthDp = with(density) { surfaceWidth.toDp() }
+            val surfaceHeightDp = with(density) { surfaceHeight.toDp() }
+
+            JustImage("etc/icySurface_white_bg.jpg")
+            JustImage(
+                filePath = "etc/snowball.png",
+                modifier = Modifier
+                    .size(30.dp)
+                    .offset(x = snowballX, y = snowballY)
+            )
+            JustImage(
+                filePath = "etc/target.png",
+                modifier = Modifier
+                    .size(100.dp)
+                    .align(Alignment.TopCenter)
+//                    .offset(x = snowballX, y = snowballY)
+            )
+
+            Button(
+                onClick = {
+                    onGameStartClick(surfaceWidthDp, surfaceHeightDp)
+                }
+            ) {
+                Text("시작하기")
+            }
+        }
+
+        Row {
+            Button(
+                onClick = {}
+            ) {
+                Text("왼쪽")
+            }
+
+            Button(
+                onClick = {}
+            ) {
+                Text("슛")
+            }
+
+            Button(
+                onClick = {}
+            ) {
+                Text("오른쪽")
+            }
+        }
+
+
+
+
+
     }
+
 }
 
 @Preview(showBackground = true)
@@ -73,7 +138,9 @@ fun FirstGameScreen(
 fun FirstGameScreenPreview() {
     MypatTheme {
         FirstGameScreen(
-            value = ""
+            snowballX = 0.dp,
+            snowballY = 0.dp,
+            onGameStartClick = { x, y -> }
         )
     }
 }
