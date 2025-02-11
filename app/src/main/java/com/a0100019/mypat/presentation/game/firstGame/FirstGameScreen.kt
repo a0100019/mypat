@@ -1,6 +1,10 @@
 package com.a0100019.mypat.presentation.game.firstGame
 
 import android.widget.Toast
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,8 +16,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
@@ -45,7 +51,11 @@ fun FirstGameScreen(
     FirstGameScreen(
         snowballX = firstGameState.snowballX,
         snowballY = firstGameState.snowballY,
-        onGameStartClick = firstGameViewModel::onGameStartClick
+        rotationAngle = firstGameState.rotationAngle,
+        onGameStartClick = firstGameViewModel::onGameStartClick,
+        onMoveClick = firstGameViewModel::onMoveClick,
+        onRotateRightClick = firstGameViewModel::onRotateRightClick,
+        onRotateLeftClick = firstGameViewModel::onRotateLeftClick
     )
 }
 
@@ -55,9 +65,27 @@ fun FirstGameScreen(
 fun FirstGameScreen(
     snowballX : Dp,
     snowballY : Dp,
+    rotationAngle : Float,
 
-    onGameStartClick : (Dp, Dp) -> Unit
+    onGameStartClick : (Dp, Dp) -> Unit,
+    onMoveClick: () -> Unit,
+    onRotateRightClick: () -> Unit,
+    onRotateLeftClick: () -> Unit
 ) {
+    // 부드러운 애니메이션 적용
+    val animatedX by animateDpAsState(
+        targetValue = snowballX,
+        animationSpec = tween(durationMillis = 500, easing = LinearEasing) // 속도 변화에 맞춰 애니메이션 적용
+    )
+    val animatedY by animateDpAsState(
+        targetValue = snowballY,
+        animationSpec = tween(durationMillis = 500, easing = LinearEasing) // 속도 변화에 맞춰 애니메이션 적용
+    )
+    val animatedRotation by animateFloatAsState(
+        targetValue = rotationAngle,
+        animationSpec = tween(durationMillis = 300, easing = LinearEasing) // 0.3초 동안 부드럽게 회전
+    )
+
     Column {
         Text("점수 : 170")
         Text("최고 기록 : 10900")
@@ -83,10 +111,17 @@ fun FirstGameScreen(
 
             JustImage("etc/icySurface_white_bg.jpg")
             JustImage(
+                filePath = "etc/arrow.png",
+                modifier = Modifier
+                    .size(30.dp, 80.dp)
+                    .offset(x = animatedX, y = animatedY - 25.dp)
+                    .rotate(animatedRotation)
+            )
+            JustImage(
                 filePath = "etc/snowball.png",
                 modifier = Modifier
                     .size(30.dp)
-                    .offset(x = snowballX, y = snowballY)
+                    .offset(x = animatedX, y = animatedY)
             )
             JustImage(
                 filePath = "etc/target.png",
@@ -107,19 +142,19 @@ fun FirstGameScreen(
 
         Row {
             Button(
-                onClick = {}
+                onClick = onRotateLeftClick
             ) {
                 Text("왼쪽")
             }
 
             Button(
-                onClick = {}
+                onClick = onMoveClick
             ) {
                 Text("슛")
             }
 
             Button(
-                onClick = {}
+                onClick = onRotateRightClick
             ) {
                 Text("오른쪽")
             }
@@ -140,7 +175,11 @@ fun FirstGameScreenPreview() {
         FirstGameScreen(
             snowballX = 0.dp,
             snowballY = 0.dp,
-            onGameStartClick = { x, y -> }
+            rotationAngle = 0f,
+            onGameStartClick = { x, y -> },
+            onMoveClick = {},
+            onRotateRightClick = {},
+            onRotateLeftClick = {}
         )
     }
 }
