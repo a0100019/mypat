@@ -62,7 +62,8 @@ class FirstGameViewModel @Inject constructor(
                 snowballX = snowballX,
                 snowballY = snowballY,
                 surfaceWidthDp = surfaceWidthDp,
-                surfaceHeightDp = surfaceHeightDp
+                surfaceHeightDp = surfaceHeightDp,
+                shotStart = false
             )
         }
     }
@@ -89,14 +90,19 @@ class FirstGameViewModel @Inject constructor(
                 velocityY = -velocity * (rotationAngle-270f)/90f
             }
 
+            var nextX = state.snowballX + velocityX
+            var nextY = state.snowballY + velocityY
+
+
             reduce {
                 state.copy(
                     snowballX = state.snowballX + velocityX,
-                    snowballY = state.snowballY + velocityY
+                    snowballY = state.snowballY + velocityY,
+                    shotStart = true
                 ) // 현재 속도로 이동
             }
             velocity *= decelerationFactor // 속도 감소
-            delay(500L) // 0.5초마다 실행 (더 부드럽게)
+            delay(500) // 0.5초마다 실행 (더 부드럽게)
         }
     }
 
@@ -127,7 +133,9 @@ data class FirstGameState(
     val snowballY: Dp = 0.dp,
     val surfaceWidthDp: Dp = 0.dp,
     val surfaceHeightDp: Dp = 0.dp,
-    val rotationAngle: Float = 0f
+    val rotationAngle: Float = 0f,
+    val shotStart: Boolean = false,
+    val shotDuration: Int = 500
 )
 
 

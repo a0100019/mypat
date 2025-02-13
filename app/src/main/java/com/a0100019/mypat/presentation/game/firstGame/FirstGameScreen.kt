@@ -52,6 +52,9 @@ fun FirstGameScreen(
         snowballX = firstGameState.snowballX,
         snowballY = firstGameState.snowballY,
         rotationAngle = firstGameState.rotationAngle,
+        shotStart = firstGameState.shotStart,
+        shotDuration = firstGameState.shotDuration,
+
         onGameStartClick = firstGameViewModel::onGameStartClick,
         onMoveClick = firstGameViewModel::onMoveClick,
         onRotateRightClick = firstGameViewModel::onRotateRightClick,
@@ -66,6 +69,8 @@ fun FirstGameScreen(
     snowballX : Dp,
     snowballY : Dp,
     rotationAngle : Float,
+    shotStart: Boolean,
+    shotDuration : Int,
 
     onGameStartClick : (Dp, Dp) -> Unit,
     onMoveClick: () -> Unit,
@@ -75,15 +80,18 @@ fun FirstGameScreen(
     // 부드러운 애니메이션 적용
     val animatedX by animateDpAsState(
         targetValue = snowballX,
-        animationSpec = tween(durationMillis = 500, easing = LinearEasing) // 속도 변화에 맞춰 애니메이션 적용
+        animationSpec = tween(durationMillis = shotDuration, easing = LinearEasing),
+        label = "" // 속도 변화에 맞춰 애니메이션 적용
     )
     val animatedY by animateDpAsState(
         targetValue = snowballY,
-        animationSpec = tween(durationMillis = 500, easing = LinearEasing) // 속도 변화에 맞춰 애니메이션 적용
+        animationSpec = tween(durationMillis = shotDuration, easing = LinearEasing),
+        label = "" // 속도 변화에 맞춰 애니메이션 적용
     )
     val animatedRotation by animateFloatAsState(
         targetValue = rotationAngle,
-        animationSpec = tween(durationMillis = 300, easing = LinearEasing) // 0.3초 동안 부드럽게 회전
+        animationSpec = tween(durationMillis = 300, easing = LinearEasing),
+        label = "" // 0.3초 동안 부드럽게 회전
     )
 
     Column {
@@ -110,13 +118,15 @@ fun FirstGameScreen(
             val surfaceHeightDp = with(density) { surfaceHeight.toDp() }
 
             JustImage("etc/icySurface_white_bg.jpg")
-            JustImage(
-                filePath = "etc/arrow.png",
-                modifier = Modifier
-                    .size(30.dp, 80.dp)
-                    .offset(x = animatedX, y = animatedY - 25.dp)
-                    .rotate(animatedRotation)
-            )
+            if(!shotStart){
+                JustImage(
+                    filePath = "etc/arrow.png",
+                    modifier = Modifier
+                        .size(30.dp, 80.dp)
+                        .offset(x = animatedX, y = animatedY - 25.dp)
+                        .rotate(animatedRotation)
+                )
+            }
             JustImage(
                 filePath = "etc/snowball.png",
                 modifier = Modifier
@@ -140,29 +150,29 @@ fun FirstGameScreen(
             }
         }
 
-        Row {
-            Button(
-                onClick = onRotateLeftClick
+        if(!shotStart){
+            Row(
+                modifier = Modifier
             ) {
-                Text("왼쪽")
-            }
+                Button(
+                    onClick = onRotateLeftClick
+                ) {
+                    Text("왼쪽")
+                }
 
-            Button(
-                onClick = onMoveClick
-            ) {
-                Text("슛")
-            }
+                Button(
+                    onClick = onMoveClick
+                ) {
+                    Text("슛")
+                }
 
-            Button(
-                onClick = onRotateRightClick
-            ) {
-                Text("오른쪽")
+                Button(
+                    onClick = onRotateRightClick
+                ) {
+                    Text("오른쪽")
+                }
             }
         }
-
-
-
-
 
     }
 
@@ -176,6 +186,9 @@ fun FirstGameScreenPreview() {
             snowballX = 0.dp,
             snowballY = 0.dp,
             rotationAngle = 0f,
+            shotStart = false,
+            shotDuration = 0,
+
             onGameStartClick = { x, y -> },
             onMoveClick = {},
             onRotateRightClick = {},
