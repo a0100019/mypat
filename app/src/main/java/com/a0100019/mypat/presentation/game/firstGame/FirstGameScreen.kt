@@ -52,13 +52,20 @@ fun FirstGameScreen(
         snowballX = firstGameState.snowballX,
         snowballY = firstGameState.snowballY,
         rotationAngle = firstGameState.rotationAngle,
-        shotStart = firstGameState.shotStart,
         shotDuration = firstGameState.shotDuration,
+        snowballSize = firstGameState.snowballSize,
+        targetSize = firstGameState.targetSize,
+        score = firstGameState.score,
+        targetX = firstGameState.targetX,
+        targetY = firstGameState.targetY,
+        level = firstGameState.level,
+        situation = firstGameState.situation,
 
         onGameStartClick = firstGameViewModel::onGameStartClick,
         onMoveClick = firstGameViewModel::onMoveClick,
         onRotateRightClick = firstGameViewModel::onRotateRightClick,
-        onRotateLeftClick = firstGameViewModel::onRotateLeftClick
+        onRotateLeftClick = firstGameViewModel::onRotateLeftClick,
+        onNextLevelClick = firstGameViewModel::onNextLevelClick
     )
 }
 
@@ -69,13 +76,20 @@ fun FirstGameScreen(
     snowballX : Dp,
     snowballY : Dp,
     rotationAngle : Float,
-    shotStart: Boolean,
     shotDuration : Int,
+    snowballSize : Dp,
+    targetSize : Dp,
+    score : Int,
+    targetX : Dp,
+    targetY : Dp,
+    level: Int,
+    situation: String,
 
     onGameStartClick : (Dp, Dp) -> Unit,
     onMoveClick: () -> Unit,
     onRotateRightClick: () -> Unit,
-    onRotateLeftClick: () -> Unit
+    onRotateLeftClick: () -> Unit,
+    onNextLevelClick: () -> Unit,
 ) {
     // 부드러운 애니메이션 적용
     val animatedX by animateDpAsState(
@@ -95,9 +109,10 @@ fun FirstGameScreen(
     )
 
     Column {
-        Text("점수 : 170")
+        Text("점수 : $score")
         Text("최고 기록 : 10900")
-        Text("콤보 : X3")
+        Text("레벨 : $level")
+        Text("최고 레벨 : ")
 
         BoxWithConstraints(
             modifier = Modifier
@@ -118,7 +133,7 @@ fun FirstGameScreen(
             val surfaceHeightDp = with(density) { surfaceHeight.toDp() }
 
             JustImage("etc/icySurface_white_bg.jpg")
-            if(!shotStart){
+            if(situation == "준비"){
                 JustImage(
                     filePath = "etc/arrow.png",
                     modifier = Modifier
@@ -130,27 +145,28 @@ fun FirstGameScreen(
             JustImage(
                 filePath = "etc/snowball.png",
                 modifier = Modifier
-                    .size(30.dp)
+                    .size(snowballSize)
                     .offset(x = animatedX, y = animatedY)
             )
             JustImage(
                 filePath = "etc/target.png",
                 modifier = Modifier
-                    .size(100.dp)
-                    .align(Alignment.TopCenter)
-//                    .offset(x = snowballX, y = snowballY)
+                    .size(targetSize)
+                    .offset(x = targetX, y = targetY)
             )
 
-            Button(
-                onClick = {
-                    onGameStartClick(surfaceWidthDp, surfaceHeightDp)
+            if(situation == "시작"){
+                Button(
+                    onClick = {
+                        onGameStartClick(surfaceWidthDp, surfaceHeightDp)
+                    }
+                ) {
+                    Text("시작하기")
                 }
-            ) {
-                Text("시작하기")
             }
         }
 
-        if(!shotStart){
+        if(situation == "준비"){
             Row(
                 modifier = Modifier
             ) {
@@ -174,6 +190,16 @@ fun FirstGameScreen(
             }
         }
 
+        if(situation == "다음") {
+            Button(
+                onClick = onNextLevelClick
+            ) {
+                Text("다음 레벨")
+            }
+        }
+
+
+
     }
 
 }
@@ -186,13 +212,20 @@ fun FirstGameScreenPreview() {
             snowballX = 0.dp,
             snowballY = 0.dp,
             rotationAngle = 0f,
-            shotStart = false,
             shotDuration = 0,
+            snowballSize = 30.dp,
+            targetSize = 100.dp,
+            score = 0,
+            targetX = 0.dp,
+            targetY = 0.dp,
+            level = 1,
+            situation = "준비",
 
             onGameStartClick = { x, y -> },
             onMoveClick = {},
             onRotateRightClick = {},
-            onRotateLeftClick = {}
+            onRotateLeftClick = {},
+            onNextLevelClick = {}
         )
     }
 }
