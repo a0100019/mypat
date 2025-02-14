@@ -26,6 +26,7 @@ import org.orbitmvi.orbit.viewmodel.container
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 import kotlin.math.sqrt
+import kotlin.random.Random
 
 
 @HiltViewModel
@@ -51,7 +52,10 @@ class FirstGameViewModel @Inject constructor(
 
     //room에서 데이터 가져옴
     private fun loadData() = intent {
-
+        val userDataList = userDao.getAllUserData()
+        reduce {
+            state.copy(userData = userDataList)
+        }
     }
 
     fun onGameStartClick(surfaceWidthDp: Dp, surfaceHeightDp:Dp) = intent {
@@ -68,7 +72,29 @@ class FirstGameViewModel @Inject constructor(
                 surfaceHeightDp = surfaceHeightDp,
                 targetX = targetX,
                 targetY = targetY,
+                score = 0,
+                level = 1,
                 situation = "준비"
+            )
+        }
+    }
+
+    fun onGameReStartClick() = intent {
+        val snowballX = state.surfaceWidthDp * 0.5f - state.snowballSize/2 // 가로의 50%
+        val snowballY = state.surfaceHeightDp * 0.9f - state.snowballSize/2 // 세로의 90%
+        val targetX = state.surfaceWidthDp * 0.5f - state.targetSize/2
+        val targetY = state.surfaceHeightDp * 0.2f - state.targetSize/2
+
+        reduce {
+            state.copy(
+                snowballX = snowballX,
+                snowballY = snowballY,
+                targetX = targetX,
+                targetY = targetY,
+                score = 0,
+                level = 1,
+                situation = "준비",
+                rotationAngle = 0f
             )
         }
     }
@@ -227,12 +253,21 @@ class FirstGameViewModel @Inject constructor(
                 }
 
             } else {
-                reduce {
-                    state.copy(
-                        score = 0,
-                        situation = "종료"
-                    )
+                if(state.userData.find { it.id == "curling" }!!.value.toInt() < state.score){
+                    userDao.update(id = "curling", value = state.score.toString())
+                    reduce {
+                        state.copy(
+                            situation = "신기록"
+                        )
+                    }
+                } else {
+                    reduce {
+                        state.copy(
+                            situation = "종료"
+                        )
+                    }
                 }
+
             }
 
 
@@ -242,9 +277,15 @@ class FirstGameViewModel @Inject constructor(
     }
 
     fun onNextLevelClick() = intent {
+        val randomX = Random.nextInt(state.targetSize.value.toInt(), (state.surfaceWidthDp - state.targetSize).value.toInt())
+        val randomY = Random.nextInt(state.targetSize.value.toInt(), (state.surfaceHeightDp - state.targetSize).value.toInt())
+
         reduce {
             state.copy(
-                situation = "준비"
+                situation = "준비",
+                level = state.level + 1,
+                targetX = randomX.dp,
+                targetY = randomY.dp
             )
         }
     }

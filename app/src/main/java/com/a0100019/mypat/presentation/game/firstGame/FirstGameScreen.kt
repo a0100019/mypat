@@ -26,6 +26,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.a0100019.mypat.data.room.user.User
+import com.a0100019.mypat.presentation.main.mainDialog.UserInformationDialog
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
@@ -60,12 +62,14 @@ fun FirstGameScreen(
         targetY = firstGameState.targetY,
         level = firstGameState.level,
         situation = firstGameState.situation,
+        userData = firstGameState.userData,
 
         onGameStartClick = firstGameViewModel::onGameStartClick,
         onMoveClick = firstGameViewModel::onMoveClick,
         onRotateRightClick = firstGameViewModel::onRotateRightClick,
         onRotateLeftClick = firstGameViewModel::onRotateLeftClick,
-        onNextLevelClick = firstGameViewModel::onNextLevelClick
+        onNextLevelClick = firstGameViewModel::onNextLevelClick,
+        onGameReStartClick = firstGameViewModel::onGameReStartClick
     )
 }
 
@@ -84,7 +88,9 @@ fun FirstGameScreen(
     targetY : Dp,
     level: Int,
     situation: String,
+    userData : List<User>,
 
+    onGameReStartClick: () -> Unit,
     onGameStartClick : (Dp, Dp) -> Unit,
     onMoveClick: () -> Unit,
     onRotateRightClick: () -> Unit,
@@ -108,11 +114,20 @@ fun FirstGameScreen(
         label = "" // 0.3초 동안 부드럽게 회전
     )
 
+    if (situation == "종료") {
+        GameOverDialog (
+            onClose = onGameReStartClick,
+        )
+    } else if (situation == "신기록") {
+        GameOverDialog (
+            onClose = onGameReStartClick,
+        )
+    }
+
     Column {
         Text("점수 : $score")
-        Text("최고 기록 : 10900")
+        Text("최고 기록 : ${userData.find { it.id == "curling" }?.value}")
         Text("레벨 : $level")
-        Text("최고 레벨 : ")
 
         BoxWithConstraints(
             modifier = Modifier
@@ -198,8 +213,6 @@ fun FirstGameScreen(
             }
         }
 
-
-
     }
 
 }
@@ -220,12 +233,14 @@ fun FirstGameScreenPreview() {
             targetY = 0.dp,
             level = 1,
             situation = "준비",
+            userData = emptyList(),
 
             onGameStartClick = { x, y -> },
             onMoveClick = {},
             onRotateRightClick = {},
             onRotateLeftClick = {},
-            onNextLevelClick = {}
+            onNextLevelClick = {},
+            onGameReStartClick = {}
         )
     }
 }
