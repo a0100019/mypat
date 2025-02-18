@@ -4,6 +4,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.a0100019.mypat.data.room.pet.Pat
+import com.a0100019.mypat.data.room.pet.PatDao
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,6 +27,7 @@ import kotlin.random.Random
 @HiltViewModel
 class FirstGameViewModel @Inject constructor(
     private val userDao: UserDao,
+    private val patDao: PatDao
 ) : ViewModel(), ContainerHost<FirstGameState, FirstGameSideEffect> {
 
     override val container: Container<FirstGameState, FirstGameSideEffect> = container(
@@ -46,8 +49,12 @@ class FirstGameViewModel @Inject constructor(
     //room에서 데이터 가져옴
     private fun loadData() = intent {
         val userDataList = userDao.getAllUserData()
+        val patData = patDao.getPatDataById(userDataList.find { it.id == "selectPat" }?.value ?: "0")
         reduce {
-            state.copy(userData = userDataList)
+            state.copy(
+                userData = userDataList,
+                patData = patData
+            )
         }
     }
 
@@ -78,6 +85,8 @@ class FirstGameViewModel @Inject constructor(
         val targetX = state.surfaceWidthDp * 0.5f - state.targetSize/2
         val targetY = state.surfaceHeightDp * 0.2f - state.targetSize/2
 
+        val patData = patDao.getPatDataById(state.patData.id.toString())
+
         reduce {
             state.copy(
                 snowballX = snowballX,
@@ -87,7 +96,8 @@ class FirstGameViewModel @Inject constructor(
                 score = 0,
                 level = 1,
                 situation = "준비",
-                rotationAngle = 0f
+                rotationAngle = 0f,
+                patData = patData
             )
         }
     }
@@ -249,6 +259,11 @@ class FirstGameViewModel @Inject constructor(
                 }
 
             } else {
+
+                val updatePatData = state.patData
+                updatePatData.love = state.patData.love + state.score
+                patDao.update(updatePatData)
+
                 if(state.userData.find { it.id == "curling" }!!.value.toInt() < state.score){
                     userDao.update(id = "curling", value = state.score.toString())
                     reduce {
@@ -352,7 +367,8 @@ data class FirstGameState(
     val isRotating: Boolean = false,
     val isShotSetting: Boolean = false,
     val rotationDuration: Int = 10,
-    val shotPower: Int = 10
+    val shotPower: Int = 10,
+    val patData: Pat = Pat(url = "")
 )
 
 

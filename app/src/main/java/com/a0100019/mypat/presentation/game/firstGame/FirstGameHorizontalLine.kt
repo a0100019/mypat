@@ -1,4 +1,4 @@
-package com.a0100019.mypat.presentation.ui.image.etc
+package com.a0100019.mypat.presentation.game.firstGame
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxWidth

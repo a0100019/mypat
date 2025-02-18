@@ -7,7 +7,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -25,8 +24,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.a0100019.mypat.data.room.pet.Pat
 import com.a0100019.mypat.data.room.user.User
-import com.a0100019.mypat.presentation.ui.image.etc.FirstGameHorizontalLine
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
@@ -64,6 +63,7 @@ fun FirstGameScreen(
         userData = firstGameState.userData,
         rotationDuration = firstGameState.rotationDuration,
         shotPower = firstGameState.shotPower,
+        patData = firstGameState.patData,
 
 
         onGameStartClick = firstGameViewModel::onGameStartClick,
@@ -92,6 +92,7 @@ fun FirstGameScreen(
     userData : List<User>,
     rotationDuration: Int,
     shotPower : Int,
+    patData : Pat,
 
     onGameReStartClick: () -> Unit,
     onGameStartClick : (Dp, Dp) -> Unit,
@@ -116,19 +117,14 @@ fun FirstGameScreen(
         label = "" // 0.3초 동안 부드럽게 회전
     )
 
-    if (situation == "종료") {
+    if (situation == "종료" || situation == "신기록") {
         GameOverDialog (
             onClose = onGameReStartClick,
             score = score,
             level = level,
-            userData = userData
-        )
-    } else if (situation == "신기록") {
-        GameOverDialog (
-            onClose = onGameReStartClick,
-            score = score,
-            level = level,
-            userData = userData
+            userData = userData,
+            patData = patData,
+            situation = situation
         )
     }
 
@@ -244,6 +240,7 @@ fun FirstGameScreenPreview() {
             userData = emptyList(),
             rotationDuration = 0,
             shotPower = 0,
+            patData = Pat(url = ""),
 
             onGameStartClick = { x, y -> },
             onMoveClick = {},

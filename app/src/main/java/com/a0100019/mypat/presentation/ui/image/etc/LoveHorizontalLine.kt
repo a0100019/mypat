@@ -8,8 +8,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun LoveHorizontalLine(value: Int) {
-    val percentage = (value.toFloat() / 10000f).coerceIn(0f, 1f)
+fun LoveHorizontalLine(
+    value: Int,
+    totalValue: Int = 10000,
+    plusValue: Int = 0
+) {
+    val valuePercentage = (value.toFloat() / totalValue.toFloat()).coerceIn(0f, 1f)
+    val plusValuePercentage = ((value.toFloat() + plusValue.toFloat()) / totalValue.toFloat()).coerceIn(0f, 1f)
 
 
     Canvas(
@@ -17,18 +22,25 @@ fun LoveHorizontalLine(value: Int) {
             .fillMaxWidth()
             .height(40.dp)
     ) {
-        // 전체 선
+        // total
         drawLine(
             color = Color.LightGray,
             start = androidx.compose.ui.geometry.Offset(0f, size.height / 2),
             end = androidx.compose.ui.geometry.Offset(size.width, size.height / 2),
-            strokeWidth = 4f
+            strokeWidth = 8f
         )
-        // 값에 따른 선
+        // plus
+        drawLine(
+            color = Color.Yellow,
+            start = androidx.compose.ui.geometry.Offset(0f, size.height / 2),
+            end = androidx.compose.ui.geometry.Offset(size.width * plusValuePercentage, size.height / 2),
+            strokeWidth = 8f
+        )
+        // value
         drawLine(
             color = Color.Cyan,
             start = androidx.compose.ui.geometry.Offset(0f, size.height / 2),
-            end = androidx.compose.ui.geometry.Offset(size.width * percentage, size.height / 2),
+            end = androidx.compose.ui.geometry.Offset(size.width * valuePercentage, size.height / 2),
             strokeWidth = 8f
         )
     }
