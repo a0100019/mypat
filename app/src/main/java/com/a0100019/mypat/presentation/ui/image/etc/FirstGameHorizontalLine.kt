@@ -1,15 +1,16 @@
 package com.a0100019.mypat.presentation.ui.image.etc
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun HorizontalLineWithValue(value: Int) {
-    val percentage = (value.toFloat() / 10000f).coerceIn(0f, 1f)
+fun FirstGameHorizontalLine(value: Int) {
+    val percentage = (value.toFloat() / 1000f).coerceIn(0f, 1f)
 
 
     Canvas(

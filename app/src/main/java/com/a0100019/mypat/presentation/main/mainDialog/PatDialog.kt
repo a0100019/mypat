@@ -28,7 +28,7 @@ import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.pet.Pat
 import com.a0100019.mypat.presentation.ui.image.pat.DialogPatImage
-import com.a0100019.mypat.presentation.ui.image.etc.HorizontalLineWithValue
+import com.a0100019.mypat.presentation.ui.image.etc.LoveHorizontalLine
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
 
@@ -67,7 +67,7 @@ fun PatDialog(
                             modifier = Modifier.size(20.dp),
                         )
                         Text("애정도 ${patData.love/100}")
-                        HorizontalLineWithValue(patData.love)
+                        LoveHorizontalLine(patData.love)
                     }
                 }
                 Text(

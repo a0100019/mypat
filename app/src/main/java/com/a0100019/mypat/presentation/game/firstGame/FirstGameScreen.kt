@@ -17,7 +17,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalContext
@@ -27,7 +26,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.data.room.user.User
-import com.a0100019.mypat.presentation.main.mainDialog.UserInformationDialog
+import com.a0100019.mypat.presentation.ui.image.etc.FirstGameHorizontalLine
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
@@ -63,11 +62,13 @@ fun FirstGameScreen(
         level = firstGameState.level,
         situation = firstGameState.situation,
         userData = firstGameState.userData,
+        rotationDuration = firstGameState.rotationDuration,
+        shotPower = firstGameState.shotPower,
+
 
         onGameStartClick = firstGameViewModel::onGameStartClick,
         onMoveClick = firstGameViewModel::onMoveClick,
-        onRotateRightClick = firstGameViewModel::onRotateRightClick,
-        onRotateLeftClick = firstGameViewModel::onRotateLeftClick,
+        onRotateStopClick = firstGameViewModel::onRotateStopClick,
         onNextLevelClick = firstGameViewModel::onNextLevelClick,
         onGameReStartClick = firstGameViewModel::onGameReStartClick
     )
@@ -89,12 +90,13 @@ fun FirstGameScreen(
     level: Int,
     situation: String,
     userData : List<User>,
+    rotationDuration: Int,
+    shotPower : Int,
 
     onGameReStartClick: () -> Unit,
     onGameStartClick : (Dp, Dp) -> Unit,
     onMoveClick: () -> Unit,
-    onRotateRightClick: () -> Unit,
-    onRotateLeftClick: () -> Unit,
+    onRotateStopClick: () -> Unit,
     onNextLevelClick: () -> Unit,
 ) {
     // 부드러운 애니메이션 적용
@@ -110,17 +112,23 @@ fun FirstGameScreen(
     )
     val animatedRotation by animateFloatAsState(
         targetValue = rotationAngle,
-        animationSpec = tween(durationMillis = 300, easing = LinearEasing),
+        animationSpec = tween(durationMillis = rotationDuration, easing = LinearEasing),
         label = "" // 0.3초 동안 부드럽게 회전
     )
 
     if (situation == "종료") {
         GameOverDialog (
             onClose = onGameReStartClick,
+            score = score,
+            level = level,
+            userData = userData
         )
     } else if (situation == "신기록") {
         GameOverDialog (
             onClose = onGameReStartClick,
+            score = score,
+            level = level,
+            userData = userData
         )
     }
 
@@ -148,7 +156,7 @@ fun FirstGameScreen(
             val surfaceHeightDp = with(density) { surfaceHeight.toDp() }
 
             JustImage("etc/icySurface_white_bg.jpg")
-            if(situation == "준비"){
+            if(situation == "회전" || situation == "준비"){
                 JustImage(
                     filePath = "etc/arrow.png",
                     modifier = Modifier
@@ -181,37 +189,37 @@ fun FirstGameScreen(
             }
         }
 
-        if(situation == "준비"){
-            Row(
-                modifier = Modifier
-            ) {
+        when (situation) {
+            "회전" -> {
                 Button(
-                    onClick = onRotateLeftClick
+                    onClick = onRotateStopClick
                 ) {
-                    Text("왼쪽")
+                    Text("정지")
                 }
 
-                Button(
-                    onClick = onMoveClick
-                ) {
-                    Text("슛")
+            }
+            "준비" -> {
+                Column {
+                    FirstGameHorizontalLine(shotPower)
+                    Button(
+                        onClick = onMoveClick
+                    ) {
+                        Text("슛")
+                    }
                 }
 
+            }
+            "다음" -> {
                 Button(
-                    onClick = onRotateRightClick
+                    onClick = onNextLevelClick
                 ) {
-                    Text("오른쪽")
+                    Text("다음 레벨")
                 }
             }
         }
 
-        if(situation == "다음") {
-            Button(
-                onClick = onNextLevelClick
-            ) {
-                Text("다음 레벨")
-            }
-        }
+        Text(shotPower.toString())
+
 
     }
 
@@ -234,11 +242,12 @@ fun FirstGameScreenPreview() {
             level = 1,
             situation = "준비",
             userData = emptyList(),
+            rotationDuration = 0,
+            shotPower = 0,
 
             onGameStartClick = { x, y -> },
             onMoveClick = {},
-            onRotateRightClick = {},
-            onRotateLeftClick = {},
+            onRotateStopClick = {},
             onNextLevelClick = {},
             onGameReStartClick = {}
         )

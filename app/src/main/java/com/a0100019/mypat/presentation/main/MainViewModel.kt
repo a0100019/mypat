@@ -133,6 +133,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun dialogPatIdChange(clickId : String) = intent {
+        userDao.update(id = "selectPat", value = clickId)
         reduce {
             state.copy(dialogPatId = clickId)
         }

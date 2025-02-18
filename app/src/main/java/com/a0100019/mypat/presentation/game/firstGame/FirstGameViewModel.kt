@@ -1,8 +1,5 @@
 package com.a0100019.mypat.presentation.game.firstGame
 
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
@@ -12,10 +9,6 @@ import com.a0100019.mypat.data.room.user.UserDao
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
@@ -101,7 +94,10 @@ class FirstGameViewModel @Inject constructor(
 
     fun onMoveClick() = intent {
         reduce {
-            state.copy(situation = "진행 중")
+            state.copy(
+                situation = "발사중",
+                isShotSetting = false
+            )
         }
         val velocity = state.snowballSpeed // 초기 속도
         val rotationAngle = if(state.rotationAngle >= 0) state.rotationAngle%360f else (state.rotationAngle+3600f)%360f
@@ -282,25 +278,52 @@ class FirstGameViewModel @Inject constructor(
 
         reduce {
             state.copy(
-                situation = "준비",
+                situation = "회전",
                 level = state.level + 1,
                 targetX = randomX.dp,
-                targetY = randomY.dp
+                targetY = randomY.dp,
+                isRotating = true
             )
         }
+
+
+        viewModelScope.launch {
+            while (state.isRotating) { // isActive를 체크하여 안전하게 종료 가능
+                reduce {
+                    state.copy(rotationAngle = state.rotationAngle + 1f)
+                }
+                delay(state.rotationDuration.toLong() - state.level) // 회전속도
+            }
+        }
+
+
     }
 
-    fun onRotateRightClick() = intent {
+    fun onRotateStopClick() = intent {
         reduce {
-            state.copy(rotationAngle = state.rotationAngle + 10f) // 5도씩 증가
+            state.copy(
+                isRotating = false,
+                isShotSetting = true,
+                situation = "준비"
+            )
+        }
+
+        while (state.isShotSetting) { // isActive를 체크하여 안전하게 종료 가능
+
+            if(state.shotPower < 1000) {
+                reduce {
+                    state.copy(shotPower = state.shotPower + 10)
+                }
+            } else {
+                reduce {
+                    state.copy(shotPower = 10)
+                }
+            }
+
+            delay((state.rotationDuration.toLong() - state.level)*10) //
         }
     }
 
-    fun onRotateLeftClick() = intent {
-        reduce {
-            state.copy(rotationAngle = state.rotationAngle - 10f) // 5도씩 증가
-        }
-    }
 
 
 }
@@ -326,6 +349,10 @@ data class FirstGameState(
     val targetY: Dp = 0.dp,
     val score: Int = 0,
     val level: Int = 1,
+    val isRotating: Boolean = false,
+    val isShotSetting: Boolean = false,
+    val rotationDuration: Int = 10,
+    val shotPower: Int = 10
 )
 
 

@@ -19,6 +19,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.a0100019.mypat.data.room.user.User
+import com.a0100019.mypat.presentation.ui.image.pat.DialogPatImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
 
@@ -26,6 +28,9 @@ import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 @Composable
 fun GameOverDialog(
     onClose: () -> Unit,
+    score: Int,
+    level: Int,
+    userData: List<User>
 ) {
 
 
@@ -41,7 +46,6 @@ fun GameOverDialog(
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
 
-                Text("Pat")
                 Box(
                     modifier = Modifier
                         .weight(1f)
@@ -49,10 +53,18 @@ fun GameOverDialog(
                         .background(Color.Gray, shape = RoundedCornerShape(16.dp))
                         .padding(16.dp)
                 ) {
-
+//                    DialogPatImage()
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Text("점수")
+                Text(text = score.toString())
+                Text("레벨")
+                Text(text = level.toString())
+                Text(text = "최고 기록")
+                Text(text = userData.find { it.id == "curling" }?.value ?: "")
+
+
+                Spacer(modifier = Modifier.height(8.dp))
 
                 Button(
                     onClick = onClose,
@@ -60,7 +72,7 @@ fun GameOverDialog(
                         .align(Alignment.End)
                         .padding(16.dp)
                 ) {
-                    Text("재시작")
+                    Text("다시 하기")
                 }
 
             }
@@ -74,7 +86,10 @@ fun GameOverDialog(
 fun GameOverDialogDialogPreview() {
     MypatTheme {
         GameOverDialog(
-            onClose = {  }
+            onClose = {  },
+            level = 3,
+            score = 190,
+            userData = listOf(User(id = "curling", value = "10000"))
         )
     }
 }
