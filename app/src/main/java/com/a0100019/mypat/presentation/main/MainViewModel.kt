@@ -396,16 +396,6 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun onSecondGameClick() = intent {
-        postSideEffect(MainSideEffect.SecondGameActivity)
-    }
-
-    fun onThirdGameClick() = intent {
-        postSideEffect(MainSideEffect.ThirdGameActivity)
-    }
-
-
-
 }
 
 @Immutable
@@ -433,6 +423,4 @@ data class MainState(
 //상태와 관련없는 것
 sealed interface MainSideEffect{
     class Toast(val message:String): MainSideEffect
-    data object SecondGameActivity: MainSideEffect
-    data object ThirdGameActivity: MainSideEffect
 }

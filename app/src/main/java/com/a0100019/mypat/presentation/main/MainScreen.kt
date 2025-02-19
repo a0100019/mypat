@@ -24,8 +24,6 @@ import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pet.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.world.World
-import com.a0100019.mypat.presentation.game.secondGame.SecondGameActivity
-import com.a0100019.mypat.presentation.game.thirdGame.ThirdGameActivity
 import com.a0100019.mypat.presentation.main.mainDialog.UserInformationDialog
 import com.a0100019.mypat.presentation.main.mainDialog.WorldAddDialog
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
@@ -42,7 +40,11 @@ fun MainScreen(
     onStoreNavigateClick: () -> Unit,
     onIndexNavigateClick: () -> Unit,
     onFirstGameNavigateClick: () -> Unit,
-) {
+    onSecondGameNavigateClick: () -> Unit,
+    onThirdGameNavigateClick: () -> Unit,
+
+
+    ) {
 
 
     val mainState : MainState = mainViewModel.collectAsState().value
@@ -52,12 +54,7 @@ fun MainScreen(
     mainViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
             is MainSideEffect.Toast -> Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
-            MainSideEffect.SecondGameActivity -> {
-                context.startActivity(Intent(context, SecondGameActivity::class.java))
-            }
-            MainSideEffect.ThirdGameActivity -> {
-                context.startActivity(Intent(context, ThirdGameActivity::class.java))
-            }
+
         }
     }
 
@@ -70,11 +67,11 @@ fun MainScreen(
         onIndexNavigateClick = onIndexNavigateClick,
         onStoreNavigateClick = onStoreNavigateClick,
         onFirstGameNavigateClick = onFirstGameNavigateClick,
+        onSecondGameNavigateClick = onSecondGameNavigateClick,
+        onThirdGameNavigateClick = onThirdGameNavigateClick,
 
         dialogPatIdChange = mainViewModel::dialogPatIdChange,
         dialogItemIdChange = mainViewModel::dialogItemIdChange,
-        onSecondGameClick = mainViewModel::onSecondGameClick,
-        onThirdGameClick = mainViewModel::onThirdGameClick,
         onWorldChangeClick = mainViewModel::onWorldChangeClick,
         onWorldSelectClick = mainViewModel::onWorldSelectClick,
         loadData = mainViewModel::loadData,
@@ -122,11 +119,11 @@ fun MainScreen(
     onStoreNavigateClick: () -> Unit,
     onIndexNavigateClick: () -> Unit,
     onFirstGameNavigateClick: () -> Unit,
+    onSecondGameNavigateClick: () -> Unit,
+    onThirdGameNavigateClick: () -> Unit,
 
     dialogPatIdChange: (String) -> Unit,
     dialogItemIdChange: (String) -> Unit,
-    onSecondGameClick: () -> Unit,
-    onThirdGameClick: () -> Unit,
     onWorldChangeClick: () -> Unit,
     onWorldSelectClick: () -> Unit,
     loadData: () -> Unit,
@@ -266,8 +263,8 @@ fun MainScreen(
                     dialogPatIdChange = dialogPatIdChange,
                     dialogItemIdChange = dialogItemIdChange,
                     onFirstGameNavigateClick = onFirstGameNavigateClick,
-                    onSecondGameClick = onSecondGameClick,
-                    onThirdGameClick = onThirdGameClick,
+                    onSecondGameNavigateClick = onSecondGameNavigateClick,
+                    onThirdGameNavigateClick = onThirdGameNavigateClick,
                     worldChange = worldChange,
                     patWorldDataDelete = patWorldDataDelete,
                     itemWorldDataDelete = itemWorldDataDelete,
@@ -376,6 +373,8 @@ fun MainScreenPreview() {
             onIndexNavigateClick = {},
             onStoreNavigateClick = {},
             onFirstGameNavigateClick = {},
+            onSecondGameNavigateClick = {},
+            onThirdGameNavigateClick = {},
             mapUrl = "map/forest.jpg",
             patDataList = listOf(Pat(url = "pat/cat.json")),
             patWorldDataList = listOf(World(id = "pat1")),
@@ -385,8 +384,6 @@ fun MainScreenPreview() {
             dialogItemId = "0",
             dialogPatIdChange = { },
             dialogItemIdChange = {},
-            onSecondGameClick = {},
-            onThirdGameClick = {},
             onWorldChangeClick = {},
             worldChange = false,
             onWorldSelectClick = {},
@@ -413,8 +410,6 @@ fun MainScreenPreview() {
             allMapDataList = listOf(Item(url = "item/table.png")),
             mapWorldData = World(id = "1"),
             onSelectMapImageClick = {},
-
-
         )
     }
 }

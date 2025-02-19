@@ -13,6 +13,8 @@ import com.a0100019.mypat.presentation.daily.english.EnglishScreen
 import com.a0100019.mypat.presentation.daily.koreanIdiom.KoreanIdiomScreen
 import com.a0100019.mypat.presentation.daily.walk.WalkScreen
 import com.a0100019.mypat.presentation.game.firstGame.FirstGameScreen
+import com.a0100019.mypat.presentation.game.secondGame.SecondGameScreen
+import com.a0100019.mypat.presentation.game.thirdGame.ThirdGameScreen
 import com.a0100019.mypat.presentation.index.IndexScreen
 import com.a0100019.mypat.presentation.main.MainScreen
 import com.a0100019.mypat.presentation.store.StoreScreen
@@ -42,6 +44,12 @@ fun MainNavHost() {
                 },
                 onFirstGameNavigateClick = {
                     navController.navigate(route = MainRoute.FirstGameScreen.name)
+                },
+                onSecondGameNavigateClick = {
+                    navController.navigate(route = MainRoute.SecondGameScreen.name)
+                },
+                onThirdGameNavigateClick = {
+                    navController.navigate(route = MainRoute.ThirdGameScreen.name)
                 }
             )
         }
@@ -74,6 +82,14 @@ fun MainNavHost() {
 
         composable(route = MainRoute.FirstGameScreen.name) {
             FirstGameScreen()
+        }
+
+        composable(route = MainRoute.SecondGameScreen.name) {
+            SecondGameScreen()
+        }
+
+        composable(route = MainRoute.ThirdGameScreen.name) {
+            ThirdGameScreen()
         }
 
         composable(route = MainRoute.DiaryScreen.name) {

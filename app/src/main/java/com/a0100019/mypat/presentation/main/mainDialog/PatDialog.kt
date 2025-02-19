@@ -37,8 +37,8 @@ fun PatDialog(
     onClose: () -> Unit,
     patData: Pat,
     onFirstGameNavigateClick: () -> Unit,
-    onSecondGameClick: () -> Unit,
-    onThirdGameClick: () -> Unit
+    onSecondGameNavigateClick: () -> Unit,
+    onThirdGameNavigateClick: () -> Unit
 ) {
     Dialog(
         onDismissRequest = onClose
@@ -107,14 +107,14 @@ fun PatDialog(
                 }
 
                 Button(
-                    onClick = onSecondGameClick,
+                    onClick = onSecondGameNavigateClick,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("피하기 게임")
                 }
 
                 Button(
-                    onClick = onThirdGameClick,
+                    onClick = onThirdGameNavigateClick,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("맞추기 게임")
@@ -148,8 +148,8 @@ fun DialogScreenContentPreview() {
                 memo = "귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다."
             ),
             onFirstGameNavigateClick = {  },
-            onSecondGameClick = {  },
-            onThirdGameClick = {  },
+            onSecondGameNavigateClick = {  },
+            onThirdGameNavigateClick = {  },
         )
     }
 }

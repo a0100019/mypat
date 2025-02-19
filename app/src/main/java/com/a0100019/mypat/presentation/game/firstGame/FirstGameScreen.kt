@@ -130,7 +130,7 @@ fun FirstGameScreen(
 
     Column {
         Text("점수 : $score")
-        Text("최고 기록 : ${userData.find { it.id == "curling" }?.value}")
+        Text("최고 기록 : ${userData.find { it.id == "firstGame" }?.value}")
         Text("레벨 : $level")
 
         BoxWithConstraints(
