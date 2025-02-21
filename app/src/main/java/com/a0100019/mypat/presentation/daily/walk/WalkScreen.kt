@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -39,7 +40,10 @@ fun WalkScreen(
     }
 
     WalkScreen(
-        todayWalk = walkState.todayWalk
+        todayWalk = walkState.todayWalk,
+
+        startForegroundService = walkViewModel::startForegroundService,
+        stopForegroundService = walkViewModel::stopForegroundService
     )
 }
 
@@ -48,9 +52,21 @@ fun WalkScreen(
 @Composable
 fun WalkScreen(
     todayWalk : Int,
+    startForegroundService : () -> Unit,
+    stopForegroundService : () -> Unit
 ) {
     Column {
         Text(todayWalk.toString())
+        Button(
+            onClick = startForegroundService
+        ) {
+            Text("측정 시작")
+        }
+        Button(
+            onClick = stopForegroundService
+        ) {
+            Text("측정 종료")
+        }
     }
 }
 
@@ -59,7 +75,10 @@ fun WalkScreen(
 fun WalkScreenPreview() {
     MypatTheme {
         WalkScreen(
-            todayWalk = 100
+            todayWalk = 100,
+            startForegroundService = {},
+            stopForegroundService = {},
+
         )
     }
 }

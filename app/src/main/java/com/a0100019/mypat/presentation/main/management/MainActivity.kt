@@ -3,6 +3,7 @@ package com.a0100019.mypat.presentation.main.management
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import com.a0100019.mypat.presentation.daily.walk.RequestPermissionScreen
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -14,6 +15,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             MypatTheme {
                 MainNavHost()
+                RequestPermissionScreen()
             }
         }
     }
