@@ -69,40 +69,6 @@ class WalkViewModel @Inject constructor(
         }
     }
 
-//
-//    // ✅ 걸음 수 데이터 감지 및 업데이트
-//    private fun observeSteps() {
-//        viewModelScope.launch {
-//            StepCounterService.stepsFlow.collectLatest { stepCount ->
-//                intent {
-//                    reduce { state.copy(todayWalk = stepCount) }
-//                }
-//                Log.d("WalkViewModel", "✅ 걸음 수 업데이트됨: $stepCount")
-//            }
-//        }
-//    }
-//
-//    fun startForegroundService() {
-//        Log.d("WalkViewModel", "✅ Foreground Service 시작 버튼 클릭됨")
-//
-//        val intent = Intent(application, StepCounterService::class.java)
-//
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            application.startForegroundService(intent)
-//            Log.d("WalkViewModel", "✅ startForegroundService 호출됨")
-//        } else {
-//            application.startService(intent)
-//            Log.d("WalkViewModel", "✅ startService 호출됨")
-//        }
-//    }
-//
-//
-//    // ✅ Foreground Service 중지
-//    fun stopForegroundService() {
-//        Log.d("WalkViewModel", "🚨 Foreground Service 중지 버튼 클릭됨")
-//        val intent = Intent(application, StepCounterService::class.java)
-//        application.stopService(intent)
-//    }
 }
 
 

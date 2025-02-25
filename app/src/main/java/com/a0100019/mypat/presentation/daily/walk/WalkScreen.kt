@@ -2,6 +2,7 @@ package com.a0100019.mypat.presentation.daily.walk
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -45,43 +46,32 @@ fun WalkScreen(
 
     WalkScreen(
         todayWalk = walkState.todayWalk,
-//
-//        startForegroundService = walkViewModel::startForegroundService,
-//        stopForegroundService = walkViewModel::stopForegroundService
+
     )
 }
-
-
 
 @Composable
 fun WalkScreen(
     todayWalk: Int,
-//    startForegroundService: () -> Unit,
-//    stopForegroundService: () -> Unit
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        modifier = Modifier.fillMaxSize()
     ) {
-        Text(text = "오늘의 걸음 수", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "$todayWalk 걸음", fontSize = 32.sp, fontWeight = FontWeight.Bold)
+        Box(
+            contentAlignment = Alignment.Center, // ✅ 내부 내용물 중앙 정렬
+            modifier = Modifier
+        ) {
+            StepProgressCircle(todayWalk)
+            Column(
+            ) {
+                Text(text = "오늘의 걸음 수", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(text = "$todayWalk 걸음", fontSize = 32.sp, fontWeight = FontWeight.Bold)
 
-        Spacer(modifier = Modifier.height(24.dp))
-
-//        Button(onClick = { startForegroundService() }) {
-//            Text("백그라운드 측정 시작")
-//        }
-//
-//        Spacer(modifier = Modifier.height(8.dp))
-//
-//        Button(onClick = { stopForegroundService() }) {
-//            Text("백그라운드 측정 중지")
-//        }
+            }
+        }
     }
+
 }
 
 @Preview(showBackground = true)
@@ -89,12 +79,7 @@ fun WalkScreen(
 fun WalkScreenPreview() {
     MypatTheme {
         WalkScreen(
-                        todayWalk = 1234 // ✅ 테스트용 더미 걸음 수 (예: 1234 걸음)
-
-
-
-//            startForegroundService = {},
-//            stopForegroundService = {},
+            todayWalk = 1234 // ✅ 테스트용 더미 걸음 수 (예: 1234 걸음)
 
         )
     }

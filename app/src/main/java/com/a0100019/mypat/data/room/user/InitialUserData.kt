@@ -10,7 +10,7 @@ fun getUserInitialData(): List<User> {
         User(id = "cash", value = "50"),
         User(id = "name", value = "익명"),
         User(id = "englishLevel", value = "0"),
-        User(id = "today", value = "0"),
+        User(id = "date", value = "0", value2 = "2025-02-05"),
         User(id = "firstGame", value = "0"), //2는 level, 3은 pat index
         User(id = "secondGame", value = "0"),
         User(id = "thirdGame", value = "0"),
