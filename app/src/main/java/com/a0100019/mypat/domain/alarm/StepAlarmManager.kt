@@ -1,5 +1,6 @@
 package com.a0100019.mypat.domain.alarm
 
+import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
@@ -11,6 +12,7 @@ import javax.inject.Inject
 
 class StepAlarmManager @Inject constructor(@ApplicationContext private val context: Context) {
 
+    @SuppressLint("MissingPermission")
     fun setDailyAlarm() {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, DailyTaskReceiver::class.java)
@@ -26,16 +28,15 @@ class StepAlarmManager @Inject constructor(@ApplicationContext private val conte
             set(Calendar.SECOND, 0)
             set(Calendar.MILLISECOND, 0)
 
-            // ✅ 현재 시간이 03:00 이후라면 다음 날 실행
             if (timeInMillis <= System.currentTimeMillis()) {
-                add(Calendar.DAY_OF_YEAR, 1)
+                add(Calendar.DAY_OF_YEAR, 1) // ✅ 현재 시간이 지나면 다음날 03:00로 설정
             }
         }
 
-        alarmManager.setRepeating(
+        // ✅ 정확한 시간에 실행되도록 `setExactAndAllowWhileIdle` 사용
+        alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
             calendar.timeInMillis,
-            AlarmManager.INTERVAL_DAY,
             pendingIntent
         )
 
