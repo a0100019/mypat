@@ -40,7 +40,6 @@ class WalkViewModel @Inject constructor(
     )
 
     private val _todayWalk = MutableStateFlow(0)
-    val todayWalk: StateFlow<Int> = _todayWalk
 
 //    // 뷰 모델 초기화 시 모든 user 데이터를 로드 및 걸음 수 추적 시작
 //    init {
@@ -50,10 +49,9 @@ class WalkViewModel @Inject constructor(
 //    private fun loadData() = intent {
 //    }
 
+//걸음수 멈추기 추가
 
     init {
-//        startForegroundService() // ✅ 앱이 실행될 때 자동으로 Foreground Service 시작
-//        observeSteps() // ✅ 걸음 수 감지
         observeStepCount()
         stepCounterManager.startListening()
     }
