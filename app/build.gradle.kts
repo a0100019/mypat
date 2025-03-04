@@ -106,10 +106,8 @@ dependencies {
     //workManager
     implementation(libs.androidx.work.runtime.ktx)
 
-    implementation("com.patrykandpatrick.vico:compose:1.12.0")
-    implementation("com.patrykandpatrick.vico:compose-m3:1.12.0")
-    implementation("com.patrykandpatrick.vico:core:1.12.0")
-    implementation("com.patrykandpatrick.vico:views:1.12.0")
+    //chart
+    implementation("co.yml:ycharts:2.1.0")
 
 
 

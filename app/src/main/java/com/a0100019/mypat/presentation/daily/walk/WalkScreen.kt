@@ -1,7 +1,10 @@
+@file:Suppress("UNUSED_EXPRESSION")
+
 package com.a0100019.mypat.presentation.daily.walk
 
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.a0100019.mypat.data.room.walk.Walk
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.orbitmvi.orbit.compose.collectAsState
@@ -53,13 +57,21 @@ fun WalkScreen(
 
     WalkScreen(
         todayWalk = walkState.todayWalk,
+        walkDataList = walkState.walkDataList,
+        mode = walkState.chartMode,
 
+        changeWalkMode = walkViewModel::changeChartMode,
     )
 }
 
 @Composable
 fun WalkScreen(
+    walkDataList: List<Walk>,
+
     todayWalk: Int,
+    mode: String,
+
+    changeWalkMode: (String) -> Unit,
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -94,7 +106,7 @@ fun WalkScreen(
         }
 
         Column(
-            modifier = Modifier.weight(0.2f)
+            modifier = Modifier.weight(0.1f)
         ) {
             Row {
                 Text(text = "총 걸음 수 : 1999999")
@@ -105,10 +117,31 @@ fun WalkScreen(
             }
         }
 
-        Box(
-            modifier = Modifier.weight(0.4f)
+        Column (
+            modifier = Modifier
+                .weight(0.4f)
+                .padding(10.dp)
         ) {
+            Row {
+                Text(
+                    text = " 일 ",
+                    modifier = Modifier.clickable {
 
+                    },
+                )
+                Text(
+                        text = " 주 ",
+                modifier = Modifier.clickable {
+                    changeWalkMode("주")
+                },
+                )
+                Text(" 월 ")
+            }
+            WalkLineChart(
+                walkDataList = walkDataList,
+                todayWalk = todayWalk,
+                mode = mode
+            )
         }
 
 
@@ -121,8 +154,10 @@ fun WalkScreen(
 fun WalkScreenPreview() {
     MypatTheme {
         WalkScreen(
-            todayWalk = 1234 // ✅ 테스트용 더미 걸음 수 (예: 1234 걸음)
-
+            todayWalk = 1234, // ✅ 테스트용 더미 걸음 수 (예: 1234 걸음)
+            walkDataList = emptyList(),
+            changeWalkMode = {},
+            mode = "일"
         )
     }
 }

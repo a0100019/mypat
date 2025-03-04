@@ -18,6 +18,7 @@ import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiomDao
 import com.a0100019.mypat.data.room.koreanIdiom.getKoreanIdiomInitialData
 import com.a0100019.mypat.data.room.pet.getPatInitialData
 import com.a0100019.mypat.data.room.user.getUserInitialData
+import com.a0100019.mypat.data.room.walk.getWalkInitialData
 import com.a0100019.mypat.data.room.world.WorldDao
 import com.a0100019.mypat.data.room.world.getWorldInitialData
 import dagger.Module
@@ -76,6 +77,10 @@ object RoomModule {
                         val worldDao = provideDatabase(context).worldDao()
                         val worldInitialData = getWorldInitialData()
                         worldDao.insertAll(worldInitialData) // 대량 삽입
+
+                        val walkDao = provideDatabase(context).walkDao()
+                        val walkInitialData = getWalkInitialData()
+                        walkDao.insertAll(walkInitialData) // 대량 삽입
 
                     }
                 }
