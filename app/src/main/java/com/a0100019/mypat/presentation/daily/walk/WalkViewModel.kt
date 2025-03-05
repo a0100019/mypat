@@ -19,6 +19,8 @@ import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
+import java.text.SimpleDateFormat
+import java.util.Locale
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 
@@ -60,10 +62,28 @@ class WalkViewModel @Inject constructor(
         val userDataList = userDao.getAllUserData()
         val walkDataList = walkDao.getAllWalkData()
 
+        val walkWeeksDataList =walkDao.getAllWalkData()
+        val recentWalkData = walkWeeksDataList
+            .dropLast(1) // 최신 데이터 제외
+            .takeLast(7) // 최근 7개만 가져오기
+            .map { walkData ->
+                walkData.copy( // 기존 데이터를 수정하여 새로운 리스트 생성
+                    date = try {
+                        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                        val outputFormat = SimpleDateFormat("MM/dd", Locale.getDefault())
+                        val date = inputFormat.parse(walkData.date)
+                        outputFormat.format(date ?: walkData.date)
+                    } catch (e: Exception) {
+                        walkData.date // 변환 실패 시 원본 유지
+                    }
+                )
+            }
+
         reduce {
             state.copy(
                 userDataList = userDataList,
-                walkDataList = walkDataList
+                walkDataList = walkDataList,
+                walkWeeksDataList = recentWalkData
             )
         }
 
@@ -83,7 +103,16 @@ class WalkViewModel @Inject constructor(
 
     fun changeChartMode(mode: String) = intent {
 
-        if (mode == "주") {
+        if(mode == "일") {
+            val walkDataList = walkDao.getAllWalkData()
+
+            reduce {
+                state.copy(
+                    chartMode = "일",
+                    walkDataList = walkDataList
+                )
+            }
+        }else if (mode == "주") {
             val weeksData = mutableListOf<Walk>()
             var weekIndex = 1
 
@@ -110,6 +139,32 @@ class WalkViewModel @Inject constructor(
                     walkDataList = weeksData  // 주 단위로 묶인 데이터로 업데이트
                 )
             }
+        } else {
+            val monthsData = mutableListOf<Walk>()
+            var monthsIndex = 1
+
+            val walkDataList = walkDao.getAllWalkData()
+            // walkDataList를 7일씩 묶고, 각 묶음에 대해 평균을 계산
+            walkDataList.chunked(30).map { weekData ->
+                val averageCount = weekData.map { it.count }.average().toInt() // 평균을 Int로 변환
+
+                val weekLabel = "${monthsIndex}주 전" // 주 번호 설정
+
+                // 첫 번째 날짜를 주 날짜로 사용하고, 평균 count를 저장
+                monthsData.add(
+                    Walk(
+                        date = weekLabel,  // "1주 전", "2주 전" 등
+                        count = averageCount  // 평균 count 값
+                    )
+                )
+                monthsIndex++
+            }
+            reduce {
+                state.copy(
+                    chartMode = "월",  // 차트 모드를 "주"로 변경
+                    walkDataList = monthsData  // 주 단위로 묶인 데이터로 업데이트
+                )
+            }
         }
 
     }
@@ -123,6 +178,7 @@ data class WalkState(
     val todayWalk: Int = 0, // ✅ 걸음 수 저장 (초기값 0)
     val userDataList: List<User> = emptyList(),
     val walkDataList: List<Walk> = emptyList(),
+    val walkWeeksDataList: List<Walk> = emptyList(),
     val chartMode: String = "일"
 )
 

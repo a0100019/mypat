@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -56,8 +57,10 @@ fun WalkScreen(
     }
 
     WalkScreen(
-        todayWalk = walkState.todayWalk,
         walkDataList = walkState.walkDataList,
+        walkWeeksDataList = walkState.walkWeeksDataList,
+
+        todayWalk = walkState.todayWalk,
         mode = walkState.chartMode,
 
         changeWalkMode = walkViewModel::changeChartMode,
@@ -67,6 +70,7 @@ fun WalkScreen(
 @Composable
 fun WalkScreen(
     walkDataList: List<Walk>,
+    walkWeeksDataList: List<Walk>,
 
     todayWalk: Int,
     mode: String,
@@ -100,10 +104,34 @@ fun WalkScreen(
         Row(
             modifier = Modifier.weight(0.1f)
         ) {
-            StepProgressCircle(
-                steps = todayWalk,
-                )
+
+
+            repeat(walkWeeksDataList.size) { index ->
+                Box(
+                    modifier = Modifier
+                        .weight(1f) // 균등 배치
+                        .aspectRatio(1f) // 정사각형 유지
+                        .padding(5.dp)
+                ) {
+                    StepProgressCircle(steps = walkWeeksDataList[walkWeeksDataList.size - 1 - index].count)
+                    Text(walkWeeksDataList[walkWeeksDataList.size - 1 - index].date)
+                }
+            }
+
+            repeat(7 - walkWeeksDataList.size) {
+                Box(
+                    modifier = Modifier
+                        .weight(1f) // 균등 배치
+                        .aspectRatio(1f) // 정사각형 유지
+                        .padding(5.dp)
+                ) {
+                    StepProgressCircle(steps = 0)
+                }
+            }
+
+
         }
+
 
         Column(
             modifier = Modifier.weight(0.1f)
@@ -126,16 +154,21 @@ fun WalkScreen(
                 Text(
                     text = " 일 ",
                     modifier = Modifier.clickable {
-
+                        changeWalkMode("일")
                     },
                 )
                 Text(
                         text = " 주 ",
                 modifier = Modifier.clickable {
                     changeWalkMode("주")
-                },
+                    },
                 )
-                Text(" 월 ")
+                Text(
+                    text = " 월 ",
+                    modifier = Modifier.clickable {
+                        changeWalkMode("월")
+                    },
+                )
             }
             WalkLineChart(
                 walkDataList = walkDataList,
@@ -156,6 +189,7 @@ fun WalkScreenPreview() {
         WalkScreen(
             todayWalk = 1234, // ✅ 테스트용 더미 걸음 수 (예: 1234 걸음)
             walkDataList = emptyList(),
+            walkWeeksDataList = listOf(Walk(date = "2024-11-22", count = 1000), Walk(date = "2024-12-02", count = 5000), Walk(date = "2024-11-22", count = 20000),),
             changeWalkMode = {},
             mode = "일"
         )

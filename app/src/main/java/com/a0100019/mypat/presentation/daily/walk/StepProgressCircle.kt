@@ -5,6 +5,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -23,7 +24,7 @@ import androidx.compose.ui.unit.dp
 fun StepProgressCircle(
     steps: Int,
     goal: Int = 10000,
-    @SuppressLint("ModifierParameter") modifier: Modifier = Modifier.fillMaxSize()) {
+    @SuppressLint("ModifierParameter") modifier: Modifier = Modifier.fillMaxSize().aspectRatio(1f)) {
     val progress = (steps.toFloat() / goal).coerceIn(0f, 1f) // ✅ 0~1 범위로 정규화
     val sweepAngle = progress * 360 // ✅ 채울 각도 (0~360도)
 
