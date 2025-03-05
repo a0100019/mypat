@@ -1,6 +1,7 @@
 package com.a0100019.mypat.presentation.main
 
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.a0100019.mypat.data.room.item.Item
@@ -95,8 +96,10 @@ class MainViewModel @Inject constructor(
                     }
                 }
             } catch (e: Exception) {
+                Log.e("DataLoadError", "데이터 로드 중 에러 발생: ${e.message}", e)
                 postSideEffect(MainSideEffect.Toast("데이터 로드 에러"))
             }
+
         }
     }
 

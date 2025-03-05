@@ -29,7 +29,7 @@ fun getWalkInitialData(): List<Walk> {
         Walk(date = "2024-03-02", count = 10000),
         Walk(date = "2024-03-02", count = 10000),
         Walk(date = "2024-03-02", count = 10000),
-        Walk(date = "2024-03-02", count = 10000),
+        Walk(date = "2024-03-05", count = 1000, steps = 5000),
 
 
     )

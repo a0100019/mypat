@@ -61,11 +61,14 @@ class WalkViewModel @Inject constructor(
 
         val userDataList = userDao.getAllUserData()
         val walkDataList = walkDao.getAllWalkData()
+        val totalWalkCount = walkDataList.sumOf { it.count }
+        val maxWalkCount = walkDataList.maxOfOrNull { it.count } ?: 0
+        val goalCount = walkDataList.count { it.count >= 10000 }
 
         val walkWeeksDataList =walkDao.getAllWalkData()
         val recentWalkData = walkWeeksDataList
-            .dropLast(1) // 최신 데이터 제외
-            .takeLast(7) // 최근 7개만 가져오기
+            .drop(1) // 최신 데이터 제외
+            .take(7) // 최근 7개만 가져오기
             .map { walkData ->
                 walkData.copy( // 기존 데이터를 수정하여 새로운 리스트 생성
                     date = try {
@@ -78,12 +81,16 @@ class WalkViewModel @Inject constructor(
                     }
                 )
             }
+            .reversed()
 
         reduce {
             state.copy(
                 userDataList = userDataList,
                 walkDataList = walkDataList,
-                walkWeeksDataList = recentWalkData
+                walkWeeksDataList = recentWalkData,
+                totalWalkCount = totalWalkCount,
+                maxWalkCount = maxWalkCount,
+                goalCount = goalCount
             )
         }
 
@@ -103,67 +110,73 @@ class WalkViewModel @Inject constructor(
 
     fun changeChartMode(mode: String) = intent {
 
-        if(mode == "일") {
-            val walkDataList = walkDao.getAllWalkData()
+        when (mode) {
+            "일" -> {
+                val walkDataList = walkDao.getAllWalkData()
 
-            reduce {
-                state.copy(
-                    chartMode = "일",
-                    walkDataList = walkDataList
-                )
-            }
-        }else if (mode == "주") {
-            val weeksData = mutableListOf<Walk>()
-            var weekIndex = 1
-
-            // walkDataList를 7일씩 묶고, 각 묶음에 대해 평균을 계산
-            state.walkDataList.chunked(7).map { weekData ->
-                val averageCount = weekData.map { it.count }.average().toInt() // 평균을 Int로 변환
-
-                val weekLabel = "${weekIndex}주 전" // 주 번호 설정
-
-                // 첫 번째 날짜를 주 날짜로 사용하고, 평균 count를 저장
-                weeksData.add(
-                    Walk(
-                        date = weekLabel,  // "1주 전", "2주 전" 등
-                        count = averageCount  // 평균 count 값
+                reduce {
+                    state.copy(
+                        chartMode = "일",
+                        walkDataList = walkDataList
                     )
-                )
-                weekIndex++
+                }
             }
+            "주" -> {
+                val weeksData = mutableListOf<Walk>()
+                var weekIndex = 1
 
-            // reduce를 사용해 새로운 상태로 업데이트
-            reduce {
-                state.copy(
-                    chartMode = "주",  // 차트 모드를 "주"로 변경
-                    walkDataList = weeksData  // 주 단위로 묶인 데이터로 업데이트
-                )
-            }
-        } else {
-            val monthsData = mutableListOf<Walk>()
-            var monthsIndex = 1
+                val walkDataList = walkDao.getAllWalkData()
 
-            val walkDataList = walkDao.getAllWalkData()
-            // walkDataList를 7일씩 묶고, 각 묶음에 대해 평균을 계산
-            walkDataList.chunked(30).map { weekData ->
-                val averageCount = weekData.map { it.count }.average().toInt() // 평균을 Int로 변환
+                // walkDataList를 7일씩 묶고, 각 묶음에 대해 평균을 계산
+                walkDataList.chunked(7).map { weekData ->
+                    val averageCount = weekData.map { it.count }.average().toInt() // 평균을 Int로 변환
 
-                val weekLabel = "${monthsIndex}주 전" // 주 번호 설정
+                    val weekLabel = "${weekIndex}주 전" // 주 번호 설정
 
-                // 첫 번째 날짜를 주 날짜로 사용하고, 평균 count를 저장
-                monthsData.add(
-                    Walk(
-                        date = weekLabel,  // "1주 전", "2주 전" 등
-                        count = averageCount  // 평균 count 값
+                    // 첫 번째 날짜를 주 날짜로 사용하고, 평균 count를 저장
+                    weeksData.add(
+                        Walk(
+                            date = weekLabel,  // "1주 전", "2주 전" 등
+                            count = averageCount  // 평균 count 값
+                        )
                     )
-                )
-                monthsIndex++
+                    weekIndex++
+                }
+
+                // reduce를 사용해 새로운 상태로 업데이트
+                reduce {
+                    state.copy(
+                        chartMode = "주",  // 차트 모드를 "주"로 변경
+                        walkDataList = weeksData  // 주 단위로 묶인 데이터로 업데이트
+                    )
+                }
             }
-            reduce {
-                state.copy(
-                    chartMode = "월",  // 차트 모드를 "주"로 변경
-                    walkDataList = monthsData  // 주 단위로 묶인 데이터로 업데이트
-                )
+            else -> {
+                val monthsData = mutableListOf<Walk>()
+                var monthsIndex = 1
+
+                val walkDataList = walkDao.getAllWalkData()
+                // walkDataList를 7일씩 묶고, 각 묶음에 대해 평균을 계산
+                walkDataList.chunked(30).map { weekData ->
+                    val averageCount = weekData.map { it.count }.average().toInt() // 평균을 Int로 변환
+
+                    val weekLabel = "${monthsIndex}주 전" // 주 번호 설정
+
+                    // 첫 번째 날짜를 주 날짜로 사용하고, 평균 count를 저장
+                    monthsData.add(
+                        Walk(
+                            date = weekLabel,  // "1주 전", "2주 전" 등
+                            count = averageCount  // 평균 count 값
+                        )
+                    )
+                    monthsIndex++
+                }
+                reduce {
+                    state.copy(
+                        chartMode = "월",  // 차트 모드를 "주"로 변경
+                        walkDataList = monthsData  // 주 단위로 묶인 데이터로 업데이트
+                    )
+                }
             }
         }
 
@@ -175,11 +188,16 @@ class WalkViewModel @Inject constructor(
 
 @Immutable
 data class WalkState(
-    val todayWalk: Int = 0, // ✅ 걸음 수 저장 (초기값 0)
     val userDataList: List<User> = emptyList(),
     val walkDataList: List<Walk> = emptyList(),
     val walkWeeksDataList: List<Walk> = emptyList(),
-    val chartMode: String = "일"
+
+    val chartMode: String = "일",
+    val todayWalk: Int = 0, // ✅ 걸음 수 저장 (초기값 0)
+    val totalWalkCount: Int = 0,
+    val maxWalkCount: Int = 0,
+    val goalCount: Int = 0,
+
 )
 
 sealed interface WalkSideEffect {

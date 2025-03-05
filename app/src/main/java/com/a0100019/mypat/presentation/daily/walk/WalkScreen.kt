@@ -62,6 +62,9 @@ fun WalkScreen(
 
         todayWalk = walkState.todayWalk,
         mode = walkState.chartMode,
+        totalWalkCount = walkState.totalWalkCount,
+        maxWalkCount = walkState.maxWalkCount,
+        goalCount = walkState.goalCount,
 
         changeWalkMode = walkViewModel::changeChartMode,
     )
@@ -74,6 +77,9 @@ fun WalkScreen(
 
     todayWalk: Int,
     mode: String,
+    totalWalkCount: Int,
+    maxWalkCount: Int,
+    goalCount: Int,
 
     changeWalkMode: (String) -> Unit,
 ) {
@@ -111,7 +117,8 @@ fun WalkScreen(
                     modifier = Modifier
                         .weight(1f) // 균등 배치
                         .aspectRatio(1f) // 정사각형 유지
-                        .padding(5.dp)
+                        .padding(5.dp),
+                    contentAlignment = Alignment.Center
                 ) {
                     StepProgressCircle(steps = walkWeeksDataList[walkWeeksDataList.size - 1 - index].count)
                     Text(walkWeeksDataList[walkWeeksDataList.size - 1 - index].date)
@@ -137,11 +144,11 @@ fun WalkScreen(
             modifier = Modifier.weight(0.1f)
         ) {
             Row {
-                Text(text = "총 걸음 수 : 1999999")
+                Text(text = "총 걸음 수 : $totalWalkCount")
             }
             Row {
-                Text(text = "최고 기록 : 34000")
-                Text(text = "만보 달성 횟수 : 5")
+                Text(text = "최고 기록 : $maxWalkCount")
+                Text(text = "만보 달성 횟수 : $goalCount")
             }
         }
 
@@ -189,9 +196,12 @@ fun WalkScreenPreview() {
         WalkScreen(
             todayWalk = 1234, // ✅ 테스트용 더미 걸음 수 (예: 1234 걸음)
             walkDataList = emptyList(),
-            walkWeeksDataList = listOf(Walk(date = "2024-11-22", count = 1000), Walk(date = "2024-12-02", count = 5000), Walk(date = "2024-11-22", count = 20000),),
+            walkWeeksDataList = listOf(Walk(date = "11/22", count = 1000), Walk(date = "12/02", count = 5000), Walk(date = "12/22", count = 20000),),
             changeWalkMode = {},
-            mode = "일"
+            mode = "일",
+            maxWalkCount = 1000,
+            totalWalkCount = 10000,
+            goalCount = 100
         )
     }
 }
