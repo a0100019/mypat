@@ -85,6 +85,7 @@ object RoomModule {
                     }
                 }
             })
+            .fallbackToDestructiveMigration() //이전 데이터 버리기
             .build()
     }
 

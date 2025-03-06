@@ -15,7 +15,7 @@ fun scheduleDailyInsertUserWorker(context: Context) {
     val workManager = WorkManager.getInstance(context)
 
     // 매일 실행할 시간 (예: 오전 3시)
-    val targetHour = 3
+    val targetHour = 0
     val now = LocalDateTime.now()
     val targetTime = now.withHour(targetHour).withMinute(0).withSecond(0)
 

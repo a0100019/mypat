@@ -30,48 +30,58 @@ class InsertUserWorker @AssistedInject constructor(
     override suspend fun doWork(): Result {
         return withContext(Dispatchers.IO) { // ✅ 백그라운드에서 실행
             try {
-                val sharedPreferences = applicationContext.getSharedPreferences("walk", Context.MODE_PRIVATE)
                 val currentStepCount = stepCounterManager.getStepCount()
-                sharedPreferences.edit().putInt("count", currentStepCount).apply()
 
                 val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-                val yesterday = LocalDate.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+                val yesterday =
+                    LocalDate.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
 
                 val lastData = walkDao.getLatestWalkData()
 
-                if(lastData.date == yesterday) {
+                if(lastData.date != currentDate) {
 
-                    val count = if(lastData.steps < currentStepCount) {
-                        currentStepCount - lastData.steps
-                    } else {
-                        currentStepCount
-                    }
+                    if (lastData.date == yesterday) {
 
-                    userDao.update(id = "date", value = currentDate) // ✅ DAO는 suspend 함수이므로 안전
-                    walkDao.updateCountByDate(date = lastData.date, newCount = lastData.count + count)
-                    walkDao.insert(Walk(date = currentDate, count = 0, steps = currentStepCount))
+                        val count = if (lastData.steps < currentStepCount) {
+                            currentStepCount - lastData.steps
+                        } else {
+                            currentStepCount
+                        }
 
-                } else {
-
-                    val today = LocalDate.now()  // 오늘 날짜
-                    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                    val lastDate = LocalDate.parse(lastData.date, formatter)  // lastData.date를 LocalDate로 변환
-                    val daysDifference = ChronoUnit.DAYS.between(lastDate, today)
-
-                    val count = if(lastData.steps < currentStepCount) {
-                        currentStepCount - lastData.steps
-                    } else {
-                        currentStepCount
-                    }
-
-                    userDao.update(id = "date", value = currentDate) // ✅ DAO는 suspend 함수이므로 안전
-                    if (daysDifference.toInt() != 0) {
-                        walkDao.updateCountByDate(date = lastData.date, newCount = lastData.count + count / daysDifference.toInt())
-                    } else {
+                        userDao.update(id = "date", value = currentDate) // ✅ DAO는 suspend 함수이므로 안전
                         walkDao.updateCountByDate(date = lastData.date, newCount = lastData.count + count)
-                    }
-                    walkDao.insert(Walk(date = currentDate, count = 0, steps = currentStepCount))
+                        walkDao.insert(Walk(date = currentDate, count = 0, steps = currentStepCount))
 
+                    } else {
+
+                        //며칠 차이가 날 때
+                        val today = LocalDate.now()  // 오늘 날짜
+                        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                        val lastDate =
+                            LocalDate.parse(lastData.date, formatter)  // lastData.date를 LocalDate로 변환
+                        val daysDifference = ChronoUnit.DAYS.between(lastDate, today)
+
+                        val count = if (lastData.steps < currentStepCount) {
+                            currentStepCount - lastData.steps
+                        } else {
+                            currentStepCount
+                        }
+
+                        userDao.update(id = "date", value = currentDate) // ✅ DAO는 suspend 함수이므로 안전
+                        if (daysDifference.toInt() != 0) {
+                            walkDao.updateCountByDate(
+                                date = lastData.date,
+                                newCount = lastData.count + count / daysDifference.toInt()
+                            )
+                        } else {
+                            walkDao.updateCountByDate(
+                                date = lastData.date,
+                                newCount = lastData.count + count
+                            )
+                        }
+                        walkDao.insert(Walk(date = currentDate, count = 0, steps = currentStepCount))
+
+                    }
                 }
 
 
