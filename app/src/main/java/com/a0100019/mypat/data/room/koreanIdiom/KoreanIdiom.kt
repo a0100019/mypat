@@ -6,13 +6,14 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "koreanIdiom_table")
 data class KoreanIdiom(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val date: String = "0",
-    val idiom: String,
-    val korean: String,
-    val meaning: String,
-    val korean1: String,
-    val korean2: String,
-    val korean3: String,
-    val korean4: String,
-    val image: String,
+    var date: String = "0",
+    var state: String = "미정",
+    val idiom: String = "한자",
+    val korean: String = "해설",
+    val meaning: String = "뜻",
+    val korean1: String = "1",
+    val korean2: String = "2",
+    val korean3: String = "3",
+    val korean4: String = "4",
+    val image: String = "koreanIdiomImage/jukmagow1.jpg",
 )

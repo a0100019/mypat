@@ -22,7 +22,7 @@ sealed class MainRoute(
 
     object EnglishScreen : MainRoute("EnglishScreen")
 
-    object KoreanIdiomScreen : MainRoute("KoreanIdiomScreen")
+    object KoreanScreen : MainRoute("KoreanScreen")
 
     object WalkScreen : MainRoute("WalkScreen")
 

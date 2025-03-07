@@ -10,7 +10,7 @@ import com.a0100019.mypat.presentation.daily.diary.DiaryScreen
 import com.a0100019.mypat.presentation.daily.diary.DiaryViewModel
 import com.a0100019.mypat.presentation.daily.diary.DiaryWriteScreen
 import com.a0100019.mypat.presentation.daily.english.EnglishScreen
-import com.a0100019.mypat.presentation.daily.koreanIdiom.KoreanIdiomScreen
+import com.a0100019.mypat.presentation.daily.korean.KoreanScreen
 import com.a0100019.mypat.presentation.daily.walk.WalkScreen
 import com.a0100019.mypat.presentation.game.firstGame.FirstGameScreen
 import com.a0100019.mypat.presentation.game.secondGame.SecondGameScreen
@@ -62,8 +62,8 @@ fun MainNavHost() {
                 onEnglishNavigateClick = {
                     navController.navigate(route = MainRoute.EnglishScreen.name)
                 },
-                onKoreanIdiomNavigateClick = {
-                    navController.navigate(route = MainRoute.KoreanIdiomScreen.name)
+                onKoreanNavigateClick = {
+                    navController.navigate(route = MainRoute.KoreanScreen.name)
                 },
                 onWalkNavigateClick = {
                     navController.navigate(route = MainRoute.WalkScreen.name)
@@ -114,8 +114,8 @@ fun MainNavHost() {
             EnglishScreen()
         }
 
-        composable(route = MainRoute.KoreanIdiomScreen.name) {
-            KoreanIdiomScreen()
+        composable(route = MainRoute.KoreanScreen.name) {
+            KoreanScreen()
         }
 
         composable(route = MainRoute.WalkScreen.name) {

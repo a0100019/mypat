@@ -7,9 +7,9 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "diary_table")
 data class Diary(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val date: String,
-    val mood: String,
-    val title: String,
-    val contents: String,
+    var date: String,
+    var mood: String = "미정",
+    var title: String = "제목",
+    var contents: String = "내용",
 )
 

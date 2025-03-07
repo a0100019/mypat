@@ -23,14 +23,14 @@ fun DailyScreen(
     onWalkNavigateClick: () -> Unit,
     onDiaryNavigateClick: () -> Unit,
     onEnglishNavigateClick: () -> Unit,
-    onKoreanIdiomNavigateClick: () -> Unit,
+    onKoreanNavigateClick: () -> Unit,
 ) {
 
     DailyScreen(
         onWalkNavigateClick = onWalkNavigateClick,
         onDiaryNavigateClick = onDiaryNavigateClick,
         onEnglishNavigateClick = onEnglishNavigateClick,
-        onKoreanIdiomNavigateClick = onKoreanIdiomNavigateClick,
+        onKoreanNavigateClick = onKoreanNavigateClick,
         value = ""
     )
     
@@ -43,7 +43,7 @@ fun DailyScreen(
     onWalkNavigateClick: () -> Unit,
     onDiaryNavigateClick: () -> Unit,
     onEnglishNavigateClick: () -> Unit,
-    onKoreanIdiomNavigateClick: () -> Unit,
+    onKoreanNavigateClick: () -> Unit,
     value : String
 ) {
     Surface {
@@ -92,7 +92,7 @@ fun DailyScreen(
                     modifier = Modifier
                         .padding(top = 8.dp)
                         .fillMaxWidth(),
-                    onClick = onKoreanIdiomNavigateClick
+                    onClick = onKoreanNavigateClick
                 ) {
                     Text("사자성어")
                 }
@@ -110,7 +110,7 @@ fun DailyScreenPreview() {
             onWalkNavigateClick = {  },
             onDiaryNavigateClick = {  },
             onEnglishNavigateClick = {  },
-            onKoreanIdiomNavigateClick = {  },
+            onKoreanNavigateClick = {  },
             value = ""
         )
     }
