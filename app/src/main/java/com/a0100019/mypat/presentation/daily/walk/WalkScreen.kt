@@ -136,7 +136,6 @@ fun WalkScreen(
                 }
             }
 
-
         }
 
 
@@ -175,6 +174,15 @@ fun WalkScreen(
                     modifier = Modifier.clickable {
                         changeWalkMode("월")
                     },
+                )
+                Text(
+                    text =
+                        when(mode) {
+                            "일" -> "일일 걸음 수"
+                            "주" -> "주 평균 걸음 수"
+                            else -> "월 평균 걸음 수"
+                        }
+
                 )
             }
             WalkLineChart(

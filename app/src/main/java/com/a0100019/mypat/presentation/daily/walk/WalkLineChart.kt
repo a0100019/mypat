@@ -116,7 +116,7 @@ fun WalkLineChart(
                                         "$dateLabel: ${y.toInt()} 걸음"
                                     } ?: "${y.toInt()} 걸음"
                                 } else {
-                                    ""
+                                    "평균 : ${y.toInt()} 걸음"
                                 }
                             }
                         }

@@ -66,6 +66,7 @@ class WalkViewModel @Inject constructor(
         val totalWalkCount = walkDataList.sumOf { it.count }
         val maxWalkCount = walkDataList.maxOfOrNull { it.count } ?: 0
         val goalCount = walkDataList.count { it.count >= 10000 }
+        val todayDropWalkDataList = walkDataList.drop(1) // 최신 데이터 제외
 
         val walkWeeksDataList =walkDao.getAllWalkData()
         val recentWalkData = walkWeeksDataList
@@ -85,14 +86,27 @@ class WalkViewModel @Inject constructor(
             }
             .reversed()
 
+        val firstData = walkDao.getLatestWalkData()
+        val currentStepCount = stepCounterManager.getStepCount()
+        val count = if (firstData.steps < currentStepCount) {
+            currentStepCount - firstData.steps
+        } else {
+            currentStepCount
+        }
+
+        walkDao.updateCountByDate(date = firstData.date, newCount = firstData.count + count)
+        walkDao.updateStepsByDate(date = firstData.date, newSteps = currentStepCount)
+
         reduce {
             state.copy(
                 userDataList = userDataList,
-                walkDataList = walkDataList,
+                walkDataList = todayDropWalkDataList,
                 walkWeeksDataList = recentWalkData,
                 totalWalkCount = totalWalkCount,
                 maxWalkCount = maxWalkCount,
-                goalCount = goalCount
+                goalCount = goalCount,
+                firstData = firstData
+
             )
         }
 
@@ -103,8 +117,9 @@ class WalkViewModel @Inject constructor(
         viewModelScope.launch {
             stepCounterManager.stepCount.collectLatest { steps ->
                 _todayWalk.value = steps // ✅ 올바르게 값 업데이트
+
                 intent {
-                    reduce { state.copy(todayWalk = steps) } // ✅ _todayWalk -> steps 값 사용
+                    reduce { state.copy(todayWalk = steps - state.firstData.steps + state.firstData.count) } // ✅ _todayWalk -> steps 값 사용
                 }
             }
         }
@@ -114,7 +129,7 @@ class WalkViewModel @Inject constructor(
 
         when (mode) {
             "일" -> {
-                val walkDataList = walkDao.getAllWalkData()
+                val walkDataList = walkDao.getAllWalkData().drop(1) // 최신 데이터 제외
 
                 reduce {
                     state.copy(
@@ -127,7 +142,7 @@ class WalkViewModel @Inject constructor(
                 val weeksData = mutableListOf<Walk>()
                 var weekIndex = 1
 
-                val walkDataList = walkDao.getAllWalkData()
+                val walkDataList = walkDao.getAllWalkData().drop(1) // 최신 데이터 제외
 
                 // walkDataList를 7일씩 묶고, 각 묶음에 대해 평균을 계산
                 walkDataList.chunked(7).map { weekData ->
@@ -153,18 +168,17 @@ class WalkViewModel @Inject constructor(
                     )
                 }
             }
-            else -> {
+            else -> { //월별 통계
                 val monthsData = mutableListOf<Walk>()
                 var monthsIndex = 1
 
-                val walkDataList = walkDao.getAllWalkData()
+                val walkDataList = walkDao.getAllWalkData().drop(1) // 최신 데이터 제외
                 // walkDataList를 7일씩 묶고, 각 묶음에 대해 평균을 계산
                 walkDataList.chunked(30).map { weekData ->
                     val averageCount = weekData.map { it.count }.average().toInt() // 평균을 Int로 변환
 
-                    val weekLabel = "${monthsIndex}주 전" // 주 번호 설정
+                    val weekLabel = "${monthsIndex}달 전" // 주 번호 설정
 
-                    // 첫 번째 날짜를 주 날짜로 사용하고, 평균 count를 저장
                     monthsData.add(
                         Walk(
                             date = weekLabel,  // "1주 전", "2주 전" 등
@@ -199,6 +213,7 @@ data class WalkState(
     val totalWalkCount: Int = 0,
     val maxWalkCount: Int = 0,
     val goalCount: Int = 0,
+    val firstData: Walk = Walk(date = "")
 
 )
 

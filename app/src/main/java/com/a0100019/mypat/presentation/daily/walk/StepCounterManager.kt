@@ -43,8 +43,8 @@ class StepCounterManager @Inject constructor(@ApplicationContext private val con
         return _stepCount.value
     }
 
-    // SharedPreferences에 걸음 수 저장
-    fun saveStepCount(steps: Int) {
-        sharedPreferences.edit().putInt("steps", steps).apply()
-    }
+//    // SharedPreferences에 걸음 수 저장
+//    fun saveStepCount(steps: Int) {
+//        sharedPreferences.edit().putInt("steps", steps).apply()
+//    }
 }
