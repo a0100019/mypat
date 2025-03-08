@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
@@ -25,6 +26,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiom
+import com.a0100019.mypat.presentation.index.IndexItemDialog
+import com.a0100019.mypat.presentation.index.IndexPatDialog
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -47,22 +50,40 @@ fun KoreanScreen(
 
 
     KoreanScreen(
-        koreanOpenDataList = koreanState.koreanOpenDataList,
+        koreanDataList = koreanState.koreanDataList,
         clickKoreanData = koreanState.clickKoreanData,
 
         onKoreanClick = koreanViewModel::onKoreanClick,
-        onReadyClick = koreanViewModel::onReadyClick
+        onReadyClick = koreanViewModel::onReadyClick,
+        onFilterClick = koreanViewModel::onFilterClick,
+        onCloseClick = koreanViewModel::onCloseClick
     )
 }
 
 @Composable
 fun KoreanScreen(
-    koreanOpenDataList : List<KoreanIdiom>,
+    koreanDataList : List<KoreanIdiom>,
     clickKoreanData : KoreanIdiom?,
+    dialogIndex : String?,
 
     onKoreanClick : (KoreanIdiom) -> Unit,
-    onReadyClick : (KoreanIdiom) -> Unit
+    onReadyClick : (KoreanIdiom) -> Unit,
+    onFilterClick : () -> Unit,
+    onCloseClick : () -> Unit
 ) {
+
+    // 다이얼로그 표시
+    if (clickKoreanData != null && clickKoreanData.state == "대기") {
+        KoreanReadyDialog(
+
+        )
+    } else if(clickKoreanData != null && clickKoreanData.state != "대기") {
+        KoreanDialog(
+            koreanData = clickKoreanData,
+            onClose = {}
+        )
+    }
+
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -74,14 +95,25 @@ fun KoreanScreen(
             color = Color.Black // Text color
         )
 
+        Button (
+            onClick = onFilterClick
+        ){
+            Text(
+            text = "필터",
+            fontSize = 32.sp, // Large font size
+            fontWeight = FontWeight.Bold, // Bold text
+            color = Color.Black // Text color
+            )
+        }
+
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp) // 카드 사이 간격 추가
         ) {
-            itemsIndexed(koreanOpenDataList.reversed()) { index, koreanData ->
+            itemsIndexed(koreanDataList) { index, koreanData ->
 
-                if(koreanData.state != "준비"){
+                if(koreanData.state != "대기"){
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -106,7 +138,7 @@ fun KoreanScreen(
                             .padding(horizontal = 8.dp)
                             .background(color = Color.Cyan),
                         shape = RoundedCornerShape(12.dp), // 둥근 테두리
-                        //elevation = CardDefaults.elevatedCardElevation(4.dp), // 그림자 효과
+                        elevation = CardDefaults.elevatedCardElevation(4.dp), // 그림자 효과
                         onClick = { onReadyClick(koreanData) }
                     ) {
                         Column(
@@ -128,10 +160,11 @@ fun KoreanScreen(
 fun KoreanScreenPreview() {
     MypatTheme {
         KoreanScreen(
-            koreanOpenDataList = listOf(KoreanIdiom()),
+            koreanDataList = listOf(KoreanIdiom()),
             clickKoreanData = KoreanIdiom(),
             onKoreanClick = {},
-            onReadyClick = {}
+            onReadyClick = {},
+            onFilterClick = {}
 
         )
     }

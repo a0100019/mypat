@@ -42,15 +42,34 @@ class KoreanViewModel @Inject constructor(
 
     //room에서 데이터 가져옴
     private fun loadData() = intent {
-        val koreanOpenDataList = koreanDao.getOpenKoreanIdiomData()
-        val koreanStarList = koreanDao.getStarKoreanIdiomData()
+        val koreanDataList = koreanDao.getOpenKoreanIdiomData()
 
         reduce {
             state.copy(
-                koreanOpenDataList = koreanOpenDataList,
-                koreanStarDataList = koreanStarList
+                koreanDataList = koreanDataList,
 
             )
+        }
+    }
+
+    fun onFilterClick() = intent {
+
+        if(state.filter == "일반") {
+            val koreanStarList = koreanDao.getStarKoreanIdiomData()
+            reduce {
+                state.copy(
+                    filter = "별",
+                    koreanDataList = koreanStarList
+                )
+            }
+        } else {
+            val koreanDataList = koreanDao.getOpenKoreanIdiomData()
+            reduce {
+                state.copy(
+                    filter = "일반",
+                    koreanDataList = koreanDataList
+                )
+            }
         }
     }
 
@@ -62,18 +81,26 @@ class KoreanViewModel @Inject constructor(
 
     }
 
+    fun onCloseClick() = intent {
+        reduce {
+            state.copy(
+                clickKoreanData = null
+            )
+        }
+    }
+
 }
 
 
 @Immutable
 data class KoreanState(
     val userData: List<User> = emptyList(),
-    val koreanOpenDataList: List<KoreanIdiom> = emptyList(),
-    val koreanStarDataList: List<KoreanIdiom> = emptyList(),
+    val koreanDataList: List<KoreanIdiom> = emptyList(),
 
     val clickKoreanData: KoreanIdiom? = null,
     val todayKoreanData: KoreanIdiom = KoreanIdiom(),
     val filter: String = "일반",
+
 )
 
 
