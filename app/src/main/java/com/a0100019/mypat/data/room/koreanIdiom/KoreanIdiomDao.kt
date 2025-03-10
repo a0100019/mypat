@@ -5,6 +5,8 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
+import com.a0100019.mypat.data.room.diary.Diary
 import com.a0100019.mypat.data.room.user.User
 import kotlinx.coroutines.flow.Flow
 
@@ -15,6 +17,9 @@ interface KoreanIdiomDao {
 
     @Delete
     suspend fun delete(koreanIdiom: KoreanIdiom)
+
+    @Update
+    suspend fun update(koreanIdiom: KoreanIdiom)
 
     @Query("SELECT * FROM koreanIdiom_table ORDER BY id DESC")
     suspend fun getAllKoreanIdiomData(): List<KoreanIdiom>

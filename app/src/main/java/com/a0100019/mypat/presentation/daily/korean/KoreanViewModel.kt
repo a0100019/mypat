@@ -74,11 +74,12 @@ class KoreanViewModel @Inject constructor(
     }
 
     fun onKoreanClick(koreanIdiom: KoreanIdiom) = intent {
-
-    }
-
-    fun onReadyClick(koreanIdiom: KoreanIdiom) = intent {
-
+        reduce {
+            state.copy(
+                clickKoreanData = koreanIdiom,
+                clickKoreanDataState = koreanIdiom.state
+            )
+        }
     }
 
     fun onCloseClick() = intent {
@@ -87,6 +88,28 @@ class KoreanViewModel @Inject constructor(
                 clickKoreanData = null
             )
         }
+    }
+
+    fun onStateChangeClick() = intent {
+
+        val stateChangeKoreanData = state.clickKoreanData
+        stateChangeKoreanData!!.state = if(stateChangeKoreanData.state == "별") "완료" else "별"
+        koreanDao.update(stateChangeKoreanData)
+
+        val koreanDataList = state.koreanDataList
+        val updatedList = koreanDataList.map {
+            if (it.id == stateChangeKoreanData.id) stateChangeKoreanData else it
+        }
+
+        reduce {
+            state.copy(
+                clickKoreanData = stateChangeKoreanData,
+                clickKoreanDataState = stateChangeKoreanData.state,
+
+                koreanDataList = updatedList
+            )
+        }
+
     }
 
 }
@@ -100,6 +123,7 @@ data class KoreanState(
     val clickKoreanData: KoreanIdiom? = null,
     val todayKoreanData: KoreanIdiom = KoreanIdiom(),
     val filter: String = "일반",
+    val clickKoreanDataState: String = ""
 
 )
 

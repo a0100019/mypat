@@ -1,7 +1,9 @@
 package com.a0100019.mypat.presentation.daily.korean
 
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -9,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,11 +23,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiom
 import com.a0100019.mypat.presentation.index.IndexItemDialog
 import com.a0100019.mypat.presentation.index.IndexPatDialog
@@ -52,11 +57,12 @@ fun KoreanScreen(
     KoreanScreen(
         koreanDataList = koreanState.koreanDataList,
         clickKoreanData = koreanState.clickKoreanData,
+        clickKoreanDataState = koreanState.clickKoreanDataState,
 
         onKoreanClick = koreanViewModel::onKoreanClick,
-        onReadyClick = koreanViewModel::onReadyClick,
         onFilterClick = koreanViewModel::onFilterClick,
-        onCloseClick = koreanViewModel::onCloseClick
+        onCloseClick = koreanViewModel::onCloseClick,
+        onStateChangeClick = koreanViewModel::onStateChangeClick
     )
 }
 
@@ -64,23 +70,26 @@ fun KoreanScreen(
 fun KoreanScreen(
     koreanDataList : List<KoreanIdiom>,
     clickKoreanData : KoreanIdiom?,
-    dialogIndex : String?,
+    clickKoreanDataState : String,
 
     onKoreanClick : (KoreanIdiom) -> Unit,
-    onReadyClick : (KoreanIdiom) -> Unit,
     onFilterClick : () -> Unit,
-    onCloseClick : () -> Unit
+    onCloseClick : () -> Unit,
+    onStateChangeClick : () -> Unit
 ) {
 
     // 다이얼로그 표시
     if (clickKoreanData != null && clickKoreanData.state == "대기") {
         KoreanReadyDialog(
-
+            koreanData = clickKoreanData,
+            onClose = onCloseClick,
         )
     } else if(clickKoreanData != null && clickKoreanData.state != "대기") {
         KoreanDialog(
             koreanData = clickKoreanData,
-            onClose = {}
+            onClose = onCloseClick,
+            onStateChangeClick = onStateChangeClick,
+            koreanDataState = clickKoreanDataState
         )
     }
 
@@ -126,6 +135,21 @@ fun KoreanScreen(
                         Column(
                             modifier = Modifier.fillMaxSize()
                         ) {
+                            if(koreanData.state == "완료"){
+                                Image(
+                                    painter = painterResource(id = R.drawable.star_gray),
+                                    contentDescription = "Sample Vector Image",
+                                    modifier = Modifier
+                                        .size(20.dp),
+                                )
+                            } else {
+                                Image(
+                                    painter = painterResource(id = R.drawable.star_yellow),
+                                    contentDescription = "Sample Vector Image",
+                                    modifier = Modifier
+                                        .size(20.dp),
+                                )
+                            }
                             Text(koreanData.idiom)
                             Text(koreanData.korean)
                         }
@@ -139,7 +163,7 @@ fun KoreanScreen(
                             .background(color = Color.Cyan),
                         shape = RoundedCornerShape(12.dp), // 둥근 테두리
                         elevation = CardDefaults.elevatedCardElevation(4.dp), // 그림자 효과
-                        onClick = { onReadyClick(koreanData) }
+                        onClick = { onKoreanClick(koreanData) }
                     ) {
                         Column(
                             modifier = Modifier.fillMaxSize()
@@ -163,8 +187,10 @@ fun KoreanScreenPreview() {
             koreanDataList = listOf(KoreanIdiom()),
             clickKoreanData = KoreanIdiom(),
             onKoreanClick = {},
-            onReadyClick = {},
-            onFilterClick = {}
+            onFilterClick = {},
+            onCloseClick = {},
+            onStateChangeClick = {},
+            clickKoreanDataState = ""
 
         )
     }
