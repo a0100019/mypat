@@ -5,10 +5,13 @@ import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiom
 import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiomDao
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
+import com.a0100019.mypat.presentation.store.StoreSideEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
+import org.orbitmvi.orbit.annotation.OrbitExperimental
+import org.orbitmvi.orbit.syntax.simple.blockingIntent
 import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
@@ -52,6 +55,28 @@ class KoreanViewModel @Inject constructor(
         }
     }
 
+    fun onSubmitClick() = intent {
+        if(state.koreanText == state.clickKoreanData!!.korean) {
+
+            val newClickKoreanData = state.clickKoreanData
+            newClickKoreanData!!.state = "완료"
+
+            koreanDao.update(newClickKoreanData)
+
+            reduce {
+                state.copy(
+                    clickKoreanData = null,
+                    koreanText = "",
+                    clickKoreanDataState = ""
+                )
+            }
+            postSideEffect(KoreanSideEffect.Toast("정답입니다."))
+        } else {
+            postSideEffect(KoreanSideEffect.Toast("오답입니다."))
+        }
+
+    }
+
     fun onFilterClick() = intent {
 
         if(state.filter == "일반") {
@@ -85,7 +110,8 @@ class KoreanViewModel @Inject constructor(
     fun onCloseClick() = intent {
         reduce {
             state.copy(
-                clickKoreanData = null
+                clickKoreanData = null,
+                clickKoreanDataState = ""
             )
         }
     }
@@ -112,6 +138,16 @@ class KoreanViewModel @Inject constructor(
 
     }
 
+
+    //아이디 입력 가능하게 하는 코드
+    @OptIn(OrbitExperimental::class)
+    fun onKoreanTextChange(koreanText: String) = blockingIntent {
+        reduce {
+            state.copy(koreanText = koreanText)
+        }
+    }
+
+
 }
 
 
@@ -123,7 +159,8 @@ data class KoreanState(
     val clickKoreanData: KoreanIdiom? = null,
     val todayKoreanData: KoreanIdiom = KoreanIdiom(),
     val filter: String = "일반",
-    val clickKoreanDataState: String = ""
+    val clickKoreanDataState: String = "",
+    val koreanText: String = "",
 
 )
 

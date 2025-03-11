@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -34,6 +35,9 @@ import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 fun KoreanReadyDialog(
     onClose: () -> Unit,
     koreanData: KoreanIdiom,
+    onKoreanTextChange: (String) -> Unit,
+    koreanText: String,
+    onSubmitClick: () -> Unit,
 ) {
 
     Dialog(
@@ -59,44 +63,42 @@ fun KoreanReadyDialog(
                 }
 
                 Text(
-                    text = koreanData.korean,
-                    style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.padding(16.dp),
-                    color = Color.Black
-                )
-
-                Text(
                     text = koreanData.idiom,
                     style = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier.padding(16.dp),
                     color = Color.Black
                 )
 
-                Row {
-                    Text(koreanData.korean1)
-                    Text(koreanData.korean2)
-                    Text(koreanData.korean3)
-                    Text(koreanData.korean4)
-                }
-
-
                 Text(text = koreanData.meaning)
 
+                OutlinedTextField(
+                    value = koreanText,
+                    onValueChange = onKoreanTextChange,
+                    label = { Text("사자성어") },
+                    placeholder = { Text("사자성어를 입력하세요") },
+                    singleLine = true,
+//            colors = TextFieldDefaults.outlinedTextFieldColors(
+//                focusedBorderColor = Color.Blue,
+//                unfocusedBorderColor = Color.Gray
+//            ),
+                    shape = RoundedCornerShape(8.dp), // 테두리를 둥글게
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                )
 
-                Text("획득 날짜 : ${koreanData.date}")
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // 추가로 원하는 Composable 요소
 
-
                 Button(
-                    onClick = onClose,
+                    onClick = onSubmitClick,
                     modifier = Modifier
                         .align(Alignment.End)
                         .padding(16.dp)
                 ) {
-                    Text("Close")
+                    Text("제출")
                 }
 
             }
@@ -112,6 +114,9 @@ fun KoreanReadyDialogPreview() {
         KoreanReadyDialog(
             onClose = {},
             koreanData = KoreanIdiom(),
+            koreanText = "",
+            onKoreanTextChange = {},
+            onSubmitClick = {}
         )
     }
 }

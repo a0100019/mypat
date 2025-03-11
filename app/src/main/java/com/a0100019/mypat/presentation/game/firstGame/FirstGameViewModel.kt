@@ -347,8 +347,6 @@ class FirstGameViewModel @Inject constructor(
 
 @Immutable
 data class FirstGameState(
-    val id:String = "",
-    val password:String = "",
     val userData: List<User> = emptyList(),
     val snowballX: Dp = 0.dp,
     val snowballY: Dp = 0.dp,
