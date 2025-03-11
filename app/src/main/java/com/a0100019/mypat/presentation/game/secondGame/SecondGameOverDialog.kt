@@ -1,4 +1,4 @@
-package com.a0100019.mypat.presentation.game.firstGame
+package com.a0100019.mypat.presentation.game.secondGame
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -25,13 +25,10 @@ import com.a0100019.mypat.presentation.ui.image.etc.LoveHorizontalLine
 import com.a0100019.mypat.presentation.ui.image.pat.DialogPatImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
-
-
 @Composable
-fun GameOverDialog(
+fun SecondGameOverDialog(
     onClose: () -> Unit,
-    score: Int,
-    level: Int,
+    time: Double,
     userData: List<User>,
     patData: Pat,
     situation: String,
@@ -61,19 +58,17 @@ fun GameOverDialog(
                     LoveHorizontalLine(
                         value = patData.love,
                         totalValue = 10000,
-                        plusValue = score
+                        plusValue = time.toInt()
                     )
                 }
 
-                Text("점수")
-                Text(text = score.toString())
-                Text("레벨")
-                Text(text = level.toString())
+                Text("시간")
+                Text(text = time.toString())
                 if(situation == "신기록") {
                     Text("신기록 달성!!")
                 } else {
                     Text(text = "최고 기록")
-                    Text(text = userData.find { it.id == "curling" }?.value ?: "")
+                    Text(text = userData.find { it.id == "secondGame" }?.value ?: "")
                 }
 
 
@@ -98,10 +93,9 @@ fun GameOverDialog(
 @Composable
 fun GameOverDialogDialogPreview() {
     MypatTheme {
-        GameOverDialog(
+        SecondGameOverDialog(
             onClose = {  },
-            level = 3,
-            score = 190,
+            time = 190.7,
             userData = listOf(User(id = "curling", value = "10000")),
             patData = Pat(url = "pat/cat.json"),
             situation = "종료"

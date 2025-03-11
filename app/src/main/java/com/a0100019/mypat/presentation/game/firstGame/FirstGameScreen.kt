@@ -118,7 +118,7 @@ fun FirstGameScreen(
     )
 
     if (situation == "종료" || situation == "신기록") {
-        GameOverDialog (
+        FirstGameOverDialog (
             onClose = onGameReStartClick,
             score = score,
             level = level,

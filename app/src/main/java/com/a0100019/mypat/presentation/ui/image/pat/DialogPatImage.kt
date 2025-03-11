@@ -11,6 +11,7 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 @Composable
 fun DialogPatImage(
     patUrl: String,
+    modifier : Modifier = Modifier
 ) {
     // `assets` 폴더에서 Lottie 파일 로드
     val composition by rememberLottieComposition(
@@ -21,7 +22,6 @@ fun DialogPatImage(
     LottieAnimation(
         composition = composition,
         iterations = Int.MAX_VALUE,
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = modifier
     )
 }

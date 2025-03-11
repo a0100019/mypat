@@ -1,5 +1,6 @@
 package com.a0100019.mypat.presentation.game.secondGame
 
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,10 +24,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.a0100019.mypat.data.room.pet.Pat
+import com.a0100019.mypat.data.room.user.User
+import com.a0100019.mypat.presentation.game.firstGame.FirstGameOverDialog
 import com.a0100019.mypat.presentation.loading.LoadingSideEffect
 import com.a0100019.mypat.presentation.loading.LoadingState
 import com.a0100019.mypat.presentation.loading.LoadingViewModel
 import com.a0100019.mypat.presentation.ui.image.etc.KoreanIdiomImage
+import com.a0100019.mypat.presentation.ui.image.pat.DialogPatImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -48,40 +53,83 @@ fun SecondGameScreen(
     }
 
     SecondGameScreen(
-        score = secondGameState.score,
         time = secondGameState.time,
         gameState = secondGameState.gameState,
         targetList = secondGameState.targetList,
         goalList = secondGameState.goalList,
+        patData = secondGameState.patData,
+        userData = secondGameState.userData,
         onItemSelected = secondGameViewModel::onItemSelected,
         onGameStartClick = secondGameViewModel::onGameStartClick,
-        onNextLevelClick = secondGameViewModel::onNextLevelClick
+        onNextLevelClick = secondGameViewModel::onNextLevelClick,
+        onFinishClick = secondGameViewModel::onFinishClick,
+        onGameReStartClick = secondGameViewModel::onGameReStartClick,
     )
 }
 
 
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun SecondGameScreen(
-    score : Int,
     time : Double,
     gameState : String,
+    patData : Pat,
+
+    userData : List<User>,
     targetList : List<Int>,
     goalList : List<Int>,
+
     onItemSelected : (Int) -> Unit,
     onGameStartClick : () -> Unit,
     onNextLevelClick : () -> Unit,
+    onFinishClick : () -> Unit,
+    onGameReStartClick: () -> Unit,
 ) {
+
+    if (gameState == "성공" || gameState == "신기록") {
+        SecondGameOverDialog(
+            onClose = onGameReStartClick,
+            userData = userData,
+            patData = patData,
+            situation = gameState,
+            time = time
+        )
+    }
+
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        Text(score.toString())
 
-        Text(time.toString())
-        
+        Text(String.format("%.2f", time))
+
         Box(
             modifier = Modifier
-                .size(100.dp)
+                .size(80.dp)
+                .aspectRatio(1f) // 정사각형 유지
+                .padding(4.dp)
+                .background(
+                    when (goalList[0]) {
+                        1 -> Color.Red
+                        2 -> Color.Magenta
+                        3 -> Color.Green
+                        4 -> Color.Blue
+                        5 -> Color.Cyan
+                        6 -> Color.DarkGray
+                        else -> Color.LightGray
+                    },
+                    shape = RoundedCornerShape(8.dp)
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            if(goalList[0] == 6) {
+                DialogPatImage(patData.url)
+            }
+        }
+
+        Box(
+            modifier = Modifier
+                .size(60.dp)
                 .aspectRatio(1f) // 정사각형 유지
                 .padding(4.dp)
                 .background(
@@ -91,30 +139,15 @@ fun SecondGameScreen(
                         3 -> Color.Green
                         4 -> Color.Blue
                         5 -> Color.Cyan
+                        6 -> Color.DarkGray
                         else -> Color.LightGray
                     },
                     shape = RoundedCornerShape(8.dp)
                 ),
             contentAlignment = Alignment.Center
         ) {
-            Box(
-                modifier = Modifier
-                    .size(80.dp)
-                    .aspectRatio(1f) // 정사각형 유지
-                    .padding(4.dp)
-                    .background(
-                        when (goalList[0]) {
-                            1 -> Color.Red
-                            2 -> Color.Magenta
-                            3 -> Color.Green
-                            4 -> Color.Blue
-                            5 -> Color.Cyan
-                            else -> Color.LightGray
-                        },
-                        shape = RoundedCornerShape(8.dp)
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
+            if(goalList[0] == 6) {
+                DialogPatImage(patData.url)
             }
         }
 
@@ -136,6 +169,7 @@ fun SecondGameScreen(
                                         3 -> Color.Green
                                         4 -> Color.Blue
                                         5 -> Color.Cyan
+                                        6 -> Color.DarkGray
                                         else -> Color.LightGray
                                     }, shape = RoundedCornerShape(8.dp)
                                 )
@@ -144,24 +178,36 @@ fun SecondGameScreen(
                                 },
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(text = actualIndex.toString(), color = Color.White)
+                            if(goalList[0] == 6) {
+                                DialogPatImage(patData.url)
+                            }
                         }
                     }
                 }
             }
         }
 
-        if(gameState == "시작"){
-            Button(
-                onClick = onGameStartClick
-            ) {
-                Text("start")
+        when (gameState) {
+            "시작" -> {
+                Button(
+                    onClick = onGameStartClick
+                ) {
+                    Text("start")
+                }
             }
-        } else {
-            Button(
-                onClick = onNextLevelClick
-            ) {
-                Text("next level")
+            "진행" -> {
+                Button(
+                    onClick = onNextLevelClick
+                ) {
+                    Text("next level")
+                }
+            }
+            "마지막" -> {
+                Button(
+                    onClick = onFinishClick
+                ) {
+                    Text("마지막")
+                }
             }
         }
 
@@ -173,14 +219,17 @@ fun SecondGameScreen(
 fun SecondGameScreenPreview() {
     MypatTheme {
         SecondGameScreen(
-            score = 10000,
             time = 10.4,
             goalList = listOf(1, 2),
             targetList = listOf(1, 2, 3, 4, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
             onItemSelected = {},
             onGameStartClick = {},
             gameState = "진행",
-            onNextLevelClick = {}
+            onNextLevelClick = {},
+            patData = Pat(url = ""),
+            onFinishClick = {},
+            onGameReStartClick = {},
+            userData = listOf(),
         )
     }
 }
