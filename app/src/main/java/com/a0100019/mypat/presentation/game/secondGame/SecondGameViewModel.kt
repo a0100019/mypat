@@ -79,13 +79,21 @@ class SecondGameViewModel @Inject constructor(
         reduce {
             state.copy(
                 gameState = "시작",
-                time = 0.00
+                time = 0.00,
+                targetList = List(25) {0},
+                goalList = List(5) {0},
+                level = 1
             )
         }
     }
 
     fun gameOver() = intent {
         stopTimer()
+        reduce {
+            state.copy(
+                gameState = "실패",
+            )
+        }
     }
 
     private fun stopTimer() {

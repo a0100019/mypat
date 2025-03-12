@@ -26,8 +26,12 @@ import com.a0100019.mypat.presentation.ui.image.pat.DialogPatImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
 @Composable
-fun SecondGameOverDialog(
+fun SecondGameDialog(
     onClose: () -> Unit,
+    time: Double,
+    userData: List<User>,
+    patData: Pat,
+    situation: String,
 ) {
 
 
@@ -43,8 +47,32 @@ fun SecondGameOverDialog(
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
 
-                Text("game over")
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .background(Color.Gray, shape = RoundedCornerShape(16.dp))
+                        .padding(16.dp)
+                ) {
+                    DialogPatImage(patData.url)
+                    LoveHorizontalLine(
+                        value = patData.love,
+                        totalValue = 10000,
+                        plusValue = time.toInt()
+                    )
+                }
 
+                Text("시간")
+                Text(text = time.toString())
+                if(situation == "신기록") {
+                    Text("신기록 달성!!")
+                } else {
+                    Text(text = "최고 기록")
+                    Text(text = userData.find { it.id == "secondGame" }?.value ?: "")
+                }
+
+
+                Spacer(modifier = Modifier.height(8.dp))
 
                 Button(
                     onClick = onClose,
@@ -63,10 +91,14 @@ fun SecondGameOverDialog(
 
 @Preview(showBackground = true)
 @Composable
-fun SecondGameOverDialogPreview() {
+fun SecondGameDialogPreview() {
     MypatTheme {
-        SecondGameOverDialog(
+        SecondGameDialog(
             onClose = {  },
+            time = 190.7,
+            userData = listOf(User(id = "curling", value = "10000")),
+            patData = Pat(url = "pat/cat.json"),
+            situation = "종료"
         )
     }
 }

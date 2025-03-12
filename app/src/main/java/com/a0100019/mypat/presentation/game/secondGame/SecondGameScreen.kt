@@ -19,18 +19,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.data.room.pet.Pat
 import com.a0100019.mypat.data.room.user.User
-import com.a0100019.mypat.presentation.game.firstGame.FirstGameOverDialog
-import com.a0100019.mypat.presentation.loading.LoadingSideEffect
-import com.a0100019.mypat.presentation.loading.LoadingState
-import com.a0100019.mypat.presentation.loading.LoadingViewModel
-import com.a0100019.mypat.presentation.ui.image.etc.KoreanIdiomImage
 import com.a0100019.mypat.presentation.ui.image.pat.DialogPatImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
@@ -59,6 +52,7 @@ fun SecondGameScreen(
         goalList = secondGameState.goalList,
         patData = secondGameState.patData,
         userData = secondGameState.userData,
+        level = secondGameState.level,
         onItemSelected = secondGameViewModel::onItemSelected,
         onGameStartClick = secondGameViewModel::onGameStartClick,
         onNextLevelClick = secondGameViewModel::onNextLevelClick,
@@ -75,6 +69,7 @@ fun SecondGameScreen(
     time : Double,
     gameState : String,
     patData : Pat,
+    level : Int,
 
     userData : List<User>,
     targetList : List<Int>,
@@ -88,7 +83,7 @@ fun SecondGameScreen(
 ) {
 
     if (gameState == "성공" || gameState == "신기록") {
-        SecondGameOverDialog(
+        SecondGameDialog(
             onClose = onGameReStartClick,
             userData = userData,
             patData = patData,
@@ -97,12 +92,18 @@ fun SecondGameScreen(
         )
     }
 
+    if (gameState == "실패") {
+        SecondGameOverDialog(
+            onClose = onGameReStartClick,
+        )
+    }
+
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
 
         Text(String.format("%.2f", time))
-
+        Text(level.toString())
         Box(
             modifier = Modifier
                 .size(80.dp)
@@ -230,6 +231,7 @@ fun SecondGameScreenPreview() {
             onFinishClick = {},
             onGameReStartClick = {},
             userData = listOf(),
+            level = 1
         )
     }
 }
