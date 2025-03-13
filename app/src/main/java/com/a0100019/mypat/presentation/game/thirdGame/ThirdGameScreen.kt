@@ -58,7 +58,9 @@ fun ThirdGameScreen(
         time = thirdGameState.time,
         onStartClick = thirdGameViewModel::makeSudoku,
         onPuzzleClick = thirdGameViewModel::onPuzzleClick,
-        onNumberClick = thirdGameViewModel::onNumberClick
+        onNumberClick = thirdGameViewModel::onNumberClick,
+        onEraserClick = thirdGameViewModel::onEraserClick,
+        onMemoClick = thirdGameViewModel::onMemoClick
     )
 }
 
@@ -72,6 +74,8 @@ fun ThirdGameScreen(
     onStartClick: () -> Unit,
     onPuzzleClick : (Int, Int) -> Unit,
     onNumberClick: (Int) -> Unit,
+    onMemoClick: () -> Unit,
+    onEraserClick: () -> Unit,
 ) {
 
 
@@ -99,7 +103,7 @@ fun ThirdGameScreen(
                             modifier = Modifier
                                 .size(40.dp)
                                 .background(
-                                    if(rowIndex.toString() == clickedPuzzle[0].toString() || colIndex.toString() == clickedPuzzle[1].toString()) {
+                                    if (rowIndex.toString() == clickedPuzzle[0].toString() || colIndex.toString() == clickedPuzzle[1].toString()) {
                                         Color.LightGray
                                     } else {
                                         Color.White
@@ -126,10 +130,20 @@ fun ThirdGameScreen(
                                 },
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(
-                                text = num.toString(),
-                                fontSize = 20.sp
-                            )
+                            Row {
+                                Text(
+                                    text = if (num != 0) num.toString() else "",
+                                    fontSize = 20.sp
+                                )
+                                Text(
+                                    text = if (num != 0) num.toString() else "",
+                                    fontSize = 20.sp
+                                )
+                                Text(
+                                    text = if (num != 0) num.toString() else "",
+                                    fontSize = 20.sp
+                                )
+                            }
                         }
                     }
                 }
@@ -154,6 +168,22 @@ fun ThirdGameScreen(
             }
         }
 
+        Button(
+            onClick = onEraserClick
+        ) {
+            Text(
+                text = "지우개"
+            )
+        }
+
+        Button(
+            onClick = onMemoClick
+        ) {
+            Text(
+                text = "메모"
+            )
+        }
+
 
     }
 
@@ -169,7 +199,9 @@ fun ThirdGameScreenPreview() {
             clickedPuzzle = "35",
             onPuzzleClick = { row, col -> },
             onNumberClick = {},
-            time = 100.1
+            time = 100.1,
+            onEraserClick = {},
+            onMemoClick = {}
         )
     }
 }

@@ -45,7 +45,67 @@ class ThirdGameViewModel @Inject constructor(
 
     }
 
+    fun onEraserClick() = intent {
+        val row = state.clickedPuzzle[0].digitToInt()
+        val col = state.clickedPuzzle[1].digitToInt()
+
+        val newSudoku = state.sudokuBoard.map { it.toMutableList() }.toMutableList()
+        newSudoku[row][col] = 0
+
+        reduce {
+            state.copy(
+                sudokuBoard = newSudoku
+            )
+        }
+    }
+
+    fun onMemoClick() = intent {
+
+    }
+
+
+
     fun onNumberClick(number: Int) = intent {
+
+        val row = state.clickedPuzzle[0].digitToInt()
+        val col = state.clickedPuzzle[1].digitToInt()
+
+        val newSudoku = state.sudokuBoard.map { it.toMutableList() }.toMutableList()
+        newSudoku[row][col] = number
+
+        reduce {
+            state.copy(
+                sudokuBoard = newSudoku
+            )
+        }
+
+        if (newSudoku.all { row -> row.all { it != 0 } }) {
+            var success = 0
+            // 0이 없으면 실행할 코드
+            repeat(9) {it ->
+                if(newSudoku[it].sum() != 45) {
+                    success++
+                }
+            }
+
+            repeat(9) {it ->
+                if(newSudoku.sumOf { it[col] } != 45) {
+                    success++
+                }
+            }
+
+            if(success == 0) {
+                //성공
+                reduce {
+                    state.copy(
+                        gameState = "성공"
+                    )
+                }
+            } else {
+                postSideEffect(ThirdGameSideEffect.Toast("오류가 있습니다."))
+            }
+        }
+
 
     }
 
@@ -93,6 +153,20 @@ class ThirdGameViewModel @Inject constructor(
         }
 
         fillBoard()
+
+        val positions = mutableListOf<Pair<Int, Int>>()
+
+        // 모든 위치를 리스트에 추가
+        for (i in 0 until 9) {
+            for (j in 0 until 9) {
+                positions.add(i to j)
+            }
+        }
+
+        // 무작위로 섞고 처음 count 개만 선택하여 0으로 변경
+        positions.shuffled().take(3).forEach { (row, col) ->
+            board[row][col] = 0
+        }
         // 2차원 배열을 리스트로 변환해서 상태 업데이트
         val newBoard = board.map { it.toList() }
         reduce { state.copy(sudokuBoard = newBoard) }
@@ -128,7 +202,8 @@ data class ThirdGameState(
     val userData: List<User> = emptyList(),
     val sudokuBoard: List<List<Int>> = List(9) { List(9) { 0 } }, // 9x9 스도쿠 보드 추가
     val clickedPuzzle : String = "99",
-    val time : Double = 0.0
+    val time : Double = 0.0,
+    val gameState : String = "대기"
 )
 
 
