@@ -54,6 +54,7 @@ fun ThirdGameScreen(
 
     ThirdGameScreen(
         board = thirdGameState.sudokuBoard,
+        memoBoard = thirdGameState.sudokuMemoBoard,
         clickedPuzzle = thirdGameState.clickedPuzzle,
         time = thirdGameState.time,
         onStartClick = thirdGameViewModel::makeSudoku,
@@ -69,6 +70,7 @@ fun ThirdGameScreen(
 @Composable
 fun ThirdGameScreen(
     board: List<List<Int>>,
+    memoBoard: List<List<String>>,
     clickedPuzzle : String,
     time : Double,
     onStartClick: () -> Unit,
@@ -130,20 +132,37 @@ fun ThirdGameScreen(
                                 },
                             contentAlignment = Alignment.Center
                         ) {
-                            Row {
+
+                            if(num != 0){
                                 Text(
                                     text = if (num != 0) num.toString() else "",
                                     fontSize = 20.sp
                                 )
-                                Text(
-                                    text = if (num != 0) num.toString() else "",
-                                    fontSize = 20.sp
-                                )
-                                Text(
-                                    text = if (num != 0) num.toString() else "",
-                                    fontSize = 20.sp
-                                )
+                            } else {
+
+                                Column {
+
+                                    val numbers = (1..9).map { it.toString() }
+                                    for (row in 0 until 3) {
+                                        Row {
+                                            for (col in 0 until 3) {
+                                                val number = numbers[row * 3 + col]
+                                                Text(
+                                                    text = if (memoBoard[row][col].contains(number)) number else "", // memo에 있으면 보이기
+                                                    fontSize = 24.sp,
+                                                    modifier = Modifier
+                                                        .size(40.dp)
+                                                        .border(1.dp, Color.Black)
+                                                        .padding(8.dp),
+                                                    textAlign = TextAlign.Center
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+
                             }
+
                         }
                     }
                 }
@@ -195,6 +214,7 @@ fun ThirdGameScreenPreview() {
     MypatTheme {
         ThirdGameScreen(
             board = Array(9) { IntArray(9) { 1 } }.map { it.toList() },
+            memoBoard = Array(9) { Array(9) { "123" } }.map { it.toList() },
             onStartClick = {},
             clickedPuzzle = "35",
             onPuzzleClick = { row, col -> },

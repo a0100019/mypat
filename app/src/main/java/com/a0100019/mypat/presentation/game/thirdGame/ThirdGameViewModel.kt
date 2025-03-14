@@ -61,9 +61,38 @@ class ThirdGameViewModel @Inject constructor(
 
     fun onMemoClick() = intent {
 
+        reduce {
+            state.copy(
+                memoMode = !state.memoMode
+            )
+        }
     }
 
+    fun onMemoNumberClick(number: Int) = intent {
 
+        val row = state.clickedPuzzle[0].digitToInt()
+        val col = state.clickedPuzzle[1].digitToInt()
+
+        val newSudoku = state.sudokuMemoBoard.map { it.toMutableList() }.toMutableList()
+
+        val currentValue = newSudoku[row][col]
+
+        val newValue = if (currentValue.contains(number.toString())) {
+            currentValue.replace(number.toString(), "") // 숫자가 있으면 제거
+        } else {
+            (currentValue + number.toString()).toCharArray().sorted().joinToString("") // 숫자가 없으면 추가 후 정렬
+        }
+
+        newSudoku[row][col] = newValue
+
+        reduce {
+            state.copy(
+                sudokuMemoBoard = newSudoku
+            )
+        }
+
+
+    }
 
     fun onNumberClick(number: Int) = intent {
 
@@ -201,9 +230,11 @@ class ThirdGameViewModel @Inject constructor(
 data class ThirdGameState(
     val userData: List<User> = emptyList(),
     val sudokuBoard: List<List<Int>> = List(9) { List(9) { 0 } }, // 9x9 스도쿠 보드 추가
+    val sudokuMemoBoard: List<List<String>> = List(9) { List(9) { "" } }, // 9x9 메모 스도쿠 보드 추가
     val clickedPuzzle : String = "99",
     val time : Double = 0.0,
-    val gameState : String = "대기"
+    val gameState : String = "대기",
+    val memoMode : Boolean = false
 )
 
 
