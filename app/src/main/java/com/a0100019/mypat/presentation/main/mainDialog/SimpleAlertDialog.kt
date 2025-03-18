@@ -8,7 +8,8 @@ import androidx.compose.runtime.Composable
 @Composable
 fun SimpleAlertDialog(
     onConfirm: () -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    text: String = "이 작업을 수행하시겠습니까?"
 ) {
     AlertDialog(
         onDismissRequest = { onDismiss() },
@@ -16,7 +17,7 @@ fun SimpleAlertDialog(
             Text(text = "확인")
         },
         text = {
-            Text("이 작업을 수행하시겠습니까?")
+            Text(text)
         },
         confirmButton = {
             TextButton(onClick = { onConfirm() }) {
