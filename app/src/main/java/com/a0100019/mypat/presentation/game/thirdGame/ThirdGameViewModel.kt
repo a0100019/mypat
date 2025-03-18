@@ -45,17 +45,36 @@ class ThirdGameViewModel @Inject constructor(
 
     }
 
+    fun dataSave() = intent {
+        val sudokuBoard = state.sudokuBoard
+        val sudokuBoardString = buildString {
+            for (rowIndex in sudokuBoard.indices) {
+                for (colIndex in sudokuBoard[rowIndex].indices) {
+                    val value = sudokuBoard[rowIndex][colIndex]
+                    if (value != 0) {
+                        // 값이 0이 아닌 경우 "rowIndex-colIndex-value" 형태로 추가
+                        append("$rowIndex-$colIndex-$value.")
+                    }
+                }
+            }
+            // 마지막 마침표(.) 제거
+            if (isNotEmpty()) deleteAt(lastIndex)
+        }
+    }
+
     fun onEraserClick() = intent {
-        val row = state.clickedPuzzle[0].digitToInt()
-        val col = state.clickedPuzzle[1].digitToInt()
+        if(state.clickedPuzzle != "99") {
+            val row = state.clickedPuzzle[0].digitToInt()
+            val col = state.clickedPuzzle[1].digitToInt()
 
-        val newSudoku = state.sudokuBoard.map { it.toMutableList() }.toMutableList()
-        newSudoku[row][col] = 0
+            val newSudoku = state.sudokuBoard.map { it.toMutableList() }.toMutableList()
+            newSudoku[row][col] = 0
 
-        reduce {
-            state.copy(
-                sudokuBoard = newSudoku
-            )
+            reduce {
+                state.copy(
+                    sudokuBoard = newSudoku
+                )
+            }
         }
     }
 
@@ -70,25 +89,28 @@ class ThirdGameViewModel @Inject constructor(
 
     fun onMemoNumberClick(number: Int) = intent {
 
-        val row = state.clickedPuzzle[0].digitToInt()
-        val col = state.clickedPuzzle[1].digitToInt()
+        if(state.clickedPuzzle != "99") {
+            val row = state.clickedPuzzle[0].digitToInt()
+            val col = state.clickedPuzzle[1].digitToInt()
 
-        val newSudoku = state.sudokuMemoBoard.map { it.toMutableList() }.toMutableList()
+            val newSudoku = state.sudokuMemoBoard.map { it.toMutableList() }.toMutableList()
 
-        val currentValue = newSudoku[row][col]
+            val currentValue = newSudoku[row][col]
 
-        val newValue = if (currentValue.contains(number.toString())) {
-            currentValue.replace(number.toString(), "") // 숫자가 있으면 제거
-        } else {
-            (currentValue + number.toString()).toCharArray().sorted().joinToString("") // 숫자가 없으면 추가 후 정렬
-        }
+            val newValue = if (currentValue.contains(number.toString())) {
+                currentValue.replace(number.toString(), "") // 숫자가 있으면 제거
+            } else {
+                (currentValue + number.toString()).toCharArray().sorted()
+                    .joinToString("") // 숫자가 없으면 추가 후 정렬
+            }
 
-        newSudoku[row][col] = newValue
+            newSudoku[row][col] = newValue
 
-        reduce {
-            state.copy(
-                sudokuMemoBoard = newSudoku
-            )
+            reduce {
+                state.copy(
+                    sudokuMemoBoard = newSudoku
+                )
+            }
         }
 
 
@@ -96,42 +118,44 @@ class ThirdGameViewModel @Inject constructor(
 
     fun onNumberClick(number: Int) = intent {
 
-        val row = state.clickedPuzzle[0].digitToInt()
-        val col = state.clickedPuzzle[1].digitToInt()
+        if(state.clickedPuzzle != "99") {
+            val row = state.clickedPuzzle[0].digitToInt()
+            val col = state.clickedPuzzle[1].digitToInt()
 
-        val newSudoku = state.sudokuBoard.map { it.toMutableList() }.toMutableList()
-        newSudoku[row][col] = number
+            val newSudoku = state.sudokuBoard.map { it.toMutableList() }.toMutableList()
+            newSudoku[row][col] = number
 
-        reduce {
-            state.copy(
-                sudokuBoard = newSudoku
-            )
-        }
-
-        if (newSudoku.all { row -> row.all { it != 0 } }) {
-            var success = 0
-            // 0이 없으면 실행할 코드
-            repeat(9) {it ->
-                if(newSudoku[it].sum() != 45) {
-                    success++
-                }
+            reduce {
+                state.copy(
+                    sudokuBoard = newSudoku
+                )
             }
 
-            repeat(9) {it ->
-                if(newSudoku.sumOf { it[col] } != 45) {
-                    success++
+            if (newSudoku.all { row -> row.all { it != 0 } }) {
+                var success = 0
+                // 0이 없으면 실행할 코드
+                repeat(9) { it ->
+                    if (newSudoku[it].sum() != 45) {
+                        success++
+                    }
                 }
-            }
 
-            if(success == 0) {
-                //성공
-                reduce {
-                    state.copy(
-                        gameState = "성공"
-                    )
+                repeat(9) { it ->
+                    if (newSudoku.sumOf { it[col] } != 45) {
+                        success++
+                    }
                 }
-            } else {
-                postSideEffect(ThirdGameSideEffect.Toast("오류가 있습니다."))
+
+                if (success == 0) {
+                    //성공
+                    reduce {
+                        state.copy(
+                            gameState = "성공"
+                        )
+                    }
+                } else {
+                    postSideEffect(ThirdGameSideEffect.Toast("오류가 있습니다."))
+                }
             }
         }
 
@@ -139,11 +163,20 @@ class ThirdGameViewModel @Inject constructor(
     }
 
     fun onPuzzleClick(rowIndex : Int, colIndex : Int) = intent {
-        reduce {
-            state.copy(
-                clickedPuzzle = rowIndex.toString() + colIndex.toString()
-            )
+        if(state.clickedPuzzle == rowIndex.toString() + colIndex.toString()) {
+            reduce {
+                state.copy(
+                    clickedPuzzle = "99"
+                )
+            }
+        } else {
+            reduce {
+                state.copy(
+                    clickedPuzzle = rowIndex.toString() + colIndex.toString()
+                )
+            }
         }
+
     }
 
     fun makeSudoku() = intent {
@@ -198,7 +231,10 @@ class ThirdGameViewModel @Inject constructor(
         }
         // 2차원 배열을 리스트로 변환해서 상태 업데이트
         val newBoard = board.map { it.toList() }
-        reduce { state.copy(sudokuBoard = newBoard) }
+        reduce { state.copy(
+            sudokuBoard = newBoard,
+            sudokuFirstBoard = newBoard
+        ) }
     }
 
     private fun stopTimer() {
@@ -230,11 +266,12 @@ class ThirdGameViewModel @Inject constructor(
 data class ThirdGameState(
     val userData: List<User> = emptyList(),
     val sudokuBoard: List<List<Int>> = List(9) { List(9) { 0 } }, // 9x9 스도쿠 보드 추가
+    val sudokuFirstBoard: List<List<Int>> = List(9) { List(9) { 0 } }, // 9x9 스도쿠 보드 추가
     val sudokuMemoBoard: List<List<String>> = List(9) { List(9) { "" } }, // 9x9 메모 스도쿠 보드 추가
     val clickedPuzzle : String = "99",
     val time : Double = 0.0,
     val gameState : String = "대기",
-    val memoMode : Boolean = false
+    val memoMode : Boolean = false,
 )
 
 

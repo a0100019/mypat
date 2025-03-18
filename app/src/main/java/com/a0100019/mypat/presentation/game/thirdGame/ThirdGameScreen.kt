@@ -22,6 +22,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -57,11 +58,14 @@ fun ThirdGameScreen(
         memoBoard = thirdGameState.sudokuMemoBoard,
         clickedPuzzle = thirdGameState.clickedPuzzle,
         time = thirdGameState.time,
+        memoMode = thirdGameState.memoMode,
+        firstBoard = thirdGameState.sudokuFirstBoard,
         onStartClick = thirdGameViewModel::makeSudoku,
         onPuzzleClick = thirdGameViewModel::onPuzzleClick,
         onNumberClick = thirdGameViewModel::onNumberClick,
         onEraserClick = thirdGameViewModel::onEraserClick,
-        onMemoClick = thirdGameViewModel::onMemoClick
+        onMemoClick = thirdGameViewModel::onMemoClick,
+        onMemoNumberClick = thirdGameViewModel::onMemoNumberClick
     )
 }
 
@@ -71,13 +75,16 @@ fun ThirdGameScreen(
 fun ThirdGameScreen(
     board: List<List<Int>>,
     memoBoard: List<List<String>>,
+    firstBoard: List<List<Int>>,
     clickedPuzzle : String,
     time : Double,
+    memoMode : Boolean,
     onStartClick: () -> Unit,
     onPuzzleClick : (Int, Int) -> Unit,
     onNumberClick: (Int) -> Unit,
     onMemoClick: () -> Unit,
     onEraserClick: () -> Unit,
+    onMemoNumberClick: (Int) -> Unit,
 ) {
 
 
@@ -97,13 +104,18 @@ fun ThirdGameScreen(
             modifier = Modifier
                 .border(5.dp, Color.Black) // 전체 판 테두리
                 .padding(2.dp) // 테두리 여백
+                .fillMaxWidth()
+                .aspectRatio(1f)
         ) {
             board.forEachIndexed { rowIndex, row ->
-                Row {
+                Row(
+                    modifier = Modifier
+                ) {
                     row.forEachIndexed { colIndex, num ->
                         Box(
                             modifier = Modifier
-                                .size(40.dp)
+                                .weight(1f)
+                                .aspectRatio(1f)
                                 .background(
                                     if (rowIndex.toString() == clickedPuzzle[0].toString() || colIndex.toString() == clickedPuzzle[1].toString()) {
                                         Color.LightGray
@@ -128,7 +140,7 @@ fun ThirdGameScreen(
                                     )
                                 }
                                 .clickable {
-                                    onPuzzleClick(rowIndex, colIndex)
+                                    if(firstBoard[rowIndex][colIndex] == 0){ onPuzzleClick(rowIndex, colIndex) }
                                 },
                             contentAlignment = Alignment.Center
                         ) {
@@ -139,27 +151,38 @@ fun ThirdGameScreen(
                                     fontSize = 20.sp
                                 )
                             } else {
-
-                                Column {
-
-                                    val numbers = (1..9).map { it.toString() }
-                                    for (row in 0 until 3) {
-                                        Row {
-                                            for (col in 0 until 3) {
-                                                val number = numbers[row * 3 + col]
-                                                Text(
-                                                    text = if (memoBoard[row][col].contains(number)) number else "", // memo에 있으면 보이기
-                                                    fontSize = 24.sp,
-                                                    modifier = Modifier
-                                                        .size(40.dp)
-                                                        .border(1.dp, Color.Black)
-                                                        .padding(8.dp),
-                                                    textAlign = TextAlign.Center
-                                                )
-                                            }
-                                        }
-                                    }
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxSize(),
+                                    horizontalArrangement = Arrangement.SpaceEvenly,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "${if(memoBoard[rowIndex][colIndex].contains("1"))"1" else "  "}\n" +
+                                                "${if (memoBoard[rowIndex][colIndex].contains("4")) "4" else "  "}\n" +
+                                                if (memoBoard[rowIndex][colIndex].contains("7")) "7" else "  ",
+                                        fontSize = 12.sp,
+                                        style = TextStyle(lineHeight = 12.sp),
+                                        color = Color.Gray
+                                    )
+                                    Text(
+                                        text = "${if(memoBoard[rowIndex][colIndex].contains("2"))"2" else "  "}\n" +
+                                                "${if (memoBoard[rowIndex][colIndex].contains("5")) "5" else "  "}\n" +
+                                                if (memoBoard[rowIndex][colIndex].contains("8")) "8" else "  ",
+                                        fontSize = 12.sp,
+                                        style = TextStyle(lineHeight = 12.sp),
+                                        color = Color.Gray
+                                    )
+                                    Text(
+                                        text = "${if(memoBoard[rowIndex][colIndex].contains("3"))"3" else "  "}\n" +
+                                                "${if (memoBoard[rowIndex][colIndex].contains("6")) "6" else "  "}\n" +
+                                                if (memoBoard[rowIndex][colIndex].contains("9")) "9" else "  ",
+                                        fontSize = 12.sp,
+                                        style = TextStyle(lineHeight = 12.sp),
+                                        color = Color.Gray
+                                    )
                                 }
+
 
                             }
 
@@ -180,7 +203,11 @@ fun ThirdGameScreen(
                     modifier = Modifier
                         .weight(1f) // 각 텍스트가 동일한 너비를 차지
                         .clickable {
-                            onNumberClick(index + 1)
+                            if (memoMode) {
+                                onMemoNumberClick(index + 1)
+                            } else {
+                                onNumberClick(index + 1)
+                            }
                         },
                     textAlign = TextAlign.Center // 텍스트를 가운데 정렬
                 )
@@ -213,15 +240,18 @@ fun ThirdGameScreen(
 fun ThirdGameScreenPreview() {
     MypatTheme {
         ThirdGameScreen(
-            board = Array(9) { IntArray(9) { 1 } }.map { it.toList() },
+            board = Array(9) { IntArray(9) { 0 } }.map { it.toList() },
+            firstBoard = Array(9) { IntArray(9) { 0 } }.map { it.toList() },
             memoBoard = Array(9) { Array(9) { "123" } }.map { it.toList() },
             onStartClick = {},
             clickedPuzzle = "35",
             onPuzzleClick = { row, col -> },
             onNumberClick = {},
             time = 100.1,
+            memoMode = false,
             onEraserClick = {},
-            onMemoClick = {}
+            onMemoClick = {},
+            onMemoNumberClick = {}
         )
     }
 }

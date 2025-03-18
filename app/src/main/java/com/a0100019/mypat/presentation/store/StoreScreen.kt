@@ -48,6 +48,9 @@ fun StoreScreen(
         onItemRoomUpClick = storeViewModel::onItemRoomUpClick,
         onNameTextChange = storeViewModel::onNameTextChange,
         changeShowDialog = storeViewModel::changeShowDialog,
+        onNameChangeConfirm = storeViewModel::onNameChangeConfirm,
+        onNameChangeClick = storeViewModel::onNameChangeClick,
+        onMoneyChangeClick = storeViewModel::onMoneyChangeClick,
 
         newPat = storeState.newPat,
         userData = storeState.userData,
@@ -71,6 +74,9 @@ fun StoreScreen(
     onSimpleDialog: (String) -> Unit,
     onNameTextChange: (String) -> Unit,
     changeShowDialog: (String) -> Unit,
+    onNameChangeClick: () -> Unit,
+    onNameChangeConfirm: () -> Unit,
+    onMoneyChangeClick: () -> Unit,
 
     newPat: Pat?,
     newItem: Item?,
@@ -118,7 +124,7 @@ fun StoreScreen(
             onClose = onDialogCloseClick,
             userData = userData,
             onNameTextChange = onNameTextChange,
-            onConfirmClick = {},
+            onConfirmClick = onNameChangeConfirm,
             newName = newName
         )
 
@@ -132,6 +138,8 @@ fun StoreScreen(
                     "알을 뽑으시겠습니까?" -> onPatRandomClick()
                     "펫 칸 늘리기" -> onPatRoomUpClick()
                     "아이템 칸 늘리기" -> onItemRoomUpClick()
+                    "가능한 닉네임입니다 변경하겠습니까?" -> onNameChangeClick()
+                    "화폐 변경" -> onMoneyChangeClick()
                 }
                 onSimpleDialog("")
             },
@@ -145,7 +153,7 @@ fun StoreScreen(
     ) {
         Row {
             Text("money : ${userData.find { it.id == "money" }?.value}")
-            Text("cash : ${userData.find {it.id == "cash"}?.value}")
+            Text("cash : ${userData.find {it.id == "money"}?.value2}")
         }
         LazyColumn {
             item {
@@ -183,13 +191,13 @@ fun StoreScreen(
                     Text("닉네임 변경")
                 }
             }
+//            item {
+//                Button(onClick = {}) {
+//                    Text("닉네임 색 입히기")
+//                }
+//            }
             item {
-                Button(onClick = {}) {
-                    Text("닉네임 색 입히기")
-                }
-            }
-            item {
-                Button(onClick = {}) {
+                Button(onClick = {onSimpleDialog("화폐 변경")}) {
                     Text("화폐 변경")
                 }
             }
@@ -210,6 +218,9 @@ fun StoreScreenPreview() {
             onItemRoomUpClick = {},
             onNameTextChange = {},
             changeShowDialog = {},
+            onNameChangeConfirm = {},
+            onNameChangeClick = {},
+            onMoneyChangeClick = {},
 
             newPat = null,
             userData = emptyList(),

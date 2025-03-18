@@ -105,14 +105,14 @@ class StoreViewModel @Inject constructor(
     fun onPatRandomClick() = intent {
         val moneyField = state.userData.find { it.id == "money" }
 
-        if(moneyField!!.value.toInt() >= 100){
-            moneyField.value = (moneyField.value.toInt() - 100).toString()
+        if(moneyField!!.value2.toInt() >= 1){
+            moneyField.value2 = (moneyField.value2.toInt() - 1).toString()
 
             val randomPat = state.allClosePatDataList.random() // 랜덤 객체 선택
             val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) // 현재 날짜 가져오기
             randomPat.date = currentDate // 날짜 업데이트
 
-            userDao.update(id = moneyField.id, value = moneyField.value)
+            userDao.update(id = moneyField.id, value2 = moneyField.value2)
             patDao.update(randomPat)
             reduce {
                 state.copy(
@@ -133,24 +133,25 @@ class StoreViewModel @Inject constructor(
                 newMap = null,
                 newItem = null,
                 newName = "",
-                showDialog = ""
+                showDialog = "",
+                simpleDialogState = ""
             )
         }
     }
 
     fun onPatRoomUpClick() = intent {
-        val cashField = state.userData.find { it.id == "cash" }
+        val moneyField = state.userData.find { it.id == "money" }
         val patRoomField = state.userData.find { it.id == "pat" }
         val firstField = state.patWorldDataList.find { it.open == "0" }
 
-        if(cashField!!.value.toInt() >= 10) {
+        if(moneyField!!.value.toInt() >= 10) {
             if(patRoomField!!.value.toInt() > patRoomField.value2.toInt()) {
                 patRoomField.value2 = (patRoomField.value2.toInt() + 1).toString()
-                cashField.value = (cashField.value.toInt() - 10).toString()
+                moneyField.value = (moneyField.value.toInt() - 10).toString()
                 firstField!!.open = "1"
 
                 userDao.update(id = patRoomField.id, value2 = patRoomField.value2)
-                userDao.update(id = cashField.id, value = cashField.value)
+                userDao.update(id = moneyField.id, value = moneyField.value)
                 worldDao.update(firstField)
                 reduce {
                     state.copy(
@@ -169,18 +170,18 @@ class StoreViewModel @Inject constructor(
     }
 
     fun onItemRoomUpClick() = intent {
-        val cashField = state.userData.find { it.id == "cash" }
+        val moneyField = state.userData.find { it.id == "money" }
         val itemRoomField = state.userData.find { it.id == "item" }
         val firstField = state.itemWorldDataList.find { it.open == "0" }
 
-        if(cashField!!.value.toInt() >= 10) {
+        if(moneyField!!.value.toInt() >= 10) {
             if(itemRoomField!!.value.toInt() > itemRoomField.value2.toInt()) {
                 itemRoomField.value2 = (itemRoomField.value2.toInt() + 1).toString()
-                cashField.value = (cashField.value.toInt() - 10).toString()
+                moneyField.value = (moneyField.value.toInt() - 10).toString()
                 firstField!!.open = "1"
 
                 userDao.update(id = itemRoomField.id, value2 = itemRoomField.value2)
-                userDao.update(id = cashField.id, value = cashField.value)
+                userDao.update(id = moneyField.id, value = moneyField.value)
                 worldDao.update(firstField)
                 reduce {
                     state.copy(
@@ -198,7 +199,36 @@ class StoreViewModel @Inject constructor(
 
     }
 
-    fun onNameChangeClick(string: String) = intent {
+    fun onNameChangeConfirm() = intent {
+        // 조건 추가
+        if(true) {
+            reduce {
+                state.copy(
+                    simpleDialogState = "가능한 닉네임입니다 변경하겠습니까?"
+                )
+            }
+        } else {
+            postSideEffect(StoreSideEffect.Toast("이미 존재하는 닉네임입니다."))
+        }
+    }
+
+    fun onNameChangeClick() = intent {
+
+        val moneyField = state.userData.find { it.id == "money" }
+
+        if(moneyField!!.value.toInt() >= 1) {
+
+            moneyField.value = (moneyField.value.toInt() - 1).toString()
+            userDao.update(id = moneyField.id, value = moneyField.value)
+
+            userDao.update("name", value = state.newName)
+            postSideEffect(StoreSideEffect.Toast("닉네임이 변경되었습니다."))
+            loadData()
+            onDialogCloseClick()
+
+        } else {
+            postSideEffect(StoreSideEffect.Toast("돈이 부족합니다!"))
+        }
 
     }
 
@@ -207,6 +237,25 @@ class StoreViewModel @Inject constructor(
             state.copy(
                 showDialog = string
             )
+        }
+    }
+
+    fun onMoneyChangeClick() = intent {
+        val moneyField = state.userData.find { it.id == "money" }
+
+        if(moneyField!!.value2.toInt() >= 1) {
+
+            moneyField.value2 = (moneyField.value2.toInt() - 1).toString()
+            userDao.update(id = moneyField.id, value2 = moneyField.value2)
+            moneyField.value = (moneyField.value.toInt() + 100).toString()
+            userDao.update(id = moneyField.id, value = moneyField.value)
+
+            postSideEffect(StoreSideEffect.Toast("교환 완료."))
+            loadData()
+            onDialogCloseClick()
+
+        } else {
+            postSideEffect(StoreSideEffect.Toast("cash가 부족합니다!"))
         }
     }
 
