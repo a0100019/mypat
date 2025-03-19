@@ -42,6 +42,7 @@ fun MainScreen(
     onDailyNavigateClick: () -> Unit,
     onStoreNavigateClick: () -> Unit,
     onIndexNavigateClick: () -> Unit,
+    onSettingNavigateClick: () -> Unit,
     onFirstGameNavigateClick: () -> Unit,
     onSecondGameNavigateClick: () -> Unit,
     onThirdGameNavigateClick: () -> Unit,
@@ -69,6 +70,7 @@ fun MainScreen(
         onDailyNavigateClick = onDailyNavigateClick,
         onIndexNavigateClick = onIndexNavigateClick,
         onStoreNavigateClick = onStoreNavigateClick,
+        onSettingNavigateClick = onSettingNavigateClick,
         onFirstGameNavigateClick = onFirstGameNavigateClick,
         onSecondGameNavigateClick = onSecondGameNavigateClick,
         onThirdGameNavigateClick = onThirdGameNavigateClick,
@@ -121,6 +123,7 @@ fun MainScreen(
     onDailyNavigateClick: () -> Unit,
     onStoreNavigateClick: () -> Unit,
     onIndexNavigateClick: () -> Unit,
+    onSettingNavigateClick: () -> Unit,
     onFirstGameNavigateClick: () -> Unit,
     onSecondGameNavigateClick: () -> Unit,
     onThirdGameNavigateClick: () -> Unit,
@@ -212,7 +215,7 @@ fun MainScreen(
                     Text("money : ${users.find { it.id == "money" }?.value} | cash : ${users.find { it.id == "cash" }?.value}")
 
                     Button(
-                        onClick = {}
+                        onClick = onSettingNavigateClick
                     ) {
                         Text("설정")
                     }
@@ -375,6 +378,7 @@ fun MainScreenPreview() {
             onDailyNavigateClick = {},
             onIndexNavigateClick = {},
             onStoreNavigateClick = {},
+            onSettingNavigateClick = {},
             onFirstGameNavigateClick = {},
             onSecondGameNavigateClick = {},
             onThirdGameNavigateClick = {},

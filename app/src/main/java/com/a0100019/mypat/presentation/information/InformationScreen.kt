@@ -1,4 +1,4 @@
-package com.a0100019.mypat.presentation.photo
+package com.a0100019.mypat.presentation.information
 
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -14,9 +14,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.a0100019.mypat.presentation.loading.LoadingSideEffect
-import com.a0100019.mypat.presentation.loading.LoadingState
-import com.a0100019.mypat.presentation.loading.LoadingViewModel
 import com.a0100019.mypat.presentation.ui.image.etc.KoreanIdiomImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
@@ -24,22 +21,22 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 
 
 @Composable
-fun PhotoScreen(
-    photoViewModel: PhotoViewModel = hiltViewModel()
+fun InformationScreen(
+    informationViewModel: InformationViewModel = hiltViewModel()
 
 ) {
 
-    val photoState : PhotoState = photoViewModel.collectAsState().value
+    val informationState : InformationState = informationViewModel.collectAsState().value
 
     val context = LocalContext.current
 
-    photoViewModel.collectSideEffect { sideEffect ->
+    informationViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
-            is PhotoSideEffect.Toast -> Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
+            is InformationSideEffect.Toast -> Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
         }
     }
 
-    PhotoScreen(
+    InformationScreen(
         value = "스크린 나누기"
     )
 }
@@ -47,7 +44,7 @@ fun PhotoScreen(
 
 
 @Composable
-fun PhotoScreen(
+fun InformationScreen(
     value : String
 ) {
     // Fullscreen container
@@ -70,9 +67,9 @@ fun PhotoScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun PhotoScreenPreview() {
+fun InformationScreenPreview() {
     MypatTheme {
-        PhotoScreen(
+        InformationScreen(
             value = ""
         )
     }

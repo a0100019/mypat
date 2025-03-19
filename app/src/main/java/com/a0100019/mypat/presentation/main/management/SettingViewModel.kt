@@ -100,6 +100,12 @@ class SettingViewModel @Inject constructor(
 
     }
 
+    fun onCloseClick() = intent {
+
+    }
+
+
+
 }
 
 

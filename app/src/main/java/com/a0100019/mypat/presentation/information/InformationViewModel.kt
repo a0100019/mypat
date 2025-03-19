@@ -1,4 +1,4 @@
-package com.a0100019.mypat.presentation.photo
+package com.a0100019.mypat.presentation.information
 
 import androidx.lifecycle.ViewModel
 import com.a0100019.mypat.data.room.user.User
@@ -15,16 +15,16 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class PhotoViewModel @Inject constructor(
+class InformationViewModel @Inject constructor(
     private val userDao: UserDao,
-) : ViewModel(), ContainerHost<PhotoState, PhotoSideEffect> {
+) : ViewModel(), ContainerHost<InformationState, InformationSideEffect> {
 
-    override val container: Container<PhotoState, PhotoSideEffect> = container(
-        initialState = PhotoState(),
+    override val container: Container<InformationState, InformationSideEffect> = container(
+        initialState = InformationState(),
         buildSettings = {
             this.exceptionHandler = CoroutineExceptionHandler { _ , throwable ->
                 intent {
-                    postSideEffect(PhotoSideEffect.Toast(message = throwable.message.orEmpty()))
+                    postSideEffect(InformationSideEffect.Toast(message = throwable.message.orEmpty()))
                 }
             }
         }
@@ -46,7 +46,7 @@ class PhotoViewModel @Inject constructor(
 
 
 @Immutable
-data class PhotoState(
+data class InformationState(
     val id:String = "",
     val password:String = "",
     val userData: List<User> = emptyList()
@@ -54,8 +54,8 @@ data class PhotoState(
 
 
 //상태와 관련없는 것
-sealed interface PhotoSideEffect{
-    class Toast(val message:String): PhotoSideEffect
+sealed interface InformationSideEffect{
+    class Toast(val message:String): InformationSideEffect
 //    data object NavigateToDailyActivity: LoadingSideEffect
 
 }

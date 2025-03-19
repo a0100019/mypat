@@ -42,6 +42,9 @@ fun MainNavHost() {
                 onIndexNavigateClick = {
                     navController.navigate(route = MainRoute.IndexScreen.name)
                 },
+                onSettingNavigateClick = {
+                    navController.navigate(route = MainRoute.SettingScreen.name)
+                },
                 onFirstGameNavigateClick = {
                     navController.navigate(route = MainRoute.FirstGameScreen.name)
                 },
@@ -117,6 +120,11 @@ fun MainNavHost() {
         composable(route = MainRoute.KoreanScreen.name) {
             KoreanScreen()
         }
+
+        composable(route = MainRoute.SettingScreen.name) {
+            SettingScreen()
+        }
+
 
         composable(route = MainRoute.WalkScreen.name) {
             WalkScreen()
