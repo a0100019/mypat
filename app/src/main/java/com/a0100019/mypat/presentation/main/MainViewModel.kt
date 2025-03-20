@@ -129,12 +129,6 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun onShowUserInformationDialogClick() = intent {
-        reduce {
-            state.copy(showUserInformationDialog = !state.showUserInformationDialog) // true/false 토글
-        }
-    }
-
     fun dialogPatIdChange(clickId : String) = intent {
         userDao.update(id = "selectPat", value = clickId)
         reduce {
@@ -417,7 +411,6 @@ data class MainState(
     val dialogPatId: String = "0",
     val dialogItemId: String = "0",
     val showWorldAddDialog: Boolean = false,
-    val showUserInformationDialog: Boolean = false,
     val worldChange: Boolean = false,
     val addDialogChange: String = "pat",
 

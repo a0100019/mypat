@@ -42,6 +42,8 @@ fun MainScreen(
     onDailyNavigateClick: () -> Unit,
     onStoreNavigateClick: () -> Unit,
     onIndexNavigateClick: () -> Unit,
+    onInformationNavigateClick: () -> Unit,
+    onCommunityNavigateClick: () -> Unit,
     onSettingNavigateClick: () -> Unit,
     onFirstGameNavigateClick: () -> Unit,
     onSecondGameNavigateClick: () -> Unit,
@@ -71,6 +73,8 @@ fun MainScreen(
         onIndexNavigateClick = onIndexNavigateClick,
         onStoreNavigateClick = onStoreNavigateClick,
         onSettingNavigateClick = onSettingNavigateClick,
+        onInformationNavigateClick = onInformationNavigateClick,
+        onCommunityNavigateClick = onCommunityNavigateClick,
         onFirstGameNavigateClick = onFirstGameNavigateClick,
         onSecondGameNavigateClick = onSecondGameNavigateClick,
         onThirdGameNavigateClick = onThirdGameNavigateClick,
@@ -88,7 +92,6 @@ fun MainScreen(
         onItemSizeDownClick = mainViewModel::onItemSizeDownClick,
         onShowAddDialogClick = mainViewModel::onShowAddDialogClick,
         onAddPatImageClick = mainViewModel::onAddPatImageClick,
-        onShowUserInformationDialogClick = mainViewModel::onShowUserInformationDialogClick,
         onItemDrag = mainViewModel::onItemDrag,
         onPatDrag = mainViewModel::onPatDrag,
         onAddDialogChangeClick = mainViewModel::onAddDialogChangeClick,
@@ -108,7 +111,6 @@ fun MainScreen(
         allPatDataList = mainState.allPatDataList,
         allItemDataList = mainState.allItemDataList,
         userDataList = mainState.userDataList,
-        showUserInformationDialog = mainState.showUserInformationDialog,
         addDialogChange = mainState.addDialogChange,
         mapWorldData = it,
         allMapDataList = mainState.allMapDataList
@@ -124,6 +126,8 @@ fun MainScreen(
     onStoreNavigateClick: () -> Unit,
     onIndexNavigateClick: () -> Unit,
     onSettingNavigateClick: () -> Unit,
+    onInformationNavigateClick: () -> Unit,
+    onCommunityNavigateClick: () -> Unit,
     onFirstGameNavigateClick: () -> Unit,
     onSecondGameNavigateClick: () -> Unit,
     onThirdGameNavigateClick: () -> Unit,
@@ -141,7 +145,6 @@ fun MainScreen(
     onItemSizeDownClick: () -> Unit,
     onShowAddDialogClick: () -> Unit,
     onAddPatImageClick: (String) -> Unit,
-    onShowUserInformationDialogClick: () -> Unit,
     onItemDrag: (String, Float, Float) -> Unit,
     onPatDrag: (String, Float, Float) -> Unit,
     onAddDialogChangeClick: () -> Unit,
@@ -160,7 +163,6 @@ fun MainScreen(
     allPatDataList: List<Pat>,
     allItemDataList: List<Item>,
     userDataList: Flow<List<User>>,
-    showUserInformationDialog: Boolean,
     addDialogChange: String,
     mapWorldData: World,
     allMapDataList: List<Item>
@@ -192,11 +194,6 @@ fun MainScreen(
                 )
             }
 
-            if (showUserInformationDialog) {
-                UserInformationDialog(
-                    onClose = onShowUserInformationDialogClick,
-                )
-            }
 
             Row(
                 modifier = Modifier
@@ -206,7 +203,7 @@ fun MainScreen(
             ) {
                 if(!worldChange){
                     Button(
-                        onClick = onShowUserInformationDialogClick
+                        onClick = onInformationNavigateClick
                     ) {
                         Text("내 정보")
                     }
@@ -241,7 +238,7 @@ fun MainScreen(
                         horizontalArrangement = Arrangement.End
                     ) {
                         Button(
-                            onClick = {  }
+                            onClick = onCommunityNavigateClick
                         ) {
                             Text("커뮤니티")
                         }
@@ -249,11 +246,6 @@ fun MainScreen(
                             onClick = onWorldChangeClick
                         ) {
                             Text("꾸미기 모드")
-                        }
-                        Button(
-                            onClick = {}
-                        ) {
-                            Text("사진 찍기")
                         }
                     }
                 }
@@ -378,6 +370,8 @@ fun MainScreenPreview() {
             onDailyNavigateClick = {},
             onIndexNavigateClick = {},
             onStoreNavigateClick = {},
+            onInformationNavigateClick = {},
+            onCommunityNavigateClick = {},
             onSettingNavigateClick = {},
             onFirstGameNavigateClick = {},
             onSecondGameNavigateClick = {},
@@ -406,8 +400,6 @@ fun MainScreenPreview() {
             allPatDataList = listOf(Pat(url = "pat/cat.json")),
             onAddPatImageClick = {},
             userDataList = flowOf(listOf(User(id = "money", value = "1000"), User(id = "cash", value = "100"))),
-            onShowUserInformationDialogClick = {},
-            showUserInformationDialog = false,
             onItemDrag = { id, newX, newY -> },
             onPatDrag = { id, newX, newY -> },
             allItemDataList = listOf(Item(url = "item/table.png")),

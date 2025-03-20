@@ -96,6 +96,14 @@ fun DailyScreen(
                 ) {
                     Text("사자성어")
                 }
+                Button(
+                    modifier = Modifier
+                        .padding(top = 8.dp)
+                        .fillMaxWidth(),
+                    onClick = {  }
+                ) {
+                    Text("광고 보기")
+                }
 
             }
         }

@@ -14,6 +14,10 @@ sealed class MainRoute(
 
     object SettingScreen : MainRoute("SettingScreen")
 
+    object InformationScreen : MainRoute("InformationScreen")
+
+    object CommunityScreen : MainRoute("CommunityScreen")
+
     object FirstGameScreen : MainRoute("FirstGameScreen")
     object SecondGameScreen : MainRoute("SecondGameScreen")
     object ThirdGameScreen : MainRoute("ThirdGameScreen")

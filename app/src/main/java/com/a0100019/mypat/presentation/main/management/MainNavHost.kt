@@ -5,6 +5,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.a0100019.mypat.presentation.community.CommunityScreen
 import com.a0100019.mypat.presentation.daily.DailyScreen
 import com.a0100019.mypat.presentation.daily.diary.DiaryScreen
 import com.a0100019.mypat.presentation.daily.diary.DiaryViewModel
@@ -16,6 +17,7 @@ import com.a0100019.mypat.presentation.game.firstGame.FirstGameScreen
 import com.a0100019.mypat.presentation.game.secondGame.SecondGameScreen
 import com.a0100019.mypat.presentation.game.thirdGame.ThirdGameScreen
 import com.a0100019.mypat.presentation.index.IndexScreen
+import com.a0100019.mypat.presentation.information.InformationScreen
 import com.a0100019.mypat.presentation.main.MainScreen
 import com.a0100019.mypat.presentation.store.StoreScreen
 
@@ -41,6 +43,12 @@ fun MainNavHost() {
                 },
                 onIndexNavigateClick = {
                     navController.navigate(route = MainRoute.IndexScreen.name)
+                },
+                onCommunityNavigateClick = {
+                    navController.navigate(route = MainRoute.CommunityScreen.name)
+                },
+                onInformationNavigateClick = {
+                    navController.navigate(route = MainRoute.InformationScreen.name)
                 },
                 onSettingNavigateClick = {
                     navController.navigate(route = MainRoute.SettingScreen.name)
@@ -82,6 +90,16 @@ fun MainNavHost() {
         composable(route = MainRoute.IndexScreen.name) {
             IndexScreen()
         }
+
+        composable(route = MainRoute.InformationScreen.name) {
+            InformationScreen()
+        }
+
+        composable(route = MainRoute.CommunityScreen.name) {
+            CommunityScreen()
+        }
+
+
 
         composable(route = MainRoute.FirstGameScreen.name) {
             FirstGameScreen()
