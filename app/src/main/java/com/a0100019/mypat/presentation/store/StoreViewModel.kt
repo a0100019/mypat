@@ -102,30 +102,6 @@ class StoreViewModel @Inject constructor(
         }
     }
 
-    fun onPatRandomClick() = intent {
-        val moneyField = state.userData.find { it.id == "money" }
-
-        if(moneyField!!.value2.toInt() >= 1){
-            moneyField.value2 = (moneyField.value2.toInt() - 1).toString()
-
-            val randomPat = state.allClosePatDataList.random() // 랜덤 객체 선택
-            val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) // 현재 날짜 가져오기
-            randomPat.date = currentDate // 날짜 업데이트
-
-            userDao.update(id = moneyField.id, value2 = moneyField.value2)
-            patDao.update(randomPat)
-            reduce {
-                state.copy(
-                    newPat = randomPat
-                )
-            }
-            loadData()
-        } else {
-            //postSideEffect를 해야 인텐트 속에서도 잘 실행됨.
-            postSideEffect(StoreSideEffect.Toast("돈이 부족합니다!"))
-        }
-    }
-
     fun onDialogCloseClick() = intent {
         reduce {
             state.copy(
@@ -267,7 +243,61 @@ class StoreViewModel @Inject constructor(
         }
     }
 
+    fun onPatRandomClick() = intent {
+        val moneyField = state.userData.find { it.id == "money" }
 
+        if(moneyField!!.value2.toInt() >= 1){
+            moneyField.value2 = (moneyField.value2.toInt() - 1).toString()
+
+            val randomPat = state.allClosePatDataList.random() // 랜덤 객체 선택
+            val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) // 현재 날짜 가져오기
+            randomPat.date = currentDate // 날짜 업데이트
+
+            userDao.update(id = moneyField.id, value2 = moneyField.value2)
+            patDao.update(randomPat)
+            reduce {
+                state.copy(
+                    newPat = randomPat
+                )
+            }
+            loadData()
+        } else {
+            //postSideEffect를 해야 인텐트 속에서도 잘 실행됨.
+            postSideEffect(StoreSideEffect.Toast("돈이 부족합니다!"))
+        }
+    }
+
+    fun onPatStoreClick() = intent {
+        val moneyField = state.userData.find { it.id == "money" }
+
+        if(moneyField!!.value2.toInt() >= 1){
+            moneyField.value2 = (moneyField.value2.toInt() - 1).toString()
+
+            val randomPatList = state.allClosePatDataList
+                .shuffled()
+                .take(5)
+                .toMutableList()
+            // 부족한 경우 기본 객체 추가 (예: 빈 Pat 객체)
+            while (randomPatList.size < 5) {
+                randomPatList.add(Pat(url = "")) // Pat.default()는 적절한 기본 객체로 변경
+            }
+
+            // 각 요소를 두 번씩 추가
+            val patEggDataList = (randomPatList + randomPatList).shuffled()
+
+            userDao.update(id = moneyField.id, value2 = moneyField.value2)
+            reduce {
+                state.copy(
+                    patStoreDataList = randomPatList,
+                    patEggDataList = patEggDataList,
+                    showDialog = "patStore"
+                )
+            }
+        } else {
+            //postSideEffect를 해야 인텐트 속에서도 잘 실행됨.
+            postSideEffect(StoreSideEffect.Toast("돈이 부족합니다!"))
+        }
+    }
 
 }
 
@@ -288,6 +318,8 @@ data class StoreState(
     val allCloseMapDataList: List<Item> = emptyList(),
     val patWorldDataList: List<World> = emptyList(),
     val itemWorldDataList: List<World> = emptyList(),
+    val patStoreDataList: List<Pat> = emptyList(),
+    val patEggDataList: List<Pat> = emptyList()
 )
 
 

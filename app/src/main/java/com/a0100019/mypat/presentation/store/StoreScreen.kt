@@ -51,6 +51,7 @@ fun StoreScreen(
         onNameChangeConfirm = storeViewModel::onNameChangeConfirm,
         onNameChangeClick = storeViewModel::onNameChangeClick,
         onMoneyChangeClick = storeViewModel::onMoneyChangeClick,
+        onPatStoreClick = storeViewModel::onPatStoreClick,
 
         newPat = storeState.newPat,
         userData = storeState.userData,
@@ -58,7 +59,9 @@ fun StoreScreen(
         newMap = storeState.newMap,
         showDialog = storeState.showDialog,
         simpleDialogState = storeState.simpleDialogState,
-        newName = storeState.newName
+        newName = storeState.newName,
+        patEggDataList = storeState.patEggDataList,
+        patStoreDataList = storeState.patStoreDataList
 
     )
 }
@@ -77,6 +80,7 @@ fun StoreScreen(
     onNameChangeClick: () -> Unit,
     onNameChangeConfirm: () -> Unit,
     onMoneyChangeClick: () -> Unit,
+    onPatStoreClick: () -> Unit,
 
     newPat: Pat?,
     newItem: Item?,
@@ -85,6 +89,9 @@ fun StoreScreen(
     showDialog: String,
     simpleDialogState: String,
     newName: String,
+    patEggDataList: List<Pat>?,
+    patStoreDataList: List<Pat>?,
+
 ) {
 
     // 다이얼로그 표시
@@ -127,6 +134,11 @@ fun StoreScreen(
             onConfirmClick = onNameChangeConfirm,
             newName = newName
         )
+        "patStore" -> PatStoreDialog(
+            onClose = onDialogCloseClick,
+            patData = patStoreDataList,
+            patEggData = patEggDataList
+        )
 
     }
 
@@ -135,7 +147,7 @@ fun StoreScreen(
             onDismiss = { onSimpleDialog("") },
             onConfirm = {
                 when(simpleDialogState) {
-                    "알을 뽑으시겠습니까?" -> onPatRandomClick()
+                    "알을 뽑으시겠습니까?" -> onPatStoreClick()
                     "펫 칸 늘리기" -> onPatRoomUpClick()
                     "아이템 칸 늘리기" -> onItemRoomUpClick()
                     "가능한 닉네임입니다 변경하겠습니까?" -> onNameChangeClick()
@@ -221,6 +233,7 @@ fun StoreScreenPreview() {
             onNameChangeConfirm = {},
             onNameChangeClick = {},
             onMoneyChangeClick = {},
+            onPatStoreClick = {},
 
             newPat = null,
             userData = emptyList(),
@@ -228,7 +241,10 @@ fun StoreScreenPreview() {
             simpleDialogState = "",
             newMap = null,
             newItem = null,
-            newName = ""
+            newName = "",
+            patEggDataList = emptyList(),
+            patStoreDataList = emptyList(),
+
         )
     }
 }

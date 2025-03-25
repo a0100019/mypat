@@ -209,7 +209,7 @@ fun MainScreen(
                     }
 
                     val users by userDataList.collectAsState(initial = emptyList())
-                    Text("money : ${users.find { it.id == "money" }?.value} | cash : ${users.find { it.id == "cash" }?.value}")
+                    Text("money : ${users.find { it.id == "money" }?.value} | cash : ${users.find { it.id == "money" }?.value2}")
 
                     Button(
                         onClick = onSettingNavigateClick
