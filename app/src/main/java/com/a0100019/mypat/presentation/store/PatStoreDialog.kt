@@ -1,6 +1,7 @@
 package com.a0100019.mypat.presentation.store
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.data.room.pet.Pat
 import com.a0100019.mypat.data.room.user.User
+import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.image.pat.AddDialogPatImage
 import com.a0100019.mypat.presentation.ui.image.pat.DialogPatImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
@@ -79,9 +81,13 @@ fun PatStoreDialog(
                     ) {
                         items(patEggData!!.take(10).withIndex().toList()) { (index, pat) ->
                             if(true) {
-                                AddDialogPatImage(
-                                    patData = TODO(),
-                                    onAddPatImageClick = TODO()
+                                JustImage(
+                                    filePath = "etc/egg.json",
+                                    modifier = Modifier
+                                        .size(50.dp)
+                                        .clickable {
+                                            
+                                        }
                                 )
                             } else {
                                 Column {

@@ -319,7 +319,8 @@ data class StoreState(
     val patWorldDataList: List<World> = emptyList(),
     val itemWorldDataList: List<World> = emptyList(),
     val patStoreDataList: List<Pat> = emptyList(),
-    val patEggDataList: List<Pat> = emptyList()
+    val patEggDataList: List<Pat> = emptyList(),
+    val
 )
 
 
