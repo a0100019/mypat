@@ -2,6 +2,7 @@ package com.a0100019.mypat.presentation.store
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.room.Index
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.item.ItemDao
 import com.a0100019.mypat.data.room.pet.Pat
@@ -267,6 +268,30 @@ class StoreViewModel @Inject constructor(
         }
     }
 
+    fun onPatEggClick(index: Int) = intent {
+        val patEggDataList = state.patEggDataList
+        val patSelectDataList = state.patSelectDataList.toMutableList()
+
+        // 선택한 데이터를 patSelectDataList로 복사
+        val selectedItem = patEggDataList[index]
+        patSelectDataList.add(selectedItem)
+
+        val newIndexList = state.patSelectIndexList + index
+
+        // 상태 업데이트
+        reduce {
+            state.copy(
+                patSelectDataList = patSelectDataList,
+                patSelectIndexList = newIndexList
+            )
+        }
+
+
+
+    }
+
+
+
     fun onPatStoreClick() = intent {
         val moneyField = state.userData.find { it.id == "money" }
 
@@ -320,7 +345,10 @@ data class StoreState(
     val itemWorldDataList: List<World> = emptyList(),
     val patStoreDataList: List<Pat> = emptyList(),
     val patEggDataList: List<Pat> = emptyList(),
-    val
+    val patSelectDataList: List<Pat> = emptyList(),
+    val patSelectIndexList: List<Int> = emptyList(),
+
+
 )
 
 

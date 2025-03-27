@@ -52,6 +52,8 @@ fun StoreScreen(
         onNameChangeClick = storeViewModel::onNameChangeClick,
         onMoneyChangeClick = storeViewModel::onMoneyChangeClick,
         onPatStoreClick = storeViewModel::onPatStoreClick,
+        onPatEggClick = storeViewModel::onPatEggClick,
+
 
         newPat = storeState.newPat,
         userData = storeState.userData,
@@ -61,7 +63,8 @@ fun StoreScreen(
         simpleDialogState = storeState.simpleDialogState,
         newName = storeState.newName,
         patEggDataList = storeState.patEggDataList,
-        patStoreDataList = storeState.patStoreDataList
+        patStoreDataList = storeState.patStoreDataList,
+        patSelectIndexList = storeState.patSelectIndexList
 
     )
 }
@@ -81,6 +84,7 @@ fun StoreScreen(
     onNameChangeConfirm: () -> Unit,
     onMoneyChangeClick: () -> Unit,
     onPatStoreClick: () -> Unit,
+    onPatEggClick: (Int) -> Unit,
 
     newPat: Pat?,
     newItem: Item?,
@@ -91,7 +95,7 @@ fun StoreScreen(
     newName: String,
     patEggDataList: List<Pat>?,
     patStoreDataList: List<Pat>?,
-
+    patSelectIndexList: List<Int>,
 ) {
 
     // 다이얼로그 표시
@@ -137,7 +141,9 @@ fun StoreScreen(
         "patStore" -> PatStoreDialog(
             onClose = onDialogCloseClick,
             patData = patStoreDataList,
-            patEggData = patEggDataList
+            patEggData = patEggDataList,
+            onPatEggClick = onPatEggClick,
+            selectIndexList = patSelectIndexList
         )
 
     }
@@ -234,6 +240,7 @@ fun StoreScreenPreview() {
             onNameChangeClick = {},
             onMoneyChangeClick = {},
             onPatStoreClick = {},
+            onPatEggClick = {},
 
             newPat = null,
             userData = emptyList(),
@@ -244,6 +251,7 @@ fun StoreScreenPreview() {
             newName = "",
             patEggDataList = emptyList(),
             patStoreDataList = emptyList(),
+            patSelectIndexList = emptyList()
 
         )
     }

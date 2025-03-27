@@ -28,6 +28,7 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 fun JustImage(
     filePath: String,
     @SuppressLint("ModifierParameter") modifier: Modifier = Modifier,
+    contentScale:ContentScale = ContentScale.Fit
 ) {
 
     if(filePath.takeLast(4) == "json") {
@@ -42,6 +43,7 @@ fun JustImage(
             composition = composition,
             iterations = Int.MAX_VALUE,
             modifier = modifier,
+            contentScale = contentScale
         )
 
     } else {
@@ -67,7 +69,8 @@ fun JustImage(
             Image(
                 bitmap = bitmap!!.asImageBitmap(),
                 contentDescription = "Asset Image",
-                modifier = modifier
+                modifier = modifier,
+                contentScale = contentScale
             )
         } else {
             // Placeholder while loading or on error

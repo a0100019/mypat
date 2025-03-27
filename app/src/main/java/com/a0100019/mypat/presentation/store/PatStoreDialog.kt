@@ -37,7 +37,9 @@ import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 fun PatStoreDialog(
     onClose: () -> Unit,
     patData: List<Pat>?,
-    patEggData: List<Pat>?
+    patEggData: List<Pat>?,
+    onPatEggClick: (Int) -> Unit,
+    selectIndexList: List<Int>
 ) {
 
     Dialog(
@@ -80,13 +82,13 @@ fun PatStoreDialog(
                         // modifier = Modifier.height(70.dp) // 높이를 적절히 조정
                     ) {
                         items(patEggData!!.take(10).withIndex().toList()) { (index, pat) ->
-                            if(true) {
+                            if(!selectIndexList.contains(index)) {
                                 JustImage(
                                     filePath = "etc/egg.json",
                                     modifier = Modifier
                                         .size(50.dp)
                                         .clickable {
-                                            
+                                            onPatEggClick(index)
                                         }
                                 )
                             } else {
@@ -96,7 +98,7 @@ fun PatStoreDialog(
                                         modifier = Modifier.size(30.dp)
                                     )
                                     Text(
-                                        text = "$index: ${pat.name}", // 인덱스 표시
+                                        text = pat.name, // 인덱스 표시
                                         fontSize = 10.sp
                                     )
                                 }
@@ -131,6 +133,8 @@ fun PatStoreDialogPreview() {
             onClose = {},
             patData = listOf(Pat(url = "pat/cat.json"),Pat(url = "pat/cat.json"),Pat(url = "pat/cat.json"),Pat(url = "pat/cat.json"),Pat(url = "pat/cat.json")),
             patEggData = listOf(Pat(url = "pat/cat.json"),Pat(url = "pat/cat.json"),Pat(url = "pat/cat.json"),Pat(url = "pat/cat.json"),Pat(url = "pat/cat.json"),Pat(url = "pat/cat.json"),Pat(url = "pat/cat.json"),Pat(url = "pat/cat.json"),Pat(url = "pat/cat.json"),Pat(url = "pat/cat.json"),Pat(url = "pat/cat.json"),),
+            onPatEggClick = {},
+            selectIndexList = emptyList()
         )
     }
 }
