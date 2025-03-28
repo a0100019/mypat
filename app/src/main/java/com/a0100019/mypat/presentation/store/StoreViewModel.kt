@@ -2,7 +2,6 @@ package com.a0100019.mypat.presentation.store
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.room.Index
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.item.ItemDao
 import com.a0100019.mypat.data.room.pet.Pat
@@ -286,6 +285,19 @@ class StoreViewModel @Inject constructor(
             )
         }
 
+        val idCounts = patSelectDataList
+            .filter { it.id != 0 } // id가 0이 아닌 데이터 필터링
+            .groupingBy { it.id }
+            .eachCount() // id별 개수 계산
+
+        val result = patSelectDataList.filter { it.id != 0 && (idCounts[it.id] ?: 0) >= 2 }
+
+        reduce {
+            state.copy(
+                selectPatData = result[0]
+            )
+        }
+
 
 
     }
@@ -336,6 +348,7 @@ data class StoreState(
     val showDialog: String = "",
     val simpleDialogState: String = "",
     val newName: String = "",
+    val selectPatData: Pat? = null,
 
     val userData: List<User> = emptyList(),
     val allClosePatDataList: List<Pat> = emptyList(),
@@ -349,7 +362,7 @@ data class StoreState(
     val patSelectIndexList: List<Int> = emptyList(),
 
 
-)
+    )
 
 
 //상태와 관련없는 것

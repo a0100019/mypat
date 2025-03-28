@@ -64,7 +64,8 @@ fun StoreScreen(
         newName = storeState.newName,
         patEggDataList = storeState.patEggDataList,
         patStoreDataList = storeState.patStoreDataList,
-        patSelectIndexList = storeState.patSelectIndexList
+        patSelectIndexList = storeState.patSelectIndexList,
+        selectPatData = storeState.selectPatData
 
     )
 }
@@ -96,7 +97,16 @@ fun StoreScreen(
     patEggDataList: List<Pat>?,
     patStoreDataList: List<Pat>?,
     patSelectIndexList: List<Int>,
+    selectPatData: Pat?
 ) {
+
+    if (selectPatData != null) {
+        PatSelectDialog(
+            onAdvertisementClick = {},
+            onSelectClick = {},
+            patData = selectPatData
+        )
+    }
 
     // 다이얼로그 표시
     if (newPat != null) {
@@ -251,7 +261,8 @@ fun StoreScreenPreview() {
             newName = "",
             patEggDataList = emptyList(),
             patStoreDataList = emptyList(),
-            patSelectIndexList = emptyList()
+            patSelectIndexList = emptyList(),
+            selectPatData = null
 
         )
     }
