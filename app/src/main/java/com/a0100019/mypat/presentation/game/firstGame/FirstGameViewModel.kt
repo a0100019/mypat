@@ -109,148 +109,51 @@ class FirstGameViewModel @Inject constructor(
                 isShotSetting = false
             )
         }
-        val velocity = state.snowballSpeed // 초기 속도
+        val velocity = state.snowballSpeed
         val rotationAngle = if(state.rotationAngle >= 0) state.rotationAngle%360f else (state.rotationAngle+3600f)%360f
 
-        var totalVelocityX = 0.dp
-        var totalVelocityY = 0.dp
+        var newVelocityX = 0.dp
+        var newVelocityY = 0.dp
 
         if(rotationAngle in 0f..90f) {
-            totalVelocityX = velocity * (rotationAngle/90f)
-            totalVelocityY = -velocity * (90f - rotationAngle)/90f
+            newVelocityX = velocity * (rotationAngle/90f)
+            newVelocityY = -velocity * (90f - rotationAngle)/90f
         } else if (rotationAngle in 90f..180f) {
-            totalVelocityX = velocity * (180f - rotationAngle)/90f
-            totalVelocityY = -velocity * (90f - rotationAngle)/90f
+            newVelocityX = velocity * (180f - rotationAngle)/90f
+            newVelocityY = -velocity * (90f - rotationAngle)/90f
         } else if (rotationAngle in 180f..270f) {
-            totalVelocityX = -velocity * (rotationAngle - 180f)/90f
-            totalVelocityY = -velocity * (rotationAngle - 270f)/90f
+            newVelocityX = -velocity * (rotationAngle - 180f)/90f
+            newVelocityY = -velocity * (rotationAngle - 270f)/90f
         } else {
-            totalVelocityX = velocity * (rotationAngle-360f)/90f
-            totalVelocityY = -velocity * (rotationAngle-270f)/90f
-        }
-
-        totalVelocityX /= 1000
-        totalVelocityY /= 1000
-
-
-        viewModelScope.launch {
-            repeat(1000) { iteration ->
-                if (iteration>500){
-                    val dynamicDelay =
-                        (1 + ((iteration-500) / 30)).toLong() // 1~10ms 증가
-                    delay(dynamicDelay)
-                    reduce {
-                        state.copy(shotDuration = dynamicDelay.toInt())
-                    }
-                } else {
-                    val dynamicDelay =
-                        (1).toLong() // 1~10ms 증가
-                    delay(dynamicDelay)
-                    reduce {
-                        state.copy(shotDuration = dynamicDelay.toInt())
-                    }
-                }
-
-                if (state.snowballX + state.snowballSize >= state.surfaceWidthDp) {
-                    reduce {
-                        state.copy(snowballX = state.snowballX - totalVelocityX)
-                    }
-                    totalVelocityX = -totalVelocityX
-
-                } else if (state.snowballX <= 0.dp) {
-                    reduce {
-                        state.copy(snowballX = state.snowballX - totalVelocityX)
-                    }
-                    totalVelocityX = -totalVelocityX
-
-                } else {
-                    if (totalVelocityX > 0.dp) {
-                        reduce {
-                            state.copy(snowballX = state.snowballX + totalVelocityX)
-                        }
-
-                    } else {
-                        reduce {
-                            state.copy(snowballX = state.snowballX + totalVelocityX)
-                        }
-
-                    }
-                }
-            }
+            newVelocityX = velocity * (rotationAngle-360f)/90f
+            newVelocityY = -velocity * (rotationAngle-270f)/90f
         }
 
         viewModelScope.launch {
-            repeat(1000) { iteration ->
-                if (iteration>800){
-                    val dynamicDelay =
-                        (17 + ((iteration-800) / 10)).toLong() // 1~10ms 증가
-                    delay(dynamicDelay)
-                    reduce {
-                        state.copy(shotDuration = dynamicDelay.toInt())
-                    }
-                } else if(iteration>600) {
-                    val dynamicDelay =
-                        (7 + ((iteration-600) / 20)).toLong() // 1~10ms 증가
-                    delay(dynamicDelay)
-                    reduce {
-                        state.copy(shotDuration = dynamicDelay.toInt())
-                    }
-                } else if(iteration>400) {
-                    val dynamicDelay =
-                        (3 + ((iteration-400) / 50)).toLong() // 1~10ms 증가
-                    delay(dynamicDelay)
-                    reduce {
-                        state.copy(shotDuration = dynamicDelay.toInt())
-                    }
-                } else if(iteration>200) {
-                    val dynamicDelay =
-                        (1 + ((iteration-200) / 100)).toLong() // 1~10ms 증가
-                    delay(dynamicDelay)
-                    reduce {
-                        state.copy(shotDuration = dynamicDelay.toInt())
-                    }
-                } else {
-                    val dynamicDelay =
-                        (1).toLong() // 1~10ms 증가
-                    delay(dynamicDelay)
-                    reduce {
-                        state.copy(shotDuration = dynamicDelay.toInt())
-                    }
-                }
 
-                if (state.snowballY + state.snowballSize >= state.surfaceHeightDp) { // 아래 벽 충돌
-                    reduce {
-                        state.copy(snowballY = state.snowballY - totalVelocityY)
-                    }
-                    totalVelocityY = -totalVelocityY // 방향 반전
-
-                } else if (state.snowballY <= 0.dp) { // 위쪽 벽 충돌
-                    reduce {
-                        state.copy(snowballY = state.snowballY - totalVelocityY)
-                    }
-                    totalVelocityY = -totalVelocityY // 방향 반전
-
-                } else {
-                    if (totalVelocityY > 0.dp) { // 아래로 이동 중
-                        reduce {
-                            state.copy(snowballY = state.snowballY + totalVelocityY)
-                        }
-                    } else { // 위로 이동 중
-                        reduce {
-                            state.copy(snowballY = state.snowballY + totalVelocityY)
-                        }
-                    }
-                }
+            reduce {
+                state.copy(
+                    snowballY = state.snowballY + newVelocityY,
+                    snowballX = state.snowballX + newVelocityX
+                )
             }
+
 
             delay(1000)
             //공 이동 끝
+
+            //표적과의 거리
             val distance = sqrt(
                 (state.targetX - state.snowballX).value * (state.targetX - state.snowballX).value +
                         (state.targetY - state.snowballY).value * (state.targetY - state.snowballY).value
             )
 
-            if(distance < 200) {
+            //맵안에 있는지
+            val mapIn = (state.snowballX > 0.dp && state.snowballX < state.surfaceWidthDp
+                    && state.snowballY > 0.dp && state.snowballY < state.surfaceHeightDp)
+
+
+            if(distance < 200 && mapIn) {
                 reduce {
                     state.copy(
                         score = state.score + 200 - distance.toInt(),
@@ -264,7 +167,7 @@ class FirstGameViewModel @Inject constructor(
                 updatePatData.love = state.patData.love + state.score
                 patDao.update(updatePatData)
 
-                if(state.userData.find { it.id == "curling" }!!.value.toInt() < state.score){
+                if(state.userData.find { it.id == "secondGame" }!!.value.toInt() < state.score){
                     userDao.update(id = "curling", value = state.score.toString())
                     reduce {
                         state.copy(
@@ -354,7 +257,7 @@ data class FirstGameState(
     val surfaceHeightDp: Dp = 0.dp,
     val rotationAngle: Float = 0f,
     val situation: String = "시작",
-    val shotDuration: Int = 1,
+    val shotDuration: Int = 1000,
     val snowballSize: Dp = 30.dp,
     val snowballSpeed: Dp = 500.dp,
     val targetSize: Dp = 100.dp,

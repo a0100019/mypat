@@ -110,7 +110,8 @@ class StoreViewModel @Inject constructor(
                 newItem = null,
                 newName = "",
                 showDialog = "",
-                simpleDialogState = ""
+                simpleDialogState = "",
+                selectPatData = null
             )
         }
     }
@@ -243,30 +244,6 @@ class StoreViewModel @Inject constructor(
         }
     }
 
-    fun onPatRandomClick() = intent {
-        val moneyField = state.userData.find { it.id == "money" }
-
-        if(moneyField!!.value2.toInt() >= 1){
-            moneyField.value2 = (moneyField.value2.toInt() - 1).toString()
-
-            val randomPat = state.allClosePatDataList.random() // 랜덤 객체 선택
-            val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) // 현재 날짜 가져오기
-            randomPat.date = currentDate // 날짜 업데이트
-
-            userDao.update(id = moneyField.id, value2 = moneyField.value2)
-            patDao.update(randomPat)
-            reduce {
-                state.copy(
-                    newPat = randomPat
-                )
-            }
-            loadData()
-        } else {
-            //postSideEffect를 해야 인텐트 속에서도 잘 실행됨.
-            postSideEffect(StoreSideEffect.Toast("돈이 부족합니다!"))
-        }
-    }
-
     fun onPatEggClick(index: Int) = intent {
         val patEggDataList = state.patEggDataList
         val patSelectDataList = state.patSelectDataList.toMutableList()
@@ -294,7 +271,7 @@ class StoreViewModel @Inject constructor(
 
         reduce {
             state.copy(
-                selectPatData = result[0]
+                selectPatData = result.firstOrNull() // result가 비어 있으면 기존 값 유지
             )
         }
 
@@ -334,6 +311,26 @@ class StoreViewModel @Inject constructor(
             //postSideEffect를 해야 인텐트 속에서도 잘 실행됨.
             postSideEffect(StoreSideEffect.Toast("돈이 부족합니다!"))
         }
+    }
+
+    fun onPatSelectClick() = intent {
+
+        val randomPat = state.allClosePatDataList.random() // 랜덤 객체 선택
+        val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) // 현재 날짜 가져오기
+        randomPat.date = currentDate // 날짜 업데이트
+
+        patDao.update(randomPat)
+        reduce {
+            state.copy(
+                newPat = randomPat
+            )
+        }
+        loadData()
+
+    }
+
+    fun onPatAdvertisementClick() = intent {
+
     }
 
 }

@@ -41,7 +41,6 @@ fun StoreScreen(
     }
 
     StoreScreen(
-        onPatRandomClick = storeViewModel::onPatRandomClick,
         onDialogCloseClick = storeViewModel::onDialogCloseClick,
         onPatRoomUpClick = storeViewModel::onPatRoomUpClick,
         onSimpleDialog = storeViewModel::onSimpleDialog,
@@ -53,6 +52,8 @@ fun StoreScreen(
         onMoneyChangeClick = storeViewModel::onMoneyChangeClick,
         onPatStoreClick = storeViewModel::onPatStoreClick,
         onPatEggClick = storeViewModel::onPatEggClick,
+        onPatSelectClick = storeViewModel::onPatSelectClick,
+        onPatAdvertisementClick = storeViewModel::onPatAdvertisementClick,
 
 
         newPat = storeState.newPat,
@@ -74,7 +75,6 @@ fun StoreScreen(
 
 @Composable
 fun StoreScreen(
-    onPatRandomClick: () -> Unit,
     onDialogCloseClick: () -> Unit,
     onPatRoomUpClick: () -> Unit,
     onItemRoomUpClick: () -> Unit,
@@ -86,6 +86,8 @@ fun StoreScreen(
     onMoneyChangeClick: () -> Unit,
     onPatStoreClick: () -> Unit,
     onPatEggClick: (Int) -> Unit,
+    onPatAdvertisementClick: () -> Unit,
+    onPatSelectClick: () -> Unit,
 
     newPat: Pat?,
     newItem: Item?,
@@ -102,8 +104,8 @@ fun StoreScreen(
 
     if (selectPatData != null) {
         PatSelectDialog(
-            onAdvertisementClick = {},
-            onSelectClick = {},
+            onAdvertisementClick = onPatAdvertisementClick,
+            onSelectClick = onPatSelectClick,
             patData = selectPatData
         )
     }
@@ -239,7 +241,6 @@ fun StoreScreen(
 fun StoreScreenPreview() {
     MypatTheme {
         StoreScreen(
-            onPatRandomClick = {},
             onDialogCloseClick = {},
             onPatRoomUpClick = {},
             onSimpleDialog = {},
@@ -251,6 +252,8 @@ fun StoreScreenPreview() {
             onMoneyChangeClick = {},
             onPatStoreClick = {},
             onPatEggClick = {},
+            onPatSelectClick = {},
+            onPatAdvertisementClick = {},
 
             newPat = null,
             userData = emptyList(),

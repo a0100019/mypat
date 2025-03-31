@@ -1,13 +1,16 @@
 package com.a0100019.mypat.presentation.game.firstGame
 
 import android.widget.Toast
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -18,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
@@ -103,12 +107,12 @@ fun FirstGameScreen(
     // 부드러운 애니메이션 적용
     val animatedX by animateDpAsState(
         targetValue = snowballX,
-        animationSpec = tween(durationMillis = shotDuration, easing = LinearEasing),
+        animationSpec = tween(durationMillis = shotDuration, easing = LinearOutSlowInEasing),
         label = "" // 속도 변화에 맞춰 애니메이션 적용
     )
     val animatedY by animateDpAsState(
         targetValue = snowballY,
-        animationSpec = tween(durationMillis = shotDuration, easing = LinearEasing),
+        animationSpec = tween(durationMillis = shotDuration, easing = LinearOutSlowInEasing),
         label = "" // 속도 변화에 맞춰 애니메이션 적용
     )
     val animatedRotation by animateFloatAsState(
@@ -151,14 +155,19 @@ fun FirstGameScreen(
             val surfaceWidthDp = with(density) { surfaceWidth.toDp() }
             val surfaceHeightDp = with(density) { surfaceHeight.toDp() }
 
-            JustImage("etc/icySurface_white_bg.jpg")
+            JustImage(
+                filePath = "etc/icySurface_white_bg.jpg",
+                modifier = Modifier
+                    .fillMaxSize()
+            )
             if(situation == "회전" || situation == "준비"){
                 JustImage(
                     filePath = "etc/arrow.png",
                     modifier = Modifier
                         .size(30.dp, 80.dp)
                         .offset(x = animatedX, y = animatedY - 25.dp)
-                        .rotate(animatedRotation)
+                        .rotate(animatedRotation),
+                    contentScale = ContentScale.Fit
                 )
             }
             JustImage(
