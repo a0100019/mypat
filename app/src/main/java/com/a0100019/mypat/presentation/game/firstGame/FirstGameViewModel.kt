@@ -60,7 +60,7 @@ class FirstGameViewModel @Inject constructor(
 
     fun onGameStartClick(surfaceWidthDp: Dp, surfaceHeightDp:Dp) = intent {
         val snowballX = surfaceWidthDp * 0.5f - state.snowballSize/2 // 가로의 50%
-        val snowballY = surfaceHeightDp * 0.9f - state.snowballSize/2 // 세로의 90%
+        val snowballY = surfaceHeightDp * 0.8f - state.snowballSize/2 // 세로의 90%
         val targetX = surfaceWidthDp * 0.5f - state.targetSize/2
         val targetY = surfaceHeightDp * 0.2f - state.targetSize/2
 
@@ -70,18 +70,31 @@ class FirstGameViewModel @Inject constructor(
                 snowballY = snowballY,
                 surfaceWidthDp = surfaceWidthDp,
                 surfaceHeightDp = surfaceHeightDp,
+                maxPower = (surfaceHeightDp.value.toInt())*3/2,
                 targetX = targetX,
                 targetY = targetY,
                 score = 0,
                 level = 1,
-                situation = "준비"
+                situation = "회전",
+                rotationAngle = 0f,
+                isRotating = true
             )
         }
+
+        viewModelScope.launch {
+            while (state.isRotating) { // isActive를 체크하여 안전하게 종료 가능
+                reduce {
+                    state.copy(rotationAngle = state.rotationAngle + 2f)
+                }
+                delay((10-state.level/10).toLong()) // 회전속도
+            }
+        }
+
     }
 
     fun onGameReStartClick() = intent {
         val snowballX = state.surfaceWidthDp * 0.5f - state.snowballSize/2 // 가로의 50%
-        val snowballY = state.surfaceHeightDp * 0.9f - state.snowballSize/2 // 세로의 90%
+        val snowballY = state.surfaceHeightDp * 0.8f - state.snowballSize/2 // 세로의 90%
         val targetX = state.surfaceWidthDp * 0.5f - state.targetSize/2
         val targetY = state.surfaceHeightDp * 0.2f - state.targetSize/2
 
@@ -95,10 +108,21 @@ class FirstGameViewModel @Inject constructor(
                 targetY = targetY,
                 score = 0,
                 level = 1,
-                situation = "준비",
+                situation = "회전",
                 rotationAngle = 0f,
-                patData = patData
+                patData = patData,
+                isRotating = true,
+                shotPower = 0
             )
+        }
+
+        viewModelScope.launch {
+            while (state.isRotating) { // isActive를 체크하여 안전하게 종료 가능
+                reduce {
+                    state.copy(rotationAngle = state.rotationAngle + 2f)
+                }
+                delay((10-state.level/10).toLong()) // 회전속도
+            }
         }
     }
 
@@ -109,7 +133,7 @@ class FirstGameViewModel @Inject constructor(
                 isShotSetting = false
             )
         }
-        val velocity = state.snowballSpeed
+        val velocity = state.shotPower.dp
         val rotationAngle = if(state.rotationAngle >= 0) state.rotationAngle%360f else (state.rotationAngle+3600f)%360f
 
         var newVelocityX = 0.dp
@@ -153,10 +177,11 @@ class FirstGameViewModel @Inject constructor(
                     && state.snowballY > 0.dp && state.snowballY < state.surfaceHeightDp)
 
 
-            if(distance < 200 && mapIn) {
+            if(distance < (state.targetSize.value/2 + state.snowballSize.value/2) && mapIn && state.level < 99) {
                 reduce {
                     state.copy(
                         score = state.score + 200 - distance.toInt(),
+                        shotPower = 0,
                         situation = "다음"
                     )
                 }
@@ -200,7 +225,8 @@ class FirstGameViewModel @Inject constructor(
                 level = state.level + 1,
                 targetX = randomX.dp,
                 targetY = randomY.dp,
-                isRotating = true
+                isRotating = true,
+                rotationDuration = state.rotationDuration*0.9
             )
         }
 
@@ -208,12 +234,11 @@ class FirstGameViewModel @Inject constructor(
         viewModelScope.launch {
             while (state.isRotating) { // isActive를 체크하여 안전하게 종료 가능
                 reduce {
-                    state.copy(rotationAngle = state.rotationAngle + 1f)
+                    state.copy(rotationAngle = state.rotationAngle + 2f)
                 }
-                delay(state.rotationDuration.toLong() - state.level) // 회전속도
+                delay((10-state.level/10).toLong()) // 회전속도
             }
         }
-
 
     }
 
@@ -228,17 +253,17 @@ class FirstGameViewModel @Inject constructor(
 
         while (state.isShotSetting) { // isActive를 체크하여 안전하게 종료 가능
 
-            if(state.shotPower < 1000) {
+            if(state.shotPower < state.maxPower) {
                 reduce {
                     state.copy(shotPower = state.shotPower + 10)
                 }
             } else {
                 reduce {
-                    state.copy(shotPower = 10)
+                    state.copy(shotPower = 0)
                 }
             }
 
-            delay((state.rotationDuration.toLong() - state.level)*10) //
+            delay((101 - state.level).toLong()) //
         }
     }
 
@@ -255,20 +280,21 @@ data class FirstGameState(
     val snowballY: Dp = 0.dp,
     val surfaceWidthDp: Dp = 0.dp,
     val surfaceHeightDp: Dp = 0.dp,
+    val maxPower: Int = 0,
     val rotationAngle: Float = 0f,
     val situation: String = "시작",
     val shotDuration: Int = 1000,
     val snowballSize: Dp = 30.dp,
-    val snowballSpeed: Dp = 500.dp,
+//    val snowballSpeed: Dp = 500.dp,
     val targetSize: Dp = 100.dp,
     val targetX: Dp = 0.dp,
     val targetY: Dp = 0.dp,
     val score: Int = 0,
-    val level: Int = 1,
+    val level: Int = 0,
     val isRotating: Boolean = false,
     val isShotSetting: Boolean = false,
-    val rotationDuration: Int = 10,
-    val shotPower: Int = 10,
+    val rotationDuration: Double = 100.0,
+    val shotPower: Int = 0,
     val patData: Pat = Pat(url = "")
 )
 

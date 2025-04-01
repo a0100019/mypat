@@ -7,10 +7,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 
 @Composable
-fun FirstGameHorizontalLine(value: Int) {
-    val percentage = (value.toFloat() / 1000f).coerceIn(0f, 1f)
+fun FirstGameHorizontalLine(value: Int, maxPower: Int) {
+    val percentage = (value.toFloat() / maxPower).coerceIn(0f, 1f)
 
 
     Canvas(

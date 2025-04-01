@@ -1,7 +1,6 @@
 package com.a0100019.mypat.presentation.game.firstGame
 
 import android.widget.Toast
-import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
@@ -32,8 +31,10 @@ import com.a0100019.mypat.data.room.pet.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
+import kotlinx.coroutines.Job
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
+import kotlin.reflect.KFunction3
 
 
 @Composable
@@ -68,6 +69,7 @@ fun FirstGameScreen(
         rotationDuration = firstGameState.rotationDuration,
         shotPower = firstGameState.shotPower,
         patData = firstGameState.patData,
+        maxPower = firstGameState.maxPower,
 
 
         onGameStartClick = firstGameViewModel::onGameStartClick,
@@ -82,24 +84,25 @@ fun FirstGameScreen(
 
 @Composable
 fun FirstGameScreen(
-    snowballX : Dp,
-    snowballY : Dp,
-    rotationAngle : Float,
-    shotDuration : Int,
-    snowballSize : Dp,
-    targetSize : Dp,
-    score : Int,
-    targetX : Dp,
-    targetY : Dp,
+    snowballX: Dp,
+    snowballY: Dp,
+    rotationAngle: Float,
+    shotDuration: Int,
+    snowballSize: Dp,
+    targetSize: Dp,
+    score: Int,
+    targetX: Dp,
+    targetY: Dp,
     level: Int,
     situation: String,
-    userData : List<User>,
-    rotationDuration: Int,
-    shotPower : Int,
-    patData : Pat,
+    userData: List<User>,
+    rotationDuration: Double,
+    shotPower: Int,
+    patData: Pat,
+    maxPower: Int,
 
     onGameReStartClick: () -> Unit,
-    onGameStartClick : (Dp, Dp) -> Unit,
+    onGameStartClick: (Dp, Dp) -> Unit,
     onMoveClick: () -> Unit,
     onRotateStopClick: () -> Unit,
     onNextLevelClick: () -> Unit,
@@ -117,7 +120,7 @@ fun FirstGameScreen(
     )
     val animatedRotation by animateFloatAsState(
         targetValue = rotationAngle,
-        animationSpec = tween(durationMillis = rotationDuration, easing = LinearEasing),
+        animationSpec = tween(durationMillis = rotationDuration.toInt(), easing = LinearEasing),
         label = "" // 0.3초 동안 부드럽게 회전
     )
 
@@ -135,7 +138,7 @@ fun FirstGameScreen(
     Column {
         Text("점수 : $score")
         Text("최고 기록 : ${userData.find { it.id == "firstGame" }?.value}")
-        Text("레벨 : $level")
+        Text("레벨 : ${level+1} / 100")
 
         BoxWithConstraints(
             modifier = Modifier
@@ -158,7 +161,8 @@ fun FirstGameScreen(
             JustImage(
                 filePath = "etc/icySurface_white_bg.jpg",
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxSize(),
+                contentScale = ContentScale.FillBounds
             )
             if(situation == "회전" || situation == "준비"){
                 JustImage(
@@ -205,7 +209,7 @@ fun FirstGameScreen(
             }
             "준비" -> {
                 Column {
-                    FirstGameHorizontalLine(shotPower)
+                    FirstGameHorizontalLine(shotPower, maxPower)
                     Button(
                         onClick = onMoveClick
                     ) {
@@ -247,11 +251,12 @@ fun FirstGameScreenPreview() {
             level = 1,
             situation = "준비",
             userData = emptyList(),
-            rotationDuration = 0,
+            rotationDuration = 0.0,
             shotPower = 0,
             patData = Pat(url = ""),
+            maxPower = 1000,
 
-            onGameStartClick = { x, y -> },
+            onGameStartClick = { _, _ -> }, // 올바른 형태로 수정
             onMoveClick = {},
             onRotateStopClick = {},
             onNextLevelClick = {},
