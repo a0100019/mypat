@@ -104,6 +104,14 @@ fun DailyScreen(
                 ) {
                     Text("광고 보기")
                 }
+                Button(
+                    modifier = Modifier
+                        .padding(top = 8.dp)
+                        .fillMaxWidth(),
+                    onClick = {  }
+                ) {
+                    Text("좋아요 누르기")
+                }
 
             }
         }

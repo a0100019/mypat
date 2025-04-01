@@ -10,8 +10,8 @@ fun getUserInitialData(): List<User> {
         User(id = "item", value = "5", value2 = "3", value3 = "0"),
         User(id = "name", value = "익명"),
         User(id = "englishLevel", value = "0"),
-        User(id = "firstGame", value = "0"), //2는 level, 3은 pat index
-        User(id = "secondGame", value = "1000.01"), //2는 없음, 3은 pat index
+        User(id = "firstGame", value = "0"), //2는 level, 3은 pat index (걍 하지말자)
+        User(id = "secondGame", value = "10"), //2는 없음, 3은 pat index
         User(id = "thirdGame", value = "0"),
 
         // 더 많은 데이터를 여기에 추가...

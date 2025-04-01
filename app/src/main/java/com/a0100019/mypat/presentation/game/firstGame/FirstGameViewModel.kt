@@ -59,20 +59,25 @@ class FirstGameViewModel @Inject constructor(
     }
 
     fun onGameStartClick(surfaceWidthDp: Dp, surfaceHeightDp:Dp) = intent {
-        val snowballX = surfaceWidthDp * 0.5f - state.snowballSize/2 // 가로의 50%
-        val snowballY = surfaceHeightDp * 0.8f - state.snowballSize/2 // 세로의 90%
-        val targetX = surfaceWidthDp * 0.5f - state.targetSize/2
-        val targetY = surfaceHeightDp * 0.2f - state.targetSize/2
+
+        val snowballSize = surfaceWidthDp * 0.1f
+        val targetSize = surfaceWidthDp * 0.8f // 나중에 0.3으로 !!
+        val snowballX = surfaceWidthDp * 0.5f - snowballSize/2 // 가로의 50%
+        val snowballY = surfaceHeightDp * 0.8f - snowballSize/2 // 세로의 90%
+        val targetX = surfaceWidthDp * 0.5f - targetSize/2
+        val targetY = surfaceHeightDp * 0.2f - targetSize/2
 
         reduce {
             state.copy(
                 snowballX = snowballX,
                 snowballY = snowballY,
+                snowballSize = snowballSize,
                 surfaceWidthDp = surfaceWidthDp,
                 surfaceHeightDp = surfaceHeightDp,
                 maxPower = (surfaceHeightDp.value.toInt())*3/2,
                 targetX = targetX,
                 targetY = targetY,
+                targetSize = targetSize,
                 score = 0,
                 level = 1,
                 situation = "회전",
@@ -99,6 +104,7 @@ class FirstGameViewModel @Inject constructor(
         val targetY = state.surfaceHeightDp * 0.2f - state.targetSize/2
 
         val patData = patDao.getPatDataById(state.patData.id.toString())
+        val userDataList = userDao.getAllUserData()
 
         reduce {
             state.copy(
@@ -112,7 +118,8 @@ class FirstGameViewModel @Inject constructor(
                 rotationAngle = 0f,
                 patData = patData,
                 isRotating = true,
-                shotPower = 0
+                shotPower = 0,
+                userData = userDataList
             )
         }
 
@@ -192,8 +199,8 @@ class FirstGameViewModel @Inject constructor(
                 updatePatData.love = state.patData.love + state.score
                 patDao.update(updatePatData)
 
-                if(state.userData.find { it.id == "secondGame" }!!.value.toInt() < state.score){
-                    userDao.update(id = "curling", value = state.score.toString())
+                if(state.userData.find { it.id == "secondGame" }!!.value.toDouble() < state.score){
+                    userDao.update(id = "secondGame", value = state.score.toString(), value2 = state.level.toString())
                     reduce {
                         state.copy(
                             situation = "신기록"
@@ -284,9 +291,8 @@ data class FirstGameState(
     val rotationAngle: Float = 0f,
     val situation: String = "시작",
     val shotDuration: Int = 1000,
-    val snowballSize: Dp = 30.dp,
-//    val snowballSpeed: Dp = 500.dp,
-    val targetSize: Dp = 100.dp,
+    val snowballSize: Dp = 0.dp,
+    val targetSize: Dp = 0.dp,
     val targetX: Dp = 0.dp,
     val targetY: Dp = 0.dp,
     val score: Int = 0,
