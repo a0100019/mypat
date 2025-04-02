@@ -62,7 +62,7 @@ class SecondGameViewModel @Inject constructor(
         val goalList: List<Int> = (1..5).shuffled().take(5)
         val randomNumbers = (0 until 25).shuffled().take(5)
         val targetList = state.targetList.toMutableStateList()
-        repeat(5) { it ->
+        repeat(5) {
             targetList[randomNumbers[it]] = it+1
         }
 
@@ -82,16 +82,8 @@ class SecondGameViewModel @Inject constructor(
                 time = 0.00,
                 targetList = List(25) {0},
                 goalList = List(5) {0},
-                level = 1
-            )
-        }
-    }
-
-    fun gameOver() = intent {
-        stopTimer()
-        reduce {
-            state.copy(
-                gameState = "실패",
+                level = 1,
+                plusLove = 0
             )
         }
     }
@@ -106,9 +98,9 @@ class SecondGameViewModel @Inject constructor(
             if (state.goalList[0] == 0) {
                 val newLevel = state.level + 1
 
-                val newGoalList: List<Int> = (1..5)
-                    .shuffled() // 먼저 숫자의 순서를 섞음
-                    .flatMap { num -> List(newLevel) { num } } // 이후 각 숫자를 newLevel번 반복
+                val baseSet = (1..5).shuffled() // 한 번만 섞은 세트 생성
+                val newGoalList: List<Int> = List(newLevel) { baseSet } // baseSet을 newLevel번 반복
+                    .flatten() // 중첩 리스트를 평탄화
 
                 val randomNumbers = (0 until 25).shuffled().take(5 * newLevel)
                 val targetList = state.targetList.toMutableStateList()
@@ -142,18 +134,30 @@ class SecondGameViewModel @Inject constructor(
         if (state.goalList[0] == 0) {
 
             stopTimer()
+
+            val plusLove = if(state.time < 500) {
+                500 - state.time
+            } else {
+                10
+            }.toInt()
+
+            val updatePatData = state.patData
+            updatePatData.love = state.patData.love + plusLove
+            patDao.update(updatePatData)
+
             var gameState = "성공"
             val time = state.time
             val oldTime = state.userData.find {it.id == "secondGame"}?.value?.toDouble()
 
-            if(time< oldTime!!) {
+            if(time < oldTime!!) {
                 gameState = "신기록"
                 userDao.update(id = "secondGame", value = String.format("%.2f", time), value3 = state.patData.id.toString())
             }
 
             reduce {
                 state.copy(
-                    gameState = gameState
+                    gameState = gameState,
+                    plusLove = plusLove
                 )
             }
         }
@@ -175,12 +179,7 @@ class SecondGameViewModel @Inject constructor(
                 )
             }
         } else {
-            gameOver()
-            reduce {
-                state.copy(
-                    gameState = "실패"
-                )
-            }
+            //다른거 클릭했을때
         }
     }
 
@@ -213,6 +212,7 @@ data class SecondGameState(
     val time : Double = 0.00,
     val level : Int = 1,
     val gameState : String = "시작",
+    val plusLove : Int = 0,
 
     val goalList : List<Int> = List(5) {0},
     val targetList : List<Int> = List(25) {0}

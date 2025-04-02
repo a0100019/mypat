@@ -270,6 +270,7 @@ data class ThirdGameState(
     val sudokuMemoBoard: List<List<String>> = List(9) { List(9) { "" } }, // 9x9 메모 스도쿠 보드 추가
     val clickedPuzzle : String = "99",
     val time : Double = 0.0,
+    val level : Int = 0,
     val gameState : String = "대기",
     val memoMode : Boolean = false,
 )

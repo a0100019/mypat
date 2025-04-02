@@ -1,5 +1,6 @@
 package com.a0100019.mypat.presentation.game.thirdGame
 
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -60,6 +61,7 @@ fun ThirdGameScreen(
         time = thirdGameState.time,
         memoMode = thirdGameState.memoMode,
         firstBoard = thirdGameState.sudokuFirstBoard,
+        level = thirdGameState.level,
         onStartClick = thirdGameViewModel::makeSudoku,
         onPuzzleClick = thirdGameViewModel::onPuzzleClick,
         onNumberClick = thirdGameViewModel::onNumberClick,
@@ -71,6 +73,7 @@ fun ThirdGameScreen(
 
 
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun ThirdGameScreen(
     board: List<List<Int>>,
@@ -85,6 +88,7 @@ fun ThirdGameScreen(
     onMemoClick: () -> Unit,
     onEraserClick: () -> Unit,
     onMemoNumberClick: (Int) -> Unit,
+    level: Int,
 ) {
 
 
@@ -94,10 +98,24 @@ fun ThirdGameScreen(
             text = String.format("%.2f", time)
         )
 
+        Text(
+            text = when(level) {
+                1 -> "쉬움"
+                2 -> "보통"
+                else -> "어려움"
+            }
+        )
+
         Button(
             onClick = onStartClick
         ) {
             Text("표작성")
+        }
+
+        Button(
+            onClick = {  }
+        ) {
+            Text("새로 하기")
         }
 
         Column(
@@ -140,7 +158,9 @@ fun ThirdGameScreen(
                                     )
                                 }
                                 .clickable {
-                                    if(firstBoard[rowIndex][colIndex] == 0){ onPuzzleClick(rowIndex, colIndex) }
+                                    if (firstBoard[rowIndex][colIndex] == 0) {
+                                        onPuzzleClick(rowIndex, colIndex)
+                                    }
                                 },
                             contentAlignment = Alignment.Center
                         ) {
@@ -148,7 +168,12 @@ fun ThirdGameScreen(
                             if(num != 0){
                                 Text(
                                     text = if (num != 0) num.toString() else "",
-                                    fontSize = 20.sp
+                                    fontSize = 20.sp,
+                                    color = if (firstBoard[rowIndex][colIndex] == 0) {
+                                        Color.Blue
+                                    } else {
+                                        Color.Black
+                                    }
                                 )
                             } else {
                                 Row(
@@ -182,7 +207,6 @@ fun ThirdGameScreen(
                                         color = Color.Gray
                                     )
                                 }
-
 
                             }
 
@@ -251,7 +275,8 @@ fun ThirdGameScreenPreview() {
             memoMode = false,
             onEraserClick = {},
             onMemoClick = {},
-            onMemoNumberClick = {}
+            onMemoNumberClick = {},
+            level = 3
         )
     }
 }

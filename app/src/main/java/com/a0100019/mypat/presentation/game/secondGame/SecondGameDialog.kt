@@ -3,6 +3,7 @@ package com.a0100019.mypat.presentation.game.secondGame
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,6 +33,8 @@ fun SecondGameDialog(
     userData: List<User>,
     patData: Pat,
     situation: String,
+    popBackStack: () -> Unit,
+    plusLove: Int,
 ) {
 
 
@@ -58,7 +61,7 @@ fun SecondGameDialog(
                     LoveHorizontalLine(
                         value = patData.love,
                         totalValue = 10000,
-                        plusValue = time.toInt()
+                        plusValue = plusLove
                     )
                 }
 
@@ -74,13 +77,21 @@ fun SecondGameDialog(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                Button(
-                    onClick = onClose,
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .padding(16.dp)
-                ) {
-                    Text("다시 하기")
+                Row {
+                    Button(
+                        onClick = onClose,
+                        modifier = Modifier
+                    ) {
+                        Text("다시 하기")
+                    }
+
+                    Button(
+                        onClick = popBackStack,
+                        modifier = Modifier
+                    ) {
+                        Text("나가기")
+                    }
+
                 }
 
             }
@@ -98,7 +109,9 @@ fun SecondGameDialogPreview() {
             time = 190.7,
             userData = listOf(User(id = "curling", value = "10000")),
             patData = Pat(url = "pat/cat.json"),
-            situation = "종료"
+            situation = "종료",
+            popBackStack = {},
+            plusLove = 100
         )
     }
 }

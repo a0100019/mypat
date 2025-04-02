@@ -17,6 +17,8 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.orbitmvi.orbit.Container
@@ -66,6 +68,14 @@ class MainViewModel @Inject constructor(
                     patDao.getPatDataById(patWorldData.value)
                 }
 
+                // 펫 flow 월드 데이터 리스트 가져오기
+                val patFlowWorldDataList = worldDao.getFlowWorldDataListByType(type = "pat")
+                    .map { list ->
+                        list.map { patWorldData ->
+                            patDao.getPatDataById(patWorldData.value)
+                        }
+                    }
+
                 // 아이템 월드 데이터 리스트 가져오기
                 val itemWorldDataList = worldDao.getWorldDataListByType(type = "item") ?: emptyList()
                 val itemDataList = itemWorldDataList.mapNotNull { itemWorldData ->
@@ -91,7 +101,8 @@ class MainViewModel @Inject constructor(
                             allPatDataList = allPatDataList,
                             userDataList = userDataList,
                             allItemDataList = allItemDataList,
-                            allMapDataList = allMapDataList
+                            allMapDataList = allMapDataList,
+                            patFlowWorldDataList = patFlowWorldDataList
                         )
                     }
                 }
@@ -405,6 +416,7 @@ data class MainState(
     val allPatDataList: List<Pat> = emptyList(),
     val allItemDataList: List<Item> = emptyList(),
     val allMapDataList: List<Item> = emptyList(),
+    val patFlowWorldDataList: Flow<List<Pat>> = flowOf(emptyList()),
 
     val worldData: List<World> = emptyList(),
     val mapData: World? = null,

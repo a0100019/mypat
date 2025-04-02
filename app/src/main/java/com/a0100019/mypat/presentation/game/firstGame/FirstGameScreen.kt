@@ -39,7 +39,8 @@ import kotlin.reflect.KFunction3
 
 @Composable
 fun FirstGameScreen(
-    firstGameViewModel: FirstGameViewModel = hiltViewModel()
+    firstGameViewModel: FirstGameViewModel = hiltViewModel(),
+    popBackStack: () -> Unit
 
 ) {
 
@@ -76,7 +77,8 @@ fun FirstGameScreen(
         onMoveClick = firstGameViewModel::onMoveClick,
         onRotateStopClick = firstGameViewModel::onRotateStopClick,
         onNextLevelClick = firstGameViewModel::onNextLevelClick,
-        onGameReStartClick = firstGameViewModel::onGameReStartClick
+        onGameReStartClick = firstGameViewModel::onGameReStartClick,
+        popBackStack = popBackStack
     )
 }
 
@@ -106,6 +108,9 @@ fun FirstGameScreen(
     onMoveClick: () -> Unit,
     onRotateStopClick: () -> Unit,
     onNextLevelClick: () -> Unit,
+    popBackStack: () -> Unit,
+
+
 ) {
     // 부드러운 애니메이션 적용
     val animatedX by animateDpAsState(
@@ -127,6 +132,7 @@ fun FirstGameScreen(
     if (situation == "종료" || situation == "신기록") {
         FirstGameOverDialog (
             onClose = onGameReStartClick,
+            popBackStack = popBackStack,
             score = score,
             level = level,
             userData = userData,
@@ -164,28 +170,28 @@ fun FirstGameScreen(
                     .fillMaxSize(),
                 contentScale = ContentScale.FillBounds
             )
-            if(situation == "회전" || situation == "준비"){
-                JustImage(
-                    filePath = "etc/arrow.png",
-                    modifier = Modifier
-                        .size(30.dp, 80.dp)
-                        .offset(x = animatedX, y = animatedY - 25.dp)
-                        .rotate(animatedRotation),
-                    contentScale = ContentScale.Fit
-                )
-            }
-            JustImage(
-                filePath = "etc/snowball.png",
-                modifier = Modifier
-                    .size(snowballSize)
-                    .offset(x = animatedX, y = animatedY)
-            )
             JustImage(
                 filePath = "etc/target.png",
                 modifier = Modifier
                     .size(targetSize)
                     .offset(x = targetX, y = targetY)
             )
+            JustImage(
+                filePath = "etc/snowball.png",
+                modifier = Modifier
+                    .size(snowballSize)
+                    .offset(x = animatedX, y = animatedY)
+            )
+            if(situation == "회전" || situation == "준비"){
+                JustImage(
+                    filePath = "etc/arrow.png",
+                    modifier = Modifier
+                        .size(snowballSize)
+                        .offset(x = animatedX, y = animatedY)
+                        .rotate(animatedRotation),
+                    contentScale = ContentScale.Fit
+                )
+            }
 
             if(situation == "시작"){
                 Button(
@@ -225,9 +231,14 @@ fun FirstGameScreen(
                     Text("다음 레벨")
                 }
             }
+            "발사중" -> {
+                Text(
+                    text = "${shotPower.toString()}m"
+                )
+            }
         }
 
-        Text(shotPower.toString())
+
 
 
     }
@@ -260,7 +271,8 @@ fun FirstGameScreenPreview() {
             onMoveClick = {},
             onRotateStopClick = {},
             onNextLevelClick = {},
-            onGameReStartClick = {}
+            onGameReStartClick = {},
+            popBackStack = {}
         )
     }
 }

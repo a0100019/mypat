@@ -28,6 +28,9 @@ interface WorldDao {
     @Query("SELECT * FROM world_table WHERE type = :type")
     suspend fun getWorldDataListByType(type: String): List<World>
 
+    @Query("SELECT * FROM world_table WHERE type = :type")
+    fun getFlowWorldDataListByType(type: String): Flow<List<World>>
+
     //초기에 데이터 한번에 넣기 위한 코드
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(users: List<World>)

@@ -31,7 +31,8 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 fun SecondGameScreen(
-    secondGameViewModel: SecondGameViewModel = hiltViewModel()
+    secondGameViewModel: SecondGameViewModel = hiltViewModel(),
+    popBackStack: () -> Unit
 
 ) {
 
@@ -53,11 +54,13 @@ fun SecondGameScreen(
         patData = secondGameState.patData,
         userData = secondGameState.userData,
         level = secondGameState.level,
+        plusLove = secondGameState.plusLove,
         onItemSelected = secondGameViewModel::onItemSelected,
         onGameStartClick = secondGameViewModel::onGameStartClick,
         onNextLevelClick = secondGameViewModel::onNextLevelClick,
         onFinishClick = secondGameViewModel::onFinishClick,
         onGameReStartClick = secondGameViewModel::onGameReStartClick,
+        popBackStack = popBackStack,
     )
 }
 
@@ -70,6 +73,7 @@ fun SecondGameScreen(
     gameState : String,
     patData : Pat,
     level : Int,
+    plusLove : Int,
 
     userData : List<User>,
     targetList : List<Int>,
@@ -80,6 +84,8 @@ fun SecondGameScreen(
     onNextLevelClick : () -> Unit,
     onFinishClick : () -> Unit,
     onGameReStartClick: () -> Unit,
+    popBackStack: () -> Unit,
+
 ) {
 
     if (gameState == "성공" || gameState == "신기록") {
@@ -88,13 +94,9 @@ fun SecondGameScreen(
             userData = userData,
             patData = patData,
             situation = gameState,
-            time = time
-        )
-    }
-
-    if (gameState == "실패") {
-        SecondGameOverDialog(
-            onClose = onGameReStartClick,
+            time = time,
+            popBackStack = popBackStack,
+            plusLove = plusLove
         )
     }
 
@@ -104,51 +106,53 @@ fun SecondGameScreen(
 
         Text(String.format("%.2f", time))
         Text(level.toString())
-        Box(
-            modifier = Modifier
-                .size(80.dp)
-                .aspectRatio(1f) // 정사각형 유지
-                .padding(4.dp)
-                .background(
-                    when (goalList[0]) {
-                        1 -> Color.Red
-                        2 -> Color.Magenta
-                        3 -> Color.Green
-                        4 -> Color.Blue
-                        5 -> Color.Cyan
-                        6 -> Color.DarkGray
-                        else -> Color.LightGray
-                    },
-                    shape = RoundedCornerShape(8.dp)
-                ),
-            contentAlignment = Alignment.Center
-        ) {
-            if(goalList[0] == 6) {
-                DialogPatImage(patData.url)
+        Row {
+            Box(
+                modifier = Modifier
+                    .size(80.dp)
+                    .aspectRatio(1f) // 정사각형 유지
+                    .padding(4.dp)
+                    .background(
+                        when (goalList[0]) {
+                            1 -> Color.Red
+                            2 -> Color.Magenta
+                            3 -> Color.Green
+                            4 -> Color.Blue
+                            5 -> Color.Cyan
+                            6 -> Color.DarkGray
+                            else -> Color.LightGray
+                        },
+                        shape = RoundedCornerShape(8.dp)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                if (goalList[0] == 6) {
+                    DialogPatImage(patData.url)
+                }
             }
-        }
 
-        Box(
-            modifier = Modifier
-                .size(60.dp)
-                .aspectRatio(1f) // 정사각형 유지
-                .padding(4.dp)
-                .background(
-                    when (goalList[1]) {
-                        1 -> Color.Red
-                        2 -> Color.Magenta
-                        3 -> Color.Green
-                        4 -> Color.Blue
-                        5 -> Color.Cyan
-                        6 -> Color.DarkGray
-                        else -> Color.LightGray
-                    },
-                    shape = RoundedCornerShape(8.dp)
-                ),
-            contentAlignment = Alignment.Center
-        ) {
-            if(goalList[0] == 6) {
-                DialogPatImage(patData.url)
+            Box(
+                modifier = Modifier
+                    .size(60.dp)
+                    .aspectRatio(1f) // 정사각형 유지
+                    .padding(4.dp)
+                    .background(
+                        when (goalList[1]) {
+                            1 -> Color.Red
+                            2 -> Color.Magenta
+                            3 -> Color.Green
+                            4 -> Color.Blue
+                            5 -> Color.Cyan
+                            6 -> Color.DarkGray
+                            else -> Color.LightGray
+                        },
+                        shape = RoundedCornerShape(8.dp)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                if (goalList[0] == 6) {
+                    DialogPatImage(patData.url)
+                }
             }
         }
 
@@ -207,7 +211,7 @@ fun SecondGameScreen(
                 Button(
                     onClick = onFinishClick
                 ) {
-                    Text("마지막")
+                    Text("종료")
                 }
             }
         }
@@ -231,7 +235,9 @@ fun SecondGameScreenPreview() {
             onFinishClick = {},
             onGameReStartClick = {},
             userData = listOf(),
-            level = 1
+            level = 1,
+            popBackStack = {},
+            plusLove = 100
         )
     }
 }

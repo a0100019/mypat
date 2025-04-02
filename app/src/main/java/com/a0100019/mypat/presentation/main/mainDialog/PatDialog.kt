@@ -36,6 +36,7 @@ import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 fun PatDialog(
     onClose: () -> Unit,
     patData: Pat,
+    patFlowData: Pat?,
     onFirstGameNavigateClick: () -> Unit,
     onSecondGameNavigateClick: () -> Unit,
     onThirdGameNavigateClick: () -> Unit
@@ -66,8 +67,8 @@ fun PatDialog(
                             contentDescription = "Sample Vector Image",
                             modifier = Modifier.size(20.dp),
                         )
-                        Text("애정도 ${patData.love/100}")
-                        LoveHorizontalLine(patData.love)
+                        Text("애정도 ${patFlowData?.love?.div(100)}")
+                        patFlowData?.love?.let { LoveHorizontalLine(it) }
                     }
                 }
                 Text(
@@ -150,6 +151,7 @@ fun DialogScreenContentPreview() {
             onFirstGameNavigateClick = {  },
             onSecondGameNavigateClick = {  },
             onThirdGameNavigateClick = {  },
+            patFlowData = null
         )
     }
 }

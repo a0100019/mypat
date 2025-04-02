@@ -4,11 +4,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,6 +28,8 @@ import com.a0100019.mypat.presentation.main.mainDialog.PatDialog
 import com.a0100019.mypat.presentation.main.mainDialog.PatSettingDialog
 import com.a0100019.mypat.presentation.ui.image.pat.PatImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
 
 @Composable
@@ -34,6 +37,7 @@ fun WorldScreen(
     mapUrl : String,
     patDataList : List<Pat>,
     patWorldDataList : List<World>,
+    patFlowWorldDataList : Flow<List<Pat>>,
     itemDataList : List<Item>,
     itemWorldDataList : List<World>,
     dialogPatId : String,
@@ -61,11 +65,14 @@ fun WorldScreen(
         color = Color.Gray
     ) {
 
+        //flow데이터 쓰는법
+        val patFlow by patFlowWorldDataList.collectAsState(initial = emptyList())
         // 다이얼로그 표시
         if (!worldChange && dialogPatId != "0") {
             PatDialog(
                 onClose = { dialogPatIdChange("0") },
                 patData = patDataList.find { it.id.toString() == dialogPatId }!!,
+                patFlowData = patFlow.find { it.id.toString() == dialogPatId},
                 onFirstGameNavigateClick = onFirstGameNavigateClick,
                 onSecondGameNavigateClick = onSecondGameNavigateClick,
                 onThirdGameNavigateClick = onThirdGameNavigateClick
@@ -212,7 +219,8 @@ fun SelectScreenPreview() {
             onPatSizeDownClick = {  },
             onItemSizeDownClick = {},
             onItemDrag = { id, newX, newY -> },
-            onPatDrag = { id, newX, newY -> }
+            onPatDrag = { id, newX, newY -> },
+            patFlowWorldDataList = flowOf(emptyList()),
         )
     }
 }

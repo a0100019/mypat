@@ -22,6 +22,7 @@ import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 import kotlin.math.sqrt
 import kotlin.random.Random
+import kotlin.math.pow
 
 
 @HiltViewModel
@@ -74,12 +75,12 @@ class FirstGameViewModel @Inject constructor(
                 snowballSize = snowballSize,
                 surfaceWidthDp = surfaceWidthDp,
                 surfaceHeightDp = surfaceHeightDp,
-                maxPower = (surfaceHeightDp.value.toInt())*3/2,
+                maxPower = (surfaceHeightDp.value.toInt())*6/5,
                 targetX = targetX,
                 targetY = targetY,
                 targetSize = targetSize,
                 score = 0,
-                level = 1,
+                level = 0,
                 situation = "회전",
                 rotationAngle = 0f,
                 isRotating = true
@@ -113,7 +114,7 @@ class FirstGameViewModel @Inject constructor(
                 targetX = targetX,
                 targetY = targetY,
                 score = 0,
-                level = 1,
+                level = 0,
                 situation = "회전",
                 rotationAngle = 0f,
                 patData = patData,
@@ -170,13 +171,13 @@ class FirstGameViewModel @Inject constructor(
             }
 
 
-            delay(1000)
+            delay(1500)
             //공 이동 끝
 
             //표적과의 거리
             val distance = sqrt(
-                (state.targetX - state.snowballX).value * (state.targetX - state.snowballX).value +
-                        (state.targetY - state.snowballY).value * (state.targetY - state.snowballY).value
+                (state.targetX + state.targetSize/2 - state.snowballX + state.snowballSize/2).value.pow(2) +
+                        (state.targetY + state.targetSize/2 - state.snowballY + state.snowballSize/2).value.pow(2)
             )
 
             //맵안에 있는지
@@ -199,8 +200,10 @@ class FirstGameViewModel @Inject constructor(
                 updatePatData.love = state.patData.love + state.score
                 patDao.update(updatePatData)
 
-                if(state.userData.find { it.id == "secondGame" }!!.value.toDouble() < state.score){
+                if(state.userData.find { it.id == "firstGame" }!!.value.toDouble() < state.score){
+
                     userDao.update(id = "secondGame", value = state.score.toString(), value2 = state.level.toString())
+
                     reduce {
                         state.copy(
                             situation = "신기록"
@@ -216,15 +219,13 @@ class FirstGameViewModel @Inject constructor(
 
             }
 
-
         }
-
 
     }
 
     fun onNextLevelClick() = intent {
-        val randomX = Random.nextInt(state.targetSize.value.toInt(), (state.surfaceWidthDp - state.targetSize).value.toInt())
-        val randomY = Random.nextInt(state.targetSize.value.toInt(), (state.surfaceHeightDp - state.targetSize).value.toInt())
+        val randomX = Random.nextInt(0, (state.surfaceWidthDp - state.targetSize).value.toInt())
+        val randomY = Random.nextInt(0, (state.surfaceHeightDp - state.targetSize).value.toInt())
 
         reduce {
             state.copy(
@@ -236,7 +237,6 @@ class FirstGameViewModel @Inject constructor(
                 rotationDuration = state.rotationDuration*0.9
             )
         }
-
 
         viewModelScope.launch {
             while (state.isRotating) { // isActive를 체크하여 안전하게 종료 가능

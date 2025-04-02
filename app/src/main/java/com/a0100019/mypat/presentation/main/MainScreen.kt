@@ -113,7 +113,8 @@ fun MainScreen(
         userDataList = mainState.userDataList,
         addDialogChange = mainState.addDialogChange,
         mapWorldData = it,
-        allMapDataList = mainState.allMapDataList
+        allMapDataList = mainState.allMapDataList,
+        patFlowWorldDataList = mainState.patFlowWorldDataList
 
     )
     }
@@ -165,7 +166,8 @@ fun MainScreen(
     userDataList: Flow<List<User>>,
     addDialogChange: String,
     mapWorldData: World,
-    allMapDataList: List<Item>
+    allMapDataList: List<Item>,
+    patFlowWorldDataList: Flow<List<Pat>>,
 
 ) {
 
@@ -272,6 +274,7 @@ fun MainScreen(
                     onItemSizeUpClick = onItemSizeUpClick,
                     onItemDrag = onItemDrag,
                     onPatDrag = onPatDrag,
+                    patFlowWorldDataList = patFlowWorldDataList
                 )
             }
 
@@ -409,6 +412,7 @@ fun MainScreenPreview() {
             allMapDataList = listOf(Item(url = "item/table.png")),
             mapWorldData = World(id = "1"),
             onSelectMapImageClick = {},
+            patFlowWorldDataList = flowOf(emptyList()),
         )
     }
 }
