@@ -30,6 +30,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.a0100019.mypat.data.room.pet.Pat
+import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.presentation.game.secondGame.SecondGameSideEffect
 import com.a0100019.mypat.presentation.game.secondGame.SecondGameState
 import com.a0100019.mypat.presentation.game.secondGame.SecondGameViewModel
@@ -40,7 +42,8 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 fun ThirdGameScreen(
-    thirdGameViewModel: ThirdGameViewModel = hiltViewModel()
+    thirdGameViewModel: ThirdGameViewModel = hiltViewModel(),
+    popBackStack: () -> Unit
 
 ) {
 
@@ -62,12 +65,18 @@ fun ThirdGameScreen(
         memoMode = thirdGameState.memoMode,
         firstBoard = thirdGameState.sudokuFirstBoard,
         level = thirdGameState.level,
-        onStartClick = thirdGameViewModel::makeSudoku,
+        gameState = thirdGameState.gameState,
+        patData = thirdGameState.patData,
+        userDataList = thirdGameState.userData,
+
         onPuzzleClick = thirdGameViewModel::onPuzzleClick,
         onNumberClick = thirdGameViewModel::onNumberClick,
         onEraserClick = thirdGameViewModel::onEraserClick,
         onMemoClick = thirdGameViewModel::onMemoClick,
-        onMemoNumberClick = thirdGameViewModel::onMemoNumberClick
+        onMemoNumberClick = thirdGameViewModel::onMemoNumberClick,
+        onLevelClick = thirdGameViewModel::onLevelClick,
+
+        popBackStack = popBackStack,
     )
 }
 
@@ -76,21 +85,34 @@ fun ThirdGameScreen(
 @SuppressLint("DefaultLocale")
 @Composable
 fun ThirdGameScreen(
-    board: List<List<Int>>,
+    board: List<List<String>>,
     memoBoard: List<List<String>>,
-    firstBoard: List<List<Int>>,
+    firstBoard: List<List<String>>,
     clickedPuzzle : String,
     time : Double,
+    gameState : String,
     memoMode : Boolean,
-    onStartClick: () -> Unit,
+    patData : Pat,
+    userDataList : List<User>,
+    level: Int,
+
     onPuzzleClick : (Int, Int) -> Unit,
     onNumberClick: (Int) -> Unit,
     onMemoClick: () -> Unit,
     onEraserClick: () -> Unit,
     onMemoNumberClick: (Int) -> Unit,
-    level: Int,
+    popBackStack: () -> Unit,
+    onLevelClick: (Int) -> Unit,
+
 ) {
 
+    when(gameState) {
+        "설정" -> ThirdGameStartDialog(
+            patData = patData,
+            popBackStack = popBackStack,
+            onLevelClick = onLevelClick
+        )
+    }
 
     Column {
 
@@ -105,12 +127,12 @@ fun ThirdGameScreen(
                 else -> "어려움"
             }
         )
-
-        Button(
-            onClick = onStartClick
-        ) {
-            Text("표작성")
-        }
+//
+//        Button(
+//            onClick = onStartClick
+//        ) {
+//            Text("표작성")
+//        }
 
         Button(
             onClick = {  }
@@ -158,18 +180,18 @@ fun ThirdGameScreen(
                                     )
                                 }
                                 .clickable {
-                                    if (firstBoard[rowIndex][colIndex] == 0) {
+                                    if (firstBoard[rowIndex][colIndex] == "0") {
                                         onPuzzleClick(rowIndex, colIndex)
                                     }
                                 },
                             contentAlignment = Alignment.Center
                         ) {
 
-                            if(num != 0){
+                            if(num != "0"){
                                 Text(
-                                    text = if (num != 0) num.toString() else "",
+                                    text = num,
                                     fontSize = 20.sp,
-                                    color = if (firstBoard[rowIndex][colIndex] == 0) {
+                                    color = if (firstBoard[rowIndex][colIndex] == "0") {
                                         Color.Blue
                                     } else {
                                         Color.Black
@@ -264,10 +286,9 @@ fun ThirdGameScreen(
 fun ThirdGameScreenPreview() {
     MypatTheme {
         ThirdGameScreen(
-            board = Array(9) { IntArray(9) { 0 } }.map { it.toList() },
-            firstBoard = Array(9) { IntArray(9) { 0 } }.map { it.toList() },
+            board = Array(9) { Array(9) { "0" } }.map { it.toList() },
+            firstBoard = Array(9) { Array(9) { "0" } }.map { it.toList() },
             memoBoard = Array(9) { Array(9) { "123" } }.map { it.toList() },
-            onStartClick = {},
             clickedPuzzle = "35",
             onPuzzleClick = { row, col -> },
             onNumberClick = {},
@@ -276,7 +297,12 @@ fun ThirdGameScreenPreview() {
             onEraserClick = {},
             onMemoClick = {},
             onMemoNumberClick = {},
-            level = 3
+            level = 3,
+            gameState = "",
+            patData = Pat(url = "pat/cat.json"),
+            userDataList = emptyList(),
+            popBackStack = {},
+            onLevelClick = {},
         )
     }
 }

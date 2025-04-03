@@ -114,7 +114,9 @@ fun MainNavHost() {
         }
 
         composable(route = MainRoute.ThirdGameScreen.name) {
-            ThirdGameScreen()
+            ThirdGameScreen(
+                popBackStack = { navController.popBackStack() }
+            )
         }
 
         composable(route = MainRoute.DiaryScreen.name) {

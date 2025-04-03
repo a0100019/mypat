@@ -6,36 +6,51 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.walk.Walk
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SudokuDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(walk: Walk)
+    @Insert
+    suspend fun insert(sudoku: Sudoku)
 
     @Delete
-    suspend fun delete(walk: Walk)
+    suspend fun delete(sudoku: Sudoku)
 
-    @Update
-    suspend fun update(walk: Walk)
+    //value 중 원하는 값 변경
+    @Query("""
+    UPDATE sudoku_table 
+    SET 
+        value = CASE WHEN :value IS NOT NULL THEN :value ELSE value END,
+        value2 = CASE WHEN :value2 IS NOT NULL THEN :value2 ELSE value2 END,
+        value3 = CASE WHEN :value3 IS NOT NULL THEN :value3 ELSE value3 END
+    WHERE id = :id
+        """)
+    suspend fun update(id: String, value: String? = null, value2: String? = null, value3: String? = null)
 
-    @Query("UPDATE walk_table SET count = :newCount WHERE date = :date")
-    suspend fun updateCountByDate(date: String, newCount: Int)
 
-    @Query("UPDATE walk_table SET steps = :newSteps WHERE date = :date")
-    suspend fun updateStepsByDate(date: String, newSteps: Int)
+    @Query("SELECT value FROM sudoku_table WHERE id = :id")
+    suspend fun getValueById(id: String): String
 
-    @Query("SELECT * FROM walk_table ORDER BY id DESC")
-    suspend fun getAllWalkData(): List<Walk>
+    @Query("""
+        SELECT *
+        FROM sudoku_table
+        ORDER BY id DESC
+        """)
+    suspend fun getAllSudokuData(): List<Sudoku>
 
-    @Query("SELECT * FROM walk_table ORDER BY id DESC LIMIT 1")
-    suspend fun getLatestWalkData(): Walk
+    //Flow는 이미 계속 비동기로 상태를 관찰하기 때문에 비동기함수인 suspend를 붙히면 안됨
+    @Query("""
+    SELECT *
+    FROM sudoku_table
+    ORDER BY id DESC
+        """)
+    fun getAllSudokuDataFlow(): Flow<List<Sudoku>>
 
-    @Query("SELECT * FROM walk_table ORDER BY id DESC LIMIT 1 OFFSET 1")
-    suspend fun getSecondLatestWalkData(): Walk
 
     //초기에 데이터 한번에 넣기 위한 코드
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(walks: List<Walk>)
+    suspend fun insertAll(sudoku: List<Sudoku>)
 }

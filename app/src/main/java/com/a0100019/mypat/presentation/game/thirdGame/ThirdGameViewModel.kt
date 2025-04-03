@@ -3,6 +3,10 @@ package com.a0100019.mypat.presentation.game.thirdGame
 import android.os.SystemClock
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.a0100019.mypat.data.room.pet.Pat
+import com.a0100019.mypat.data.room.pet.PatDao
+import com.a0100019.mypat.data.room.sudoku.Sudoku
+import com.a0100019.mypat.data.room.sudoku.SudokuDao
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,6 +26,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ThirdGameViewModel @Inject constructor(
     private val userDao: UserDao,
+    private val patDao: PatDao,
+    private val sudokuDao: SudokuDao,
 ) : ViewModel(), ContainerHost<ThirdGameState, ThirdGameSideEffect> {
 
     override val container: Container<ThirdGameState, ThirdGameSideEffect> = container(
@@ -40,27 +46,84 @@ class ThirdGameViewModel @Inject constructor(
         loadData()
     }
 
-    //room에서 데이터 가져옴
     private fun loadData() = intent {
+        val userDataList = userDao.getAllUserData()
+        val patData = patDao.getPatDataById(userDataList.find { it.id == "selectPat" }?.value ?: "0")
+
+        reduce {
+            state.copy(
+                userData = userDataList,
+                patData = patData
+            )
+        }
+
+        val sudokuDataList = sudokuDao.getAllSudokuData()
+        if(sudokuDataList.find { it.id == "level" }!!.value == "0") {
+            reduce {
+                state.copy(
+                    gameState = "설정"
+                )
+            }
+        } else {
+
+            //이어하기
+            val sudokuBoard = returnSudokuBoard(sudokuDataList.find { it.id == "sudokuBoard" }!!.value)
+            val sudokuFirstBoard = returnSudokuBoard(sudokuDataList.find { it.id == "sudokuFirstBoard" }!!.value)
+            val sudokuMemoBoard = returnSudokuBoard(sudokuDataList.find { it.id == "sudokuMemoBoard" }!!.value)
+            val time = sudokuDataList.find { it.id == "time" }!!.value.toDouble()
+            val level = sudokuDataList.find { it.id == "level" }!!.value
+
+            reduce {
+                state.copy(
+                    sudokuBoard = sudokuBoard,
+                    sudokuFirstBoard = sudokuFirstBoard,
+                    sudokuMemoBoard = sudokuMemoBoard,
+                    time = time,
+                    level = level.toInt()
+                )
+            }
+
+            startTimer()
+
+        }
 
     }
 
-    fun dataSave() = intent {
-        val sudokuBoard = state.sudokuBoard
+    fun buildStringSudokuBoard(list: List<List<String>>) : String {
+
         val sudokuBoardString = buildString {
-            for (rowIndex in sudokuBoard.indices) {
-                for (colIndex in sudokuBoard[rowIndex].indices) {
-                    val value = sudokuBoard[rowIndex][colIndex]
-                    if (value != 0) {
-                        // 값이 0이 아닌 경우 "rowIndex-colIndex-value" 형태로 추가
+            for (rowIndex in list.indices) {
+                for (colIndex in list[rowIndex].indices) {
+                    val value = list[rowIndex][colIndex]
                         append("$rowIndex-$colIndex-$value.")
-                    }
                 }
             }
             // 마지막 마침표(.) 제거
             if (isNotEmpty()) deleteAt(lastIndex)
         }
+
+        return sudokuBoardString
     }
+
+    private fun returnSudokuBoard(data: String): List<List<String>> {
+        val board = MutableList(9) { MutableList(9) { "" } } // 9x9 보드 초기화
+
+        if (data.isNotEmpty()) {
+            val cells = data.split(".")
+            for (cell in cells) {
+                val parts = cell.split("-")
+                if (parts.size == 3) {
+                    val row = parts[0].toInt()
+                    val col = parts[1].toInt()
+                    val value = parts[2]
+                    board[row][col] = value
+                }
+            }
+        }
+
+        return board
+    }
+
 
     fun onEraserClick() = intent {
         if(state.clickedPuzzle != "99") {
@@ -68,7 +131,7 @@ class ThirdGameViewModel @Inject constructor(
             val col = state.clickedPuzzle[1].digitToInt()
 
             val newSudoku = state.sudokuBoard.map { it.toMutableList() }.toMutableList()
-            newSudoku[row][col] = 0
+            newSudoku[row][col] = "0"
 
             reduce {
                 state.copy(
@@ -123,7 +186,7 @@ class ThirdGameViewModel @Inject constructor(
             val col = state.clickedPuzzle[1].digitToInt()
 
             val newSudoku = state.sudokuBoard.map { it.toMutableList() }.toMutableList()
-            newSudoku[row][col] = number
+            newSudoku[row][col] = number.toString()
 
             reduce {
                 state.copy(
@@ -131,20 +194,23 @@ class ThirdGameViewModel @Inject constructor(
                 )
             }
 
-            if (newSudoku.all { row -> row.all { it != 0 } }) {
+            if (newSudoku.all { row -> row.all { it != "0" } }) {
                 var success = 0
                 // 0이 없으면 실행할 코드
-                repeat(9) { it ->
-                    if (newSudoku[it].sum() != 45) {
+                repeat(9) { index ->
+                    val rowSum = newSudoku[index].sumOf { it.toString().toInt() } // 각 문자(String)를 Int로 변환 후 합산
+                    if (rowSum != 45) {
                         success++
                     }
                 }
 
-                repeat(9) { it ->
-                    if (newSudoku.sumOf { it[col] } != 45) {
+                repeat(9) { col ->
+                    val colSum = newSudoku.sumOf { it[col].toString().toInt() } // 각 열의 숫자를 Int로 변환 후 합산
+                    if (colSum != 45) {
                         success++
                     }
                 }
+
 
                 if (success == 0) {
                     //성공
@@ -179,7 +245,7 @@ class ThirdGameViewModel @Inject constructor(
 
     }
 
-    fun makeSudoku() = intent {
+    fun makeSudoku(zeroNumber: Int) = intent {
         val board = Array(9) { IntArray(9) { 0 } }
 
         fun isValid(row: Int, col: Int, num: Int): Boolean {
@@ -226,11 +292,13 @@ class ThirdGameViewModel @Inject constructor(
         }
 
         // 무작위로 섞고 처음 count 개만 선택하여 0으로 변경
-        positions.shuffled().take(3).forEach { (row, col) ->
+        positions.shuffled().take(zeroNumber).forEach { (row, col) ->
             board[row][col] = 0
         }
-        // 2차원 배열을 리스트로 변환해서 상태 업데이트
-        val newBoard = board.map { it.toList() }
+
+        // 기존 2차원 리스트를 문자열 리스트로 변환
+        val newBoard: List<List<String>> = board.map { row -> row.map { it.toString() } }
+
         reduce { state.copy(
             sudokuBoard = newBoard,
             sudokuFirstBoard = newBoard
@@ -258,6 +326,24 @@ class ThirdGameViewModel @Inject constructor(
         }
     }
 
+    fun onLevelClick(level: Int) = intent {
+
+        when(level) {
+            1 -> makeSudoku(10)
+            2 -> makeSudoku(20)
+            3 -> makeSudoku(30)
+        }
+        startTimer()
+
+        reduce {
+            state.copy(
+                gameState = "",
+//                sudokuBoard =
+            )
+        }
+
+    }
+
 
 }
 
@@ -265,15 +351,17 @@ class ThirdGameViewModel @Inject constructor(
 @Immutable
 data class ThirdGameState(
     val userData: List<User> = emptyList(),
-    val sudokuBoard: List<List<Int>> = List(9) { List(9) { 0 } }, // 9x9 스도쿠 보드 추가
-    val sudokuFirstBoard: List<List<Int>> = List(9) { List(9) { 0 } }, // 9x9 스도쿠 보드 추가
-    val sudokuMemoBoard: List<List<String>> = List(9) { List(9) { "" } }, // 9x9 메모 스도쿠 보드 추가
+    val patData: Pat = Pat(url = ""),
+    val sudokuBoard: List<List<String>> = List(9) { List(9) { "0" } }, // 9x9 스도쿠 보드 추가
+    val sudokuFirstBoard: List<List<String>> = List(9) { List(9) { "0" } }, // 9x9 스도쿠 보드 추가
+    val sudokuMemoBoard: List<List<String>> = List(9) { List(9) { "0" } }, // 9x9 메모 스도쿠 보드 추가
     val clickedPuzzle : String = "99",
     val time : Double = 0.0,
     val level : Int = 0,
-    val gameState : String = "대기",
+    val gameState : String = "",
     val memoMode : Boolean = false,
-)
+
+    )
 
 
 //상태와 관련없는 것
