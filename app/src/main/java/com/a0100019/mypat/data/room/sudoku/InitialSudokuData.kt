@@ -8,7 +8,9 @@ fun getSudokuInitialData(): List<Sudoku> {
         Sudoku(id = "sudokuFirstBoard"),
         Sudoku(id = "sudokuMemoBoard"),
         Sudoku(id = "time"),
-        Sudoku(id = "level", value = "0")
+        Sudoku(id = "level", value = "0"),
+        Sudoku(id = "state", value = "0")
+
 
         // 더 많은 데이터를 여기에 추가...
     )

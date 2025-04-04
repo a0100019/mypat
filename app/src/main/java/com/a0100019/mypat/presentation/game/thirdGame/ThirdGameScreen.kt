@@ -68,6 +68,7 @@ fun ThirdGameScreen(
         gameState = thirdGameState.gameState,
         patData = thirdGameState.patData,
         userDataList = thirdGameState.userData,
+        plusLove = thirdGameState.plusLove,
 
         onPuzzleClick = thirdGameViewModel::onPuzzleClick,
         onNumberClick = thirdGameViewModel::onNumberClick,
@@ -95,6 +96,7 @@ fun ThirdGameScreen(
     patData : Pat,
     userDataList : List<User>,
     level: Int,
+    plusLove: Int,
 
     onPuzzleClick : (Int, Int) -> Unit,
     onNumberClick: (Int) -> Unit,
@@ -111,6 +113,14 @@ fun ThirdGameScreen(
             patData = patData,
             popBackStack = popBackStack,
             onLevelClick = onLevelClick
+        )
+        "성공" -> ThirdGameSuccessDialog(
+            onClose = {  },
+            time = time,
+            userData = userDataList,
+            patData = patData,
+            popBackStack = popBackStack,
+            plusLove = plusLove
         )
     }
 
@@ -303,6 +313,7 @@ fun ThirdGameScreenPreview() {
             userDataList = emptyList(),
             popBackStack = {},
             onLevelClick = {},
+            plusLove = 1000
         )
     }
 }

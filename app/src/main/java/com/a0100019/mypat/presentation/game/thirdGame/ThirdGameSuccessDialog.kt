@@ -24,3 +24,84 @@ import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.presentation.ui.image.etc.LoveHorizontalLine
 import com.a0100019.mypat.presentation.ui.image.pat.DialogPatImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
+
+@Composable
+fun ThirdGameSuccessDialog(
+    onClose: () -> Unit,
+    time: Double,
+    userData: List<User>,
+    patData: Pat,
+    popBackStack: () -> Unit,
+    plusLove: Int,
+) {
+
+
+    Dialog(
+        onDismissRequest = onClose
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.6f)
+                .background(Color.White, shape = RoundedCornerShape(16.dp))
+                .padding(16.dp)
+        ) {
+            Column(modifier = Modifier.fillMaxSize()) {
+
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .background(Color.Gray, shape = RoundedCornerShape(16.dp))
+                        .padding(16.dp)
+                ) {
+                    DialogPatImage(patData.url)
+                    LoveHorizontalLine(
+                        value = patData.love,
+                        totalValue = 10000,
+                        plusValue = plusLove
+                    )
+                }
+
+                Text("시간")
+                Text(text = time.toString())
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row {
+                    Button(
+                        onClick = onClose,
+                        modifier = Modifier
+                    ) {
+                        Text("다시 하기")
+                    }
+
+                    Button(
+                        onClick = popBackStack,
+                        modifier = Modifier
+                    ) {
+                        Text("나가기")
+                    }
+
+                }
+
+            }
+        }
+    }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun ThirdGameDialogPreview() {
+    MypatTheme {
+        ThirdGameSuccessDialog(
+            onClose = {  },
+            time = 190.7,
+            userData = listOf(User(id = "thirdGame", value = "10000")),
+            patData = Pat(url = "pat/cat.json"),
+            popBackStack = {},
+            plusLove = 100
+        )
+    }
+}

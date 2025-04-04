@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.a0100019.mypat.data.room.pet.Pat
 import com.a0100019.mypat.data.room.pet.PatDao
-import com.a0100019.mypat.data.room.sudoku.Sudoku
 import com.a0100019.mypat.data.room.sudoku.SudokuDao
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
@@ -58,7 +57,7 @@ class ThirdGameViewModel @Inject constructor(
         }
 
         val sudokuDataList = sudokuDao.getAllSudokuData()
-        if(sudokuDataList.find { it.id == "level" }!!.value == "0") {
+        if(sudokuDataList.find { it.id == "state" }!!.value == "0") {
             reduce {
                 state.copy(
                     gameState = "설정"
@@ -89,13 +88,36 @@ class ThirdGameViewModel @Inject constructor(
 
     }
 
-    fun buildStringSudokuBoard(list: List<List<String>>) : String {
+    //종료될때 실행
+    override fun onCleared() {
+        super.onCleared()
+        // ViewModel이 종료될 때 실행할 코드
+        stopTimer()
+        saveData()
+    }
+
+    private fun saveData() = intent {
+        val sudokuBoardString = buildStringSudokuBoard(state.sudokuBoard)
+        val sudokuFirstBoardString = buildStringSudokuBoard(state.sudokuFirstBoard)
+        val sudokuMemoBoardString = buildStringSudokuBoard(state.sudokuMemoBoard)
+        val time = state.time
+        val level = state.level
+
+        sudokuDao.update(id = "sudokuBoard", value = sudokuBoardString)
+        sudokuDao.update(id = "sudokuFirstBoard", value = sudokuFirstBoardString)
+        sudokuDao.update(id = "sudokuMemoBoard", value = sudokuMemoBoardString)
+        sudokuDao.update(id = "time", value = time.toString())
+        sudokuDao.update(id = "level", value = level.toString())
+
+    }
+
+    private fun buildStringSudokuBoard(list: List<List<String>>) : String {
 
         val sudokuBoardString = buildString {
             for (rowIndex in list.indices) {
                 for (colIndex in list[rowIndex].indices) {
                     val value = list[rowIndex][colIndex]
-                        append("$rowIndex-$colIndex-$value.")
+                    append("$rowIndex-$colIndex-$value.")
                 }
             }
             // 마지막 마침표(.) 제거
@@ -124,7 +146,6 @@ class ThirdGameViewModel @Inject constructor(
         return board
     }
 
-
     fun onEraserClick() = intent {
         if(state.clickedPuzzle != "99") {
             val row = state.clickedPuzzle[0].digitToInt()
@@ -139,6 +160,9 @@ class ThirdGameViewModel @Inject constructor(
                 )
             }
         }
+
+        saveData()
+
     }
 
     fun onMemoClick() = intent {
@@ -176,6 +200,7 @@ class ThirdGameViewModel @Inject constructor(
             }
         }
 
+        saveData()
 
     }
 
@@ -214,6 +239,8 @@ class ThirdGameViewModel @Inject constructor(
 
                 if (success == 0) {
                     //성공
+                    stopTimer()
+                    sudokuDao.update(id = "state", value = "0" )
                     reduce {
                         state.copy(
                             gameState = "성공"
@@ -225,6 +252,7 @@ class ThirdGameViewModel @Inject constructor(
             }
         }
 
+        saveData()
 
     }
 
@@ -243,9 +271,11 @@ class ThirdGameViewModel @Inject constructor(
             }
         }
 
+        saveData()
+
     }
 
-    fun makeSudoku(zeroNumber: Int) = intent {
+    private fun makeSudoku(zeroNumber: Int) = intent {
         val board = Array(9) { IntArray(9) { 0 } }
 
         fun isValid(row: Int, col: Int, num: Int): Boolean {
@@ -315,7 +345,7 @@ class ThirdGameViewModel @Inject constructor(
     private fun startTimer() {
         timerJob?.cancel() // 기존 타이머 중지
         timerJob = viewModelScope.launch {
-            val startTime = SystemClock.elapsedRealtime() // 시작 시간 기록
+            val startTime = SystemClock.elapsedRealtime() - sudokuDao.getValueById("time").toDouble()*1000 // 시작 시간 기록
             while (true) {
                 val elapsed = (SystemClock.elapsedRealtime() - startTime) / 1000.0 // 경과 시간(초)
                 intent {
@@ -329,16 +359,16 @@ class ThirdGameViewModel @Inject constructor(
     fun onLevelClick(level: Int) = intent {
 
         when(level) {
-            1 -> makeSudoku(10)
+            1 -> makeSudoku(3)
             2 -> makeSudoku(20)
             3 -> makeSudoku(30)
         }
         startTimer()
+        sudokuDao.update(id = "state", value = "1")
 
         reduce {
             state.copy(
                 gameState = "",
-//                sudokuBoard =
             )
         }
 
@@ -360,6 +390,7 @@ data class ThirdGameState(
     val level : Int = 0,
     val gameState : String = "",
     val memoMode : Boolean = false,
+    val plusLove : Int = 0,
 
     )
 

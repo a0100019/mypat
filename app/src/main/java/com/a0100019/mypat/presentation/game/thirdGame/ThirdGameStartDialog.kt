@@ -40,7 +40,7 @@ fun ThirdGameStartDialog(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .wrapContentHeight()
+                .fillMaxHeight(0.6f)
                 .background(Color.White, shape = RoundedCornerShape(16.dp))
                 .padding(16.dp)
         ) {
@@ -48,7 +48,7 @@ fun ThirdGameStartDialog(
 
                 Box(
                     modifier = Modifier
-//                        .weight(1f)
+                        .weight(1f)
                         .fillMaxWidth()
                         .background(Color.Gray, shape = RoundedCornerShape(16.dp))
                         .padding(16.dp)
