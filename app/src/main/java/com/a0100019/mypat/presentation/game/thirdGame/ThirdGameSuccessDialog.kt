@@ -33,6 +33,7 @@ fun ThirdGameSuccessDialog(
     patData: Pat,
     popBackStack: () -> Unit,
     plusLove: Int,
+    level: Int,
 ) {
 
 
@@ -59,13 +60,27 @@ fun ThirdGameSuccessDialog(
                     LoveHorizontalLine(
                         value = patData.love,
                         totalValue = 10000,
-                        plusValue = plusLove
+                        plusValue = plusLove,
                     )
                 }
 
+
                 Text("시간")
                 Text(text = time.toString())
-
+                Text(
+                    text = when(level) {
+                        1 -> "쉬움 클리어!"
+                        2 -> "보통 클리어!"
+                        else -> "어려움 클리어!"
+                    }
+                )
+                Text("총 클리어 개수 : ${(userData.find { it.id == "thirdGame" }!!.value).toInt()+1}개")
+                Button(
+                    onClick = { },
+                    modifier = Modifier
+                ) {
+                    Text("전체 순위 보기")
+                }
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Row {
@@ -101,7 +116,8 @@ fun ThirdGameDialogPreview() {
             userData = listOf(User(id = "thirdGame", value = "10000")),
             patData = Pat(url = "pat/cat.json"),
             popBackStack = {},
-            plusLove = 100
+            plusLove = 100,
+            level = 1
         )
     }
 }

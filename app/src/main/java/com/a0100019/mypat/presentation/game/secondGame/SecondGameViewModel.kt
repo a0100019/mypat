@@ -201,7 +201,6 @@ class SecondGameViewModel @Inject constructor(
         }
     }
 
-
 }
 
 @Immutable

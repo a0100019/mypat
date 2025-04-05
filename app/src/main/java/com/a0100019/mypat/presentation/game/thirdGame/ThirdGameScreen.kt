@@ -35,6 +35,7 @@ import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.presentation.game.secondGame.SecondGameSideEffect
 import com.a0100019.mypat.presentation.game.secondGame.SecondGameState
 import com.a0100019.mypat.presentation.game.secondGame.SecondGameViewModel
+import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
 import com.a0100019.mypat.presentation.ui.image.etc.KoreanIdiomImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
@@ -76,6 +77,8 @@ fun ThirdGameScreen(
         onMemoClick = thirdGameViewModel::onMemoClick,
         onMemoNumberClick = thirdGameViewModel::onMemoNumberClick,
         onLevelClick = thirdGameViewModel::onLevelClick,
+        onStateChangeClick = thirdGameViewModel::onStateChangeClick,
+        newGame = thirdGameViewModel::newGame,
 
         popBackStack = popBackStack,
     )
@@ -105,7 +108,8 @@ fun ThirdGameScreen(
     onMemoNumberClick: (Int) -> Unit,
     popBackStack: () -> Unit,
     onLevelClick: (Int) -> Unit,
-
+    onStateChangeClick: (String) -> Unit,
+    newGame: () -> Unit,
 ) {
 
     when(gameState) {
@@ -115,12 +119,20 @@ fun ThirdGameScreen(
             onLevelClick = onLevelClick
         )
         "성공" -> ThirdGameSuccessDialog(
-            onClose = {  },
+            onClose = newGame,
             time = time,
             userData = userDataList,
             patData = patData,
             popBackStack = popBackStack,
-            plusLove = plusLove
+            plusLove = plusLove,
+            level = level
+        )
+        "newGame" -> SimpleAlertDialog(
+            onConfirm = newGame,
+            onDismiss = {
+                onStateChangeClick("")
+            },
+            text = "게임을 새로 시작하시겠습니까?"
         )
     }
 
@@ -145,7 +157,9 @@ fun ThirdGameScreen(
 //        }
 
         Button(
-            onClick = {  }
+            onClick = {
+                onStateChangeClick("newGame")
+            }
         ) {
             Text("새로 하기")
         }
@@ -313,7 +327,9 @@ fun ThirdGameScreenPreview() {
             userDataList = emptyList(),
             popBackStack = {},
             onLevelClick = {},
-            plusLove = 1000
+            plusLove = 1000,
+            onStateChangeClick = {},
+            newGame = {}
         )
     }
 }

@@ -88,12 +88,32 @@ class ThirdGameViewModel @Inject constructor(
 
     }
 
-    //종료될때 실행
-    override fun onCleared() {
-        super.onCleared()
-        // ViewModel이 종료될 때 실행할 코드
+    fun newGame() = intent {
+
+        sudokuDao.update(id = "state", value = "0")
+        sudokuDao.update(id = "time", value = "0.0")
+        reduce {
+            state.copy(
+                gameState = "설정",
+                sudokuBoard = List(9) { List(9) { "0" } },
+                sudokuFirstBoard = List(9) { List(9) { "0" } },
+                sudokuMemoBoard = List(9) { List(9) { "0" } },
+                time = 0.0,
+                clickedPuzzle = "99"
+            )
+        }
         stopTimer()
-        saveData()
+
+    }
+
+    fun onStateChangeClick(newState: String) = intent {
+
+        reduce {
+            state.copy(
+                gameState = newState
+            )
+        }
+
     }
 
     private fun saveData() = intent {
@@ -223,27 +243,45 @@ class ThirdGameViewModel @Inject constructor(
                 var success = 0
                 // 0이 없으면 실행할 코드
                 repeat(9) { index ->
-                    val rowSum = newSudoku[index].sumOf { it.toString().toInt() } // 각 문자(String)를 Int로 변환 후 합산
+                    val rowSum = newSudoku[index].sumOf { it.toInt() } // 각 문자(String)를 Int로 변환 후 합산
                     if (rowSum != 45) {
                         success++
                     }
                 }
 
                 repeat(9) { col ->
-                    val colSum = newSudoku.sumOf { it[col].toString().toInt() } // 각 열의 숫자를 Int로 변환 후 합산
+                    val colSum = newSudoku.sumOf { it[col].toInt() } // 각 열의 숫자를 Int로 변환 후 합산
                     if (colSum != 45) {
                         success++
                     }
                 }
 
-
                 if (success == 0) {
                     //성공
                     stopTimer()
                     sudokuDao.update(id = "state", value = "0" )
+
+                    val plusLove = when(state.level) {
+                        1 -> 1000
+                        2 -> 3000
+                        else -> 10000
+                    }
+                    val updatePatData = state.patData
+                    updatePatData.love = state.patData.love + plusLove
+                    patDao.update(updatePatData)
+
+                    val current = state.userData.find { it.id == "thirdGame" }!!
+                    when (state.level) {
+                        1 -> userDao.update(id = "thirdGame", value = (current.value.toInt() + 1).toString())
+                        2 -> userDao.update(id = "thirdGame", value2 = (current.value2.toInt() + 1).toString())
+                        3 -> userDao.update(id = "thirdGame", value3 = (current.value3.toInt() + 1).toString())
+                    }
+
+
                     reduce {
                         state.copy(
-                            gameState = "성공"
+                            gameState = "성공",
+                            plusLove = plusLove
                         )
                     }
                 } else {
@@ -365,15 +403,16 @@ class ThirdGameViewModel @Inject constructor(
         }
         startTimer()
         sudokuDao.update(id = "state", value = "1")
+        sudokuDao.update(id = "level", value = level.toString())
 
         reduce {
             state.copy(
                 gameState = "",
+                level = level
             )
         }
 
     }
-
 
 }
 
