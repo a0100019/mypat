@@ -54,7 +54,8 @@ fun StoreScreen(
         onPatEggClick = storeViewModel::onPatEggClick,
         onPatSelectClick = storeViewModel::onPatSelectClick,
         onPatAdvertisementClick = storeViewModel::onPatAdvertisementClick,
-
+        onItemClick = storeViewModel::onItemClick,
+        onItemStoreClick = storeViewModel::onItemStoreClick,
 
         newPat = storeState.newPat,
         userData = storeState.userData,
@@ -66,7 +67,8 @@ fun StoreScreen(
         patEggDataList = storeState.patEggDataList,
         patStoreDataList = storeState.patStoreDataList,
         patSelectIndexList = storeState.patSelectIndexList,
-        selectPatData = storeState.selectPatData
+        selectPatData = storeState.selectPatData,
+        itemStoreDataList = storeState.itemStoreDataList,
 
     )
 }
@@ -88,6 +90,8 @@ fun StoreScreen(
     onPatEggClick: (Int) -> Unit,
     onPatAdvertisementClick: () -> Unit,
     onPatSelectClick: () -> Unit,
+    onItemClick: (Int) -> Unit,
+    onItemStoreClick: () -> Unit,
 
     newPat: Pat?,
     newItem: Item?,
@@ -99,7 +103,8 @@ fun StoreScreen(
     patEggDataList: List<Pat>?,
     patStoreDataList: List<Pat>?,
     patSelectIndexList: List<Int>,
-    selectPatData: Pat?
+    selectPatData: Pat?,
+    itemStoreDataList: List<Item>?
 ) {
 
     if (selectPatData != null) {
@@ -151,11 +156,17 @@ fun StoreScreen(
             newName = newName
         )
         "patStore" -> PatStoreDialog(
-            onClose = onDialogCloseClick,
+            onClose = { },
             patData = patStoreDataList,
             patEggData = patEggDataList,
             onPatEggClick = onPatEggClick,
             selectIndexList = patSelectIndexList
+        )
+        "itemStore" -> ItemStoreDialog(
+            onClose = { },
+            itemData = itemStoreDataList,
+            onItemClick = onItemClick,
+            onAdvertisementClick = {  }
         )
 
     }
@@ -166,6 +177,7 @@ fun StoreScreen(
             onConfirm = {
                 when(simpleDialogState) {
                     "알을 뽑으시겠습니까?" -> onPatStoreClick()
+                    "아이템을 뽑으시겠습니까?" -> onItemStoreClick()
                     "펫 칸 늘리기" -> onPatRoomUpClick()
                     "아이템 칸 늘리기" -> onItemRoomUpClick()
                     "가능한 닉네임입니다 변경하겠습니까?" -> onNameChangeClick()
@@ -192,13 +204,8 @@ fun StoreScreen(
                 }
             }
             item {
-                Button(onClick = {}) {
+                Button(onClick = { onSimpleDialog("아이템을 뽑으시겠습니까?")}) {
                     Text("아이템 뽑기")
-                }
-            }
-            item {
-                Button(onClick = {}) {
-                    Text("맵 뽑기")
                 }
             }
             item {
@@ -221,11 +228,6 @@ fun StoreScreen(
                     Text("닉네임 변경")
                 }
             }
-//            item {
-//                Button(onClick = {}) {
-//                    Text("닉네임 색 입히기")
-//                }
-//            }
             item {
                 Button(onClick = {onSimpleDialog("화폐 변경")}) {
                     Text("화폐 변경")
@@ -254,6 +256,8 @@ fun StoreScreenPreview() {
             onPatEggClick = {},
             onPatSelectClick = {},
             onPatAdvertisementClick = {},
+            onItemClick = {},
+            onItemStoreClick = {},
 
             newPat = null,
             userData = emptyList(),
@@ -265,7 +269,8 @@ fun StoreScreenPreview() {
             patEggDataList = emptyList(),
             patStoreDataList = emptyList(),
             patSelectIndexList = emptyList(),
-            selectPatData = null
+            selectPatData = null,
+            itemStoreDataList = emptyList()
 
         )
     }

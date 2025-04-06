@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pet.Pat
+import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.image.etc.KoreanIdiomImage
@@ -57,6 +58,10 @@ fun InformationScreen(
         patDataList = informationState.patDataList,
         itemDataList = informationState.itemDataList,
         mapUrl = informationState.mapData?.value ?: "",
+        allPatDataList = informationState.allPatDataList,
+        allItemDataList = informationState.allItemDataList,
+        allMapDataList = informationState.allMapDataList,
+        userDataList = informationState.userData
 
         )
 }
@@ -68,7 +73,10 @@ fun InformationScreen(
     mapUrl : String,
     patDataList : List<Pat>,
     itemDataList : List<Item>,
-
+    allPatDataList: List<Pat>,
+    allItemDataList: List<Item>,
+    allMapDataList: List<Item>,
+    userDataList: List<User>
 
     ) {
 
@@ -81,9 +89,13 @@ fun InformationScreen(
                 text = "이름"
             )
             Text(
-                text = "#17"
+                text = "#${userDataList.find { it.id == "name" }?.value2}"
+            )
+            Text(
+                text = "좋아요 ${userDataList.find { it.id == "like" }?.value}개"
             )
         }
+
         Box(
             modifier = Modifier
                 .fillMaxWidth() // 가로 크기는 최대
@@ -138,6 +150,67 @@ fun InformationScreen(
             }
 
         }
+
+        Row {
+            Text(
+                text = "펫"
+            )
+            Text("${allPatDataList.count { it.date != "0" }}/${allPatDataList.size}")
+        }
+
+        Row {
+            Text(
+                text = "아이템"
+            )
+            Text("${allItemDataList.count { it.date != "0" }}/${allItemDataList.size}")
+            Text(
+                text = "맵"
+            )
+            Text("${allMapDataList.count { it.date != "0" }}/${allMapDataList.size}")
+        }
+
+        Row {
+            Text(
+                text = "컬링"
+            )
+            Text("${userDataList.find { it.id == "firstGame" }?.value}점")
+            Text(
+                text = "14등"
+            )
+        }
+
+        Row {
+            Text(
+                text = "블록게임"
+            )
+            Text("${userDataList.find { it.id == "secondGame" }?.value}점")
+            Text(
+                text = "14등"
+            )
+        }
+
+        Row {
+            Text(
+                text = "sudoku"
+            )
+            Text("${userDataList.find { it.id == "thirdGame" }?.value}점")
+            Text(
+                text = "14등"
+            )
+        }
+
+        Row {
+            Text(
+                text = "최초 접속"
+            )
+            Text("${userDataList.find { it.id == "date" }?.value2}")
+
+            Text(
+                text = "접속일"
+            )
+            Text("${userDataList.find { it.id == "date" }?.value3}일")
+        }
+
     }
 
 }
@@ -150,6 +223,10 @@ fun InformationScreenPreview() {
             mapUrl = "map/beach.jpg",
             patDataList = listOf(Pat(url = "pat/cat.json")),
             itemDataList = listOf(Item(url = "item/table.png")),
+            allPatDataList = listOf(Pat(url = "pat/cat.json")),
+            allItemDataList = listOf(Item(url = "item/table.png")),
+            allMapDataList = listOf(Item(url = "item/forest.png")),
+            userDataList = listOf(User(id = "firstGame"))
         )
     }
 }

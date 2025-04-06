@@ -65,13 +65,19 @@ class InformationViewModel @Inject constructor(
         }
 
         val userDataList = userDao.getAllUserData()
+        val allMapDataList = itemDao.getAllMapData()
+        val allPatDataList = patDao.getAllPatData()
+        val allItemDataList = itemDao.getAllItemData()
 
         reduce {
             state.copy(
                 mapData = mapData,
                 patDataList = patDataList,
                 itemDataList = itemDataList,
-                userData = userDataList
+                userData = userDataList,
+                allMapDataList = allMapDataList,
+                allPatDataList = allPatDataList,
+                allItemDataList = allItemDataList
             )
         }
 
@@ -87,6 +93,10 @@ data class InformationState(
     val userData: List<User> = emptyList(),
     val patDataList: List<Pat> = emptyList(),
     val itemDataList: List<Item> = emptyList(),
+    val allPatDataList: List<Pat> = emptyList(),
+    val allItemDataList: List<Item> = emptyList(),
+    val allMapDataList: List<Item> = emptyList(),
+
     val mapData: World? = null,
 
     )

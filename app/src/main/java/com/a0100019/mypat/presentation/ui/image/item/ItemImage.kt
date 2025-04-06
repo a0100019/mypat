@@ -26,6 +26,7 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 @Composable
 fun ItemImage(
     itemUrl: String,
+    modifier: Modifier = Modifier
     ) {
         if(itemUrl.takeLast(4) == "json") {
 
@@ -38,8 +39,7 @@ fun ItemImage(
             LottieAnimation(
                 composition = composition,
                 iterations = Int.MAX_VALUE,
-                modifier = Modifier
-                    .size(100.dp)
+                modifier = modifier
             )
 
         } else {
@@ -65,8 +65,7 @@ fun ItemImage(
                 Image(
                     bitmap = bitmap!!.asImageBitmap(),
                     contentDescription = "Asset Image",
-                    modifier = Modifier
-                        .size(100.dp)
+                    modifier = modifier
                 )
             } else {
                 // Placeholder while loading or on error

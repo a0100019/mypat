@@ -279,7 +279,13 @@ class StoreViewModel @Inject constructor(
 
     }
 
+    fun onItemClick(index: Int) = intent {
 
+    }
+
+    fun onItemStoreClick() = intent {
+
+    }
 
     fun onPatStoreClick() = intent {
         val moneyField = state.userData.find { it.id == "money" }
@@ -357,6 +363,7 @@ data class StoreState(
     val patEggDataList: List<Pat> = emptyList(),
     val patSelectDataList: List<Pat> = emptyList(),
     val patSelectIndexList: List<Int> = emptyList(),
+    val itemStoreDataList: List<Item> = emptyList()
 
 
     )
