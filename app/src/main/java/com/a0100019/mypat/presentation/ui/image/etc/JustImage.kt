@@ -77,7 +77,7 @@ fun JustImage(
             Box(
                 contentAlignment = Alignment.Center
             ) {
-                Text("Loading...")
+                Text("?")
             }
         }
     }

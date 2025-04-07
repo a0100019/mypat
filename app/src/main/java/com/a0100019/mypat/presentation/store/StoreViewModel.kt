@@ -111,7 +111,8 @@ class StoreViewModel @Inject constructor(
                 newName = "",
                 showDialog = "",
                 simpleDialogState = "",
-                selectPatData = null
+                selectPatData = null,
+                selectItemData = null,
             )
         }
     }
@@ -244,47 +245,63 @@ class StoreViewModel @Inject constructor(
         }
     }
 
-    fun onPatEggClick(index: Int) = intent {
-        val patEggDataList = state.patEggDataList
-        val patSelectDataList = state.patSelectDataList.toMutableList()
-
-        // 선택한 데이터를 patSelectDataList로 복사
-        val selectedItem = patEggDataList[index]
-        patSelectDataList.add(selectedItem)
-
-        val newIndexList = state.patSelectIndexList + index
-
-        // 상태 업데이트
-        reduce {
-            state.copy(
-                patSelectDataList = patSelectDataList,
-                patSelectIndexList = newIndexList
-            )
-        }
-
-        val idCounts = patSelectDataList
-            .filter { it.id != 0 } // id가 0이 아닌 데이터 필터링
-            .groupingBy { it.id }
-            .eachCount() // id별 개수 계산
-
-        val result = patSelectDataList.filter { it.id != 0 && (idCounts[it.id] ?: 0) >= 2 }
-
-        reduce {
-            state.copy(
-                selectPatData = result.firstOrNull() // result가 비어 있으면 기존 값 유지
-            )
-        }
-
-
-
-    }
 
     fun onItemClick(index: Int) = intent {
+        reduce {
+            state.copy(
+                selectItemData = state.itemStoreDataList[index]
+            )
+        }
+    }
 
+    fun onItemSelectClick() = intent {
+        val selectItem = state.selectItemData
+        val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) // 현재 날짜 가져오기
+        selectItem?.date = currentDate // 날짜 업데이트
+
+        selectItem?.let { itemDao.update(it) }
+        reduce {
+            state.copy(
+                newItem = selectItem
+            )
+        }
+        loadData()
+    }
+
+    fun onItemSelectCloseClick() = intent {
+        reduce {
+            state.copy(
+                selectItemData = null
+            )
+        }
     }
 
     fun onItemStoreClick() = intent {
+        val moneyField = state.userData.find { it.id == "money" }
 
+        if(moneyField!!.value2.toInt() >= 1){
+            moneyField.value2 = (moneyField.value2.toInt() - 1).toString()
+
+            val randomItemList = state.allCloseItemDataList
+                .shuffled()
+                .take(5)
+                .toMutableList()
+            // 부족한 경우 기본 객체 추가 (예: 빈 Pat 객체)
+            while (randomItemList.size < 5) {
+                randomItemList.add(Item(url = "")) // Pat.default()는 적절한 기본 객체로 변경
+            }
+
+            userDao.update(id = moneyField.id, value2 = moneyField.value2)
+            reduce {
+                state.copy(
+                    itemStoreDataList = randomItemList,
+                    showDialog = "itemStore"
+                )
+            }
+        } else {
+            //postSideEffect를 해야 인텐트 속에서도 잘 실행됨.
+            postSideEffect(StoreSideEffect.Toast("돈이 부족합니다!"))
+        }
     }
 
     fun onPatStoreClick() = intent {
@@ -321,17 +338,52 @@ class StoreViewModel @Inject constructor(
 
     fun onPatSelectClick() = intent {
 
-        val randomPat = state.allClosePatDataList.random() // 랜덤 객체 선택
+        val selectPat = state.selectPatData
         val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) // 현재 날짜 가져오기
-        randomPat.date = currentDate // 날짜 업데이트
+        selectPat?.date = currentDate // 날짜 업데이트
 
-        patDao.update(randomPat)
+        selectPat?.let { patDao.update(it) }
         reduce {
             state.copy(
-                newPat = randomPat
+                newPat = selectPat
             )
         }
         loadData()
+
+    }
+
+    fun onPatEggClick(index: Int) = intent {
+        val patEggDataList = state.patEggDataList
+        val patSelectDataList = state.patSelectDataList.toMutableList()
+
+        // 선택한 데이터를 patSelectDataList로 복사
+        val selectedItem = patEggDataList[index]
+        patSelectDataList.add(selectedItem)
+
+        val newIndexList = state.patSelectIndexList + index
+
+        // 상태 업데이트
+        reduce {
+            state.copy(
+                patSelectDataList = patSelectDataList,
+                patSelectIndexList = newIndexList
+            )
+        }
+
+        val idCounts = patSelectDataList
+            .filter { it.id != 0 } // id가 0이 아닌 데이터 필터링
+            .groupingBy { it.id }
+            .eachCount() // id별 개수 계산
+
+        val result = patSelectDataList.filter { it.id != 0 && (idCounts[it.id] ?: 0) >= 2 }
+
+        reduce {
+            state.copy(
+                selectPatData = result.firstOrNull() // result가 비어 있으면 기존 값 유지
+            )
+        }
+
+
 
     }
 
@@ -352,6 +404,7 @@ data class StoreState(
     val simpleDialogState: String = "",
     val newName: String = "",
     val selectPatData: Pat? = null,
+    val selectItemData: Item? = null,
 
     val userData: List<User> = emptyList(),
     val allClosePatDataList: List<Pat> = emptyList(),

@@ -56,6 +56,8 @@ fun StoreScreen(
         onPatAdvertisementClick = storeViewModel::onPatAdvertisementClick,
         onItemClick = storeViewModel::onItemClick,
         onItemStoreClick = storeViewModel::onItemStoreClick,
+        onItemSelectClick = storeViewModel::onItemSelectClick,
+        onItemSelectCloseClick = storeViewModel::onItemSelectCloseClick,
 
         newPat = storeState.newPat,
         userData = storeState.userData,
@@ -68,6 +70,7 @@ fun StoreScreen(
         patStoreDataList = storeState.patStoreDataList,
         patSelectIndexList = storeState.patSelectIndexList,
         selectPatData = storeState.selectPatData,
+        selectItemData = storeState.selectItemData,
         itemStoreDataList = storeState.itemStoreDataList,
 
     )
@@ -92,6 +95,8 @@ fun StoreScreen(
     onPatSelectClick: () -> Unit,
     onItemClick: (Int) -> Unit,
     onItemStoreClick: () -> Unit,
+    onItemSelectClick: () -> Unit,
+    onItemSelectCloseClick: () -> Unit,
 
     newPat: Pat?,
     newItem: Item?,
@@ -104,6 +109,7 @@ fun StoreScreen(
     patStoreDataList: List<Pat>?,
     patSelectIndexList: List<Int>,
     selectPatData: Pat?,
+    selectItemData: Item?,
     itemStoreDataList: List<Item>?
 ) {
 
@@ -112,6 +118,14 @@ fun StoreScreen(
             onAdvertisementClick = onPatAdvertisementClick,
             onSelectClick = onPatSelectClick,
             patData = selectPatData
+        )
+    }
+
+    if (selectItemData != null) {
+        ItemSelectDialog(
+            onCloseClick = onItemSelectCloseClick,
+            onSelectClick = onItemSelectClick,
+            itemData = selectItemData
         )
     }
 
@@ -182,6 +196,7 @@ fun StoreScreen(
                     "아이템 칸 늘리기" -> onItemRoomUpClick()
                     "가능한 닉네임입니다 변경하겠습니까?" -> onNameChangeClick()
                     "화폐 변경" -> onMoneyChangeClick()
+
                 }
                 onSimpleDialog("")
             },
@@ -258,6 +273,8 @@ fun StoreScreenPreview() {
             onPatAdvertisementClick = {},
             onItemClick = {},
             onItemStoreClick = {},
+            onItemSelectClick = {},
+            onItemSelectCloseClick = {},
 
             newPat = null,
             userData = emptyList(),
@@ -270,7 +287,8 @@ fun StoreScreenPreview() {
             patStoreDataList = emptyList(),
             patSelectIndexList = emptyList(),
             selectPatData = null,
-            itemStoreDataList = emptyList()
+            itemStoreDataList = emptyList(),
+            selectItemData = null
 
         )
     }
