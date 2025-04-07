@@ -65,7 +65,8 @@ fun KoreanScreen(
         onCloseClick = koreanViewModel::onCloseClick,
         onStateChangeClick = koreanViewModel::onStateChangeClick,
         onKoreanTextChange = koreanViewModel::onKoreanTextChange,
-        onSubmitClick = koreanViewModel::onSubmitClick
+        onSubmitClick = koreanViewModel::onSubmitClick,
+        onFailDialogCloseClick = koreanViewModel::onFailDialogCloseClick
     )
 }
 
@@ -82,6 +83,7 @@ fun KoreanScreen(
     onStateChangeClick : () -> Unit,
     onKoreanTextChange : (String) -> Unit,
     onSubmitClick : () -> Unit,
+    onFailDialogCloseClick: () -> Unit,
 ) {
 
     // 다이얼로그 표시
@@ -93,10 +95,17 @@ fun KoreanScreen(
             koreanText = koreanText,
             onSubmitClick = onSubmitClick
         )
-    } else if(clickKoreanData != null && clickKoreanData.state != "대기") {
+    } else if(clickKoreanData != null && clickKoreanData.state in listOf("완료", "별")) {
         KoreanDialog(
             koreanData = clickKoreanData,
             onClose = onCloseClick,
+            onStateChangeClick = onStateChangeClick,
+            koreanDataState = clickKoreanDataState
+        )
+    } else if(clickKoreanData != null && clickKoreanData.state == "오답" ) {
+        KoreanDialog(
+            koreanData = clickKoreanData,
+            onClose = onFailDialogCloseClick,
             onStateChangeClick = onStateChangeClick,
             koreanDataState = clickKoreanDataState
         )
@@ -202,7 +211,8 @@ fun KoreanScreenPreview() {
             clickKoreanDataState = "",
             koreanText = "",
             onKoreanTextChange = {},
-            onSubmitClick = {}
+            onSubmitClick = {},
+            onFailDialogCloseClick = {}
 
         )
     }

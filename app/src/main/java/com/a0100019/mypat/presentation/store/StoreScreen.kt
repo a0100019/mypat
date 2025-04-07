@@ -196,14 +196,12 @@ fun StoreScreen(
                     "아이템 칸 늘리기" -> onItemRoomUpClick()
                     "가능한 닉네임입니다 변경하겠습니까?" -> onNameChangeClick()
                     "화폐 변경" -> onMoneyChangeClick()
-
                 }
                 onSimpleDialog("")
             },
             text = simpleDialogState
         )
     }
-
 
     Column(
         modifier = Modifier.fillMaxSize()

@@ -72,6 +72,14 @@ class KoreanViewModel @Inject constructor(
             }
             postSideEffect(KoreanSideEffect.Toast("정답입니다."))
         } else {
+            val newClickKoreanData = state.clickKoreanData
+            newClickKoreanData!!.state = "오답"
+            reduce {
+                state.copy(
+                    koreanText = "",
+                    clickKoreanData = newClickKoreanData
+                )
+            }
             postSideEffect(KoreanSideEffect.Toast("오답입니다."))
         }
 
@@ -112,6 +120,14 @@ class KoreanViewModel @Inject constructor(
             state.copy(
                 clickKoreanData = null,
                 clickKoreanDataState = ""
+            )
+        }
+    }
+
+    fun onFailDialogCloseClick() = intent {
+        reduce {
+            state.copy(
+                clickKoreanDataState = "대기"
             )
         }
     }

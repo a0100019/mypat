@@ -63,7 +63,7 @@ fun KoreanDialog(
                             .clickable {
                                 onStateChangeClick() },
                     )
-                } else {
+                } else if(koreanDataState == "별"){
                     Image(
                         painter = painterResource(id = R.drawable.star_yellow),
                         contentDescription = "Sample Vector Image",
