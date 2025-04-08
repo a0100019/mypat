@@ -8,7 +8,8 @@ import androidx.room.PrimaryKey
 data class Diary(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     var date: String,
-    var mood: String = "미정",
+    var mood: String = "smile",
+    var state: String = "대기",
     var title: String = "제목",
     var contents: String = "내용",
 )

@@ -5,6 +5,11 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import androidx.work.Worker
+import co.yml.charts.common.extensions.isNotNull
+import com.a0100019.mypat.data.room.diary.Diary
+import com.a0100019.mypat.data.room.diary.DiaryDao
+import com.a0100019.mypat.data.room.english.EnglishDao
+import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiomDao
 import com.a0100019.mypat.data.room.walk.Walk
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.walk.WalkDao
@@ -23,6 +28,9 @@ class InsertUserWorker @AssistedInject constructor(
     @Assisted workerParams: WorkerParameters,
     private val userDao: UserDao,
     private val walkDao: WalkDao,
+    private val koreanIdiomDao: KoreanIdiomDao,
+    private val englishDao: EnglishDao,
+    private val diaryDao: DiaryDao,
     private val stepCounterManager: StepCounterManager
 
 ) : CoroutineWorker(context, workerParams) { // ✅ CoroutineWorker 사용
@@ -39,6 +47,22 @@ class InsertUserWorker @AssistedInject constructor(
                 val lastData = walkDao.getLatestWalkData()
 
                 if(lastData.date != currentDate) {
+
+                    val closeKoreanIdiomData = koreanIdiomDao.getCloseKoreanIdiom()
+                    if(closeKoreanIdiomData.isNotNull()) {
+                        closeKoreanIdiomData!!.date = currentDate
+                        closeKoreanIdiomData.state = "대기"
+                        koreanIdiomDao.update(closeKoreanIdiomData)
+                    }
+
+                    val closeEnglishData = englishDao.getCloseEnglish()
+                    if(closeEnglishData.isNotNull()) {
+                        closeEnglishData!!.date = currentDate
+                        closeEnglishData.state = "대기"
+                        englishDao.update(closeEnglishData)
+                    }
+
+                    diaryDao.insert(Diary(date = currentDate))
 
                     if (lastData.date == yesterday) {
 

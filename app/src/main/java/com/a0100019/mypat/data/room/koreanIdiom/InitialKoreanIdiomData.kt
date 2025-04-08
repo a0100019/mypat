@@ -47,6 +47,39 @@ fun getKoreanIdiomInitialData(): List<KoreanIdiom> {
             korean3 = "연고 고",
             korean4 = "벗 우",
             image = "koreanIdiomImage/jukmagow1.jpg"
-        )
+        ),
+        KoreanIdiom(
+            idiom = "竹馬故友",
+            state = "미정",
+            korean = "죽마고우3",
+            meaning = "대말을 타고 놀던 벗이라는 뜻으로, 어릴 때부터 같이 놀며 자란 벗",
+            korean1 = "대나무 죽",
+            korean2 = "말 마",
+            korean3 = "연고 고",
+            korean4 = "벗 우",
+            image = "koreanIdiomImage/jukmagow1.jpg"
+        ),
+        KoreanIdiom(
+            idiom = "竹馬故友",
+            state = "미정",
+            korean = "죽마고우3",
+            meaning = "대말을 타고 놀던 벗이라는 뜻으로, 어릴 때부터 같이 놀며 자란 벗",
+            korean1 = "대나무 죽",
+            korean2 = "말 마",
+            korean3 = "연고 고",
+            korean4 = "벗 우",
+            image = "koreanIdiomImage/jukmagow1.jpg"
+        ),
+        KoreanIdiom(
+            idiom = "竹馬故友",
+            state = "미정",
+            korean = "죽마고우6",
+            meaning = "대말을 타고 놀던 벗이라는 뜻으로, 어릴 때부터 같이 놀며 자란 벗",
+            korean1 = "대나무 죽",
+            korean2 = "말 마",
+            korean3 = "연고 고",
+            korean4 = "벗 우",
+            image = "koreanIdiomImage/jukmagow1.jpg"
+        ),
     )
 }

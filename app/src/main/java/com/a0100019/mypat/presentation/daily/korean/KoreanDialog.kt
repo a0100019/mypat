@@ -61,7 +61,8 @@ fun KoreanDialog(
                         modifier = Modifier
                             .size(20.dp)
                             .clickable {
-                                onStateChangeClick() },
+                                onStateChangeClick()
+                                       },
                     )
                 } else if(koreanDataState == "별"){
                     Image(

@@ -87,22 +87,22 @@ fun KoreanScreen(
 ) {
 
     // 다이얼로그 표시
-    if (clickKoreanData != null && clickKoreanData.state == "대기") {
+    if (clickKoreanData != null && clickKoreanDataState == "대기") {
         KoreanReadyDialog(
             koreanData = clickKoreanData,
-            onClose = onCloseClick,
+            onClose = {  },
             onKoreanTextChange = onKoreanTextChange,
             koreanText = koreanText,
             onSubmitClick = onSubmitClick
         )
-    } else if(clickKoreanData != null && clickKoreanData.state in listOf("완료", "별")) {
+    } else if(clickKoreanData != null && clickKoreanDataState in listOf("완료", "별")) {
         KoreanDialog(
             koreanData = clickKoreanData,
             onClose = onCloseClick,
             onStateChangeClick = onStateChangeClick,
             koreanDataState = clickKoreanDataState
         )
-    } else if(clickKoreanData != null && clickKoreanData.state == "오답" ) {
+    } else if(clickKoreanData != null && clickKoreanDataState == "오답" ) {
         KoreanDialog(
             koreanData = clickKoreanData,
             onClose = onFailDialogCloseClick,
@@ -140,7 +140,7 @@ fun KoreanScreen(
         ) {
             itemsIndexed(koreanDataList) { index, koreanData ->
 
-                if(koreanData.state != "대기"){
+                if(koreanData.state != "대기" && koreanData.state != "오답"){
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
