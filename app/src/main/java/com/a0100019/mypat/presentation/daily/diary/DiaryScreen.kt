@@ -98,33 +98,47 @@ fun DiaryScreen(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp) // 카드 사이 간격 추가
         ) {
-            itemsIndexed(diaryDataList.reversed()) { index, diaryData ->
+            itemsIndexed(diaryDataList) { index, diaryData ->
 
-                //달이 다르면 false 출력
                 val monthChange = index > 0 && diaryData.date.substring(5, 7) != diaryDataList[index -1].date.substring(5, 7)
 
                 if(monthChange) {
                     Text(diaryData.date.substring(0,7))
                 }
 
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(100.dp)
-                        .padding(horizontal = 8.dp),
-                    shape = RoundedCornerShape(12.dp), // 둥근 테두리
-                    elevation = CardDefaults.elevatedCardElevation(4.dp), // 그림자 효과
-                    onClick = { onDiaryClick(diaryData) }
-                ) {
-                    Column(
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        Text(diaryData.date)
+                if(diaryData.state =="대기") {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp)
+                            .padding(horizontal = 8.dp)
+                            .background(color = Color.Cyan),
+                        shape = RoundedCornerShape(12.dp), // 둥근 테두리
+                        elevation = CardDefaults.elevatedCardElevation(4.dp), // 그림자 효과
+                        onClick = { onDiaryClick(diaryData) },
 
-                        if(diaryData.title == "") {
-                            Text("눌러서 일기를 작성해주세요.")
-                        } else {
-                            Text(diaryData.title)
+                    ) {
+                        Column(
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            Text(diaryData.date)
+                            Text("눌러서 일기를 작성해주세요")
+                        }
+                    }
+                } else {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(100.dp)
+                            .padding(horizontal = 8.dp),
+                        shape = RoundedCornerShape(12.dp), // 둥근 테두리
+                        elevation = CardDefaults.elevatedCardElevation(4.dp), // 그림자 효과
+                        onClick = { onDiaryClick(diaryData) }
+                    ) {
+                        Column(
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            Text(diaryData.date)
                             Text(diaryData.contents)
                         }
                     }
@@ -140,7 +154,6 @@ fun DiaryScreenPreview() {
     MypatTheme {
         DiaryScreen(
 
-
             clickDiaryData = null,
 
             onDiaryClick = {},
@@ -148,20 +161,15 @@ fun DiaryScreenPreview() {
             onDiaryChangeClick = {},
 
             diaryDataList = listOf(
-                Diary(date = "2025-02-06", mood = "happy", title = "안녕", contents = "안녕안녕안녕"),
-                Diary(date = "2025-02-07", mood = "", title = "", contents = ""),
-                Diary(date = "2025-02-06", mood = "happy", title = "안녕", contents = "안녕안녕안녕"),
-                Diary(date = "2025-02-07", mood = "", title = "", contents = ""),
-                Diary(date = "2025-02-06", mood = "happy", title = "안녕", contents = "안녕안녕안녕"),
-                Diary(date = "2025-02-07", mood = "", title = "", contents = ""),
-                Diary(date = "2025-02-06", mood = "happy", title = "안녕", contents = "안녕안녕안녕"),
-                Diary(date = "2025-02-07", mood = "", title = "", contents = ""),
-                Diary(date = "2025-02-06", mood = "happy", title = "안녕", contents = "안녕안녕안녕"),
-                Diary(date = "2025-02-07", mood = "", title = "", contents = ""),
-                Diary(date = "2025-01-06", mood = "happy", title = "안녕", contents = "안녕안녕안녕"),
-                Diary(date = "2025-02-07", mood = "", title = "", contents = ""),
-                Diary(date = "2025-01-06", mood = "happy", title = "안녕", contents = "안녕안녕안녕"),
-                Diary(date = "2025-02-07", mood = "", title = "", contents = "")
+                Diary(date = "2025-02-07", mood = "", contents = ""),
+                Diary(date = "2025-02-06", mood = "happy", contents = "안녕안녕안녕"),
+                Diary(date = "2025-02-07", mood = "", contents = ""),
+                Diary(date = "2025-02-06", mood = "happy", contents = "안녕안녕안녕"),
+                Diary(date = "2025-02-07", mood = "", contents = ""),
+                Diary(date = "2025-01-05", mood = "happy", contents = "안녕안녕안녕"),
+                Diary(date = "2025-02-06", mood = "", contents = ""),
+                Diary(date = "2025-02-07", mood = "happy", contents = "안녕안녕안녕"),
+                Diary(date = "2025-02-08", mood = "", contents = "")
             ),
 
         )

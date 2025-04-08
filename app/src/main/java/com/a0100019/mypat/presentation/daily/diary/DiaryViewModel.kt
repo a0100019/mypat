@@ -1,11 +1,13 @@
 package com.a0100019.mypat.presentation.daily.diary
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.a0100019.mypat.data.room.diary.Diary
 import com.a0100019.mypat.data.room.diary.DiaryDao
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
+import com.a0100019.mypat.presentation.daily.korean.KoreanSideEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -26,7 +28,7 @@ import javax.inject.Inject
 @HiltViewModel
 class DiaryViewModel @Inject constructor(
     private val userDao: UserDao,
-    private val diaryDao: DiaryDao
+    private val diaryDao: DiaryDao,
 ) : ViewModel(), ContainerHost<DiaryState, DiarySideEffect> {
 
     override val container: Container<DiaryState, DiarySideEffect> = container(
@@ -71,11 +73,19 @@ class DiaryViewModel @Inject constructor(
     }
 
     fun onDiaryClick(diaryData : Diary) = intent {
-        if(diaryData.title == "") {
-            val writeDiaryData = Diary(date = diaryData.date, title = "", contents = "", mood = "")
+
+        reduce {
+            state.copy(
+                writePossible = false,
+                isError = false
+            )
+        }
+
+        if(diaryData.state == "대기") {
+            val writeDiaryData = Diary(id = diaryData.id, date = diaryData.date, contents = "", mood = "")
             reduce {
                 state.copy(
-                    writeDiaryData = writeDiaryData
+                    writeDiaryData = writeDiaryData,
                 )
             }
             postSideEffect(DiarySideEffect.NavigateToDiaryWriteScreen)
@@ -89,7 +99,7 @@ class DiaryViewModel @Inject constructor(
     fun onDiaryChangeClick() = intent {
         reduce {
             state.copy(
-                writeDiaryData = state.clickDiaryData!!
+                writeDiaryData = state.clickDiaryData!!,
             )
         }
         postSideEffect(DiarySideEffect.NavigateToDiaryWriteScreen)
@@ -104,25 +114,48 @@ class DiaryViewModel @Inject constructor(
     }
 
     fun onDiaryFinishClick() = intent {
-        diaryDao.update(state.writeDiaryData)
-        reduce {
-            state.copy(
-                clickDiaryData = null,
-            )
-        }
-        loadData()
-    }
+        if(state.writeDiaryData.contents.length > 9){
 
-    //입력 가능하게 하는 코드
-    @OptIn(OrbitExperimental::class)
-    fun onTitleTextChange(titleText: String) = blockingIntent {
-        reduce {
-            state.copy(writeDiaryData = state.writeDiaryData.copy(title = titleText))
+            //보상
+            userDao.update(id = "money", value = (state.userDataList.find { it.id == "money" }!!.value.toInt() + 100).toString())
+
+            diaryDao.update(state.writeDiaryData)
+            reduce {
+                state.copy(
+                    clickDiaryData = null,
+                )
+            }
+            loadData()
+
+        } else {
+
+            reduce {
+                state.copy(
+                    isError = true
+                )
+            }
+
         }
     }
 
     @OptIn(OrbitExperimental::class)
     fun onContentsTextChange(contentsText: String) = blockingIntent {
+        if(state.writeDiaryData.contents.length > 9){
+            reduce {
+                state.copy(
+                    writePossible = true,
+                    isError = false
+                )
+            }
+        } else {
+            reduce {
+                state.copy(
+                    writePossible = false,
+                    isError = false
+                )
+            }
+        }
+
         reduce {
             state.copy(writeDiaryData = state.writeDiaryData.copy(contents = contentsText))
         }
@@ -135,9 +168,10 @@ data class DiaryState(
     val userDataList: List<User> = emptyList(),
     val diaryDataList: List<Diary> = emptyList(),
     val clickDiaryData: Diary? = null,
-    val writeDiaryData: Diary = Diary(date = "", title = "", contents = "", mood = "")
+    val writeDiaryData: Diary = Diary(date = "", contents = "", mood = ""),
+    val writePossible: Boolean = false,
+    val isError: Boolean = false
 )
-
 
 //상태와 관련없는 것
 sealed interface DiarySideEffect{

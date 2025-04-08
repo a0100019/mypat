@@ -43,15 +43,6 @@ fun DiaryReadDialog(
             Column(modifier = Modifier.fillMaxSize()) {
 
                 Text(diaryData.date)
-                Box(
-                    modifier = Modifier
-                        .weight(0.2f)
-                        .fillMaxSize()
-                        .background(Color.Gray, shape = RoundedCornerShape(16.dp))
-                        .padding(16.dp)
-                ) {
-                    Text(diaryData.title)
-                }
 
                 Spacer(modifier = Modifier.height(10.dp))
 
@@ -94,7 +85,7 @@ fun DiaryReadDialog(
 fun DiaryReadDialogPreview() {
     MypatTheme {
         DiaryReadDialog(
-            diaryData = Diary(date = "2024-04-02", mood = "happy", title = "제목", contents = "내용"),
+            diaryData = Diary(date = "2024-04-02", mood = "happy", contents = "내용"),
             onClose = {  },
             onDiaryChangeClick = {}
         )

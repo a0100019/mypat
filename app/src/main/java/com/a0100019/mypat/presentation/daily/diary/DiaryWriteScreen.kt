@@ -37,10 +37,10 @@ fun DiaryWriteScreen(
 //    }
 
     DiaryWriteScreen(
-        value = "스크린 나누기",
         writeDiaryData = diaryState.writeDiaryData,
+        writePossible = diaryState.writePossible,
+        isError = diaryState.isError,
 
-        onTitleTextChange = diaryViewModel::onTitleTextChange,
         onContentsTextChange = diaryViewModel::onContentsTextChange,
         onDiaryFinishClick = diaryViewModel::onDiaryFinishClick,
         popBackStack = popBackStack
@@ -51,10 +51,10 @@ fun DiaryWriteScreen(
 
 @Composable
 fun DiaryWriteScreen(
-    value: String,
     writeDiaryData: Diary,
+    writePossible: Boolean,
+    isError: Boolean,
 
-    onTitleTextChange: (String) -> Unit,
     onDiaryFinishClick: () -> Unit,
     onContentsTextChange: (String) -> Unit,
     popBackStack: () -> Unit,
@@ -69,29 +69,28 @@ fun DiaryWriteScreen(
             ) {
                 Text("감정")
             }
-        }
 
-        OutlinedTextField(
-            value = writeDiaryData.title,
-            onValueChange = onTitleTextChange,
-            label = { Text("제목") },
-            placeholder = { Text("제목을 입력하세요") },
-            singleLine = true,
-//            colors = TextFieldDefaults.outlinedTextFieldColors(
-//                focusedBorderColor = Color.Blue,
-//                unfocusedBorderColor = Color.Gray
-//            ),
-            shape = RoundedCornerShape(8.dp), // 테두리를 둥글게
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-        )
+            Button(
+                modifier = Modifier
+                    .padding(8.dp),
+                onClick = {
+                    onDiaryFinishClick()
+                    if(writePossible){
+                        popBackStack()
+                    }
+                }
+            ) {
+                Text("작성 완료")
+            }
+
+        }
 
         OutlinedTextField(
             value = writeDiaryData.contents,
             onValueChange = onContentsTextChange,
             label = { Text("내용") },
-            placeholder = { Text("내용을 입력하세요") },
+            isError = isError,
+            placeholder = { Text("내용을 10자 이상 입력하세요") },
             shape = RoundedCornerShape(8.dp), // 테두리를 둥글게
             modifier = Modifier
                 .fillMaxWidth()
@@ -99,16 +98,7 @@ fun DiaryWriteScreen(
                 .weight(1f)
         )
 
-        Button(
-            modifier = Modifier
-                .padding(8.dp),
-            onClick = {
-                onDiaryFinishClick()
-                popBackStack()
-            }
-        ) {
-            Text("작성 완료")
-        }
+
     }
 }
 
@@ -117,12 +107,12 @@ fun DiaryWriteScreen(
 fun DiaryWriteScreenPreview() {
     MypatTheme {
         DiaryWriteScreen(
-            value = "",
-            writeDiaryData = Diary(date = "2025-02-06", mood = "happy", title = "안녕", contents = "안녕안녕안녕"),
-            onTitleTextChange = {},
+            writeDiaryData = Diary(date = "2025-02-06", mood = "happy", contents = "안녕안녕안녕"),
             onContentsTextChange = {},
             onDiaryFinishClick =  {},
-            popBackStack = {}
+            popBackStack = {},
+            writePossible = false,
+            isError = false
 
             )
     }

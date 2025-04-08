@@ -90,7 +90,7 @@ fun KoreanScreen(
     if (clickKoreanData != null && clickKoreanDataState == "대기") {
         KoreanReadyDialog(
             koreanData = clickKoreanData,
-            onClose = {  },
+            onClose = onCloseClick,
             onKoreanTextChange = onKoreanTextChange,
             koreanText = koreanText,
             onSubmitClick = onSubmitClick

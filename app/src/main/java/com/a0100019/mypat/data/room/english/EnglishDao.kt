@@ -24,13 +24,13 @@ interface EnglishDao {
     @Query("SELECT * FROM english_table ORDER BY id DESC")
     suspend fun getAllEnglishData(): List<English>
 
-    @Query("SELECT * FROM koreanIdiom_table WHERE state != '미정' ORDER BY id DESC")
+    @Query("SELECT * FROM english_table WHERE state != '미정' ORDER BY id DESC")
     suspend fun getOpenEnglishData(): List<English>
 
-    @Query("SELECT * FROM koreanIdiom_table WHERE state = '미정' ORDER BY id DESC LIMIT 1")
+    @Query("SELECT * FROM english_table WHERE state = '미정' ORDER BY id DESC LIMIT 1")
     suspend fun getCloseEnglish(): English?
 
-    @Query("SELECT * FROM koreanIdiom_table WHERE state = '별' ORDER BY id DESC")
+    @Query("SELECT * FROM english_table WHERE state = '별' ORDER BY id DESC")
     suspend fun getStarEnglishData(): List<English>
 
     //초기에 데이터 한번에 넣기 위한 코드

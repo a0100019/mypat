@@ -10,7 +10,6 @@ data class Diary(
     var date: String,
     var mood: String = "smile",
     var state: String = "대기",
-    var title: String = "제목",
     var contents: String = "내용",
 )
 
