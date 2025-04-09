@@ -5,13 +5,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
@@ -25,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.data.room.diary.Diary
+import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -49,13 +53,21 @@ fun DiaryScreen(
     }
 
     DiaryScreen(
-        diaryDataList = diaryState.diaryDataList,
+        diaryDataList = diaryState.diaryFilterDataList,
 
         clickDiaryData = diaryState.clickDiaryData,
+        dialogState = diaryState.dialogState,
+        searchText = diaryState.searchText,
+        emotionFilter = diaryState.emotionFilter,
 
         onDiaryClick = diaryViewModel::onDiaryClick,
         onCloseClick = diaryViewModel::onCloseClick,
-        onDiaryChangeClick = diaryViewModel::onDiaryChangeClick
+        onDiaryChangeClick = diaryViewModel::onDiaryChangeClick,
+        onSearchClick = diaryViewModel::onSearchClick,
+        onSearchTextChange = diaryViewModel::onSearchTextChange,
+        onDialogStateChange = diaryViewModel::onDialogStateChange,
+        onEmotionFilterClick = diaryViewModel::onEmotionFilterClick,
+        onSearchClearClick = diaryViewModel::onSearchClearClick
     )
 }
 
@@ -66,10 +78,18 @@ fun DiaryScreen(
     diaryDataList: List<Diary>,
 
     clickDiaryData: Diary?,
+    dialogState: String,
+    searchText: String,
+    emotionFilter: String,
 
+    onSearchTextChange: (String) -> Unit,
+    onSearchClick: () -> Unit,
     onDiaryClick: (Diary) -> Unit,
     onCloseClick: () -> Unit,
-    onDiaryChangeClick: () -> Unit
+    onDiaryChangeClick: () -> Unit,
+    onDialogStateChange: (String) -> Unit,
+    onEmotionFilterClick: (String) -> Unit,
+    onSearchClearClick: () -> Unit,
 ) {
 
     if(clickDiaryData != null) {
@@ -77,6 +97,20 @@ fun DiaryScreen(
             onClose = onCloseClick,
             diaryData = clickDiaryData,
             onDiaryChangeClick = onDiaryChangeClick
+        )
+    }
+
+    when(dialogState) {
+        "검색" -> DiarySearchDialog(
+            onClose = onSearchClearClick,
+            onSearchTextChange = onSearchTextChange,
+            searchString = searchText,
+            onConfirmClick = onSearchClick,
+        )
+        "감정" -> DiaryEmotionDialog(
+            onClose = onCloseClick,
+            onEmotionClick = onEmotionFilterClick,
+            removeEmotion = true
         )
     }
     
@@ -87,12 +121,33 @@ fun DiaryScreen(
             .background(Color.White), // Optional: Set background color
     ) {
         // Text in the center
-        Text(
-            text = "일기장",
-            fontSize = 32.sp, // Large font size
-            fontWeight = FontWeight.Bold, // Bold text
-            color = Color.Black // Text color
-        )
+        Row {
+            Text(
+                text = "일기장",
+                fontSize = 32.sp, // Large font size
+                fontWeight = FontWeight.Bold, // Bold text
+                color = Color.Black // Text color
+            )
+
+            Button(
+                onClick = {
+                    onDialogStateChange("감정")
+                }
+            ) {
+                JustImage(
+                    filePath = emotionFilter,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+
+            Button(
+                onClick = {
+                    onDialogStateChange("검색")
+                }
+            ) {
+                Text("검색")
+            }
+        }
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(16.dp),
@@ -138,7 +193,13 @@ fun DiaryScreen(
                         Column(
                             modifier = Modifier.fillMaxSize()
                         ) {
-                            Text(diaryData.date)
+                            Row {
+                                Text(diaryData.date)
+                                JustImage(
+                                    filePath = diaryData.emotion,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
                             Text(diaryData.contents)
                         }
                     }
@@ -155,21 +216,29 @@ fun DiaryScreenPreview() {
         DiaryScreen(
 
             clickDiaryData = null,
+            dialogState = "",
+            searchText = "",
 
             onDiaryClick = {},
             onCloseClick = {},
             onDiaryChangeClick = {},
+            onSearchClick = {},
+            onSearchTextChange = {},
+            onDialogStateChange = {},
+            onEmotionFilterClick = {},
+            onSearchClearClick = {},
+            emotionFilter = "etc/snowball.png",
 
             diaryDataList = listOf(
-                Diary(date = "2025-02-07", mood = "", contents = ""),
-                Diary(date = "2025-02-06", mood = "happy", contents = "안녕안녕안녕"),
-                Diary(date = "2025-02-07", mood = "", contents = ""),
-                Diary(date = "2025-02-06", mood = "happy", contents = "안녕안녕안녕"),
-                Diary(date = "2025-02-07", mood = "", contents = ""),
-                Diary(date = "2025-01-05", mood = "happy", contents = "안녕안녕안녕"),
-                Diary(date = "2025-02-06", mood = "", contents = ""),
-                Diary(date = "2025-02-07", mood = "happy", contents = "안녕안녕안녕"),
-                Diary(date = "2025-02-08", mood = "", contents = "")
+                Diary(date = "2025-02-07", emotion = "", contents = ""),
+                Diary(date = "2025-02-06", emotion = "happy", contents = "안녕안녕안녕"),
+                Diary(date = "2025-02-07", emotion = "", contents = ""),
+                Diary(date = "2025-02-06", emotion = "happy", contents = "안녕안녕안녕"),
+                Diary(date = "2025-02-07", emotion = "", contents = ""),
+                Diary(date = "2025-01-05", emotion = "happy", contents = "안녕안녕안녕"),
+                Diary(date = "2025-02-06", emotion = "", contents = ""),
+                Diary(date = "2025-02-07", emotion = "happy", contents = "안녕안녕안녕"),
+                Diary(date = "2025-02-08", emotion = "", contents = "")
             ),
 
         )

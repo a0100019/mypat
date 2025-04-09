@@ -1,13 +1,11 @@
 package com.a0100019.mypat.presentation.daily.diary
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.a0100019.mypat.data.room.diary.Diary
 import com.a0100019.mypat.data.room.diary.DiaryDao
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
-import com.a0100019.mypat.presentation.daily.korean.KoreanSideEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -61,7 +59,8 @@ class DiaryViewModel @Inject constructor(
                     reduce {
                         state.copy(
                             userDataList = userDataList,
-                            diaryDataList = diaryDataList
+                            diaryDataList = diaryDataList,
+                            diaryFilterDataList = diaryDataList
 
                         )
                     }
@@ -82,7 +81,7 @@ class DiaryViewModel @Inject constructor(
         }
 
         if(diaryData.state == "대기") {
-            val writeDiaryData = Diary(id = diaryData.id, date = diaryData.date, contents = "", mood = "")
+            val writeDiaryData = Diary(id = diaryData.id, date = diaryData.date, state = "완료", contents = "", emotion = "")
             reduce {
                 state.copy(
                     writeDiaryData = writeDiaryData,
@@ -109,6 +108,7 @@ class DiaryViewModel @Inject constructor(
         reduce {
             state.copy(
                 clickDiaryData = null,
+                dialogState = "",
             )
         }
     }
@@ -140,7 +140,12 @@ class DiaryViewModel @Inject constructor(
 
     @OptIn(OrbitExperimental::class)
     fun onContentsTextChange(contentsText: String) = blockingIntent {
-        if(state.writeDiaryData.contents.length > 9){
+
+        reduce {
+            state.copy(writeDiaryData = state.writeDiaryData.copy(contents = contentsText))
+        }
+
+        if (contentsText.length > 9) {
             reduce {
                 state.copy(
                     writePossible = true,
@@ -155,11 +160,77 @@ class DiaryViewModel @Inject constructor(
                 )
             }
         }
+    }
 
+
+    //검색
+    fun onSearchClick() = intent {
+        val newDiaryDataList = state.diaryDataList.filter { it.contents.contains(state.searchText) }
+        if(state.emotionFilter != "") {
+            newDiaryDataList.filter { it.emotion == state.emotionFilter }
+        }
         reduce {
-            state.copy(writeDiaryData = state.writeDiaryData.copy(contents = contentsText))
+            state.copy(
+                diaryFilterDataList = newDiaryDataList,
+                dialogState = ""
+            )
         }
     }
+
+    fun onSearchClearClick() = intent {
+        var newDiaryDataList = state.diaryDataList
+        if(state.emotionFilter != "etc/snowball.png") {
+            newDiaryDataList = newDiaryDataList.filter { it.emotion == state.emotionFilter }
+        }
+        reduce {
+            state.copy(
+                diaryFilterDataList = newDiaryDataList,
+                dialogState = "",
+                searchText = ""
+            )
+        }
+    }
+
+
+    fun onDialogStateChange(string: String) = intent {
+        reduce {
+            state.copy(dialogState = string)
+        }
+    }
+
+    fun emotionChangeClick(emotion: String) = intent {
+        val newWriteDiaryData = state.writeDiaryData
+        newWriteDiaryData.emotion = emotion
+        reduce {
+            state.copy(
+                writeDiaryData = newWriteDiaryData,
+                dialogState = ""
+            )
+        }
+    }
+
+    fun onEmotionFilterClick(emotion: String) = intent {
+        var newDiaryDataList = state.diaryDataList.filter { it.contents.contains(state.searchText) }
+        if(emotion != "etc/snowball.png") {
+            newDiaryDataList = newDiaryDataList.filter { it.emotion == emotion }
+        }
+        reduce {
+            state.copy(
+                diaryFilterDataList = newDiaryDataList,
+                dialogState = "",
+                emotionFilter = emotion
+            )
+        }
+    }
+
+    //입력 가능하게 하는 코드
+    @OptIn(OrbitExperimental::class)
+    fun onSearchTextChange(searchText: String) = blockingIntent {
+        reduce {
+            state.copy(searchText = searchText)
+        }
+    }
+
 
 }
 
@@ -167,10 +238,15 @@ class DiaryViewModel @Inject constructor(
 data class DiaryState(
     val userDataList: List<User> = emptyList(),
     val diaryDataList: List<Diary> = emptyList(),
+    val diaryFilterDataList: List<Diary> = emptyList(),
+
     val clickDiaryData: Diary? = null,
-    val writeDiaryData: Diary = Diary(date = "", contents = "", mood = ""),
+    val writeDiaryData: Diary = Diary(date = "", contents = "", emotion = ""),
     val writePossible: Boolean = false,
-    val isError: Boolean = false
+    val isError: Boolean = false,
+    val searchText: String = "",
+    val dialogState: String = "",
+    val emotionFilter: String = "etc/snowball.png"
 )
 
 //상태와 관련없는 것

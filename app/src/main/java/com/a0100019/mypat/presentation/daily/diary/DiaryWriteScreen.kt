@@ -15,6 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.data.room.diary.Diary
+import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 
@@ -40,10 +41,13 @@ fun DiaryWriteScreen(
         writeDiaryData = diaryState.writeDiaryData,
         writePossible = diaryState.writePossible,
         isError = diaryState.isError,
+        dialogState = diaryState.dialogState,
 
         onContentsTextChange = diaryViewModel::onContentsTextChange,
         onDiaryFinishClick = diaryViewModel::onDiaryFinishClick,
-        popBackStack = popBackStack
+        popBackStack = popBackStack,
+        emotionChangeClick = diaryViewModel::emotionChangeClick,
+        onDialogStateChange = diaryViewModel::onDialogStateChange
     )
 }
 
@@ -54,20 +58,33 @@ fun DiaryWriteScreen(
     writeDiaryData: Diary,
     writePossible: Boolean,
     isError: Boolean,
+    dialogState: String,
 
     onDiaryFinishClick: () -> Unit,
     onContentsTextChange: (String) -> Unit,
     popBackStack: () -> Unit,
+    emotionChangeClick: (String) -> Unit,
+    onDialogStateChange: (String) -> Unit,
 ) {
+
+    when(dialogState) {
+        "emotion" -> DiaryEmotionDialog(
+            onClose = {},
+            onEmotionClick = emotionChangeClick
+        )
+    }
+
     // Fullscreen container
     Column {
         Text("일기장")
         Row {
             Text(writeDiaryData.date)
             Button(
-                onClick = {}
+                onClick = {
+                    onDialogStateChange("emotion")
+                }
             ) {
-                Text("감정")
+                JustImage(filePath = writeDiaryData.emotion)
             }
 
             Button(
@@ -107,12 +124,15 @@ fun DiaryWriteScreen(
 fun DiaryWriteScreenPreview() {
     MypatTheme {
         DiaryWriteScreen(
-            writeDiaryData = Diary(date = "2025-02-06", mood = "happy", contents = "안녕안녕안녕"),
+            writeDiaryData = Diary(date = "2025-02-06", emotion = "happy", contents = "안녕안녕안녕"),
             onContentsTextChange = {},
             onDiaryFinishClick =  {},
             popBackStack = {},
             writePossible = false,
-            isError = false
+            isError = false,
+            emotionChangeClick = {},
+            dialogState = "",
+            onDialogStateChange = {}
 
             )
     }

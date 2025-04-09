@@ -14,13 +14,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.data.room.diary.Diary
+import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
 @Composable
@@ -42,8 +42,12 @@ fun DiaryReadDialog(
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
 
-                Text(diaryData.date)
-
+                Row {
+                    Text(diaryData.date)
+                    JustImage(
+                        filePath = diaryData.emotion
+                    )
+                }
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Box(
@@ -85,7 +89,7 @@ fun DiaryReadDialog(
 fun DiaryReadDialogPreview() {
     MypatTheme {
         DiaryReadDialog(
-            diaryData = Diary(date = "2024-04-02", mood = "happy", contents = "내용"),
+            diaryData = Diary(date = "2024-04-02", emotion = "happy", contents = "내용"),
             onClose = {  },
             onDiaryChangeClick = {}
         )

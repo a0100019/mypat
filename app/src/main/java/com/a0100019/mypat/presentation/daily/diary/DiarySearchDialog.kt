@@ -1,12 +1,10 @@
-package com.a0100019.mypat.presentation.store
+package com.a0100019.mypat.presentation.daily.diary
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,23 +14,18 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiom
-import com.a0100019.mypat.data.room.user.User
-import com.a0100019.mypat.presentation.ui.image.etc.KoreanIdiomImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
 @Composable
-fun NameChangeDialog(
+fun DiarySearchDialog(
     onClose: () -> Unit,
-    onNameTextChange: (String) -> Unit,
-    newName: String,
-    userData: List<User>,
+    onSearchTextChange: (String) -> Unit,
+    searchString: String,
     onConfirmClick: () -> Unit,
 ) {
 
@@ -49,19 +42,17 @@ fun NameChangeDialog(
             Column(modifier = Modifier) {
 
                 Text(
-                    text = "닉네임 변경",
+                    text = "검색",
                     style = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier.padding(16.dp),
                     color = Color.Black
                 )
 
-                Text(text = "기존 닉네임 : ${userData.find { it.id == "name" }?.value}")
-
                 OutlinedTextField(
-                    value = newName,
-                    onValueChange = onNameTextChange,
-                    label = { Text("닉네임") },
-                    placeholder = { Text("새 닉네임을 입력하세요.") },
+                    value = searchString,
+                    onValueChange = onSearchTextChange,
+                    label = { Text("검색어") },
+//                    placeholder = { Text("새 닉네임을 입력하세요.") },
                     singleLine = true,
 //            colors = TextFieldDefaults.outlinedTextFieldColors(
 //                focusedBorderColor = Color.Blue,
@@ -73,7 +64,6 @@ fun NameChangeDialog(
                         .padding(8.dp)
                 )
 
-
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // 추가로 원하는 Composable 요소
@@ -84,7 +74,7 @@ fun NameChangeDialog(
                         modifier = Modifier
                             .padding(16.dp)
                     ) {
-                        Text("취소")
+                        Text("지우기")
                     }
 
                     Button(
@@ -95,7 +85,6 @@ fun NameChangeDialog(
                         Text("확인")
                     }
                 }
-
             }
         }
     }
@@ -104,14 +93,13 @@ fun NameChangeDialog(
 
 @Preview(showBackground = true)
 @Composable
-fun NameChangeDialogPreview() {
+fun DiarySearchDialogPreview() {
     MypatTheme {
-        NameChangeDialog(
+        DiarySearchDialog(
             onClose = {},
-            onNameTextChange = {},
+            onSearchTextChange = {},
             onConfirmClick = {},
-            newName = "",
-            userData = emptyList()
+            searchString = ""
         )
     }
 }
