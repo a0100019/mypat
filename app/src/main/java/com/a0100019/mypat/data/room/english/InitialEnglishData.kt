@@ -15,21 +15,22 @@ fun getEnglishInitialData(): List<English> {
         ),
         English(
             word = "pat",
-            meaning = "애완동물",
+            meaning = "애완동물2",
             example = "I hava a pat",
             exampleMeaning = "나는 애완동물을 가지고 있다.",
             level = "1"
         ),
         English(
             word = "pat",
-            meaning = "애완동물",
+            meaning = "애완동물3",
             example = "I hava a pat",
             exampleMeaning = "나는 애완동물을 가지고 있다.",
             level = "1"
         ),
         English(
             word = "pat",
-            meaning = "애완동물",
+            state = "대기",
+            meaning = "애완동물4",
             example = "I hava a pat",
             exampleMeaning = "나는 애완동물을 가지고 있다.",
             level = "1"

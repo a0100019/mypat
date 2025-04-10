@@ -20,18 +20,18 @@ import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 
 @HiltViewModel
-class SettingViewModel @Inject constructor(
+class ManagementViewModel @Inject constructor(
     private val userDao: UserDao,
     private val walkDao: WalkDao,
     private val stepCounterManager: StepCounterManager
-) : ViewModel(), ContainerHost<SettingState, SettingSideEffect> {
+) : ViewModel(), ContainerHost<ManagementState, ManagementSideEffect> {
 
-    override val container: Container<SettingState, SettingSideEffect> = container(
-        initialState = SettingState(),
+    override val container: Container<ManagementState, ManagementSideEffect> = container(
+        initialState = ManagementState(),
         buildSettings = {
             this.exceptionHandler = CoroutineExceptionHandler { _ , throwable ->
                 intent {
-                    postSideEffect(SettingSideEffect.Toast(message = throwable.message.orEmpty()))
+                    postSideEffect(ManagementSideEffect.Toast(message = throwable.message.orEmpty()))
                 }
             }
         }
@@ -100,18 +100,13 @@ class SettingViewModel @Inject constructor(
 
     }
 
-    fun onCloseClick() = intent {
-
-    }
-
-
 
 }
 
 
 
 @Immutable
-data class SettingState(
+data class ManagementState(
     val id:String = "",
     val password:String = "",
     val userData: List<User> = emptyList()
@@ -119,8 +114,8 @@ data class SettingState(
 
 
 //상태와 관련없는 것
-sealed interface SettingSideEffect{
-    class Toast(val message:String): SettingSideEffect
+sealed interface ManagementSideEffect{
+    class Toast(val message:String): ManagementSideEffect
 //    data object NavigateToDailyActivity: LoadingSideEffect
 
 }

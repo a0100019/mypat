@@ -1,10 +1,13 @@
 package com.a0100019.mypat.presentation.main.management
 
+import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.a0100019.mypat.presentation.community.CommunityScreen
 import com.a0100019.mypat.presentation.daily.DailyScreen
 import com.a0100019.mypat.presentation.daily.diary.DiaryScreen
@@ -19,6 +22,8 @@ import com.a0100019.mypat.presentation.game.thirdGame.ThirdGameScreen
 import com.a0100019.mypat.presentation.index.IndexScreen
 import com.a0100019.mypat.presentation.information.InformationScreen
 import com.a0100019.mypat.presentation.main.MainScreen
+import com.a0100019.mypat.presentation.setting.SettingScreen
+import com.a0100019.mypat.presentation.setting.WebViewScreen
 import com.a0100019.mypat.presentation.store.StoreScreen
 
 @Composable
@@ -146,12 +151,23 @@ fun MainNavHost() {
         }
 
         composable(route = MainRoute.SettingScreen.name) {
-            SettingScreen()
+            SettingScreen(
+                onNavigateToWebView = { url ->
+                    navController.navigate("webview?url=${Uri.encode(url)}")
+                }
+            )
         }
-
 
         composable(route = MainRoute.WalkScreen.name) {
             WalkScreen()
+        }
+
+        composable(
+            route = "webview?url={url}",
+            arguments = listOf(navArgument("url") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val url = backStackEntry.arguments?.getString("url") ?: ""
+            WebViewScreen(url = Uri.decode(url))
         }
 
 //

@@ -27,7 +27,7 @@ import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.presentation.daily.walk.WalkViewModel
 import com.a0100019.mypat.presentation.main.mainDialog.UserInformationDialog
 import com.a0100019.mypat.presentation.main.mainDialog.WorldAddDialog
-import com.a0100019.mypat.presentation.main.management.SettingViewModel
+import com.a0100019.mypat.presentation.main.management.ManagementViewModel
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -38,7 +38,7 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 @Composable
 fun MainScreen(
     mainViewModel: MainViewModel = hiltViewModel(),
-    settingViewModel: SettingViewModel = hiltViewModel(),
+    managementViewModel: ManagementViewModel = hiltViewModel(),
     onDailyNavigateClick: () -> Unit,
     onStoreNavigateClick: () -> Unit,
     onIndexNavigateClick: () -> Unit,
