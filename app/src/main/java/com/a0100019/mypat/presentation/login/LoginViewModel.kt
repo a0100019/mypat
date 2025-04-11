@@ -1,5 +1,6 @@
 package com.a0100019.mypat.presentation.login
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
@@ -12,6 +13,7 @@ import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
+import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
@@ -42,30 +44,38 @@ class LoginViewModel @Inject constructor(
 
     }
 
-    fun guestLoginClick() = intent {
+    fun onGuestLoginClick() = intent {
 
     }
 
-    fun googleLoginClick() = intent {
+    fun onGoogleLoginClick(idToken: String) = intent {
+        Log.e("login", "idToken = $idToken") // 🔍 여기 추가
 
-    }
+        if (state.isLoggingIn) return@intent // 이미 로그인 중이면 리턴
 
-    fun onGoogleSignInResult(idToken: String) = intent {
-        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        reduce { state.copy(isLoggingIn = true) }
+
         try {
+            val credential = GoogleAuthProvider.getCredential(idToken, null)
             val authResult = FirebaseAuth.getInstance().signInWithCredential(credential).await()
             val user = authResult.user
-            // 예: 로컬 DB 저장
-            user?.let {
-                userDao.insert(User(id = "auth", value = it.uid, value2 = it.displayName.orEmpty()))
-            }
-            postSideEffect(LoginSideEffect.Toast("로그인 성공"))
-            postSideEffect(LoginSideEffect.NavigateToMainScreen)
 
+            Log.e("login", "user = $user")
+
+            user?.let {
+                Log.e("login", "뷰모델 로그인 성공")
+                userDao.update(id = "auth", value = it.uid, value2 = it.displayName.orEmpty())
+                postSideEffect(LoginSideEffect.Toast("로그인 성공"))
+                postSideEffect(LoginSideEffect.NavigateToMainScreen)
+            }
         } catch (e: Exception) {
+            Log.e("login", "뷰모델 로그인 실패", e)
             postSideEffect(LoginSideEffect.Toast("로그인 실패: ${e.localizedMessage}"))
+        } finally {
+            reduce { state.copy(isLoggingIn = false) }
         }
     }
+
 
 
 }
@@ -77,7 +87,8 @@ class LoginViewModel @Inject constructor(
 data class LoginState(
     val id:String = "",
     val password:String = "",
-    val userData: List<User> = emptyList()
+    val userData: List<User> = emptyList(),
+    val isLoggingIn:Boolean = false
 )
 
 

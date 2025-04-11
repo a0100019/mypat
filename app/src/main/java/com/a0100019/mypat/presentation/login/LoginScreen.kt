@@ -1,5 +1,7 @@
 package com.a0100019.mypat.presentation.login
 
+import android.util.Log
+import android.widget.MediaController
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -37,10 +39,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.a0100019.mypat.R
 import com.a0100019.mypat.presentation.loading.LoadingSideEffect
 import com.a0100019.mypat.presentation.loading.LoadingState
 import com.a0100019.mypat.presentation.loading.LoadingViewModel
+import com.a0100019.mypat.presentation.main.management.MainRoute
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.image.etc.KoreanIdiomImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
@@ -52,41 +56,56 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 fun LoginScreen(
-    loginViewModel: LoginViewModel = hiltViewModel()
-
+    loginViewModel: LoginViewModel = hiltViewModel(),
+    navController: NavController // NavController를 파라미터로 받아오기
 ) {
-
-    val loginState : LoginState = loginViewModel.collectAsState().value
-
     val context = LocalContext.current
 
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-        try {
-            val account = task.getResult(ApiException::class.java)
-            account.idToken?.let { loginViewModel.onGoogleSignInResult(it) }
-        } catch (e: Exception) {
-            // loginViewModel.postSideEffect(LoginSideEffect.Toast("Google 로그인 실패"))
-        }
-    }
-
+    // 🔥 여기서 네비게이션 처리
     loginViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
             is LoginSideEffect.Toast -> Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
-            //LoginSideEffect.NavigateToMainScreen -> onNavigateTo
+            is LoginSideEffect.NavigateToMainScreen -> {
+                navController.navigate(MainRoute.MainScreen.name) {
+                    popUpTo(MainRoute.LoginScreen.name) { inclusive = true } // 뒤로가기 방지
+                }
+            }
         }
     }
+
+    val loginState = loginViewModel.collectAsState().value
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+        try {
+            val account = task.getResult(ApiException::class.java)
+            val idToken = account.idToken
+            if (idToken != null) {
+                loginViewModel.onGoogleLoginClick(idToken)
+            } else {
+                Log.e("login", "로그인 스크린 로그인 성공")
+//                LoginSideEffect.Toast(postLoginSideEffect.Toast("구글 로그인 실패: 토큰 없음"))
+            }
+        } catch (e: Exception) {
+            Log.e("login", "로그인 스크린 로그인 실패: ${e.localizedMessage}", e)
+//            loginViewModel.postSideEffect(LoginSideEffect.Toast("구글 로그인 실패"))
+        }
+    }
+
 
     LoginScreen(
         googleLoginClick = {
             val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(context.getString(R.string.default_web_client_id)) // 여기!
+                .requestIdToken(context.getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build()
-            val client = GoogleSignIn.getClient(context, gso)
-            launcher.launch(client.signInIntent)
+
+            val googleSignInClient = GoogleSignIn.getClient(context, gso)
+            launcher.launch(googleSignInClient.signInIntent)
         },
-        guestLoginClick = loginViewModel::guestLoginClick,
+        guestLoginClick = loginViewModel::onGuestLoginClick
     )
 }
 

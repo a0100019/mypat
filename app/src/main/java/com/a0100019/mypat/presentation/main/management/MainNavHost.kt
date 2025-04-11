@@ -37,7 +37,7 @@ fun MainNavHost() {
 
     NavHost(
         navController = navController,
-        startDestination = MainRoute.MainScreen.name,
+        startDestination = MainRoute.LoginScreen.name,
     ){
         composable(route = MainRoute.MainScreen.name) {
             MainScreen(
@@ -72,10 +72,9 @@ fun MainNavHost() {
         }
 
         composable(route = MainRoute.LoginScreen.name) {
-            LoginScreen(
-
-            )
+            LoginScreen(navController = navController)
         }
+
 
         composable(route = MainRoute.DailyScreen.name) {
             DailyScreen(
