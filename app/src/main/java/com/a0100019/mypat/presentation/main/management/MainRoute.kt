@@ -6,6 +6,8 @@ sealed class MainRoute(
 
     object MainScreen : MainRoute("MainScreen")
 
+    object LoginScreen : MainRoute("LoginScreen")
+
     object DailyScreen : MainRoute("DailyScreen")
 
     object StoreScreen : MainRoute("StoreScreen")

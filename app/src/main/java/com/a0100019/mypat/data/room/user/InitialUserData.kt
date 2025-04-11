@@ -9,6 +9,7 @@ fun getUserInitialData(): List<User> {
         User(id = "pat", value = "5", value2 = "3", value3 = "0"),
         User(id = "item", value = "5", value2 = "3", value3 = "0"),
         User(id = "name", value = "익명"),
+        User(id = "auth"),
         User(id = "englishLevel", value = "0"),
         User(id = "firstGame", value = "0"), //2는 level, 3은 pat index (걍 하지말자)
         User(id = "secondGame", value = "1000"), //2는 없음, 3은 pat index

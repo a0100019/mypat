@@ -11,7 +11,7 @@ plugins {
 
 android {
     namespace = "com.a0100019.mypat"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.a0100019.mypat"
@@ -117,6 +117,11 @@ dependencies {
     //웹 열기
     implementation ("androidx.browser:browser:1.7.0")
 
+    //firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.12.0"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
 
 
 

@@ -21,6 +21,7 @@ import com.a0100019.mypat.presentation.game.secondGame.SecondGameScreen
 import com.a0100019.mypat.presentation.game.thirdGame.ThirdGameScreen
 import com.a0100019.mypat.presentation.index.IndexScreen
 import com.a0100019.mypat.presentation.information.InformationScreen
+import com.a0100019.mypat.presentation.login.LoginScreen
 import com.a0100019.mypat.presentation.main.MainScreen
 import com.a0100019.mypat.presentation.setting.SettingScreen
 import com.a0100019.mypat.presentation.setting.WebViewScreen
@@ -67,6 +68,12 @@ fun MainNavHost() {
                 onThirdGameNavigateClick = {
                     navController.navigate(route = MainRoute.ThirdGameScreen.name)
                 }
+            )
+        }
+
+        composable(route = MainRoute.LoginScreen.name) {
+            LoginScreen(
+
             )
         }
 
