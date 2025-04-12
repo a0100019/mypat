@@ -1,5 +1,6 @@
 package com.a0100019.mypat.presentation.main.management
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
@@ -7,6 +8,7 @@ import com.a0100019.mypat.data.room.walk.Walk
 import com.a0100019.mypat.data.room.walk.WalkDao
 import com.a0100019.mypat.presentation.daily.walk.StepCounterManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineExceptionHandler
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
@@ -23,7 +25,9 @@ import javax.inject.Inject
 class ManagementViewModel @Inject constructor(
     private val userDao: UserDao,
     private val walkDao: WalkDao,
-    private val stepCounterManager: StepCounterManager
+    private val stepCounterManager: StepCounterManager,
+    @ApplicationContext private val context: Context
+
 ) : ViewModel(), ContainerHost<ManagementState, ManagementSideEffect> {
 
     override val container: Container<ManagementState, ManagementSideEffect> = container(
@@ -100,10 +104,7 @@ class ManagementViewModel @Inject constructor(
 
     }
 
-
 }
-
-
 
 @Immutable
 data class ManagementState(

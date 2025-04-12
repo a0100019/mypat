@@ -3,7 +3,10 @@ package com.a0100019.mypat.presentation.setting
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,18 +24,21 @@ import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 import androidx.browser.customtabs.CustomTabsIntent
-
-fun launchCustomTab(context: Context, url: String) {
-    val customTabsIntent = CustomTabsIntent.Builder()
-        .setShowTitle(true)
-        .build()
-    customTabsIntent.launchUrl(context, Uri.parse(url))
-}
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.ui.graphics.Color
+import com.a0100019.mypat.R
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
 
 @Composable
 fun SettingScreen(
     settingViewModel: SettingViewModel = hiltViewModel(),
-    onNavigateToWebView: (String) -> Unit // ✅ 추가
+    onSignOutClick: () -> Unit
 ) {
     val settingState: SettingState = settingViewModel.collectAsState().value
     val context = LocalContext.current
@@ -42,125 +48,142 @@ fun SettingScreen(
             is SettingSideEffect.Toast -> {
                 Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
             }
-            is SettingSideEffect.OpenChromeTab -> {
-                launchCustomTab(context, sideEffect.url)
+            SettingSideEffect.NavigateToLoginScreen -> onSignOutClick()
+        }
+    }
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+        try {
+            val account = task.getResult(ApiException::class.java)
+            val idToken = account.idToken
+            if (idToken != null) {
+                settingViewModel.onGoogleLoginClick(idToken)
+            } else {
+                Log.e("login", "로그인 스크린 로그인 성공")
+//                LoginSideEffect.Toast(postLoginSideEffect.Toast("구글 로그인 실패: 토큰 없음"))
             }
+        } catch (e: Exception) {
+            Log.e("login", "로그인 스크린 로그인 실패: ${e.localizedMessage}", e)
+//            loginViewModel.postSideEffect(LoginSideEffect.Toast("구글 로그인 실패"))
         }
     }
 
     SettingScreen(
-        onClose = settingViewModel::onCloseClick,
         userData = settingState.userData,
-        onTermsClick = settingViewModel::onTermsClick
+        googleLoginState = settingState.googleLoginState,
+
+        onClose = settingViewModel::onCloseClick,
+        onTermsClick = settingViewModel::onTermsClick,
+        onSignOutClick = settingViewModel::onSignOutClick,
+
+        onGoogleLoginClick = {
+            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(context.getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build()
+
+            val googleSignInClient = GoogleSignIn.getClient(context, gso)
+            launcher.launch(googleSignInClient.signInIntent)
+        },
+
     )
+}
+@Composable
+fun SettingScreen(
+    userData: List<User>,
+    googleLoginState: Boolean,
+    onTermsClick: () -> Unit,
+    onSignOutClick: () -> Unit,
+    onClose: () -> Unit,
+    onGoogleLoginClick: () -> Unit,
+) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(vertical = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        if (!googleLoginState) {
+            item {
+                SettingButton(
+                    text = "구글 로그인 하기",
+                    onClick = onGoogleLoginClick
+                )
+            }
+        }
+
+        item {
+            SettingButton(
+                text = "편지 모음",
+                onClick = { /* TODO */ }
+            )
+        }
+
+        item {
+            SettingButton(
+                text = "이용 약관",
+                onClick = onTermsClick
+            )
+        }
+
+        item {
+            SettingButton(
+                text = "계정 삭제",
+                onClick = { /* TODO */ }
+            )
+        }
+
+        item {
+            SettingButton(
+                text = "버그 신고",
+                onClick = { /* TODO */ }
+            )
+        }
+
+        item {
+            SettingButton(
+                text = "쿠폰 코드",
+                onClick = { /* TODO */ }
+            )
+        }
+
+        if (googleLoginState) {
+            item {
+                SettingButton(
+                    text = "로그아웃",
+                    onClick = onSignOutClick
+                )
+            }
+        }
+    }
 }
 
 @Composable
-fun SettingScreen(
-    onClose: () -> Unit,
-    userData: List<User>,
-    onTermsClick: () -> Unit,
+fun SettingButton(
+    text: String,
+    onClick: () -> Unit
 ) {
-
-    LazyColumn {
-        item {
-            Button(
-                onClick = {}
-            ) {
-                Text(
-                    text = "편지 모음",
-                    fontSize = 20.sp,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                )
-            }
-//            HorizontalDivider(thickness = 1.dp, color = Color.Gray)
-        }
-        item {
-            Button(
-                onClick = {}
-            ) {
-                Text(
-                    text = "로그아웃",
-                    fontSize = 20.sp,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                )
-            }
-        }
-        item {
-            Button(
-                onClick = onTermsClick
-            ) {
-                Text(
-                    text = "이용 약관",
-                    fontSize = 20.sp,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                )
-            }
-        }
-        item {
-            Button(
-                onClick = {}
-            ) {
-                Text(
-                    text = "계정 삭제",
-                    fontSize = 20.sp,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                )
-            }
-        }
-        item {
-            Button(
-                onClick = {}
-            ) {
-                Text(
-                    text = "버그 신고",
-                    fontSize = 20.sp,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                )
-            }
-        }
-        item {
-            Button(
-                onClick = {}
-            ) {
-                Text(
-                    text = "쿠폰 코드",
-                    fontSize = 20.sp,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                )
-            }
-        }
-        item {
-            Button(
-                onClick = {}
-            ) {
-                Text(
-                    text = "쿠폰 코드",
-                    fontSize = 20.sp,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                )
-            }
-        }
-
-
-
+    Button(
+        onClick = onClick,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        shape = RoundedCornerShape(8.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color(0xFFF0F0F0),
+            contentColor = Color.Black
+        )
+    ) {
+        Text(
+            text = text,
+            fontSize = 18.sp,
+            modifier = Modifier
+                .padding(vertical = 12.dp)
+        )
     }
-
-
 }
 
 
@@ -172,7 +195,10 @@ fun SettingScreenPreview() {
         SettingScreen(
             onClose = {},
             userData = emptyList(),
-            onTermsClick = {}
+            onTermsClick = {},
+            onSignOutClick = {},
+            googleLoginState = false,
+            onGoogleLoginClick = {}
         )
     }
 }

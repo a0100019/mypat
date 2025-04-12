@@ -98,7 +98,6 @@ fun MainScreen(
         onAddItemImageClick = mainViewModel::onAddItemImageClick,
         onSelectMapImageClick = mainViewModel::onSelectMapImageClick,
 
-
         mapUrl = mainState.mapData.value,
         patDataList = mainState.patDataList,
         patWorldDataList = mainState.patWorldDataList,

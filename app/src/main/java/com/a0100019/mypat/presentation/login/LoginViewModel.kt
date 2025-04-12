@@ -41,11 +41,41 @@ class LoginViewModel @Inject constructor(
 
     //room에서 데이터 가져옴
     private fun loadData() = intent {
+        val userDataList = userDao.getAllUserData()
+        val loginState = userDataList.find { it.id == "auth" }!!.value
+
+        if(loginState == "0") {
+            reduce {
+                state.copy(
+                    loginState = "unLogin"
+                )
+            }
+        } else {
+            reduce {
+                state.copy(
+                    loginState = "login"
+                )
+            }
+        }
 
     }
 
-    fun onGuestLoginClick() = intent {
+    fun dialogChangeClick(string: String) = intent {
+        reduce {
+            state.copy(
+                dialogState = string
+            )
+        }
+    }
 
+    fun onGuestLoginClick() = intent {
+        userDao.update(id = "auth", value = "guest")
+        postSideEffect(LoginSideEffect.NavigateToMainScreen)
+        reduce {
+            state.copy(
+                dialogState = ""
+            )
+        }
     }
 
     fun onGoogleLoginClick(idToken: String) = intent {
@@ -64,7 +94,7 @@ class LoginViewModel @Inject constructor(
 
             user?.let {
                 Log.e("login", "뷰모델 로그인 성공")
-                userDao.update(id = "auth", value = it.uid, value2 = it.displayName.orEmpty())
+                userDao.update(id = "auth", value = it.uid)
                 postSideEffect(LoginSideEffect.Toast("로그인 성공"))
                 postSideEffect(LoginSideEffect.NavigateToMainScreen)
             }
@@ -74,6 +104,10 @@ class LoginViewModel @Inject constructor(
         } finally {
             reduce { state.copy(isLoggingIn = false) }
         }
+    }
+
+    fun onNavigateToMainScreen() = intent {
+        postSideEffect(LoginSideEffect.NavigateToMainScreen)
     }
 
 
@@ -88,7 +122,9 @@ data class LoginState(
     val id:String = "",
     val password:String = "",
     val userData: List<User> = emptyList(),
-    val isLoggingIn:Boolean = false
+    val isLoggingIn:Boolean = false,
+    val dialogState: String = "",
+    val loginState: String = ""
 )
 
 

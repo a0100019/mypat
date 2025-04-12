@@ -31,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -44,6 +45,7 @@ import com.a0100019.mypat.R
 import com.a0100019.mypat.presentation.loading.LoadingSideEffect
 import com.a0100019.mypat.presentation.loading.LoadingState
 import com.a0100019.mypat.presentation.loading.LoadingViewModel
+import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
 import com.a0100019.mypat.presentation.main.management.MainRoute
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.image.etc.KoreanIdiomImage
@@ -96,6 +98,13 @@ fun LoginScreen(
 
 
     LoginScreen(
+        dialogState = loginState.dialogState,
+        loginState = loginState.loginState,
+
+        guestLoginClick = loginViewModel::onGuestLoginClick,
+        dialogChangeClick = loginViewModel::dialogChangeClick,
+        onNavigateToMainScreen = loginViewModel::onNavigateToMainScreen,
+
         googleLoginClick = {
             val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(context.getString(R.string.default_web_client_id))
@@ -105,7 +114,6 @@ fun LoginScreen(
             val googleSignInClient = GoogleSignIn.getClient(context, gso)
             launcher.launch(googleSignInClient.signInIntent)
         },
-        guestLoginClick = loginViewModel::onGuestLoginClick
     )
 }
 
@@ -113,45 +121,107 @@ fun LoginScreen(
 fun LoginScreen(
     guestLoginClick: () -> Unit,
     googleLoginClick: () -> Unit,
+    dialogChangeClick: (String) -> Unit,
+    onNavigateToMainScreen: () -> Unit,
+
+    dialogState: String,
+    loginState: String,
 ) {
-    Column {
-        Text("로그인")
-        Button(
-            onClick = {}
-        ) {
-            Text("게스트 로그인")
-        }
 
-        Button(
-            onClick = googleLoginClick,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.White,
-                contentColor = Color.Black
-            ),
-            shape = RoundedCornerShape(8.dp),
-            border = BorderStroke(1.dp, Color.LightGray),
-            modifier = Modifier
-                .height(48.dp)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                JustImage(
-                    filePath = "etc/googleLogo.png",
-                    modifier = Modifier
-                        .size(24.dp)
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                Text("구글 로그인")
-            }
-        }
-
-
-
+    when (dialogState) {
+        "guest" -> SimpleAlertDialog(
+            onConfirm = guestLoginClick,
+            onDismiss = {
+                dialogChangeClick("")
+            },
+            text = "게스트로 로그인하시겠습니까?"
+        )
     }
 
+    Box {
 
+        JustImage(
+            filePath = "etc/loginScreen.png",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.FillBounds
+        )
+
+        when (loginState) {
+            "unLogin" -> Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(24.dp),
+                verticalArrangement = Arrangement.Bottom,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+
+//                Text(
+//                    text = "로그인",
+//                    fontSize = 24.sp,
+//                    fontWeight = FontWeight.Bold,
+//                    modifier = Modifier.padding(bottom = 32.dp)
+//                )
+
+                // ✅ 게스트 로그인 버튼
+                Button(
+                    onClick = {
+                        dialogChangeClick("guest")
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp)
+                ) {
+                    Text("게스트 로그인")
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // ✅ 구글 로그인 버튼
+                Button(
+                    onClick = googleLoginClick,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.White,
+                        contentColor = Color.Black
+                    ),
+                    shape = RoundedCornerShape(8.dp),
+                    border = BorderStroke(1.dp, Color.LightGray),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        JustImage(
+                            filePath = "etc/googleLogo.png",
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text("구글 로그인")
+                    }
+                }
+
+                Spacer(modifier = Modifier.size(10.dp))
+
+            }
+
+            "login" -> Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clickable {
+                        onNavigateToMainScreen()
+                    },
+                verticalArrangement = Arrangement.Bottom,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("화면 터치해서 시작")
+                Spacer(modifier = Modifier.size(70.dp))
+
+            }
+        }
+    }
 }
+
 
 @Preview(showBackground = true)
 @Composable
@@ -159,7 +229,11 @@ fun LoginScreenPreview() {
     MypatTheme {
         LoginScreen(
             googleLoginClick = {},
-            guestLoginClick = {}
+            guestLoginClick = {},
+            dialogChangeClick = {},
+            onNavigateToMainScreen = {},
+            dialogState = "",
+            loginState = "unLogin"
         )
     }
 }

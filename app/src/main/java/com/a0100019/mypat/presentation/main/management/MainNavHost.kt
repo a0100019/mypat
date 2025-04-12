@@ -158,8 +158,11 @@ fun MainNavHost() {
 
         composable(route = MainRoute.SettingScreen.name) {
             SettingScreen(
-                onNavigateToWebView = { url ->
-                    navController.navigate("webview?url=${Uri.encode(url)}")
+                onSignOutClick = {
+                    navController.navigate(route = MainRoute.LoginScreen.name) {
+                        popUpTo(0) { inclusive = true } // 백스택 전체 제거
+                        launchSingleTop = true // 같은 화면 여러 번 안 쌓이게
+                    }
                 }
             )
         }

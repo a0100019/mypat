@@ -102,7 +102,7 @@ fun DailyScreen(
                         .fillMaxWidth(),
                     onClick = {  }
                 ) {
-                    Text("광고 보기")
+                    Text("커뮤니티 구경하기")
                 }
                 Button(
                     modifier = Modifier
@@ -110,9 +110,8 @@ fun DailyScreen(
                         .fillMaxWidth(),
                     onClick = {  }
                 ) {
-                    Text("좋아요 누르기")
+                    Text("광고 보기")
                 }
-
             }
         }
     }
