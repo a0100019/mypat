@@ -4,6 +4,7 @@ package com.a0100019.mypat.presentation.main
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.yml.charts.common.extensions.isNotNull
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.item.ItemDao
 import com.a0100019.mypat.data.room.pet.Pat
@@ -18,7 +19,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.orbitmvi.orbit.Container
@@ -62,6 +62,9 @@ class MainViewModel @Inject constructor(
                 // 맵 데이터 가져오기
                 val mapData = worldDao.getWorldDataById("map")
 
+                //월드 데이터 가져오기
+                val worldDataList = worldDao.getAllWorldDataExceptFirst()
+
                 // 펫 월드 데이터 리스트 가져오기
                 val patWorldDataList = worldDao.getWorldDataListByType(type = "pat") ?: emptyList()
                 val patDataList = patWorldDataList.mapNotNull { patWorldData ->
@@ -102,7 +105,8 @@ class MainViewModel @Inject constructor(
                             userDataList = userDataList,
                             allItemDataList = allItemDataList,
                             allMapDataList = allMapDataList,
-                            patFlowWorldDataList = patFlowWorldDataList
+                            patFlowWorldDataList = patFlowWorldDataList,
+                            worldDataList = worldDataList
                         )
                     }
                 }
@@ -183,6 +187,110 @@ class MainViewModel @Inject constructor(
                 patDataList = updatedPatDataList
             )
         }
+
+    }
+
+    fun worldDataDelete(deleteIndex: Int) = intent {
+        val currentList = state.worldDataList.toMutableList()
+
+        // 1. 삭제
+        currentList.removeAt(deleteIndex)
+
+        // 2. id만 한 칸씩 앞당김 (value, open, type은 그대로 유지)
+        val shiftedList = currentList.mapIndexed { index, item ->
+            item.copy(id = (index + 1).toString())
+        }.toMutableList()
+
+        // 3. 마지막에 초기값을 가진 World 하나 추가
+        val newWorld = World(
+            id = (shiftedList.size + 1).toString(),
+            value = "0",
+            open = "0",
+            type = ""
+        )
+        shiftedList.add(newWorld)
+
+        reduce {
+            state.copy(
+                worldDataList = shiftedList
+            )
+        }
+
+    }
+
+
+    fun onAddPatClick(patId: String) = intent {
+        // 1. patWorldDataList에서 patId와 일치하는 value 값을 찾는다
+        val matchingIndex = state.worldDataList.indexOfFirst { it.value == patId }
+
+        if (matchingIndex != -1) {
+            // 1.1 일치하는 데이터가 있는 경우 ( 펫이 월드에 나와 있는 경우 펫 제거)
+            worldDataDelete(matchingIndex)
+        } else {
+
+            val updatedList = state.worldDataList.toMutableList()
+
+            // value == "0" 인 World 중 첫 번째 찾기
+            val firstEmptyIndex = updatedList.indexOfFirst { it.value == "0" }
+
+            if (firstEmptyIndex != -1) {
+                val oldItem = updatedList[firstEmptyIndex]
+                val updatedItem = oldItem.copy(value = patId, type = "pat")
+                updatedList[firstEmptyIndex] = updatedItem
+
+                // 상태 업데이트
+                reduce {
+                    state.copy(worldDataList = updatedList)
+                }
+            }
+
+        }
+
+        val updatedState = if (matchingIndex != -1) {
+            // 1.1 일치하는 데이터가 있는 경우 ( 펫이 월드에 나와 있는 경우 펫 제거)
+            val updatedPatWorldDataList = state.patWorldDataList.mapIndexed { index, world ->
+                if (index == matchingIndex) world.copy(value = "0") else world
+            }
+
+            val updatedPatDataList = state.patDataList.filter { it.id != patId.toInt() }
+
+            // 새로운 상태 생성
+            state.copy(
+                patWorldDataList = updatedPatWorldDataList,
+                patDataList = updatedPatDataList
+            )
+        } else {
+            // 1.2 일치하는 데이터가 없는 경우 ( 월드에 펫이 없을 때 추가 )
+            val zeroIndex = state.patWorldDataList.indexOfFirst { it.value == "0" }
+            val openCount = state.patWorldDataList.count { it.open == "1" }
+
+            if (zeroIndex != -1 && zeroIndex < openCount) {
+                val updatedPatWorldDataList = state.patWorldDataList.mapIndexed { index, world ->
+                    if (index == zeroIndex) world.copy(value = patId) else world
+                }
+
+                val newPatData = state.allPatDataList.find { it.id == patId.toInt() }
+                val updatedPatDataList = if (newPatData != null) {
+                    state.patDataList + newPatData
+                } else {
+                    state.patDataList
+                }
+
+                // 새로운 상태 생성
+                state.copy(
+                    patWorldDataList = updatedPatWorldDataList,
+                    patDataList = updatedPatDataList
+                )
+            } else {
+                // "0"인 데이터가 없는 경우의 처리
+                println("No available slot in patWorldDataList to update with patId")
+                postSideEffect(MainSideEffect.Toast("공간이 부족합니다!"))
+                state // 상태 변경 없음
+            }
+        }
+
+        // 상태 업데이트
+        reduce { updatedState }
     }
 
     fun itemWorldDataDelete(itemId: String) = intent {
@@ -417,8 +525,8 @@ data class MainState(
     val allItemDataList: List<Item> = emptyList(),
     val allMapDataList: List<Item> = emptyList(),
     val patFlowWorldDataList: Flow<List<Pat>> = flowOf(emptyList()),
+    val worldDataList: List<World> = emptyList(),
 
-    val worldData: List<World> = emptyList(),
     val mapData: World? = null,
     val dialogPatId: String = "0",
     val dialogItemId: String = "0",
