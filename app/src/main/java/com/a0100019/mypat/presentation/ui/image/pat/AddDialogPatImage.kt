@@ -22,7 +22,6 @@ fun AddDialogPatImage(
         LottieCompositionSpec.Asset(patData.url)
     )
 
-    // LottieAnimation을 클릭 가능한 Modifier로 감쌉니다.
     LottieAnimation(
         composition = composition,
         iterations = Int.MAX_VALUE,
@@ -32,4 +31,5 @@ fun AddDialogPatImage(
                 onAddPatImageClick(patData.id.toString())
             }
     )
+
 }

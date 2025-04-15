@@ -4,7 +4,6 @@ package com.a0100019.mypat.presentation.main
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import co.yml.charts.common.extensions.isNotNull
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.item.ItemDao
 import com.a0100019.mypat.data.room.pet.Pat
@@ -90,7 +89,8 @@ class MainViewModel @Inject constructor(
                 val allItemDataList = itemDao.getAllOpenItemData()
                 val allMapDataList = itemDao.getAllOpenMapData()
 
-                val userDataList = userDao.getAllUserDataFlow()
+                val userFlowDataList = userDao.getAllUserDataFlow()
+                val userDataList = userDao.getAllUserData()
 
                 // UI 상태 업데이트 (Main Dispatcher에서 실행)
                 withContext(Dispatchers.Main) {
@@ -102,11 +102,12 @@ class MainViewModel @Inject constructor(
                             itemWorldDataList = itemWorldDataList,
                             itemDataList = itemDataList,
                             allPatDataList = allPatDataList,
-                            userDataList = userDataList,
+                            userFlowDataList = userFlowDataList,
                             allItemDataList = allItemDataList,
                             allMapDataList = allMapDataList,
                             patFlowWorldDataList = patFlowWorldDataList,
-                            worldDataList = worldDataList
+                            worldDataList = worldDataList,
+                            userDataList = userDataList
                         )
                     }
                 }
@@ -170,7 +171,11 @@ class MainViewModel @Inject constructor(
         state.patWorldDataList.forEach { world ->
             worldDao.update(world)
         }
+        state.worldDataList.forEach { world ->
+            worldDao.update(world)
+        }
         state.mapData?.let { worldDao.update(it) }
+        userDao.updateUsers(state.userDataList)
         loadData()
     }
 
@@ -190,11 +195,12 @@ class MainViewModel @Inject constructor(
 
     }
 
-    fun worldDataDelete(deleteIndex: Int) = intent {
+    fun worldDataDelete(id: String, type: String) = intent {
         val currentList = state.worldDataList.toMutableList()
+        val targetIndex = currentList.indexOfFirst { it.id == id && it.type == type }
 
         // 1. 삭제
-        currentList.removeAt(deleteIndex)
+        currentList.removeAt(targetIndex)
 
         // 2. id만 한 칸씩 앞당김 (value, open, type은 그대로 유지)
         val shiftedList = currentList.mapIndexed { index, item ->
@@ -218,79 +224,98 @@ class MainViewModel @Inject constructor(
 
     }
 
-
     fun onAddPatClick(patId: String) = intent {
+
         // 1. patWorldDataList에서 patId와 일치하는 value 값을 찾는다
         val matchingIndex = state.worldDataList.indexOfFirst { it.value == patId }
 
         if (matchingIndex != -1) {
             // 1.1 일치하는 데이터가 있는 경우 ( 펫이 월드에 나와 있는 경우 펫 제거)
-            worldDataDelete(matchingIndex)
+            worldDataDelete(patId, "pat")
         } else {
+            // 일치하는 데이터가 없어서 추가
+            val currentList = state.userDataList.toMutableList()
+            val userData = currentList.find { it.id == "pat" }
 
-            val updatedList = state.worldDataList.toMutableList()
+            //칸수 남아 있음
+            if (userData!!.value2.toInt() > userData.value3.toInt()){
+                val updatedList = state.worldDataList.toMutableList()
+                // value == "0" 인 World 중 첫 번째 찾기
+                val firstEmptyIndex = updatedList.indexOfFirst { it.value == "0" }
 
-            // value == "0" 인 World 중 첫 번째 찾기
-            val firstEmptyIndex = updatedList.indexOfFirst { it.value == "0" }
-
-            if (firstEmptyIndex != -1) {
+                //새 값 추가
                 val oldItem = updatedList[firstEmptyIndex]
                 val updatedItem = oldItem.copy(value = patId, type = "pat")
                 updatedList[firstEmptyIndex] = updatedItem
 
+                //user pat 업데이트
+                val index = currentList.indexOf(userData)
+                val updatedUserData = userData.copy(
+                    value3 = (userData.value3.toInt() + 1).toString()
+                )
+                currentList[index] = updatedUserData
+
                 // 상태 업데이트
                 reduce {
-                    state.copy(worldDataList = updatedList)
-                }
-            }
-
-        }
-
-        val updatedState = if (matchingIndex != -1) {
-            // 1.1 일치하는 데이터가 있는 경우 ( 펫이 월드에 나와 있는 경우 펫 제거)
-            val updatedPatWorldDataList = state.patWorldDataList.mapIndexed { index, world ->
-                if (index == matchingIndex) world.copy(value = "0") else world
-            }
-
-            val updatedPatDataList = state.patDataList.filter { it.id != patId.toInt() }
-
-            // 새로운 상태 생성
-            state.copy(
-                patWorldDataList = updatedPatWorldDataList,
-                patDataList = updatedPatDataList
-            )
-        } else {
-            // 1.2 일치하는 데이터가 없는 경우 ( 월드에 펫이 없을 때 추가 )
-            val zeroIndex = state.patWorldDataList.indexOfFirst { it.value == "0" }
-            val openCount = state.patWorldDataList.count { it.open == "1" }
-
-            if (zeroIndex != -1 && zeroIndex < openCount) {
-                val updatedPatWorldDataList = state.patWorldDataList.mapIndexed { index, world ->
-                    if (index == zeroIndex) world.copy(value = patId) else world
+                    state.copy(
+                        worldDataList = updatedList,
+                        userDataList = currentList
+                    )
                 }
 
-                val newPatData = state.allPatDataList.find { it.id == patId.toInt() }
-                val updatedPatDataList = if (newPatData != null) {
-                    state.patDataList + newPatData
-                } else {
-                    state.patDataList
-                }
-
-                // 새로운 상태 생성
-                state.copy(
-                    patWorldDataList = updatedPatWorldDataList,
-                    patDataList = updatedPatDataList
-                )
             } else {
-                // "0"인 데이터가 없는 경우의 처리
-                println("No available slot in patWorldDataList to update with patId")
                 postSideEffect(MainSideEffect.Toast("공간이 부족합니다!"))
-                state // 상태 변경 없음
             }
+
         }
 
-        // 상태 업데이트
-        reduce { updatedState }
+    }
+
+    fun onAddItemClick(itemId: String) = intent {
+
+        // 1. patWorldDataList에서 patId와 일치하는 value 값을 찾는다
+        val matchingIndex = state.worldDataList.indexOfFirst { it.value == itemId }
+
+        if (matchingIndex != -1) {
+            // 1.1 일치하는 데이터가 있는 경우 ( 펫이 월드에 나와 있는 경우 펫 제거)
+            worldDataDelete(itemId, "item")
+        } else {
+            // 일치하는 데이터가 없어서 추가
+            val currentList = state.userDataList.toMutableList()
+            val userData = currentList.find { it.id == "item" }
+
+            //칸수 남아 있음
+            if (userData!!.value2.toInt() > userData.value3.toInt()){
+                val updatedList = state.worldDataList.toMutableList()
+                // value == "0" 인 World 중 첫 번째 찾기
+                val firstEmptyIndex = updatedList.indexOfFirst { it.value == "0" }
+
+                //새 값 추가
+                val oldItem = updatedList[firstEmptyIndex]
+                val updatedItem = oldItem.copy(value = itemId, type = "item")
+                updatedList[firstEmptyIndex] = updatedItem
+
+                //user pat 업데이트
+                val index = currentList.indexOf(userData)
+                val updatedUserData = userData.copy(
+                    value3 = (userData.value3.toInt() + 1).toString()
+                )
+                currentList[index] = updatedUserData
+
+                // 상태 업데이트
+                reduce {
+                    state.copy(
+                        worldDataList = updatedList,
+                        userDataList = currentList
+                    )
+                }
+
+            } else {
+                postSideEffect(MainSideEffect.Toast("공간이 부족합니다!"))
+            }
+
+        }
+
     }
 
     fun itemWorldDataDelete(itemId: String) = intent {
@@ -516,7 +541,7 @@ class MainViewModel @Inject constructor(
 
 @Immutable
 data class MainState(
-    val userDataList: Flow<List<User>> = flowOf(emptyList()),
+    val userFlowDataList: Flow<List<User>> = flowOf(emptyList()),
     val patDataList: List<Pat> = emptyList(),
     val patWorldDataList: List<World> = emptyList(),
     val itemDataList: List<Item> = emptyList(),
@@ -526,6 +551,7 @@ data class MainState(
     val allMapDataList: List<Item> = emptyList(),
     val patFlowWorldDataList: Flow<List<Pat>> = flowOf(emptyList()),
     val worldDataList: List<World> = emptyList(),
+    val userDataList: List<User> = emptyList(),
 
     val mapData: World? = null,
     val dialogPatId: String = "0",

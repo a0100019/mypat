@@ -41,7 +41,7 @@ fun WorldAddDialog(
     itemWorldDataList: List<World>,
     allMapDataList: List<Item>,
     mapWorldData: World,
-    onAddPatImageClick: (String) -> Unit,
+    worldDataDelete: (String, String) -> Unit,
     onAddItemImageClick: (String) -> Unit,
     onSelectMapImageClick: (String) -> Unit,
     onAddDialogChangeClick: () -> Unit,
@@ -94,7 +94,10 @@ fun WorldAddDialog(
                                     ) {
                                         AddDialogPatImage(
                                             patData = allPatDataList[index],
-                                            onAddPatImageClick = onAddPatImageClick
+                                            onAddPatImageClick = { id ->
+                                                // 여기에 id랑 type(pat) 활용하는 로직
+                                                worldDataDelete(id, "pat")
+                                            }
                                         )
                                         if (patWorldDataList.any { it.value == allPatDataList[index].id.toString() && it.type == "pat" }) {
                                             Text("선택")
@@ -110,7 +113,10 @@ fun WorldAddDialog(
                                     ) {
                                         AddDialogItemImage(
                                             itemData = allItemDataList[index],
-                                            onAddItemImageClick = onAddItemImageClick
+                                            onAddItemImageClick = { id ->
+                                                // 여기에 id랑 type(pat) 활용하는 로직
+                                                worldDataDelete(id, "item")
+                                            }
                                         )
                                         if (itemWorldDataList.any { it.value == allItemDataList[index].id.toString() && it.type == "item"}) {
                                             Text("선택")
@@ -176,7 +182,7 @@ fun WorldAddDialogPreview() {
             onClose = {},
             allPatDataList = listOf(Pat(url = "pat/cat.json", name = "고양이"), Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json")),
             patWorldDataList = listOf(World(id = "pat1", value = "1", open = "1", type = "pat"), World(id = "pat2", value = "2", open = "1", type = "pat"), World(id = "pat3", value = "0", open = "1", type = "pat")),
-            onAddPatImageClick = {},
+            worldDataDelete = {_, _ -> },
             allItemDataList = listOf(Item(url = "item/table.png", name = "책상")),
             itemWorldDataList = listOf(World(id = "item1", value = "1", open = "1", type = "item")),
             addDialogChange = "pat",

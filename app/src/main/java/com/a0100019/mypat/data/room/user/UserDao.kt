@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -27,6 +28,8 @@ interface UserDao {
         """)
     suspend fun update(id: String, value: String? = null, value2: String? = null, value3: String? = null)
 
+    @Update
+    suspend fun updateUsers(users: List<User>)
 
     @Query("SELECT value FROM user_table WHERE id = :id")
     suspend fun getValueById(id: String): String

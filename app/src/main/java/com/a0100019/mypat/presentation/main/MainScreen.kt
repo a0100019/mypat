@@ -1,7 +1,6 @@
 package com.a0100019.mypat.presentation.main
 
 
-import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,8 +23,6 @@ import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pet.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.world.World
-import com.a0100019.mypat.presentation.daily.walk.WalkViewModel
-import com.a0100019.mypat.presentation.main.mainDialog.UserInformationDialog
 import com.a0100019.mypat.presentation.main.mainDialog.WorldAddDialog
 import com.a0100019.mypat.presentation.main.management.ManagementViewModel
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
@@ -97,6 +94,9 @@ fun MainScreen(
         onAddDialogChangeClick = mainViewModel::onAddDialogChangeClick,
         onAddItemImageClick = mainViewModel::onAddItemImageClick,
         onSelectMapImageClick = mainViewModel::onSelectMapImageClick,
+        worldDataDelete = mainViewModel::worldDataDelete,
+        onAddPatClick = mainViewModel::onAddPatClick,
+        onAddItemClick = mainViewModel::onAddItemClick,
 
         mapUrl = mainState.mapData.value,
         patDataList = mainState.patDataList,
@@ -109,11 +109,12 @@ fun MainScreen(
         showWorldAddDialog = mainState.showWorldAddDialog,
         allPatDataList = mainState.allPatDataList,
         allItemDataList = mainState.allItemDataList,
-        userDataList = mainState.userDataList,
+        userFlowDataList = mainState.userFlowDataList,
         addDialogChange = mainState.addDialogChange,
         mapWorldData = it,
         allMapDataList = mainState.allMapDataList,
-        patFlowWorldDataList = mainState.patFlowWorldDataList
+        patFlowWorldDataList = mainState.patFlowWorldDataList,
+        worldDataList = mainState.worldDataList
 
     )
     }
@@ -150,6 +151,9 @@ fun MainScreen(
     onAddDialogChangeClick: () -> Unit,
     onAddItemImageClick: (String) -> Unit,
     onSelectMapImageClick: (String) -> Unit,
+    onAddPatClick: (String) -> Unit,
+    onAddItemClick: (String) -> Unit,
+    worldDataDelete: (String, String) -> Unit,
 
     mapUrl: String,
     patDataList: List<Pat>,
@@ -162,13 +166,14 @@ fun MainScreen(
     showWorldAddDialog: Boolean,
     allPatDataList: List<Pat>,
     allItemDataList: List<Item>,
-    userDataList: Flow<List<User>>,
+    userFlowDataList: Flow<List<User>>,
     addDialogChange: String,
     mapWorldData: World,
     allMapDataList: List<Item>,
     patFlowWorldDataList: Flow<List<Pat>>,
+    worldDataList: List<World>,
 
-) {
+    ) {
 
     Surface {
         Column (
@@ -185,7 +190,7 @@ fun MainScreen(
                     patWorldDataList = patWorldDataList,
                     allItemDataList = allItemDataList,
                     itemWorldDataList = itemWorldDataList,
-                    onAddPatImageClick = onAddPatImageClick,
+                    worldDataDelete = worldDataDelete,
                     addDialogChange = addDialogChange,
                     onAddDialogChangeClick = onAddDialogChangeClick,
                     onAddItemImageClick = onAddItemImageClick,
@@ -209,7 +214,7 @@ fun MainScreen(
                         Text("내 정보")
                     }
 
-                    val users by userDataList.collectAsState(initial = emptyList())
+                    val users by userFlowDataList.collectAsState(initial = emptyList())
                     Text("money : ${users.find { it.id == "money" }?.value} | cash : ${users.find { it.id == "money" }?.value2}")
 
                     Button(
@@ -273,7 +278,11 @@ fun MainScreen(
                     onItemSizeUpClick = onItemSizeUpClick,
                     onItemDrag = onItemDrag,
                     onPatDrag = onPatDrag,
-                    patFlowWorldDataList = patFlowWorldDataList
+                    patFlowWorldDataList = patFlowWorldDataList,
+                    worldDataList = worldDataList,
+                    worldDataDelete = worldDataDelete,
+                    onAddPatClick = onAddPatClick,
+                    onAddItemClick = onAddItemClick
                 )
             }
 
@@ -401,7 +410,7 @@ fun MainScreenPreview() {
             onShowAddDialogClick = {},
             allPatDataList = listOf(Pat(url = "pat/cat.json")),
             onAddPatImageClick = {},
-            userDataList = flowOf(listOf(User(id = "money", value = "1000"), User(id = "cash", value = "100"))),
+            userFlowDataList = flowOf(listOf(User(id = "money", value = "1000"), User(id = "cash", value = "100"))),
             onItemDrag = { id, newX, newY -> },
             onPatDrag = { id, newX, newY -> },
             allItemDataList = listOf(Item(url = "item/table.png")),
@@ -412,6 +421,10 @@ fun MainScreenPreview() {
             mapWorldData = World(id = "1"),
             onSelectMapImageClick = {},
             patFlowWorldDataList = flowOf(emptyList()),
+            worldDataList = emptyList(),
+            onAddItemClick = {},
+            onAddPatClick = {},
+            worldDataDelete = {_, _ ->}
         )
     }
 }
