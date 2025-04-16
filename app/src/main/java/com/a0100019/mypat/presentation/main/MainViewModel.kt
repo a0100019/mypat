@@ -62,7 +62,7 @@ class MainViewModel @Inject constructor(
                 val mapData = worldDao.getWorldDataById("map")
 
                 //월드 데이터 가져오기
-                val worldDataList = worldDao.getAllWorldDataExceptFirst()
+                val worldDataList = worldDao.getAllWorldData().drop(1)
 
                 // 펫 월드 데이터 리스트 가져오기
                 val patWorldDataList = worldDao.getWorldDataListByType(type = "pat") ?: emptyList()
@@ -197,28 +197,43 @@ class MainViewModel @Inject constructor(
 
     fun worldDataDelete(id: String, type: String) = intent {
         val currentList = state.worldDataList.toMutableList()
-        val targetIndex = currentList.indexOfFirst { it.id == id && it.type == type }
+        Log.e("e", "targetIndex${id}}")
+        val targetIndex = currentList.indexOfFirst { it.value == id && it.type == type }
+        Log.e("e", "targetIndex${targetIndex}}")
+        if (targetIndex == -1) return@intent // 못 찾았으면 종료
 
-        // 1. 삭제
-        currentList.removeAt(targetIndex)
+        // 1. targetIndex 뒤의 데이터들을 한 칸씩 앞으로 복사
+        for (i in targetIndex until currentList.size - 1) {
+            val nextItem = currentList[i + 1]
+            currentList[i] = currentList[i].copy(
+                value = nextItem.value,
+                open = nextItem.open,
+                type = nextItem.type
+            )
+        }
 
-        // 2. id만 한 칸씩 앞당김 (value, open, type은 그대로 유지)
-        val shiftedList = currentList.mapIndexed { index, item ->
-            item.copy(id = (index + 1).toString())
-        }.toMutableList()
-
-        // 3. 마지막에 초기값을 가진 World 하나 추가
-        val newWorld = World(
-            id = (shiftedList.size + 1).toString(),
+        // 2. 마지막 아이템은 초기값으로 덮기
+        val lastIndex = currentList.lastIndex
+        currentList[lastIndex] = currentList[lastIndex].copy(
             value = "0",
             open = "0",
             type = ""
         )
-        shiftedList.add(newWorld)
+
+        val newUserDataList = state.userDataList.toMutableList()
+        if(type == "pat"){
+            newUserDataList.find { it.id == "pat" }!!.value3 =
+                ((newUserDataList.find { it.id == "pat" }!!.value3).toInt() - 1).toString()
+        } else {
+            newUserDataList.find { it.id == "item" }!!.value3 =
+                ((newUserDataList.find { it.id == "item" }!!.value3).toInt() - 1).toString()
+        }
+
 
         reduce {
             state.copy(
-                worldDataList = shiftedList
+                worldDataList = currentList,
+                userDataList =  newUserDataList
             )
         }
 
@@ -227,7 +242,7 @@ class MainViewModel @Inject constructor(
     fun onAddPatClick(patId: String) = intent {
 
         // 1. patWorldDataList에서 patId와 일치하는 value 값을 찾는다
-        val matchingIndex = state.worldDataList.indexOfFirst { it.value == patId }
+        val matchingIndex = state.worldDataList.indexOfFirst { it.value == patId && it.type == "pat" }
 
         if (matchingIndex != -1) {
             // 1.1 일치하는 데이터가 있는 경우 ( 펫이 월드에 나와 있는 경우 펫 제거)
@@ -274,7 +289,7 @@ class MainViewModel @Inject constructor(
     fun onAddItemClick(itemId: String) = intent {
 
         // 1. patWorldDataList에서 patId와 일치하는 value 값을 찾는다
-        val matchingIndex = state.worldDataList.indexOfFirst { it.value == itemId }
+        val matchingIndex = state.worldDataList.indexOfFirst { it.value == itemId  && it.type == "item" }
 
         if (matchingIndex != -1) {
             // 1.1 일치하는 데이터가 있는 경우 ( 펫이 월드에 나와 있는 경우 펫 제거)

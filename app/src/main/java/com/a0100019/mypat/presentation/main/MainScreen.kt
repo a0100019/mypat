@@ -114,7 +114,8 @@ fun MainScreen(
         mapWorldData = it,
         allMapDataList = mainState.allMapDataList,
         patFlowWorldDataList = mainState.patFlowWorldDataList,
-        worldDataList = mainState.worldDataList
+        worldDataList = mainState.worldDataList,
+        userDataList = mainState.userDataList
 
     )
     }
@@ -172,6 +173,7 @@ fun MainScreen(
     allMapDataList: List<Item>,
     patFlowWorldDataList: Flow<List<Pat>>,
     worldDataList: List<World>,
+    userDataList: List<User>,
 
     ) {
 
@@ -196,7 +198,10 @@ fun MainScreen(
                     onAddItemImageClick = onAddItemImageClick,
                     onSelectMapImageClick = onSelectMapImageClick,
                     mapWorldData = mapWorldData,
-                    allMapDataList = allMapDataList
+                    allMapDataList = allMapDataList,
+                    worldDataList = worldDataList,
+                    onAddItemClick = onAddItemClick,
+                    onAddPatClick = onAddPatClick
                 )
             }
 
@@ -233,7 +238,7 @@ fun MainScreen(
                             .padding(end = 10.dp),
                         horizontalArrangement = Arrangement.End
                     ) {
-                        Text("Pat ${patWorldDataList.count { it.value != "0" }} / ${patWorldDataList.count { it.open == "1" }}  " +
+                        Text("Pat ${userDataList.find { it.id == "pat" }?.value3} / ${userDataList.find { it.id == "pat" }?.value2}  " +
                                 "Item ${itemWorldDataList.count { it.value != "0" }} / ${itemWorldDataList.count { it.open == "1" }}")
                     }
                 } else {
@@ -424,7 +429,8 @@ fun MainScreenPreview() {
             worldDataList = emptyList(),
             onAddItemClick = {},
             onAddPatClick = {},
-            worldDataDelete = {_, _ ->}
+            worldDataDelete = {_, _ ->},
+            userDataList = emptyList(),
         )
     }
 }

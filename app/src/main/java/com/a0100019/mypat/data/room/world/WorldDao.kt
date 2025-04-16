@@ -22,9 +22,8 @@ interface WorldDao {
     @Query("SELECT * FROM world_table ORDER BY id DESC")
     fun getAllFlowWorldData(): Flow<List<World>>
 
-    @Query("SELECT * FROM world_table ORDER BY id DESC LIMIT -1 OFFSET 1")
-    fun getAllWorldDataExceptFirst(): List<World>
-
+    @Query("SELECT * FROM world_table")
+    fun getAllWorldData(): List<World>
 
     @Query("SELECT * FROM world_table WHERE id = :id")
     suspend fun getWorldDataById(id: String): World

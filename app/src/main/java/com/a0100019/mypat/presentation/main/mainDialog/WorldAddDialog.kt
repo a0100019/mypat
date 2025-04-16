@@ -45,7 +45,10 @@ fun WorldAddDialog(
     onAddItemImageClick: (String) -> Unit,
     onSelectMapImageClick: (String) -> Unit,
     onAddDialogChangeClick: () -> Unit,
-    addDialogChange: String
+    addDialogChange: String,
+    worldDataList: List<World>,
+    onAddPatClick: (String) -> Unit,
+    onAddItemClick: (String) -> Unit,
 ) {
 
     val openCount = when (addDialogChange) {
@@ -96,10 +99,10 @@ fun WorldAddDialog(
                                             patData = allPatDataList[index],
                                             onAddPatImageClick = { id ->
                                                 // 여기에 id랑 type(pat) 활용하는 로직
-                                                worldDataDelete(id, "pat")
+                                                onAddPatClick(id)
                                             }
                                         )
-                                        if (patWorldDataList.any { it.value == allPatDataList[index].id.toString() && it.type == "pat" }) {
+                                        if (worldDataList.any { it.value == allPatDataList[index].id.toString() && it.type == "pat" }) {
                                             Text("선택")
                                         }
                                         Text(allPatDataList[index].name)
@@ -115,10 +118,10 @@ fun WorldAddDialog(
                                             itemData = allItemDataList[index],
                                             onAddItemImageClick = { id ->
                                                 // 여기에 id랑 type(pat) 활용하는 로직
-                                                worldDataDelete(id, "item")
+                                                onAddItemClick(id)
                                             }
                                         )
-                                        if (itemWorldDataList.any { it.value == allItemDataList[index].id.toString() && it.type == "item"}) {
+                                        if (worldDataList.any { it.value == allItemDataList[index].id.toString() && it.type == "item"}) {
                                             Text("선택")
                                         }
                                         Text(allItemDataList[index].name)
@@ -190,7 +193,10 @@ fun WorldAddDialogPreview() {
             onAddItemImageClick = {},
             allMapDataList = listOf(Item(url = "item/table.png")),
             mapWorldData = World(id = "1"),
-            onSelectMapImageClick = {}
+            onSelectMapImageClick = {},
+            worldDataList = emptyList(),
+            onAddItemClick = {},
+            onAddPatClick = {}
         )
     }
 }

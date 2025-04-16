@@ -5,6 +5,7 @@ package com.a0100019.mypat.presentation.ui.image.pat
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
@@ -28,6 +29,7 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 
 @Composable
 fun DraggablePatImage(
+    worldIndex: String,
     patUrl: String,
     surfaceWidthDp: Dp,
     surfaceHeightDp: Dp,
@@ -75,12 +77,15 @@ fun DraggablePatImage(
                         )
                     }
                 },
-            contentAlignment = Alignment.Center
+//            contentAlignment = Alignment.Center
         ) {
+
             LottieAnimation(
                 composition = composition,
                 progress = lottieAnimationState.progress
             )
+            Text(worldIndex)
+
         }
     } else {
         // Placeholder while loading or on error

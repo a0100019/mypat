@@ -101,7 +101,7 @@ fun WorldScreen(
         if (worldChange && dialogItemId != "0") {
             ItemSettingDialog(
                 onDelete = {
-                    worldDataDelete(dialogPatId, "item")
+                    worldDataDelete(dialogItemId, "item")
                     dialogItemIdChange("0")
                 },
                 onDismiss = { dialogItemIdChange("0") },
@@ -139,9 +139,10 @@ fun WorldScreen(
                 worldDataList.forEach { worldData ->
                     if(worldData.type == "pat") {
 
-                        patDataList.find { it.id.toString() == worldData.id }?.let { patData ->
+                        patDataList.find { it.id.toString() == worldData.value }?.let { patData ->
                             if(worldChange) {
                                 DraggablePatImage(
+                                    worldIndex = worldData.id,
                                     patUrl = patData.url,
                                     surfaceWidthDp = surfaceWidthDp,
                                     surfaceHeightDp = surfaceHeightDp,
@@ -167,7 +168,7 @@ fun WorldScreen(
 
                     } else {
 
-                        itemDataList.find { it.id.toString() == worldData.id }?.let { itemData ->
+                        itemDataList.find { it.id.toString() == worldData.value }?.let { itemData ->
                             if(worldChange) {
                                 DraggableItemImage(
                                     itemUrl = itemData.url,
