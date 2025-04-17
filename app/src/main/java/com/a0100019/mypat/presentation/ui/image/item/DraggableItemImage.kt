@@ -30,6 +30,7 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 
 @Composable
 fun DraggableItemImage(
+    worldIndex: String,
     itemUrl: String,
     surfaceWidthDp: Dp,
     surfaceHeightDp: Dp,
@@ -37,8 +38,8 @@ fun DraggableItemImage(
     yFloat: Float,
     sizeFloat: Float,
     onClick: () -> Unit,
-    newFloat: (Float, Float) -> Unit
-) {
+    newFloat: (Float, Float) -> Unit,
+    ) {
 
 
     val imageSize = surfaceWidthDp * sizeFloat // 이미지 크기를 Surface 너비의 비율로 설정
@@ -77,6 +78,7 @@ fun DraggableItemImage(
                     }
                 }
         )
+        Text(worldIndex)
 
     } else {
         val context = LocalContext.current
@@ -117,6 +119,7 @@ fun DraggableItemImage(
                         }
                     }
             )
+            Text(worldIndex)
         } else {
             // Placeholder while loading or on error
             Box(

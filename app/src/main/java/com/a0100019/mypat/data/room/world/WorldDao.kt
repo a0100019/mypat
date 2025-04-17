@@ -19,14 +19,17 @@ interface WorldDao {
     @Update
     suspend fun update(item: World)
 
+    @Query("DELETE FROM world_table WHERE id != 1")
+    suspend fun deleteAllExceptIdOne()
+
     @Query("SELECT * FROM world_table ORDER BY id DESC")
     fun getAllFlowWorldData(): Flow<List<World>>
 
     @Query("SELECT * FROM world_table")
-    fun getAllWorldData(): List<World>
+    suspend fun getAllWorldData(): List<World>
 
     @Query("SELECT * FROM world_table WHERE id = :id")
-    suspend fun getWorldDataById(id: String): World
+    suspend fun getWorldDataById(id: Int): World
 
     @Query("SELECT * FROM world_table WHERE type = :type")
     suspend fun getWorldDataListByType(type: String): List<World>

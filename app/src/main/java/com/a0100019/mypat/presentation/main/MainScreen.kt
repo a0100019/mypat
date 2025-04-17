@@ -26,6 +26,7 @@ import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.presentation.main.mainDialog.WorldAddDialog
 import com.a0100019.mypat.presentation.main.management.ManagementViewModel
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
+import com.a0100019.mypat.presentation.world.WorldScreen
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import org.orbitmvi.orbit.compose.collectAsState
@@ -77,38 +78,21 @@ fun MainScreen(
         onThirdGameNavigateClick = onThirdGameNavigateClick,
 
         dialogPatIdChange = mainViewModel::dialogPatIdChange,
-        dialogItemIdChange = mainViewModel::dialogItemIdChange,
         onWorldChangeClick = mainViewModel::onWorldChangeClick,
         onWorldSelectClick = mainViewModel::onWorldSelectClick,
         loadData = mainViewModel::loadData,
-        patWorldDataDelete = mainViewModel::patWorldDataDelete,
-        itemWorldDataDelete = mainViewModel::itemWorldDataDelete,
-        onPatSizeUpClick = mainViewModel::onPatSizeUpClick,
-        onItemSizeUpClick = mainViewModel::onItemSizeUpClick,
-        onPatSizeDownClick = mainViewModel::onPatSizeDownClick,
-        onItemSizeDownClick = mainViewModel::onItemSizeDownClick,
         onShowAddDialogClick = mainViewModel::onShowAddDialogClick,
-        onAddPatImageClick = mainViewModel::onAddPatImageClick,
-        onItemDrag = mainViewModel::onItemDrag,
-        onPatDrag = mainViewModel::onPatDrag,
         onAddDialogChangeClick = mainViewModel::onAddDialogChangeClick,
-        onAddItemImageClick = mainViewModel::onAddItemImageClick,
         onSelectMapImageClick = mainViewModel::onSelectMapImageClick,
-        worldDataDelete = mainViewModel::worldDataDelete,
         onAddPatClick = mainViewModel::onAddPatClick,
         onAddItemClick = mainViewModel::onAddItemClick,
 
         mapUrl = mainState.mapData.value,
         patDataList = mainState.patDataList,
-        patWorldDataList = mainState.patWorldDataList,
         itemDataList = mainState.itemDataList,
-        itemWorldDataList = mainState.itemWorldDataList,
         dialogPatId = mainState.dialogPatId,
-        dialogItemId = mainState.dialogItemId,
         worldChange = mainState.worldChange,
         showWorldAddDialog = mainState.showWorldAddDialog,
-        allPatDataList = mainState.allPatDataList,
-        allItemDataList = mainState.allItemDataList,
         userFlowDataList = mainState.userFlowDataList,
         addDialogChange = mainState.addDialogChange,
         mapWorldData = it,
@@ -135,38 +119,21 @@ fun MainScreen(
     onThirdGameNavigateClick: () -> Unit,
 
     dialogPatIdChange: (String) -> Unit,
-    dialogItemIdChange: (String) -> Unit,
     onWorldChangeClick: () -> Unit,
     onWorldSelectClick: () -> Unit,
     loadData: () -> Unit,
-    patWorldDataDelete: (String) -> Unit,
-    itemWorldDataDelete: (String) -> Unit,
-    onPatSizeUpClick: () -> Unit,
-    onItemSizeUpClick: () -> Unit,
-    onPatSizeDownClick: () -> Unit,
-    onItemSizeDownClick: () -> Unit,
     onShowAddDialogClick: () -> Unit,
-    onAddPatImageClick: (String) -> Unit,
-    onItemDrag: (String, Float, Float) -> Unit,
-    onPatDrag: (String, Float, Float) -> Unit,
     onAddDialogChangeClick: () -> Unit,
-    onAddItemImageClick: (String) -> Unit,
     onSelectMapImageClick: (String) -> Unit,
     onAddPatClick: (String) -> Unit,
     onAddItemClick: (String) -> Unit,
-    worldDataDelete: (String, String) -> Unit,
 
     mapUrl: String,
     patDataList: List<Pat>,
-    patWorldDataList: List<World>,
     itemDataList: List<Item>,
-    itemWorldDataList: List<World>,
     dialogPatId: String,
-    dialogItemId: String,
     worldChange: Boolean,
     showWorldAddDialog: Boolean,
-    allPatDataList: List<Pat>,
-    allItemDataList: List<Item>,
     userFlowDataList: Flow<List<User>>,
     addDialogChange: String,
     mapWorldData: World,
@@ -188,14 +155,10 @@ fun MainScreen(
             if (showWorldAddDialog) {
                 WorldAddDialog(
                     onClose = onShowAddDialogClick,
-                    allPatDataList = allPatDataList,
-                    patWorldDataList = patWorldDataList,
-                    allItemDataList = allItemDataList,
-                    itemWorldDataList = itemWorldDataList,
-                    worldDataDelete = worldDataDelete,
+                    allPatDataList = patDataList,
+                    allItemDataList = itemDataList,
                     addDialogChange = addDialogChange,
                     onAddDialogChangeClick = onAddDialogChangeClick,
-                    onAddItemImageClick = onAddItemImageClick,
                     onSelectMapImageClick = onSelectMapImageClick,
                     mapWorldData = mapWorldData,
                     allMapDataList = allMapDataList,
@@ -239,7 +202,7 @@ fun MainScreen(
                         horizontalArrangement = Arrangement.End
                     ) {
                         Text("Pat ${userDataList.find { it.id == "pat" }?.value3} / ${userDataList.find { it.id == "pat" }?.value2}  " +
-                                "Item ${itemWorldDataList.count { it.value != "0" }} / ${itemWorldDataList.count { it.open == "1" }}")
+                                "Item ${userDataList.find { it.id == "item" }?.value3} / ${userDataList.find { it.id == "item" }?.value2}")
                     }
                 } else {
                     Row(
@@ -261,34 +224,21 @@ fun MainScreen(
                     }
                 }
 
-                WorldScreen(
+
+                WorldViewScreen(
                     mapUrl = mapUrl,
                     patDataList = patDataList,
-                    patWorldDataList = patWorldDataList,
                     itemDataList = itemDataList,
-                    itemWorldDataList = itemWorldDataList,
                     dialogPatId = dialogPatId,
-                    dialogItemId = dialogItemId,
                     dialogPatIdChange = dialogPatIdChange,
-                    dialogItemIdChange = dialogItemIdChange,
                     onFirstGameNavigateClick = onFirstGameNavigateClick,
                     onSecondGameNavigateClick = onSecondGameNavigateClick,
                     onThirdGameNavigateClick = onThirdGameNavigateClick,
-                    worldChange = worldChange,
-                    patWorldDataDelete = patWorldDataDelete,
-                    itemWorldDataDelete = itemWorldDataDelete,
-                    onPatSizeDownClick = onPatSizeDownClick,
-                    onItemSizeDownClick = onItemSizeDownClick,
-                    onPatSizeUpClick = onPatSizeUpClick,
-                    onItemSizeUpClick = onItemSizeUpClick,
-                    onItemDrag = onItemDrag,
-                    onPatDrag = onPatDrag,
                     patFlowWorldDataList = patFlowWorldDataList,
                     worldDataList = worldDataList,
-                    worldDataDelete = worldDataDelete,
-                    onAddPatClick = onAddPatClick,
-                    onAddItemClick = onAddItemClick
                 )
+
+
             }
 
             if(worldChange) {
@@ -394,42 +344,25 @@ fun MainScreenPreview() {
             onThirdGameNavigateClick = {},
             mapUrl = "map/forest.jpg",
             patDataList = listOf(Pat(url = "pat/cat.json")),
-            patWorldDataList = listOf(World(id = "pat1")),
             itemDataList = listOf(Item(url = "item/table.png")),
-            itemWorldDataList = listOf(World(id = "item1")),
             dialogPatId = "0",
-            dialogItemId = "0",
             dialogPatIdChange = { },
-            dialogItemIdChange = {},
             onWorldChangeClick = {},
             worldChange = false,
             onWorldSelectClick = {},
             loadData = {},
-            patWorldDataDelete = {},
-            itemWorldDataDelete = {},
-            onItemSizeUpClick = {},
-            onPatSizeUpClick = {},
-            onItemSizeDownClick = {},
-            onPatSizeDownClick = {},
             showWorldAddDialog = false,
             onShowAddDialogClick = {},
-            allPatDataList = listOf(Pat(url = "pat/cat.json")),
-            onAddPatImageClick = {},
             userFlowDataList = flowOf(listOf(User(id = "money", value = "1000"), User(id = "cash", value = "100"))),
-            onItemDrag = { id, newX, newY -> },
-            onPatDrag = { id, newX, newY -> },
-            allItemDataList = listOf(Item(url = "item/table.png")),
             onAddDialogChangeClick = {},
             addDialogChange = "map",
-            onAddItemImageClick = {},
             allMapDataList = listOf(Item(url = "item/table.png")),
-            mapWorldData = World(id = "1"),
+            mapWorldData = World(id = 1),
             onSelectMapImageClick = {},
             patFlowWorldDataList = flowOf(emptyList()),
             worldDataList = emptyList(),
             onAddItemClick = {},
             onAddPatClick = {},
-            worldDataDelete = {_, _ ->},
             userDataList = emptyList(),
         )
     }

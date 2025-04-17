@@ -120,17 +120,16 @@ class StoreViewModel @Inject constructor(
     fun onPatRoomUpClick() = intent {
         val moneyField = state.userData.find { it.id == "money" }
         val patRoomField = state.userData.find { it.id == "pat" }
-        val firstField = state.patWorldDataList.find { it.open == "0" }
+        val emptyRoom = patRoomField?.value2!!.toInt() > patRoomField.value3.toInt()
 
+        //돈 있는지
         if(moneyField!!.value.toInt() >= 10) {
-            if(patRoomField!!.value.toInt() > patRoomField.value2.toInt()) {
-                patRoomField.value2 = (patRoomField.value2.toInt() + 1).toString()
-                moneyField.value = (moneyField.value.toInt() - 10).toString()
-                firstField!!.open = "1"
 
-                userDao.update(id = patRoomField.id, value2 = patRoomField.value2)
-                userDao.update(id = moneyField.id, value = moneyField.value)
-                worldDao.update(firstField)
+            //빈방 있는지
+            if(emptyRoom) {
+
+                userDao.update(id = "pat", value3 = (patRoomField.value3.toInt() + 1).toString())
+                userDao.update(id = moneyField.id, value = (moneyField.value.toInt() - 10).toString())
                 reduce {
                     state.copy(
                         showDialog = "pat"
@@ -150,17 +149,16 @@ class StoreViewModel @Inject constructor(
     fun onItemRoomUpClick() = intent {
         val moneyField = state.userData.find { it.id == "money" }
         val itemRoomField = state.userData.find { it.id == "item" }
-        val firstField = state.itemWorldDataList.find { it.open == "0" }
+        val emptyRoom = itemRoomField?.value2!!.toInt() > itemRoomField.value3.toInt()
 
+        //돈 있는지
         if(moneyField!!.value.toInt() >= 10) {
-            if(itemRoomField!!.value.toInt() > itemRoomField.value2.toInt()) {
-                itemRoomField.value2 = (itemRoomField.value2.toInt() + 1).toString()
-                moneyField.value = (moneyField.value.toInt() - 10).toString()
-                firstField!!.open = "1"
 
-                userDao.update(id = itemRoomField.id, value2 = itemRoomField.value2)
-                userDao.update(id = moneyField.id, value = moneyField.value)
-                worldDao.update(firstField)
+            //빈방 있는지
+            if(emptyRoom) {
+
+                userDao.update(id = "item", value3 = (itemRoomField.value3.toInt() + 1).toString())
+                userDao.update(id = moneyField.id, value = (moneyField.value.toInt() - 10).toString())
                 reduce {
                     state.copy(
                         showDialog = "item"
@@ -174,7 +172,6 @@ class StoreViewModel @Inject constructor(
         } else {
             postSideEffect(StoreSideEffect.Toast("돈이 부족합니다!"))
         }
-
     }
 
     fun onNameChangeConfirm() = intent {

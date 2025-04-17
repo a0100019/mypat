@@ -36,13 +36,9 @@ import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 fun WorldAddDialog(
     onClose: () -> Unit,
     allPatDataList: List<Pat>,
-    patWorldDataList: List<World>,
     allItemDataList: List<Item>,
-    itemWorldDataList: List<World>,
     allMapDataList: List<Item>,
     mapWorldData: World,
-    worldDataDelete: (String, String) -> Unit,
-    onAddItemImageClick: (String) -> Unit,
     onSelectMapImageClick: (String) -> Unit,
     onAddDialogChangeClick: () -> Unit,
     addDialogChange: String,
@@ -50,19 +46,6 @@ fun WorldAddDialog(
     onAddPatClick: (String) -> Unit,
     onAddItemClick: (String) -> Unit,
 ) {
-
-    val openCount = when (addDialogChange) {
-        "pat" -> patWorldDataList.count { it.type == "pat" && it.open == "1" }
-        "item" -> itemWorldDataList.count { it.type == "item" && it.open == "1" }
-        else -> itemWorldDataList.count { it.type == "map" && it.open == "1" }
-    }
-
-
-    val useCount = when (addDialogChange) {
-        "pat" -> patWorldDataList.count { it.type == "pat" && it.value != "0" }
-        "item" -> itemWorldDataList.count { it.type == "item" && it.value != "0" }
-        else -> itemWorldDataList.count { it.type == "map" && it.value != "0" }
-    }
 
     Dialog(
         onDismissRequest = onClose
@@ -77,7 +60,6 @@ fun WorldAddDialog(
             Column(modifier = Modifier.fillMaxSize()) {
 
                 Text(addDialogChange)
-                Text("${useCount}/${openCount}")
                 Box(
                     modifier = Modifier
                         .weight(1f)
@@ -184,15 +166,11 @@ fun WorldAddDialogPreview() {
         WorldAddDialog(
             onClose = {},
             allPatDataList = listOf(Pat(url = "pat/cat.json", name = "고양이"), Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json")),
-            patWorldDataList = listOf(World(id = "pat1", value = "1", open = "1", type = "pat"), World(id = "pat2", value = "2", open = "1", type = "pat"), World(id = "pat3", value = "0", open = "1", type = "pat")),
-            worldDataDelete = {_, _ -> },
             allItemDataList = listOf(Item(url = "item/table.png", name = "책상")),
-            itemWorldDataList = listOf(World(id = "item1", value = "1", open = "1", type = "item")),
             addDialogChange = "pat",
             onAddDialogChangeClick = {},
-            onAddItemImageClick = {},
             allMapDataList = listOf(Item(url = "item/table.png")),
-            mapWorldData = World(id = "1"),
+            mapWorldData = World(id = 1),
             onSelectMapImageClick = {},
             worldDataList = emptyList(),
             onAddItemClick = {},

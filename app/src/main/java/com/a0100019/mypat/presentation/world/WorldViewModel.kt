@@ -1,5 +1,4 @@
-package com.a0100019.mypat.presentation.main
-
+package com.a0100019.mypat.presentation.world
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -30,20 +29,20 @@ import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor(
+class WorldViewModel @Inject constructor(
     private val userDao: UserDao,
     private val worldDao: WorldDao,
     private val patDao: PatDao,
     private val itemDao: ItemDao
 
-) : ViewModel(), ContainerHost<MainState, MainSideEffect> {
+) : ViewModel(), ContainerHost<WorldState, WorldSideEffect> {
 
-    override val container: Container<MainState, MainSideEffect> = container(
-        initialState = MainState(),
+    override val container: Container<WorldState, WorldSideEffect> = container(
+        initialState = WorldState(),
         buildSettings = {
             this.exceptionHandler = CoroutineExceptionHandler { _ , throwable ->
                 intent {
-                    postSideEffect(MainSideEffect.Toast(message = throwable.message.orEmpty()))
+                    postSideEffect(WorldSideEffect.Toast(message = throwable.message.orEmpty()))
                 }
             }
         }
@@ -97,7 +96,7 @@ class MainViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 Log.e("DataLoadError", "데이터 로드 중 에러 발생: ${e.message}", e)
-                postSideEffect(MainSideEffect.Toast("데이터 로드 에러"))
+                postSideEffect(WorldSideEffect.Toast("데이터 로드 에러"))
             }
 
         }
@@ -133,6 +132,12 @@ class MainViewModel @Inject constructor(
         userDao.update(id = "selectPat", value = clickId)
         reduce {
             state.copy(dialogPatId = clickId)
+        }
+    }
+
+    fun dialogItemIdChange(clickId : String) = intent {
+        reduce {
+            state.copy(dialogItemId = clickId)
         }
     }
 
@@ -221,7 +226,7 @@ class MainViewModel @Inject constructor(
                 }
 
             } else {
-                postSideEffect(MainSideEffect.Toast("공간이 부족합니다!"))
+                postSideEffect(WorldSideEffect.Toast("공간이 부족합니다!"))
             }
 
         }
@@ -268,12 +273,105 @@ class MainViewModel @Inject constructor(
                 }
 
             } else {
-                postSideEffect(MainSideEffect.Toast("공간이 부족합니다!"))
+                postSideEffect(WorldSideEffect.Toast("공간이 부족합니다!"))
             }
 
         }
 
     }
+
+    fun onItemDrag(itemId: String, newX: Float, newY: Float) = intent {
+        val targetItem = state.itemDataList.find { it.id.toString() == itemId }
+        if (targetItem != null) {
+            val updatedItem = targetItem.copy(x = newX, y = newY)
+            val updatedItemDataList = state.itemDataList.toMutableList().apply {
+                set(indexOf(targetItem), updatedItem)
+            }
+
+            reduce {
+                state.copy(itemDataList = updatedItemDataList)
+            }
+        }
+    }
+
+    fun onPatDrag(patId: String, newX: Float, newY: Float) = intent {
+        val targetPat = state.patDataList.find { it.id.toString() == patId }
+        if (targetPat != null) {
+            val updatedPat = targetPat.copy(x = newX, y = newY)
+            val updatedPatDataList = state.patDataList.toMutableList().apply {
+                set(indexOf(targetPat), updatedPat)
+            }
+
+            reduce {
+                state.copy(patDataList = updatedPatDataList)
+            }
+        }
+    }
+
+
+
+    fun onPatSizeUpClick() = intent {
+        val targetPat = state.patDataList.find { it.id.toString() == state.dialogPatId }!!
+        val maxSize = targetPat.minFloat * 4 // 최대 크기 계산
+        val updatedSize = (targetPat.sizeFloat + 0.1f).coerceAtMost(maxSize) // 크기를 제한
+
+        val updatedPat = targetPat.copy(sizeFloat = updatedSize)
+        val updatedPatDataList = state.patDataList.toMutableList().apply {
+            set(indexOf(targetPat), updatedPat)
+        }
+
+        reduce {
+            state.copy(patDataList = updatedPatDataList)
+        }
+    }
+
+    fun onItemSizeUpClick() = intent {
+        val targetItem = state.itemDataList.find { it.id.toString() == state.dialogItemId }!!
+        val maxSize = targetItem.minFloat * 4 // 최대 크기 계산
+        val updatedSize = (targetItem.sizeFloat + 0.1f).coerceAtMost(maxSize) // 크기를 제한
+
+        val updatedItem = targetItem.copy(sizeFloat = updatedSize)
+        val updatedItemDataList = state.itemDataList.toMutableList().apply {
+            set(indexOf(targetItem), updatedItem)
+        }
+
+        reduce {
+            state.copy(itemDataList = updatedItemDataList)
+        }
+
+
+    }
+
+    fun onPatSizeDownClick() =  intent {
+        val targetPat = state.patDataList.find { it.id.toString() == state.dialogPatId }!!
+        val minSize = targetPat.minFloat // 최소 크기
+        val updatedSize = (targetPat.sizeFloat - 0.1f).coerceAtLeast(minSize) // 크기를 제한
+
+        val updatedPat = targetPat.copy(sizeFloat = updatedSize)
+        val updatedPatDataList = state.patDataList.toMutableList().apply {
+            set(indexOf(targetPat), updatedPat)
+        }
+
+        reduce {
+            state.copy(patDataList = updatedPatDataList)
+        }
+    }
+
+    fun onItemSizeDownClick() =  intent {
+        val targetItem = state.itemDataList.find { it.id.toString() == state.dialogItemId }!!
+        val minSize = targetItem.minFloat // 최소 크기
+        val updatedSize = (targetItem.sizeFloat - 0.1f).coerceAtLeast(minSize) // 크기를 제한
+
+        val updatedItem = targetItem.copy(sizeFloat = updatedSize)
+        val updatedItemDataList = state.itemDataList.toMutableList().apply {
+            set(indexOf(targetItem), updatedItem)
+        }
+
+        reduce {
+            state.copy(itemDataList = updatedItemDataList)
+        }
+    }
+
 
     fun onSelectMapImageClick(mapId: String) = intent {
         val newUrl = state.allMapDataList.find { it.id == mapId.toInt() }?.url ?: ""
@@ -288,7 +386,7 @@ class MainViewModel @Inject constructor(
 }
 
 @Immutable
-data class MainState(
+data class WorldState(
     val userFlowDataList: Flow<List<User>> = flowOf(emptyList()),
     val patDataList: List<Pat> = emptyList(),
     val itemDataList: List<Item> = emptyList(),
@@ -307,6 +405,6 @@ data class MainState(
     )
 
 //상태와 관련없는 것
-sealed interface MainSideEffect{
-    class Toast(val message:String): MainSideEffect
+sealed interface WorldSideEffect{
+    class Toast(val message:String): WorldSideEffect
 }

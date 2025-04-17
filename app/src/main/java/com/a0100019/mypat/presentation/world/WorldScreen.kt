@@ -1,4 +1,4 @@
-package com.a0100019.mypat.presentation.main
+package com.a0100019.mypat.presentation.world
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -10,6 +10,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,10 +36,8 @@ import kotlinx.coroutines.flow.flowOf
 @Composable
 fun WorldScreen(
     patDataList : List<Pat>,
-    patWorldDataList : List<World>,
     patFlowWorldDataList : Flow<List<Pat>>,
     itemDataList : List<Item>,
-    itemWorldDataList : List<World>,
     worldDataList : List<World>,
 
     dialogPatId : String,
@@ -51,8 +50,6 @@ fun WorldScreen(
     onFirstGameNavigateClick: () -> Unit,
     onSecondGameNavigateClick: () -> Unit,
     onThirdGameNavigateClick: () -> Unit,
-    patWorldDataDelete: (String) -> Unit,
-    itemWorldDataDelete: (String) -> Unit,
     onPatSizeUpClick: () -> Unit,
     onItemSizeUpClick: () -> Unit,
     onPatSizeDownClick: () -> Unit,
@@ -60,8 +57,6 @@ fun WorldScreen(
     onItemDrag: (String, Float, Float) -> Unit,
     onPatDrag: (String, Float, Float) -> Unit,
     worldDataDelete: (String, String) -> Unit,
-    onAddPatClick: (String) -> Unit,
-    onAddItemClick: (String) -> Unit,
 ) {
 
     Surface(
@@ -136,67 +131,66 @@ fun WorldScreen(
                 val surfaceWidthDp = with(density) { surfaceWidth.toDp() }
                 val surfaceHeightDp = with(density) { surfaceHeight.toDp() }
 
-                worldDataList.forEach { worldData ->
-                    if(worldData.type == "pat") {
-
-                        patDataList.find { it.id.toString() == worldData.value }?.let { patData ->
-                            if(worldChange) {
-                                DraggablePatImage(
-                                    worldIndex = worldData.id,
-                                    patUrl = patData.url,
-                                    surfaceWidthDp = surfaceWidthDp,
-                                    surfaceHeightDp = surfaceHeightDp,
-                                    xFloat = patData.x,
-                                    yFloat = patData.y,
-                                    sizeFloat = patData.sizeFloat,
-                                    onClick = { dialogPatIdChange(patData.id.toString()) }
-                                ) { newXFloat, newYFloat ->
-                                    onPatDrag(patData.id.toString(), newXFloat, newYFloat)
+                worldDataList.forEachIndexed { index, worldData ->
+                    key("${worldData.id}_${worldData.type}") {
+                        if (worldData.type == "pat") {
+                            patDataList.find { it.id.toString() == worldData.value }?.let { patData ->
+                                if (worldChange) {
+                                    DraggablePatImage(
+                                        worldIndex = index.toString(),
+                                        patUrl = patData.url,
+                                        surfaceWidthDp = surfaceWidthDp,
+                                        surfaceHeightDp = surfaceHeightDp,
+                                        xFloat = patData.x,
+                                        yFloat = patData.y,
+                                        sizeFloat = patData.sizeFloat,
+                                        onClick = { dialogPatIdChange(patData.id.toString()) }
+                                    ) { newXFloat, newYFloat ->
+                                        onPatDrag(patData.id.toString(), newXFloat, newYFloat)
+                                    }
+                                } else {
+                                    PatImage(
+                                        patUrl = patData.url,
+                                        surfaceWidthDp = surfaceWidthDp,
+                                        surfaceHeightDp = surfaceHeightDp,
+                                        xFloat = patData.x,
+                                        yFloat = patData.y,
+                                        sizeFloat = patData.sizeFloat,
+                                        onClick = { dialogPatIdChange(patData.id.toString()) }
+                                    )
                                 }
-                            } else {
-                                PatImage(
-                                    patUrl = patData.url,
-                                    surfaceWidthDp = surfaceWidthDp,
-                                    surfaceHeightDp = surfaceHeightDp,
-                                    xFloat = patData.x,
-                                    yFloat = patData.y,
-                                    sizeFloat = patData.sizeFloat,
-                                    onClick = { dialogPatIdChange(patData.id.toString()) }
-                                )
+                            }
+                        } else {
+                            itemDataList.find { it.id.toString() == worldData.value }?.let { itemData ->
+                                if (worldChange) {
+                                    DraggableItemImage(
+                                        worldIndex = index.toString(),
+                                        itemUrl = itemData.url,
+                                        surfaceWidthDp = surfaceWidthDp,
+                                        surfaceHeightDp = surfaceHeightDp,
+                                        xFloat = itemData.x,
+                                        yFloat = itemData.y,
+                                        sizeFloat = itemData.sizeFloat,
+                                        onClick = { dialogItemIdChange(itemData.id.toString()) }
+                                    ) { newXFloat, newYFloat ->
+                                        onItemDrag(itemData.id.toString(), newXFloat, newYFloat)
+                                    }
+                                } else {
+                                    WorldItemImage(
+                                        itemUrl = itemData.url,
+                                        surfaceWidthDp = surfaceWidthDp,
+                                        surfaceHeightDp = surfaceHeightDp,
+                                        xFloat = itemData.x,
+                                        yFloat = itemData.y,
+                                        sizeFloat = itemData.sizeFloat
+                                    )
+                                }
                             }
                         }
-
-                    } else {
-
-                        itemDataList.find { it.id.toString() == worldData.value }?.let { itemData ->
-                            if(worldChange) {
-                                DraggableItemImage(
-                                    itemUrl = itemData.url,
-                                    surfaceWidthDp = surfaceWidthDp,
-                                    surfaceHeightDp = surfaceHeightDp,
-                                    xFloat = itemData.x,
-                                    yFloat = itemData.y,
-                                    sizeFloat = itemData.sizeFloat,
-                                    onClick = { dialogItemIdChange(itemData.id.toString()) }
-                                ) { newXFloat, newYFloat ->
-                                    onItemDrag(itemData.id.toString(), newXFloat, newYFloat)
-                                }
-                            } else {
-                                WorldItemImage(
-                                    itemUrl = itemData.url,
-                                    surfaceWidthDp = surfaceWidthDp,
-                                    surfaceHeightDp = surfaceHeightDp,
-                                    xFloat = itemData.x,
-                                    yFloat = itemData.y,
-                                    sizeFloat = itemData.sizeFloat
-                                )
-                            }
-
-                        }
-
                     }
-
                 }
+
+
 
             }
 
@@ -215,9 +209,7 @@ fun SelectScreenPreview() {
         WorldScreen(
             mapUrl = "map/beach.jpg",
             patDataList = listOf(Pat(url = "pat/cat.json")),
-            patWorldDataList = listOf(World(id = "pat1")),
             itemDataList = listOf(Item(url = "item/table.png")),
-            itemWorldDataList = listOf(World(id = "item1")),
             dialogPatId = "0",
             dialogItemId = "0",
             dialogPatIdChange = { },
@@ -226,8 +218,6 @@ fun SelectScreenPreview() {
             onSecondGameNavigateClick = { },
             onThirdGameNavigateClick = { },
             worldChange = false,
-            patWorldDataDelete = { },
-            itemWorldDataDelete = {},
             onPatSizeUpClick = {  },
             onItemSizeUpClick = {},
             onPatSizeDownClick = {  },
@@ -237,8 +227,6 @@ fun SelectScreenPreview() {
             patFlowWorldDataList = flowOf(emptyList()),
             worldDataList = emptyList(),
             worldDataDelete = {_, _ ->},
-            onAddPatClick = {},
-            onAddItemClick = {}
         )
     }
 }

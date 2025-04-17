@@ -50,7 +50,7 @@ class InformationViewModel @Inject constructor(
     private fun loadData() = intent {
 
         // 맵 데이터 가져오기
-        val mapData = worldDao.getWorldDataById("map")
+        val mapData = worldDao.getWorldDataById(1)
 
         // 펫 월드 데이터 리스트 가져오기
         val patWorldDataList = worldDao.getWorldDataListByType(type = "pat") ?: emptyList()
