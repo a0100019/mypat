@@ -43,18 +43,18 @@ fun MainScreen(
     onInformationNavigateClick: () -> Unit,
     onCommunityNavigateClick: () -> Unit,
     onSettingNavigateClick: () -> Unit,
+    onWorldNavigateClick: () -> Unit,
     onFirstGameNavigateClick: () -> Unit,
     onSecondGameNavigateClick: () -> Unit,
     onThirdGameNavigateClick: () -> Unit,
 
-
     ) {
-
 
     val mainState : MainState = mainViewModel.collectAsState().value
 
     val context = LocalContext.current
 
+    //뷰모델 거치는 navigate만 여기 작성
     mainViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
             is MainSideEffect.Toast -> Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
@@ -62,11 +62,8 @@ fun MainScreen(
         }
     }
 
+    MainScreen(
 
-
-
-    mainState.mapData?.let {
-        MainScreen(
         onDailyNavigateClick = onDailyNavigateClick,
         onIndexNavigateClick = onIndexNavigateClick,
         onStoreNavigateClick = onStoreNavigateClick,
@@ -76,33 +73,20 @@ fun MainScreen(
         onFirstGameNavigateClick = onFirstGameNavigateClick,
         onSecondGameNavigateClick = onSecondGameNavigateClick,
         onThirdGameNavigateClick = onThirdGameNavigateClick,
+        onWorldNavigateClick = onWorldNavigateClick,
 
         dialogPatIdChange = mainViewModel::dialogPatIdChange,
-        onWorldChangeClick = mainViewModel::onWorldChangeClick,
-        onWorldSelectClick = mainViewModel::onWorldSelectClick,
-        loadData = mainViewModel::loadData,
-        onShowAddDialogClick = mainViewModel::onShowAddDialogClick,
-        onAddDialogChangeClick = mainViewModel::onAddDialogChangeClick,
-        onSelectMapImageClick = mainViewModel::onSelectMapImageClick,
-        onAddPatClick = mainViewModel::onAddPatClick,
-        onAddItemClick = mainViewModel::onAddItemClick,
 
         mapUrl = mainState.mapData.value,
         patDataList = mainState.patDataList,
         itemDataList = mainState.itemDataList,
         dialogPatId = mainState.dialogPatId,
-        worldChange = mainState.worldChange,
-        showWorldAddDialog = mainState.showWorldAddDialog,
         userFlowDataList = mainState.userFlowDataList,
-        addDialogChange = mainState.addDialogChange,
-        mapWorldData = it,
-        allMapDataList = mainState.allMapDataList,
         patFlowWorldDataList = mainState.patFlowWorldDataList,
         worldDataList = mainState.worldDataList,
         userDataList = mainState.userDataList
 
     )
-    }
 
 }
 
@@ -112,6 +96,7 @@ fun MainScreen(
     onStoreNavigateClick: () -> Unit,
     onIndexNavigateClick: () -> Unit,
     onSettingNavigateClick: () -> Unit,
+    onWorldNavigateClick: () -> Unit,
     onInformationNavigateClick: () -> Unit,
     onCommunityNavigateClick: () -> Unit,
     onFirstGameNavigateClick: () -> Unit,
@@ -119,25 +104,12 @@ fun MainScreen(
     onThirdGameNavigateClick: () -> Unit,
 
     dialogPatIdChange: (String) -> Unit,
-    onWorldChangeClick: () -> Unit,
-    onWorldSelectClick: () -> Unit,
-    loadData: () -> Unit,
-    onShowAddDialogClick: () -> Unit,
-    onAddDialogChangeClick: () -> Unit,
-    onSelectMapImageClick: (String) -> Unit,
-    onAddPatClick: (String) -> Unit,
-    onAddItemClick: (String) -> Unit,
 
     mapUrl: String,
     patDataList: List<Pat>,
     itemDataList: List<Item>,
     dialogPatId: String,
-    worldChange: Boolean,
-    showWorldAddDialog: Boolean,
     userFlowDataList: Flow<List<User>>,
-    addDialogChange: String,
-    mapWorldData: World,
-    allMapDataList: List<Item>,
     patFlowWorldDataList: Flow<List<Pat>>,
     worldDataList: List<World>,
     userDataList: List<User>,
@@ -151,79 +123,47 @@ fun MainScreen(
             verticalArrangement = Arrangement.SpaceBetween
         ){
 
-            // 다이얼로그 표시
-            if (showWorldAddDialog) {
-                WorldAddDialog(
-                    onClose = onShowAddDialogClick,
-                    allPatDataList = patDataList,
-                    allItemDataList = itemDataList,
-                    addDialogChange = addDialogChange,
-                    onAddDialogChangeClick = onAddDialogChangeClick,
-                    onSelectMapImageClick = onSelectMapImageClick,
-                    mapWorldData = mapWorldData,
-                    allMapDataList = allMapDataList,
-                    worldDataList = worldDataList,
-                    onAddItemClick = onAddItemClick,
-                    onAddPatClick = onAddPatClick
-                )
-            }
-
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(10.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                if(!worldChange){
-                    Button(
-                        onClick = onInformationNavigateClick
-                    ) {
-                        Text("내 정보")
-                    }
-
-                    val users by userFlowDataList.collectAsState(initial = emptyList())
-                    Text("money : ${users.find { it.id == "money" }?.value} | cash : ${users.find { it.id == "money" }?.value2}")
-
-                    Button(
-                        onClick = onSettingNavigateClick
-                    ) {
-                        Text("설정")
-                    }
+                Button(
+                    onClick = onInformationNavigateClick
+                ) {
+                    Text("내 정보")
                 }
+
+                val users by userFlowDataList.collectAsState(initial = emptyList())
+                Text("money : ${users.find { it.id == "money" }?.value} | cash : ${users.find { it.id == "money" }?.value2}")
+
+                Button(
+                    onClick = onSettingNavigateClick
+                ) {
+                    Text("설정")
+                }
+
             }
 
             Column {
-                if(worldChange) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(end = 10.dp),
-                        horizontalArrangement = Arrangement.End
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(end = 10.dp),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    Button(
+                        onClick = onCommunityNavigateClick
                     ) {
-                        Text("Pat ${userDataList.find { it.id == "pat" }?.value3} / ${userDataList.find { it.id == "pat" }?.value2}  " +
-                                "Item ${userDataList.find { it.id == "item" }?.value3} / ${userDataList.find { it.id == "item" }?.value2}")
+                        Text("커뮤니티")
                     }
-                } else {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(end = 10.dp),
-                        horizontalArrangement = Arrangement.End
+                    Button(
+                        onClick = onWorldNavigateClick
                     ) {
-                        Button(
-                            onClick = onCommunityNavigateClick
-                        ) {
-                            Text("커뮤니티")
-                        }
-                        Button(
-                            onClick = onWorldChangeClick
-                        ) {
-                            Text("꾸미기 모드")
-                        }
+                        Text("꾸미기 모드")
                     }
                 }
-
 
                 WorldViewScreen(
                     mapUrl = mapUrl,
@@ -241,87 +181,42 @@ fun MainScreen(
 
             }
 
-            if(worldChange) {
-                Column {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Button(
-                            modifier = Modifier
-                                .fillMaxWidth(0.5f),
-                            onClick = onShowAddDialogClick
-                        ) {
-                            Text("추가 하기")
-                        }
-                    }
 
-                    Row(
+            Column {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Button(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 10.dp),
-                        horizontalArrangement = Arrangement.SpaceEvenly
+                            .fillMaxWidth(0.5f),
+                        onClick = onDailyNavigateClick
                     ) {
-                        Button(
-                            modifier = Modifier,
-                            onClick = {
-                                onWorldChangeClick()
-                                loadData()
-                            }
-                        ) {
-                            Text("취소")
-                        }
-                        Button(
-                            modifier = Modifier,
-                            onClick = {
-                                onWorldSelectClick()
-                                onWorldChangeClick()
-                                loadData()
-                            }
-                        ) {
-                            Text("확인")
-                        }
+                        Text("일일 루틴")
                     }
-
                 }
-            } else {
-                Column {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Button(
-                            modifier = Modifier
-                                .fillMaxWidth(0.5f),
-                            onClick = onDailyNavigateClick
-                        ) {
-                            Text("일일 루틴")
-                        }
-                    }
 
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 10.dp),
-                        horizontalArrangement = Arrangement.SpaceEvenly
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 10.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    Button(
+                        modifier = Modifier,
+                        onClick = onStoreNavigateClick
                     ) {
-                        Button(
-                            modifier = Modifier,
-                            onClick = onStoreNavigateClick
-                        ) {
-                            Text("상점")
-                        }
-                        Button(
-                            modifier = Modifier,
-                            onClick = onIndexNavigateClick
-                        ) {
-                            Text("도감")
-                        }
+                        Text("상점")
                     }
-
+                    Button(
+                        modifier = Modifier,
+                        onClick = onIndexNavigateClick
+                    ) {
+                        Text("도감")
+                    }
                 }
+
             }
 
         }
@@ -337,6 +232,7 @@ fun MainScreenPreview() {
             onIndexNavigateClick = {},
             onStoreNavigateClick = {},
             onInformationNavigateClick = {},
+            onWorldNavigateClick = {},
             onCommunityNavigateClick = {},
             onSettingNavigateClick = {},
             onFirstGameNavigateClick = {},
@@ -347,22 +243,9 @@ fun MainScreenPreview() {
             itemDataList = listOf(Item(url = "item/table.png")),
             dialogPatId = "0",
             dialogPatIdChange = { },
-            onWorldChangeClick = {},
-            worldChange = false,
-            onWorldSelectClick = {},
-            loadData = {},
-            showWorldAddDialog = false,
-            onShowAddDialogClick = {},
             userFlowDataList = flowOf(listOf(User(id = "money", value = "1000"), User(id = "cash", value = "100"))),
-            onAddDialogChangeClick = {},
-            addDialogChange = "map",
-            allMapDataList = listOf(Item(url = "item/table.png")),
-            mapWorldData = World(id = 1),
-            onSelectMapImageClick = {},
             patFlowWorldDataList = flowOf(emptyList()),
             worldDataList = emptyList(),
-            onAddItemClick = {},
-            onAddPatClick = {},
             userDataList = emptyList(),
         )
     }

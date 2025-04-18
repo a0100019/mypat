@@ -102,15 +102,6 @@ class WorldViewModel @Inject constructor(
         }
     }
 
-
-
-    fun onWorldChangeClick() = intent {
-        reduce {
-            state.copy(worldChange = !state.worldChange) // true/false 토글
-        }
-        loadData()
-    }
-
     fun onAddDialogChangeClick() = intent {
         val newValue = when(state.addDialogChange) {
             "pat" -> "item"
@@ -152,9 +143,11 @@ class WorldViewModel @Inject constructor(
         state.worldDataList.forEach { world ->
             worldDao.insert(world)
         }
-        state.mapData?.let { worldDao.update(it) }
+        state.mapData.let { worldDao.update(it) }
         userDao.updateUsers(state.userDataList)
-        loadData()
+
+        postSideEffect(WorldSideEffect.NavigateToMainScreen)
+
     }
 
     fun worldDataDelete(id: String, type: String) = intent {
@@ -378,7 +371,7 @@ class WorldViewModel @Inject constructor(
 
         reduce {
             state.copy(
-                mapData = state.mapData?.copy(value = newUrl) // 기존 객체를 유지하면서 value만 변경
+                mapData = state.mapData.copy(value = newUrl) // 기존 객체를 유지하면서 value만 변경
             )
         }
     }
@@ -395,11 +388,10 @@ data class WorldState(
     val worldDataList: List<World> = emptyList(),
     val userDataList: List<User> = emptyList(),
 
-    val mapData: World? = null,
+    val mapData: World = World(),
     val dialogPatId: String = "0",
     val dialogItemId: String = "0",
     val showWorldAddDialog: Boolean = false,
-    val worldChange: Boolean = false,
     val addDialogChange: String = "pat",
 
     )
@@ -407,4 +399,7 @@ data class WorldState(
 //상태와 관련없는 것
 sealed interface WorldSideEffect{
     class Toast(val message:String): WorldSideEffect
+
+    object NavigateToMainScreen : WorldSideEffect
+
 }

@@ -26,6 +26,7 @@ import com.a0100019.mypat.presentation.main.MainScreen
 import com.a0100019.mypat.presentation.setting.SettingScreen
 import com.a0100019.mypat.presentation.setting.WebViewScreen
 import com.a0100019.mypat.presentation.store.StoreScreen
+import com.a0100019.mypat.presentation.world.WorldScreen
 
 @Composable
 fun MainNavHost() {
@@ -49,6 +50,9 @@ fun MainNavHost() {
                 },
                 onIndexNavigateClick = {
                     navController.navigate(route = MainRoute.IndexScreen.name)
+                },
+                onWorldNavigateClick = {
+                    navController.navigate(route = MainRoute.WorldScreen.name)
                 },
                 onCommunityNavigateClick = {
                     navController.navigate(route = MainRoute.CommunityScreen.name)
@@ -93,6 +97,16 @@ fun MainNavHost() {
             )
         }
 
+        composable(route = MainRoute.WorldScreen.name) {
+            WorldScreen(
+                onMainNavigateClick = {
+                    navController.navigate(route = MainRoute.MainScreen.name) {
+                        popUpTo(0) { inclusive = true } // 백스택 전체 제거
+                        launchSingleTop = true // 같은 화면 여러 번 안 쌓이게
+                    }
+                }
+            )
+        }
 
         composable(route = MainRoute.StoreScreen.name) {
             StoreScreen()

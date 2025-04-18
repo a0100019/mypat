@@ -103,32 +103,6 @@ class MainViewModel @Inject constructor(
         }
     }
 
-
-
-    fun onWorldChangeClick() = intent {
-        reduce {
-            state.copy(worldChange = !state.worldChange) // true/false 토글
-        }
-        loadData()
-    }
-
-    fun onAddDialogChangeClick() = intent {
-        val newValue = when(state.addDialogChange) {
-            "pat" -> "item"
-            "item" -> "map"
-            else -> "pat"
-        }
-        reduce {
-            state.copy(addDialogChange = newValue) // true/false 토글
-        }
-    }
-
-    fun onShowAddDialogClick() = intent {
-        reduce {
-            state.copy(showWorldAddDialog = !state.showWorldAddDialog) // true/false 토글
-        }
-    }
-
     fun dialogPatIdChange(clickId : String) = intent {
         userDao.update(id = "selectPat", value = clickId)
         reduce {
@@ -136,23 +110,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun onWorldSelectClick() = intent {
-        state.itemDataList.forEach { item ->
-            itemDao.update(item)
-        }
-        state.patDataList.forEach { pat ->
-            patDao.update(pat)
-        }
-        worldDao.deleteAllExceptIdOne()
-        state.worldDataList.forEach { world ->
-            worldDao.insert(world)
-        }
-        state.mapData?.let { worldDao.update(it) }
-        userDao.updateUsers(state.userDataList)
-        loadData()
-    }
-
-    fun worldDataDelete(id: String, type: String) = intent {
+    private fun worldDataDelete(id: String, type: String) = intent {
         val currentList = state.worldDataList.toMutableList()
         Log.e("e", "targetIndex${id}}")
         val targetIndex = currentList.indexOfFirst { it.value == id && it.type == type }
@@ -181,110 +139,6 @@ class MainViewModel @Inject constructor(
 
     }
 
-    fun onAddPatClick(patId: String) = intent {
-
-        // 1. patWorldDataList에서 patId와 일치하는 value 값을 찾는다
-        val matchingIndex = state.worldDataList.indexOfFirst { it.value == patId && it.type == "pat" }
-
-        if (matchingIndex != -1) {
-            // 1.1 일치하는 데이터가 있는 경우 ( 펫이 월드에 나와 있는 경우 펫 제거)
-            worldDataDelete(patId, "pat")
-        } else {
-
-            // 일치하는 데이터가 없어서 추가
-            val currentUserList = state.userDataList.toMutableList()
-            val userData = currentUserList.find { it.id == "pat" }
-
-            //칸수 남아 있음
-            if (userData!!.value2.toInt() > userData.value3.toInt()){
-                val updatedList = state.worldDataList.toMutableList()
-
-                val newWorld = World(
-                    value = patId,
-                    type = "pat"
-                )
-
-                updatedList.add(newWorld) // 맨 끝에 추가
-
-                //user pat 업데이트, 사용 칸 수 +1
-                val index = currentUserList.indexOf(userData)
-                val updatedUserData = userData.copy(
-                    value3 = (userData.value3.toInt() + 1).toString()
-                )
-                currentUserList[index] = updatedUserData
-
-                reduce {
-                    state.copy(
-                        worldDataList = updatedList,
-                        userDataList = currentUserList.toList() // 이쪽도 동일하게
-                    )
-                }
-
-            } else {
-                postSideEffect(MainSideEffect.Toast("공간이 부족합니다!"))
-            }
-
-        }
-
-    }
-
-    fun onAddItemClick(itemId: String) = intent {
-
-        // 1. patWorldDataList에서 patId와 일치하는 value 값을 찾는다
-        val matchingIndex = state.worldDataList.indexOfFirst { it.value == itemId  && it.type == "item" }
-
-        if (matchingIndex != -1) {
-            // 1.1 일치하는 데이터가 있는 경우 ( 펫이 월드에 나와 있는 경우 펫 제거)
-            worldDataDelete(itemId, "item")
-        } else {
-            // 일치하는 데이터가 없어서 추가
-            val currentUserList = state.userDataList.toMutableList()
-            val userData = currentUserList.find { it.id == "item" }
-
-            //칸수 남아 있음
-            if (userData!!.value2.toInt() > userData.value3.toInt()){
-                val updatedList = state.worldDataList.toMutableList()
-
-                val newWorld = World(
-                    value = itemId,
-                    type = "item"
-                )
-
-                updatedList.add(newWorld) // 맨 끝에 추가
-
-                //user pat 업데이트
-                val index = currentUserList.indexOf(userData)
-                val updatedUserData = userData.copy(
-                    value3 = (userData.value3.toInt() + 1).toString()
-                )
-                currentUserList[index] = updatedUserData
-
-                // 상태 업데이트
-                reduce {
-                    state.copy(
-                        worldDataList = updatedList,
-                        userDataList = currentUserList
-                    )
-                }
-
-            } else {
-                postSideEffect(MainSideEffect.Toast("공간이 부족합니다!"))
-            }
-
-        }
-
-    }
-
-    fun onSelectMapImageClick(mapId: String) = intent {
-        val newUrl = state.allMapDataList.find { it.id == mapId.toInt() }?.url ?: ""
-
-        reduce {
-            state.copy(
-                mapData = state.mapData?.copy(value = newUrl) // 기존 객체를 유지하면서 value만 변경
-            )
-        }
-    }
-
 }
 
 @Immutable
@@ -297,12 +151,9 @@ data class MainState(
     val worldDataList: List<World> = emptyList(),
     val userDataList: List<User> = emptyList(),
 
-    val mapData: World? = null,
+    val mapData: World = World(),
     val dialogPatId: String = "0",
     val dialogItemId: String = "0",
-    val showWorldAddDialog: Boolean = false,
-    val worldChange: Boolean = false,
-    val addDialogChange: String = "pat",
 
     )
 

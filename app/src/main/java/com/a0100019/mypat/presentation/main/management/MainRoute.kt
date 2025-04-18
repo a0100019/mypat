@@ -14,6 +14,8 @@ sealed class MainRoute(
 
     object IndexScreen : MainRoute("IndexScreen")
 
+    object WorldScreen : MainRoute("WorldScreen")
+
     object SettingScreen : MainRoute("SettingScreen")
 
     object InformationScreen : MainRoute("InformationScreen")
