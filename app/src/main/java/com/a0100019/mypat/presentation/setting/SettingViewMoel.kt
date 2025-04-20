@@ -2,14 +2,20 @@ package com.a0100019.mypat.presentation.setting
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import com.a0100019.mypat.data.room.diary.DiaryDao
+import com.a0100019.mypat.data.room.english.EnglishDao
+import com.a0100019.mypat.data.room.item.ItemDao
+import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiomDao
+import com.a0100019.mypat.data.room.pet.PatDao
+import com.a0100019.mypat.data.room.sudoku.SudokuDao
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
-import com.a0100019.mypat.data.room.walk.Walk
 import com.a0100019.mypat.data.room.walk.WalkDao
-import com.a0100019.mypat.presentation.daily.walk.StepCounterManager
-import com.a0100019.mypat.presentation.login.LoginSideEffect
+import com.a0100019.mypat.data.room.world.WorldDao
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.firestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.tasks.await
@@ -19,9 +25,6 @@ import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 
@@ -29,6 +32,14 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingViewModel @Inject constructor(
     private val userDao: UserDao,
+    private val patDao: PatDao,
+    private val itemDao: ItemDao,
+    private val diaryDao: DiaryDao,
+    private val englishDao: EnglishDao,
+    private val koreanIdiomDao: KoreanIdiomDao,
+    private val sudokuDao: SudokuDao,
+    private val walkDao: WalkDao,
+    private val worldDao: WorldDao
 ) : ViewModel(), ContainerHost<SettingState, SettingSideEffect> {
 
     override val container: Container<SettingState, SettingSideEffect> = container(
@@ -54,7 +65,7 @@ class SettingViewModel @Inject constructor(
 
         reduce {
             state.copy(
-                userData = userDataList,
+                userDataList = userDataList,
                 googleLoginState = googleLoginState
             )
         }
@@ -69,8 +80,8 @@ class SettingViewModel @Inject constructor(
     }
 
     fun onSignOutClick() = intent {
-        FirebaseAuth.getInstance().signOut()
 
+        FirebaseAuth.getInstance().signOut()
         // 현재 사용자 null이면 로그아웃 성공
         val currentUser = FirebaseAuth.getInstance().currentUser
         if (currentUser == null) {
@@ -83,6 +94,45 @@ class SettingViewModel @Inject constructor(
             // ❌ 로그아웃 실패
             postSideEffect(SettingSideEffect.Toast("로그아웃에 실패했습니다"))
         }
+
+    }
+
+    fun dataSave() = intent {
+
+        val db = Firebase.firestore
+        val userId = state.userDataList.find { it.id == "auth" }!!.value
+        val userDataList = state.userDataList
+
+        val userData = mapOf(
+            "ban" to userDataList.find { it.id == "like"}!!.value3,
+            "cash" to userDataList.find { it.id == "money"}!!.value2,
+            "firstDate" to userDataList.find { it.id == "date"}!!.value3,
+            "like" to userDataList.find { it.id == "like"}!!.value,
+            "money" to userDataList.find { it.id == "money"}!!.value,
+            "name" to userDataList.find { it.id == "name"}!!.value,
+            "openItem" to userDataList.find { it.id == ""}!!.value,
+
+
+            "name" to "Alice",
+            "age" to 25,
+            "isPremium" to true,
+            "tags" to listOf("android", "compose", "kotlin"),
+            "profile" to mapOf(
+                "bio" to "Jetpack Compose 좋아함",
+                "location" to "Seoul"
+            ),
+        )
+
+        db.collection("users")
+            .document(userId)
+            .set(userData)
+            .addOnSuccessListener {
+                Log.d("Firestore", "데이터 저장 성공")
+                // UI 상태 업데이트 등
+            }
+            .addOnFailureListener { e ->
+                Log.e("Firestore", "저장 실패", e)
+            }
 
     }
 
@@ -120,20 +170,14 @@ class SettingViewModel @Inject constructor(
         }
     }
 
-
-
-
-
 }
-
 
 
 @Immutable
 data class SettingState(
-    val userData: List<User> = emptyList(),
+    val userDataList: List<User> = emptyList(),
     val isLoggingIn:Boolean = false,
     val googleLoginState: Boolean = false
-
     )
 
 

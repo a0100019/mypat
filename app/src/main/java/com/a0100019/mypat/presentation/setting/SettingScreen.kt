@@ -1,8 +1,5 @@
 package com.a0100019.mypat.presentation.setting
 
-import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -23,10 +20,8 @@ import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
-import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.ui.graphics.Color
@@ -72,12 +67,12 @@ fun SettingScreen(
     }
 
     SettingScreen(
-        userData = settingState.userData,
+        userData = settingState.userDataList,
         googleLoginState = settingState.googleLoginState,
 
         onClose = settingViewModel::onCloseClick,
         onTermsClick = settingViewModel::onTermsClick,
-        onSignOutClick = settingViewModel::onSignOutClick,
+        onSignOutClick = settingViewModel::dataSave,
 
         onGoogleLoginClick = {
             val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)

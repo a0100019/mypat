@@ -14,8 +14,7 @@ fun getUserInitialData(): List<User> {
         User(id = "firstGame", value = "0"), //2는 level, 3은 pat index (걍 하지말자)
         User(id = "secondGame", value = "1000"), //2는 없음, 3은 pat index
         User(id = "thirdGame", value = "0"), //1은 쉬움, 2는 보통, 3은 어려움 개수
-        User(id = "like", value = "0"),
-        User(id = "ban", value = "0")
+        User(id = "community"), // 좋아요, 경고, 벤
 
         // 더 많은 데이터를 여기에 추가...
     )
