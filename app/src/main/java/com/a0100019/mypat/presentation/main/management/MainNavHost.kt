@@ -24,7 +24,6 @@ import com.a0100019.mypat.presentation.information.InformationScreen
 import com.a0100019.mypat.presentation.login.LoginScreen
 import com.a0100019.mypat.presentation.main.MainScreen
 import com.a0100019.mypat.presentation.setting.SettingScreen
-import com.a0100019.mypat.presentation.setting.WebViewScreen
 import com.a0100019.mypat.presentation.store.StoreScreen
 import com.a0100019.mypat.presentation.world.WorldScreen
 
@@ -183,14 +182,6 @@ fun MainNavHost() {
 
         composable(route = MainRoute.WalkScreen.name) {
             WalkScreen()
-        }
-
-        composable(
-            route = "webview?url={url}",
-            arguments = listOf(navArgument("url") { type = NavType.StringType })
-        ) { backStackEntry ->
-            val url = backStackEntry.arguments?.getString("url") ?: ""
-            WebViewScreen(url = Uri.decode(url))
         }
 
 //

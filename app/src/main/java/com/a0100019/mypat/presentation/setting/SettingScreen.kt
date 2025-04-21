@@ -69,10 +69,13 @@ fun SettingScreen(
     SettingScreen(
         userData = settingState.userDataList,
         googleLoginState = settingState.googleLoginState,
+        settingSituation = settingState.settingSituation,
+        imageUrl = settingState.imageUrl,
 
         onClose = settingViewModel::onCloseClick,
         onTermsClick = settingViewModel::onTermsClick,
         onSignOutClick = settingViewModel::dataSave,
+        onSituationChange = settingViewModel::onSituationChange,
 
         onGoogleLoginClick = {
             val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -90,11 +93,23 @@ fun SettingScreen(
 fun SettingScreen(
     userData: List<User>,
     googleLoginState: Boolean,
+    settingSituation: String,
+    imageUrl: String,
+
     onTermsClick: () -> Unit,
     onSignOutClick: () -> Unit,
     onClose: () -> Unit,
+    onSituationChange: (String) -> Unit,
     onGoogleLoginClick: () -> Unit,
 ) {
+
+    when(settingSituation) {
+        "terms" -> TermsDialog(
+            onClose = onClose,
+            imageUrl = imageUrl
+        )
+    }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -120,7 +135,10 @@ fun SettingScreen(
         item {
             SettingButton(
                 text = "이용 약관",
-                onClick = onTermsClick
+                onClick = {
+                    onTermsClick()
+                    onSituationChange("terms")
+                }
             )
         }
 
@@ -193,7 +211,10 @@ fun SettingScreenPreview() {
             onTermsClick = {},
             onSignOutClick = {},
             googleLoginState = false,
-            onGoogleLoginClick = {}
+            onGoogleLoginClick = {},
+            settingSituation = "",
+            onSituationChange = {},
+            imageUrl = ""
         )
     }
 }
