@@ -113,6 +113,11 @@ fun LoginScreen(
 
             val googleSignInClient = GoogleSignIn.getClient(context, gso)
             launcher.launch(googleSignInClient.signInIntent)
+
+            // 🔥 자동 로그인 방지: 이전 계정 로그아웃, 로그아웃 시 아이디 선택창 뜸
+            googleSignInClient.signOut().addOnCompleteListener {
+                launcher.launch(googleSignInClient.signInIntent)
+            }
         },
     )
 }

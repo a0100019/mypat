@@ -20,6 +20,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.firestore
 import com.google.firebase.storage.FirebaseStorage
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,6 +29,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
+import org.orbitmvi.orbit.annotation.OrbitExperimental
+import org.orbitmvi.orbit.syntax.simple.blockingIntent
 import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
@@ -88,7 +91,8 @@ class SettingViewModel @Inject constructor(
     fun onCloseClick() = intent {
         reduce {
             state.copy(
-                settingSituation = ""
+                settingSituation = "",
+                editText = ""
             )
         }
     }
@@ -115,7 +119,7 @@ class SettingViewModel @Inject constructor(
         }
     }
 
-    fun onSignOutClick() = intent {
+    private fun onSignOutClick() = intent {
 
         FirebaseAuth.getInstance().signOut()
         // 현재 사용자 null이면 로그아웃 성공
@@ -195,28 +199,21 @@ class SettingViewModel @Inject constructor(
             }
             .toMap()
 
-        val result = mapOf("world" to worldMap)
+        val finalData = userData + mapOf("world" to worldMap)
 
+        val batch = Firebase.firestore.batch()
 
-        db.collection("users")
-            .document(userId)
-            .set(result)
+        val userDocRef = Firebase.firestore.collection("users").document(userId)
+
+        batch.set(userDocRef, finalData, SetOptions.merge()) // 필드 기준 병합 저장
+
+// 커밋 실행
+        batch.commit()
             .addOnSuccessListener {
-                Log.d("Firestore", "world 저장 성공")
+                onSignOutClick()
             }
-            .addOnFailureListener { e ->
-                Log.e("Firestore", "world 저장 실패", e)
-            }
-
-        db.collection("users")
-            .document(userId)
-            .set(userData)
-            .addOnSuccessListener {
-                Log.d("Firestore", "데이터 저장 성공")
-                // UI 상태 업데이트 등
-            }
-            .addOnFailureListener { e ->
-                Log.e("Firestore", "저장 실패", e)
+            .addOnFailureListener {
+                Log.e("Firestore", "저장 실패", it)
             }
 
     }
@@ -257,13 +254,32 @@ class SettingViewModel @Inject constructor(
     }
 
     fun onAccountDeleteClick() = intent {
-        val auth = FirebaseAuth.getInstance()
-        val db = FirebaseFirestore.getInstance()
+        if(state.editText == "계정삭제"){
+            reduce {
+                state.copy(
+                    settingSituation = ""
+                )
+            }
+            val auth = FirebaseAuth.getInstance()
+            val db = FirebaseFirestore.getInstance()
 
-        // 1. Firestore 데이터 먼저 삭제
-        db.collection("users").document(state.userDataList.find {it.id == "auth"}!!.value).delete()
-            .addOnSuccessListener {
-                Log.d("Firestore", "유저 문서 삭제됨")
+            val userDocRef =
+                db.collection("users").document(state.userDataList.find { it.id == "auth" }!!.value)
+            val subCollections =
+                listOf("pat", "item", "diary", "code", "english", "game", "koreanIdiom", "walk")
+
+            try {
+                // 1. 서브컬렉션 안의 문서 삭제
+                for (sub in subCollections) {
+                    val subColRef = userDocRef.collection(sub)
+                    val documents = subColRef.get().await().documents
+                    for (doc in documents) {
+                        doc.reference.delete().await()
+                    }
+                }
+
+                // 2. 마지막으로 사용자 문서 삭제
+                userDocRef.delete().await()
 
                 // 2. Authentication 계정 삭제
                 auth.currentUser?.delete()
@@ -278,10 +294,104 @@ class SettingViewModel @Inject constructor(
                     ?.addOnFailureListener {
                         Log.e("Auth", "계정 삭제 실패", it)
                     }
+
+                Log.d("Firestore", "사용자 전체 삭제 완료")
+            } catch (e: Exception) {
+                Log.e("Firestore", "삭제 실패", e)
             }
-            .addOnFailureListener {
-                Log.e("Firestore", "문서 삭제 실패", it)
+
+        } else {
+            postSideEffect(SettingSideEffect.Toast("[계정삭제]를 입력해주세요."))
+        }
+
+    }
+
+    fun onCouponConfirmClick() = intent {
+        val db = Firebase.firestore
+        val couponText = state.editText // 사용자가 입력한 쿠폰 코드
+        val userId = state.userDataList.find { it.id == "auth" }!!.value
+
+        db.collection("code").document("coupon")
+            .get()
+            .addOnSuccessListener { document ->
+                if (document != null && document.contains(couponText)) {
+                    val couponData = document.get(couponText) as? Map<*, *>
+                    val reward = couponData?.get("reward") as? String
+                    val type = couponData?.get("type") as? String
+                    val amount = couponData?.get("amount") as? String
+
+                    Log.d("Coupon", "내용: $reward, 금액: $amount")
+                    // 여기에 UI 상태 업데이트 또는 처리 코드 작성
+
+                    db.collection("users").document(userId).collection("code").document("coupon")
+                        .get()
+                        .addOnSuccessListener { couponDocument ->
+                                if (couponDocument != null && couponDocument.contains(couponText)) {
+                                    viewModelScope.launch {
+                                        postSideEffect(SettingSideEffect.Toast("이미 사용한 쿠폰 번호입니다."))
+                                    }
+                                } else {
+
+                                    val newCouponMap = mapOf(
+                                        couponText to mapOf(
+                                            "reward" to reward,
+                                            "type" to type,
+                                            "amount" to amount
+                                        )
+                                    )
+
+                                    db.collection("users").document(userId)
+                                        .collection("code").document("coupon")
+                                        .set(newCouponMap, SetOptions.merge()) // 기존 필드 보존하면서 병합 저장
+                                        .addOnSuccessListener {
+                                            viewModelScope.launch {
+                                                if(reward == "money") {
+                                                    userDao.update(id = "money", value = (state.userDataList.find { it.id == "money" }!!.value.toInt() + amount!!.toInt()).toString())
+                                                } else {
+                                                    userDao.update(id = "money", value2 = (state.userDataList.find { it.id == "money" }!!.value2.toInt() + amount!!.toInt()).toString())
+                                                }
+                                                postSideEffect(SettingSideEffect.Toast("쿠폰 사용 : $reward +$amount"))
+                                                onCloseClick()
+                                                loadData()
+                                            }
+                                        }
+                                        .addOnFailureListener { e ->
+                                            Log.e("Coupon", "쿠폰 저장 실패", e)
+                                        }
+                                }
+                        }
+
+                } else {
+                    viewModelScope.launch {
+                        postSideEffect(SettingSideEffect.Toast("존재하지 않는 쿠폰 번호입니다."))
+                    }
+                }
             }
+            .addOnFailureListener { e ->
+                Log.e("Coupon", "쿠폰 조회 실패", e)
+            }
+
+    }
+
+    fun onSettingTalkConfirmClick() = intent {
+        val db = Firebase.firestore
+        db.collection("settingTalk").document(state.userDataList.find { it.id == "auth" }!!.value)
+            .set(mapOf("contents" to state.editText))
+            .addOnSuccessListener {
+                viewModelScope.launch {
+                    postSideEffect(SettingSideEffect.Toast("전송되었습니다."))
+                    onCloseClick()
+                }
+            }
+    }
+
+
+    //입력 가능하게 하는 코드
+    @OptIn(OrbitExperimental::class)
+    fun onEditTextChange(editText: String) = blockingIntent {
+        reduce {
+            state.copy(editText = editText)
+        }
     }
 
 }
@@ -296,7 +406,8 @@ data class SettingState(
     val itemDataList: List<Item> = emptyList(),
     val worldDataList: List<World> = emptyList(),
     val settingSituation: String = "",
-    val imageUrl: String = ""
+    val imageUrl: String = "",
+    val editText: String = ""
     )
 
 

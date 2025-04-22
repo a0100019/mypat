@@ -67,16 +67,6 @@ fun SettingScreen(
     }
 
     SettingScreen(
-        userData = settingState.userDataList,
-        googleLoginState = settingState.googleLoginState,
-        settingSituation = settingState.settingSituation,
-        imageUrl = settingState.imageUrl,
-
-        onClose = settingViewModel::onCloseClick,
-        onTermsClick = settingViewModel::onTermsClick,
-        onSignOutClick = settingViewModel::dataSave,
-        onSituationChange = settingViewModel::onSituationChange,
-
         onGoogleLoginClick = {
             val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(context.getString(R.string.default_web_client_id))
@@ -85,7 +75,27 @@ fun SettingScreen(
 
             val googleSignInClient = GoogleSignIn.getClient(context, gso)
             launcher.launch(googleSignInClient.signInIntent)
+
+            // 🔥 자동 로그인 방지: 이전 계정 로그아웃, 로그아웃 시 아이디 선택창 뜸
+            googleSignInClient.signOut().addOnCompleteListener {
+                launcher.launch(googleSignInClient.signInIntent)
+            }
         },
+
+        userData = settingState.userDataList,
+        googleLoginState = settingState.googleLoginState,
+        settingSituation = settingState.settingSituation,
+        imageUrl = settingState.imageUrl,
+        editText = settingState.editText,
+
+        onClose = settingViewModel::onCloseClick,
+        onTermsClick = settingViewModel::onTermsClick,
+        onSignOutClick = settingViewModel::dataSave,
+        onSituationChange = settingViewModel::onSituationChange,
+        onAccountDeleteClick = settingViewModel::onAccountDeleteClick,
+        onEditTextChange = settingViewModel::onEditTextChange,
+        onCouponConfirmClick = settingViewModel::onCouponConfirmClick,
+        onSettingTalkConfirmClick = settingViewModel::onSettingTalkConfirmClick
 
     )
 }
@@ -95,18 +105,41 @@ fun SettingScreen(
     googleLoginState: Boolean,
     settingSituation: String,
     imageUrl: String,
+    editText: String,
 
     onTermsClick: () -> Unit,
     onSignOutClick: () -> Unit,
     onClose: () -> Unit,
     onSituationChange: (String) -> Unit,
     onGoogleLoginClick: () -> Unit,
+    onAccountDeleteClick: () -> Unit,
+    onEditTextChange: (String) -> Unit,
+    onCouponConfirmClick: () -> Unit,
+    onSettingTalkConfirmClick: () -> Unit,
 ) {
 
     when(settingSituation) {
         "terms" -> TermsDialog(
             onClose = onClose,
             imageUrl = imageUrl
+        )
+        "accountDelete" -> AccountDeleteDialog(
+            onClose = onClose,
+            onAccountDeleteTextChange = onEditTextChange,
+            accountDeleteString = editText,
+            onConfirmClick = onAccountDeleteClick
+        )
+        "coupon" -> CouponDialog(
+            onClose = onClose,
+            onCouponTextChange = onEditTextChange,
+            couponText = editText,
+            onConfirmClick = onCouponConfirmClick
+        )
+        "settingTalk" -> SettingTalkDialog(
+            onClose = onClose,
+            onSettingTalkTextChange = onEditTextChange,
+            settingTalkText = editText,
+            onConfirmClick = onSettingTalkConfirmClick
         )
     }
 
@@ -145,21 +178,27 @@ fun SettingScreen(
         item {
             SettingButton(
                 text = "계정 삭제",
-                onClick = { /* TODO */ }
+                onClick = {
+                    onSituationChange("accountDelete")
+                }
             )
         }
 
         item {
             SettingButton(
                 text = "버그 신고",
-                onClick = { /* TODO */ }
+                onClick = {
+                    onSituationChange("settingTalk")
+                }
             )
         }
 
         item {
             SettingButton(
                 text = "쿠폰 코드",
-                onClick = { /* TODO */ }
+                onClick = {
+                    onSituationChange("coupon")
+                }
             )
         }
 
@@ -214,7 +253,12 @@ fun SettingScreenPreview() {
             onGoogleLoginClick = {},
             settingSituation = "",
             onSituationChange = {},
-            imageUrl = ""
+            imageUrl = "",
+            onAccountDeleteClick = {},
+            onEditTextChange = {},
+            editText = "",
+            onCouponConfirmClick = {},
+            onSettingTalkConfirmClick = {}
         )
     }
 }
