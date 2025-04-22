@@ -8,6 +8,8 @@ import com.a0100019.mypat.data.room.english.EnglishDao
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.item.ItemDao
 import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiomDao
+import com.a0100019.mypat.data.room.letter.Letter
+import com.a0100019.mypat.data.room.letter.LetterDao
 import com.a0100019.mypat.data.room.pet.Pat
 import com.a0100019.mypat.data.room.pet.PatDao
 import com.a0100019.mypat.data.room.sudoku.SudokuDao
@@ -50,7 +52,8 @@ class SettingViewModel @Inject constructor(
     private val koreanIdiomDao: KoreanIdiomDao,
     private val sudokuDao: SudokuDao,
     private val walkDao: WalkDao,
-    private val worldDao: WorldDao
+    private val worldDao: WorldDao,
+    private val letterDao: LetterDao,
 ) : ViewModel(), ContainerHost<SettingState, SettingSideEffect> {
 
     override val container: Container<SettingState, SettingSideEffect> = container(
@@ -76,6 +79,7 @@ class SettingViewModel @Inject constructor(
         val itemDataList = itemDao.getAllItemData()
         val patDataList = patDao.getAllPatData()
         val worldDataList = worldDao.getAllWorldData()
+        val letterDataList = letterDao.getAllLetterData()
 
         reduce {
             state.copy(
@@ -83,7 +87,8 @@ class SettingViewModel @Inject constructor(
                 googleLoginState = googleLoginState,
                 itemDataList = itemDataList,
                 patDataList = patDataList,
-                worldDataList = worldDataList
+                worldDataList = worldDataList,
+                letterDataList = letterDataList
             )
         }
     }
@@ -385,6 +390,23 @@ class SettingViewModel @Inject constructor(
             }
     }
 
+    fun clickLetterDataChange(letterId: Int) = intent {
+        if(letterId != 0) {
+            reduce {
+                state.copy(
+                    clickLetterData = state.letterDataList.find { it.id == letterId }!!
+                )
+            }
+        } else {
+            reduce {
+                state.copy(
+                    clickLetterData = Letter()
+                )
+            }
+        }
+
+    }
+
 
     //입력 가능하게 하는 코드
     @OptIn(OrbitExperimental::class)
@@ -407,7 +429,9 @@ data class SettingState(
     val worldDataList: List<World> = emptyList(),
     val settingSituation: String = "",
     val imageUrl: String = "",
-    val editText: String = ""
+    val editText: String = "",
+    val clickLetterData: Letter = Letter(),
+    val letterDataList: List<Letter> = emptyList()
     )
 
 

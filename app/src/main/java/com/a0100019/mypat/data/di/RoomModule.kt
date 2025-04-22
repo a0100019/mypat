@@ -16,6 +16,8 @@ import com.a0100019.mypat.data.room.item.getItemInitialData
 import com.a0100019.mypat.data.room.pet.PatDao
 import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiomDao
 import com.a0100019.mypat.data.room.koreanIdiom.getKoreanIdiomInitialData
+import com.a0100019.mypat.data.room.letter.LetterDao
+import com.a0100019.mypat.data.room.letter.getLetterInitialData
 import com.a0100019.mypat.data.room.pet.getPatInitialData
 import com.a0100019.mypat.data.room.sudoku.Sudoku
 import com.a0100019.mypat.data.room.sudoku.SudokuDao
@@ -89,6 +91,11 @@ object RoomModule {
                         val sudokuInitialData = getSudokuInitialData()
                         sudokuDao.insertAll(sudokuInitialData) // 대량 삽입
 
+                        val letterDao = provideDatabase(context).letterDao()
+                        val letterInitialData = getLetterInitialData()
+                        letterDao.insertAll(letterInitialData) // 대량 삽입
+
+
                     }
                 }
             })
@@ -155,6 +162,11 @@ object RoomModule {
     @Provides
     fun provideSudokuDao(database: Database): SudokuDao {
         return database.sudokuDao()
+    }
+
+    @Provides
+    fun provideLetterDao(database: Database): LetterDao {
+        return database.letterDao()
     }
 }
 

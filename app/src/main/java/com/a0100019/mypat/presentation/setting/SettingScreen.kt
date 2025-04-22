@@ -26,6 +26,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.ui.graphics.Color
 import com.a0100019.mypat.R
+import com.a0100019.mypat.data.room.letter.Letter
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
@@ -87,6 +88,8 @@ fun SettingScreen(
         settingSituation = settingState.settingSituation,
         imageUrl = settingState.imageUrl,
         editText = settingState.editText,
+        clickLetterData = settingState.clickLetterData,
+        letterDataList = settingState.letterDataList,
 
         onClose = settingViewModel::onCloseClick,
         onTermsClick = settingViewModel::onTermsClick,
@@ -95,10 +98,13 @@ fun SettingScreen(
         onAccountDeleteClick = settingViewModel::onAccountDeleteClick,
         onEditTextChange = settingViewModel::onEditTextChange,
         onCouponConfirmClick = settingViewModel::onCouponConfirmClick,
-        onSettingTalkConfirmClick = settingViewModel::onSettingTalkConfirmClick
+        onSettingTalkConfirmClick = settingViewModel::onSettingTalkConfirmClick,
+        clickLetterDataChange = settingViewModel::clickLetterDataChange
 
     )
 }
+
+
 @Composable
 fun SettingScreen(
     userData: List<User>,
@@ -106,6 +112,8 @@ fun SettingScreen(
     settingSituation: String,
     imageUrl: String,
     editText: String,
+    letterDataList: List<Letter>,
+    clickLetterData: Letter,
 
     onTermsClick: () -> Unit,
     onSignOutClick: () -> Unit,
@@ -116,6 +124,8 @@ fun SettingScreen(
     onEditTextChange: (String) -> Unit,
     onCouponConfirmClick: () -> Unit,
     onSettingTalkConfirmClick: () -> Unit,
+    clickLetterDataChange: (Int) -> Unit,
+
 ) {
 
     when(settingSituation) {
@@ -141,6 +151,19 @@ fun SettingScreen(
             settingTalkText = editText,
             onConfirmClick = onSettingTalkConfirmClick
         )
+        "letter" -> LetterDialog(
+            onClose = onClose,
+            onLetterClick = clickLetterDataChange,
+            letterDataList = letterDataList
+        )
+    }
+
+    if(clickLetterData.id != 0) {
+        LetterViewDialog(
+            onClose = {
+                clickLetterDataChange(0)
+            }
+        )
     }
 
     LazyColumn(
@@ -161,7 +184,9 @@ fun SettingScreen(
         item {
             SettingButton(
                 text = "편지 모음",
-                onClick = { /* TODO */ }
+                onClick = {
+                    onSituationChange("letter")
+                }
             )
         }
 
@@ -258,7 +283,11 @@ fun SettingScreenPreview() {
             onEditTextChange = {},
             editText = "",
             onCouponConfirmClick = {},
-            onSettingTalkConfirmClick = {}
+            onSettingTalkConfirmClick = {},
+            clickLetterData = Letter(),
+            clickLetterDataChange = {},
+            letterDataList = emptyList()
+
         )
     }
 }
