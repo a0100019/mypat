@@ -104,14 +104,7 @@ fun DailyScreen(
                 ) {
                     Text("커뮤니티 구경하기")
                 }
-                Button(
-                    modifier = Modifier
-                        .padding(top = 8.dp)
-                        .fillMaxWidth(),
-                    onClick = {  }
-                ) {
-                    Text("광고 보기")
-                }
+
             }
         }
     }

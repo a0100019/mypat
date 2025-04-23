@@ -40,7 +40,7 @@ fun LetterDialog(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.8f)
+                .fillMaxHeight(0.9f)
                 .background(Color.White, shape = RoundedCornerShape(16.dp))
                 .padding(16.dp)
         ) {
@@ -58,15 +58,35 @@ fun LetterDialog(
                         .padding(horizontal = 8.dp)
                 ) {
                     items(letterDataList) { letter ->
-                        Text(
-                            text = letter.title,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { onLetterClick(letter.id) }
-                                .padding(12.dp),
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = Color.DarkGray
-                        )
+                        when(letter.state) {
+                            "open" -> Text(
+                                text = letter.title,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { onLetterClick(letter.id) }
+                                    .padding(12.dp),
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = Color.DarkGray
+                            )
+                            "read" -> Text(
+                                text = letter.title,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { onLetterClick(letter.id) }
+                                    .padding(12.dp),
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = Color.DarkGray
+                            )
+                            "get" -> Text(
+                                text = letter.title,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { onLetterClick(letter.id) }
+                                    .padding(12.dp),
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = Color.DarkGray
+                            )
+                        }
                     }
                 }
 

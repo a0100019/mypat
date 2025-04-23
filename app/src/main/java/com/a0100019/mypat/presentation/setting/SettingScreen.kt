@@ -1,5 +1,7 @@
 package com.a0100019.mypat.presentation.setting
 
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -45,6 +47,10 @@ fun SettingScreen(
                 Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
             }
             SettingSideEffect.NavigateToLoginScreen -> onSignOutClick()
+            is SettingSideEffect.OpenUrl -> {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(sideEffect.url))
+                context.startActivity(intent)
+            }
         }
     }
 
@@ -90,6 +96,7 @@ fun SettingScreen(
         editText = settingState.editText,
         clickLetterData = settingState.clickLetterData,
         letterDataList = settingState.letterDataList,
+        letterImages = settingState.letterImages,
 
         onClose = settingViewModel::onCloseClick,
         onTermsClick = settingViewModel::onTermsClick,
@@ -99,7 +106,9 @@ fun SettingScreen(
         onEditTextChange = settingViewModel::onEditTextChange,
         onCouponConfirmClick = settingViewModel::onCouponConfirmClick,
         onSettingTalkConfirmClick = settingViewModel::onSettingTalkConfirmClick,
-        clickLetterDataChange = settingViewModel::clickLetterDataChange
+        clickLetterDataChange = settingViewModel::clickLetterDataChange,
+        onLetterGetClick = settingViewModel::onLetterGetClick,
+        onLetterLinkClick = settingViewModel::onLetterLinkClick
 
     )
 }
@@ -114,6 +123,7 @@ fun SettingScreen(
     editText: String,
     letterDataList: List<Letter>,
     clickLetterData: Letter,
+    letterImages: List<String>,
 
     onTermsClick: () -> Unit,
     onSignOutClick: () -> Unit,
@@ -125,6 +135,8 @@ fun SettingScreen(
     onCouponConfirmClick: () -> Unit,
     onSettingTalkConfirmClick: () -> Unit,
     clickLetterDataChange: (Int) -> Unit,
+    onLetterLinkClick: () -> Unit,
+    onLetterGetClick: () -> Unit,
 
 ) {
 
@@ -162,7 +174,11 @@ fun SettingScreen(
         LetterViewDialog(
             onClose = {
                 clickLetterDataChange(0)
-            }
+            },
+            clickLetterData = clickLetterData,
+            letterImages = letterImages,
+            onLetterLinkClick = onLetterLinkClick,
+            onLetterGetClick = onLetterGetClick
         )
     }
 
@@ -286,7 +302,10 @@ fun SettingScreenPreview() {
             onSettingTalkConfirmClick = {},
             clickLetterData = Letter(),
             clickLetterDataChange = {},
-            letterDataList = emptyList()
+            letterDataList = emptyList(),
+            letterImages = emptyList(),
+            onLetterLinkClick = {},
+            onLetterGetClick = {}
 
         )
     }

@@ -5,7 +5,9 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.a0100019.mypat.data.room.sudoku.Sudoku
+import com.a0100019.mypat.data.room.world.World
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -16,6 +18,9 @@ interface LetterDao {
 
     @Delete
     suspend fun delete(letter: Letter)
+
+    @Update
+    suspend fun update(letter: Letter)
 
     @Query("""
         SELECT *

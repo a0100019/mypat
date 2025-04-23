@@ -97,7 +97,8 @@ class SettingViewModel @Inject constructor(
         reduce {
             state.copy(
                 settingSituation = "",
-                editText = ""
+                editText = "",
+                clickLetterData = Letter()
             )
         }
     }
@@ -392,18 +393,65 @@ class SettingViewModel @Inject constructor(
 
     fun clickLetterDataChange(letterId: Int) = intent {
         if(letterId != 0) {
-            reduce {
-                state.copy(
-                    clickLetterData = state.letterDataList.find { it.id == letterId }!!
-                )
+
+            val clickLetterData = state.letterDataList.find { it.id == letterId }!!
+            val letterImages = clickLetterData.image.split("@")
+            val imageUrls = mutableListOf<String>()
+
+            try {
+                letterImages.forEach { imageName ->
+                    val uri = FirebaseStorage.getInstance()
+                        .reference.child(imageName)
+                        .downloadUrl.await()
+                    imageUrls.add(uri.toString())
+                }
+
+                reduce {
+                    state.copy(
+                        letterImages = imageUrls,
+                        clickLetterData = clickLetterData
+                        )
+                }
+
+            } catch (e: Exception) {
+                // 실패 처리
+                Log.e("ImageLoad", "이미지 URL 로딩 실패", e)
             }
+
         } else {
+
             reduce {
                 state.copy(
-                    clickLetterData = Letter()
+                    clickLetterData = Letter(),
+                    letterImages = emptyList()
                 )
             }
         }
+
+    }
+
+    fun onLetterLinkClick() = intent {
+        val url = state.clickLetterData.link
+        postSideEffect(SettingSideEffect.OpenUrl(url))
+    }
+
+    //편지 보상받기
+    fun onLetterGetClick() = intent {
+
+        val letterData = state.clickLetterData
+
+        if(letterData.reward == "money") {
+            userDao.update(id = "money", value = (state.userDataList.find { it.id == "money" }!!.value.toInt() + letterData.amount.toInt()).toString())
+        } else {
+            userDao.update(id = "money", value2 = (state.userDataList.find { it.id == "money" }!!.value2.toInt() + letterData.amount.toInt()).toString())
+        }
+        postSideEffect(SettingSideEffect.Toast("보상 획득 : ${letterData.reward} +${letterData.amount}"))
+
+        letterData.state = "get"
+        letterDao.update(letterData)
+
+        clickLetterDataChange(0)
+        loadData()
 
     }
 
@@ -431,11 +479,14 @@ data class SettingState(
     val imageUrl: String = "",
     val editText: String = "",
     val clickLetterData: Letter = Letter(),
-    val letterDataList: List<Letter> = emptyList()
+    val letterDataList: List<Letter> = emptyList(),
+    val letterImages: List<String> = emptyList()
     )
 
 
 sealed interface SettingSideEffect {
     class Toast(val message: String) : SettingSideEffect
     data object NavigateToLoginScreen : SettingSideEffect
+    data class OpenUrl(val url: String) : SettingSideEffect
+
 }
