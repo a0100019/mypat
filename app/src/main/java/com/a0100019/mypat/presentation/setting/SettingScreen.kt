@@ -108,7 +108,8 @@ fun SettingScreen(
         onSettingTalkConfirmClick = settingViewModel::onSettingTalkConfirmClick,
         clickLetterDataChange = settingViewModel::clickLetterDataChange,
         onLetterGetClick = settingViewModel::onLetterGetClick,
-        onLetterLinkClick = settingViewModel::onLetterLinkClick
+        onLetterLinkClick = settingViewModel::onLetterLinkClick,
+        onLetterCloseClick = settingViewModel::onLetterCloseClick
 
     )
 }
@@ -137,6 +138,7 @@ fun SettingScreen(
     clickLetterDataChange: (Int) -> Unit,
     onLetterLinkClick: () -> Unit,
     onLetterGetClick: () -> Unit,
+    onLetterCloseClick: () -> Unit,
 
 ) {
 
@@ -172,9 +174,7 @@ fun SettingScreen(
 
     if(clickLetterData.id != 0) {
         LetterViewDialog(
-            onClose = {
-                clickLetterDataChange(0)
-            },
+            onClose = onLetterCloseClick,
             clickLetterData = clickLetterData,
             letterImages = letterImages,
             onLetterLinkClick = onLetterLinkClick,
@@ -305,7 +305,8 @@ fun SettingScreenPreview() {
             letterDataList = emptyList(),
             letterImages = emptyList(),
             onLetterLinkClick = {},
-            onLetterGetClick = {}
+            onLetterGetClick = {},
+            onLetterCloseClick = {}
 
         )
     }

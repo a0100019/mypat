@@ -74,14 +74,19 @@ fun LetterViewDialog(
                 ) {
 
                     letterImages.forEach { image ->
-                        Image(
-                            painter = rememberAsyncImagePainter(image),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .aspectRatio(0.6f), // 이거 중요!
-                            contentScale = ContentScale.Fit // 또는 ContentScale.Crop, 원하는대로 조절
-                        )
+                        Box{
+
+                            Text("loading...")
+                            
+                            Image(
+                                painter = rememberAsyncImagePainter(image),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .aspectRatio(0.6f), // 이거 중요!
+                                contentScale = ContentScale.Fit // 또는 ContentScale.Crop, 원하는대로 조절
+                            )
+                        }
                     }
 
                     if(clickLetterData.link != "0") {

@@ -41,7 +41,6 @@ import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 
 
-@Suppress("IMPLICIT_CAST_TO_ANY")
 @HiltViewModel
 class SettingViewModel @Inject constructor(
     private val userDao: UserDao,
@@ -161,7 +160,7 @@ class SettingViewModel @Inject constructor(
             ),
             "firstDate" to userDataList.find { it.id == "date"}!!.value3,
             "item" to mapOf(
-                "openItem" to itemDataList.count { it.date != "0"},
+                "openItem" to itemDataList.count { it.date != "0"}.toString(),
                 "openItemSpace" to userDataList.find { it.id == "item"}!!.value2,
                 "useItem" to userDataList.find { it.id == "item"}!!.value3
             ),
@@ -169,7 +168,7 @@ class SettingViewModel @Inject constructor(
             "money" to userDataList.find { it.id == "money"}!!.value,
             "name" to userDataList.find { it.id == "name"}!!.value,
             "pat" to mapOf(
-                "openPat" to patDataList.count { it.date != "0"},
+                "openPat" to patDataList.count { it.date != "0"}.toString(),
                 "openPatSpace" to userDataList.find { it.id == "pat"}!!.value2,
                 "usePat" to userDataList.find { it.id == "pat"}!!.value3
             ),
@@ -185,20 +184,20 @@ class SettingViewModel @Inject constructor(
                     // index는 0부터 시작하니까 +1 해서 문자열로 만듦
                     index.toString() to mapOf(
                         "id" to data.value,
-                        "size" to patData!!.sizeFloat,
+                        "size" to patData!!.sizeFloat.toString(),
                         "type" to data.type,
-                        "x" to patData.x,
-                        "y" to patData.y
+                        "x" to patData.x.toString(),
+                        "y" to patData.y.toString()
                     )
                 } else {
                     val itemData = itemDataList.find { it.id == data.value.toInt() }
                     // index는 0부터 시작하니까 +1 해서 문자열로 만듦
                     index.toString() to mapOf(
                         "id" to data.value,
-                        "size" to itemData!!.sizeFloat,
+                        "size" to itemData!!.sizeFloat.toString(),
                         "type" to data.type,
-                        "x" to itemData.x,
-                        "y" to itemData.y
+                        "x" to itemData.x.toString(),
+                        "y" to itemData.y.toString()
                     )
                 }
 
@@ -433,6 +432,18 @@ class SettingViewModel @Inject constructor(
     fun onLetterLinkClick() = intent {
         val url = state.clickLetterData.link
         postSideEffect(SettingSideEffect.OpenUrl(url))
+    }
+
+    fun onLetterCloseClick() = intent {
+
+        val letterData = state.clickLetterData
+        if(letterData.state == "open"){
+            letterData.state = "read"
+            letterDao.update(letterData)
+        }
+        clickLetterDataChange(0)
+        loadData()
+
     }
 
     //편지 보상받기

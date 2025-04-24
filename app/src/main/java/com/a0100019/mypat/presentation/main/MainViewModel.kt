@@ -6,12 +6,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.item.ItemDao
+import com.a0100019.mypat.data.room.letter.Letter
+import com.a0100019.mypat.data.room.letter.LetterDao
 import com.a0100019.mypat.data.room.pet.Pat
 import com.a0100019.mypat.data.room.pet.PatDao
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.data.room.world.WorldDao
+import com.a0100019.mypat.presentation.setting.SettingSideEffect
+import com.google.firebase.storage.FirebaseStorage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -19,6 +23,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
@@ -26,6 +31,9 @@ import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 
@@ -34,7 +42,8 @@ class MainViewModel @Inject constructor(
     private val userDao: UserDao,
     private val worldDao: WorldDao,
     private val patDao: PatDao,
-    private val itemDao: ItemDao
+    private val itemDao: ItemDao,
+    private val letterDao: LetterDao
 
 ) : ViewModel(), ContainerHost<MainState, MainSideEffect> {
 
@@ -80,6 +89,42 @@ class MainViewModel @Inject constructor(
                 val userFlowDataList = userDao.getAllUserDataFlow()
                 val userDataList = userDao.getAllUserData()
 
+                //한달 이내 편지 찾기
+                val allLetterData = letterDao.getAllLetterData()
+                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                val todayDate = LocalDate.parse(userDataList.find { it.id == "date" }!!.value, formatter)
+                val showLetterData = allLetterData.firstOrNull {
+                    it.state == "open" && run {
+                        val itemDate = LocalDate.parse(it.date, formatter)
+                        val daysBetween = ChronoUnit.DAYS.between(itemDate, todayDate)
+                        daysBetween in 0..7
+                    }
+                }
+                if(showLetterData != null){
+                    val letterImages = showLetterData.image.split("@")
+                    val imageUrls = mutableListOf<String>()
+
+                    try {
+                        letterImages.forEach { imageName ->
+                            val uri = FirebaseStorage.getInstance()
+                                .reference.child(imageName)
+                                .downloadUrl.await()
+                            imageUrls.add(uri.toString())
+                        }
+
+                        reduce {
+                            state.copy(
+                                letterImages = imageUrls,
+                                showLetterData = showLetterData
+                            )
+                        }
+
+                    } catch (e: Exception) {
+                        // 실패 처리
+                        Log.e("ImageLoad", "이미지 URL 로딩 실패", e)
+                    }
+                }
+
                 // UI 상태 업데이트 (Main Dispatcher에서 실행)
                 withContext(Dispatchers.Main) {
                     reduce {
@@ -91,7 +136,7 @@ class MainViewModel @Inject constructor(
                             allMapDataList = allMapDataList,
                             patFlowWorldDataList = patFlowWorldDataList,
                             worldDataList = worldDataList,
-                            userDataList = userDataList
+                            userDataList = userDataList,
                         )
                     }
                 }
@@ -110,34 +155,60 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun worldDataDelete(id: String, type: String) = intent {
-        val currentList = state.worldDataList.toMutableList()
-        Log.e("e", "targetIndex${id}}")
-        val targetIndex = currentList.indexOfFirst { it.value == id && it.type == type }
-        Log.e("e", "targetIndex${targetIndex}}")
-        if (targetIndex == -1) return@intent // 못 찾았으면 종료
-
-        // targetIndex에 있는 데이터 삭제
-        currentList.removeAt(targetIndex)
-
-        val newUserDataList = state.userDataList.toMutableList()
-        if(type == "pat"){
-            newUserDataList.find { it.id == "pat" }!!.value3 =
-                ((newUserDataList.find { it.id == "pat" }!!.value3).toInt() - 1).toString()
-        } else {
-            newUserDataList.find { it.id == "item" }!!.value3 =
-                ((newUserDataList.find { it.id == "item" }!!.value3).toInt() - 1).toString()
+    fun onSituationChange(situation: String) = intent {
+        reduce {
+            state.copy(
+                situation = situation
+            )
         }
+    }
 
+    fun onLetterCloseClick() = intent {
+
+        val letterData = state.showLetterData
+        letterData.state = "read"
+        letterDao.update(letterData)
+        reduce {
+            state.copy(
+                showLetterData = Letter()
+            )
+        }
+        onSituationChange("")
+        loadData()
+
+    }
+
+    fun onLetterLinkClick() = intent {
+        val url = state.showLetterData.link
+        postSideEffect(MainSideEffect.OpenUrl(url))
+    }
+
+    //편지 보상받기
+    fun onLetterGetClick() = intent {
+
+        val letterData = state.showLetterData
+
+        if(letterData.reward == "money") {
+            userDao.update(id = "money", value = (state.userDataList.find { it.id == "money" }!!.value.toInt() + letterData.amount.toInt()).toString())
+        } else {
+            userDao.update(id = "money", value2 = (state.userDataList.find { it.id == "money" }!!.value2.toInt() + letterData.amount.toInt()).toString())
+        }
+        postSideEffect(MainSideEffect.Toast("보상 획득 : ${letterData.reward} +${letterData.amount}"))
+
+        letterData.state = "get"
+        letterDao.update(letterData)
 
         reduce {
             state.copy(
-                worldDataList = currentList.toList(),
-                userDataList =  newUserDataList
+                showLetterData = Letter()
             )
         }
 
+        onSituationChange("")
+        loadData()
+
     }
+
 
 }
 
@@ -150,14 +221,19 @@ data class MainState(
     val patFlowWorldDataList: Flow<List<Pat>> = flowOf(emptyList()),
     val worldDataList: List<World> = emptyList(),
     val userDataList: List<User> = emptyList(),
+    val letterDataList: List<Letter> = emptyList(),
+    val letterImages: List<String> = emptyList(),
 
     val mapData: World = World(),
     val dialogPatId: String = "0",
-    val dialogItemId: String = "0",
+    val showLetterData: Letter = Letter(),
+    val situation: String = ""
 
     )
 
 //상태와 관련없는 것
 sealed interface MainSideEffect{
     class Toast(val message:String): MainSideEffect
+    data class OpenUrl(val url: String) : MainSideEffect
+
 }

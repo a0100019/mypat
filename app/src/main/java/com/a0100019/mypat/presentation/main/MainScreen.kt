@@ -1,30 +1,39 @@
 package com.a0100019.mypat.presentation.main
 
 
+import android.content.Intent
+import android.net.Uri
 import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.data.room.item.Item
+import com.a0100019.mypat.data.room.letter.Letter
 import com.a0100019.mypat.data.room.pet.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.presentation.main.mainDialog.WorldAddDialog
 import com.a0100019.mypat.presentation.main.management.ManagementViewModel
+import com.a0100019.mypat.presentation.setting.LetterViewDialog
+import com.a0100019.mypat.presentation.setting.SettingSideEffect
+import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import com.a0100019.mypat.presentation.world.WorldScreen
 import kotlinx.coroutines.flow.Flow
@@ -58,7 +67,10 @@ fun MainScreen(
     mainViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
             is MainSideEffect.Toast -> Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
-
+            is MainSideEffect.OpenUrl -> {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(sideEffect.url))
+                context.startActivity(intent)
+            }
         }
     }
 
@@ -75,7 +87,11 @@ fun MainScreen(
         onThirdGameNavigateClick = onThirdGameNavigateClick,
         onWorldNavigateClick = onWorldNavigateClick,
 
+        onLetterGetClick = mainViewModel::onLetterGetClick,
+        onLetterCloseClick = mainViewModel::onLetterCloseClick,
+        onLetterLinkClick = mainViewModel::onLetterLinkClick,
         dialogPatIdChange = mainViewModel::dialogPatIdChange,
+        onSituationChange = mainViewModel::onSituationChange,
 
         mapUrl = mainState.mapData.value,
         patDataList = mainState.patDataList,
@@ -84,7 +100,10 @@ fun MainScreen(
         userFlowDataList = mainState.userFlowDataList,
         patFlowWorldDataList = mainState.patFlowWorldDataList,
         worldDataList = mainState.worldDataList,
-        userDataList = mainState.userDataList
+        userDataList = mainState.userDataList,
+        showLetterData = mainState.showLetterData,
+        situation = mainState.situation,
+        letterImages = mainState.letterImages
 
     )
 
@@ -104,6 +123,10 @@ fun MainScreen(
     onThirdGameNavigateClick: () -> Unit,
 
     dialogPatIdChange: (String) -> Unit,
+    onLetterGetClick: () -> Unit,
+    onLetterCloseClick: () -> Unit,
+    onLetterLinkClick: () -> Unit,
+    onSituationChange: (String) -> Unit,
 
     mapUrl: String,
     patDataList: List<Pat>,
@@ -113,8 +136,21 @@ fun MainScreen(
     patFlowWorldDataList: Flow<List<Pat>>,
     worldDataList: List<World>,
     userDataList: List<User>,
+    showLetterData: Letter,
+    situation: String,
+    letterImages: List<String>,
 
     ) {
+
+    when(situation) {
+        "letter" -> LetterViewDialog(
+            onClose = onLetterCloseClick,
+            onLetterLinkClick = onLetterLinkClick,
+            onLetterGetClick = onLetterGetClick,
+            clickLetterData = showLetterData,
+            letterImages = letterImages
+        )
+    }
 
     Surface {
         Column (
@@ -123,27 +159,43 @@ fun MainScreen(
             verticalArrangement = Arrangement.SpaceBetween
         ){
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(10.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Button(
-                    onClick = onInformationNavigateClick
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text("내 정보")
+                    Button(
+                        onClick = onInformationNavigateClick
+                    ) {
+                        Text("내 정보")
+                    }
+
+                    val users by userFlowDataList.collectAsState(initial = emptyList())
+                    Text("money : ${users.find { it.id == "money" }?.value} | cash : ${users.find { it.id == "money" }?.value2}")
+
+                    Button(
+                        onClick = onSettingNavigateClick
+                    ) {
+                        Text("설정")
+                    }
+
                 }
 
-                val users by userFlowDataList.collectAsState(initial = emptyList())
-                Text("money : ${users.find { it.id == "money" }?.value} | cash : ${users.find { it.id == "money" }?.value2}")
-
-                Button(
-                    onClick = onSettingNavigateClick
-                ) {
-                    Text("설정")
+                //편지 이미지
+                if(showLetterData.id != 0){
+                    JustImage(
+                        filePath = "etc/letter.json",
+                        modifier = Modifier
+                            .size(100.dp)
+                            .clickable {
+                                onSituationChange("letter")
+                            }
+                    )
                 }
-
             }
 
             Column {
@@ -247,6 +299,13 @@ fun MainScreenPreview() {
             patFlowWorldDataList = flowOf(emptyList()),
             worldDataList = emptyList(),
             userDataList = emptyList(),
+            onSituationChange = {},
+            onLetterGetClick = {},
+            onLetterLinkClick = {},
+            onLetterCloseClick = {},
+            situation = "",
+            showLetterData = Letter(),
+            letterImages = emptyList()
         )
     }
 }
