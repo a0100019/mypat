@@ -155,6 +155,22 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun onLovePatChange(patId: Int) = intent {
+        if(patId == 0){
+            reduce {
+                state.copy(
+                    lovePatData = Pat(url = "")
+                )
+            }
+        } else {
+            reduce {
+                state.copy(
+                    lovePatData = state.patDataList.find { it.id == patId }!!
+                )
+            }
+        }
+    }
+
     fun onSituationChange(situation: String) = intent {
         reduce {
             state.copy(
@@ -162,6 +178,8 @@ class MainViewModel @Inject constructor(
             )
         }
     }
+
+
 
     fun onLetterCloseClick() = intent {
 
@@ -227,7 +245,8 @@ data class MainState(
     val mapData: World = World(),
     val dialogPatId: String = "0",
     val showLetterData: Letter = Letter(),
-    val situation: String = ""
+    val situation: String = "",
+    val lovePatData: Pat = Pat(url = "")
 
     )
 

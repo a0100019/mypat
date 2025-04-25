@@ -25,7 +25,7 @@ import com.a0100019.mypat.presentation.login.LoginScreen
 import com.a0100019.mypat.presentation.main.MainScreen
 import com.a0100019.mypat.presentation.setting.SettingScreen
 import com.a0100019.mypat.presentation.store.StoreScreen
-import com.a0100019.mypat.presentation.world.WorldScreen
+import com.a0100019.mypat.presentation.main.world.WorldScreen
 
 @Composable
 fun MainNavHost() {

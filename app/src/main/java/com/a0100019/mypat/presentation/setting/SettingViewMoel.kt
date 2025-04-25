@@ -150,6 +150,7 @@ class SettingViewModel @Inject constructor(
         val itemDataList = state.itemDataList
         val patDataList = state.patDataList
         val worldDataList = state.worldDataList
+        val batch = db.batch()
 
         val userData = mapOf(
             "cash" to userDataList.find { it.id == "money"}!!.value2,
@@ -205,14 +206,48 @@ class SettingViewModel @Inject constructor(
             .toMap()
 
         val finalData = userData + mapOf("world" to worldMap)
-
-        val batch = Firebase.firestore.batch()
-
         val userDocRef = Firebase.firestore.collection("users").document(userId)
-
         batch.set(userDocRef, finalData, SetOptions.merge()) // 필드 기준 병합 저장
 
-// 커밋 실행
+        //펫 데이터 저장
+        val patCollectionRef = db.collection("users")
+            .document(userId)
+            .collection("pat")
+
+        patDataList
+            .filter { it.date != "0" }
+            .forEach { patData ->
+                val docRef = patCollectionRef.document(patData.id.toString())
+                val data = mapOf(
+                    "date" to patData.date,
+                    "love" to patData.love.toString(),
+                    "size" to patData.sizeFloat.toString(),
+                    "x" to patData.x.toString(),
+                    "y" to patData.y.toString()
+                )
+                batch.set(docRef, data)
+            }
+
+        val itemCollectionRef = db.collection("users")
+            .document(userId)
+            .collection("pat")
+
+        itemDataList
+            .filter { it.date != "0" }
+            .forEach { itemData ->
+                val docRef = itemCollectionRef.document(itemData.id.toString())
+                val data = mapOf(
+                    "date" to itemData.date,
+                    "size" to itemData.sizeFloat.toString(),
+                    "x" to itemData.x.toString(),
+                    "y" to itemData.y.toString()
+                )
+                batch.set(docRef, data)
+            }
+
+
+
+// 전체 커밋 실행
         batch.commit()
             .addOnSuccessListener {
                 onSignOutClick()

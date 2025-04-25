@@ -1,4 +1,4 @@
-package com.a0100019.mypat.presentation.world
+package com.a0100019.mypat.presentation.main.world
 
 import android.widget.Toast
 import androidx.compose.foundation.background

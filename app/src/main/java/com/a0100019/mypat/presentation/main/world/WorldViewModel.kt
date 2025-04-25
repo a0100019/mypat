@@ -1,4 +1,4 @@
-package com.a0100019.mypat.presentation.world
+package com.a0100019.mypat.presentation.main.world
 
 import android.util.Log
 import androidx.lifecycle.ViewModel

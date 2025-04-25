@@ -29,13 +29,12 @@ import com.a0100019.mypat.data.room.letter.Letter
 import com.a0100019.mypat.data.room.pet.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.world.World
-import com.a0100019.mypat.presentation.main.mainDialog.WorldAddDialog
+import com.a0100019.mypat.presentation.main.mainDialog.LovePatDialog
 import com.a0100019.mypat.presentation.main.management.ManagementViewModel
 import com.a0100019.mypat.presentation.setting.LetterViewDialog
-import com.a0100019.mypat.presentation.setting.SettingSideEffect
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
-import com.a0100019.mypat.presentation.world.WorldScreen
+import com.a0100019.mypat.presentation.main.world.WorldViewScreen
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import org.orbitmvi.orbit.compose.collectAsState
@@ -92,6 +91,7 @@ fun MainScreen(
         onLetterLinkClick = mainViewModel::onLetterLinkClick,
         dialogPatIdChange = mainViewModel::dialogPatIdChange,
         onSituationChange = mainViewModel::onSituationChange,
+        onLovePatChange = mainViewModel::onLovePatChange,
 
         mapUrl = mainState.mapData.value,
         patDataList = mainState.patDataList,
@@ -103,7 +103,8 @@ fun MainScreen(
         userDataList = mainState.userDataList,
         showLetterData = mainState.showLetterData,
         situation = mainState.situation,
-        letterImages = mainState.letterImages
+        letterImages = mainState.letterImages,
+        lovePatData = mainState.lovePatData
 
     )
 
@@ -127,6 +128,7 @@ fun MainScreen(
     onLetterCloseClick: () -> Unit,
     onLetterLinkClick: () -> Unit,
     onSituationChange: (String) -> Unit,
+    onLovePatChange: (Int) -> Unit,
 
     mapUrl: String,
     patDataList: List<Pat>,
@@ -139,6 +141,7 @@ fun MainScreen(
     showLetterData: Letter,
     situation: String,
     letterImages: List<String>,
+    lovePatData: Pat,
 
     ) {
 
@@ -149,6 +152,12 @@ fun MainScreen(
             onLetterGetClick = onLetterGetClick,
             clickLetterData = showLetterData,
             letterImages = letterImages
+        )
+    }
+
+    if(lovePatData.id != 0) {
+        LovePatDialog(
+            lovePatData = lovePatData
         )
     }
 
@@ -228,6 +237,7 @@ fun MainScreen(
                     onThirdGameNavigateClick = onThirdGameNavigateClick,
                     patFlowWorldDataList = patFlowWorldDataList,
                     worldDataList = worldDataList,
+                    onLovePatChange = onLovePatChange
                 )
 
 
@@ -305,7 +315,9 @@ fun MainScreenPreview() {
             onLetterCloseClick = {},
             situation = "",
             showLetterData = Letter(),
-            letterImages = emptyList()
+            letterImages = emptyList(),
+            onLovePatChange = {},
+            lovePatData = Pat(url = "pat/cat.json")
         )
     }
 }
