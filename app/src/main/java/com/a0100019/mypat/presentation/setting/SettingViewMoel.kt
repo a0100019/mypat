@@ -3,10 +3,13 @@ package com.a0100019.mypat.presentation.setting
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.a0100019.mypat.data.room.diary.Diary
 import com.a0100019.mypat.data.room.diary.DiaryDao
+import com.a0100019.mypat.data.room.english.English
 import com.a0100019.mypat.data.room.english.EnglishDao
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.item.ItemDao
+import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiom
 import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiomDao
 import com.a0100019.mypat.data.room.letter.Letter
 import com.a0100019.mypat.data.room.letter.LetterDao
@@ -15,6 +18,7 @@ import com.a0100019.mypat.data.room.pet.PatDao
 import com.a0100019.mypat.data.room.sudoku.SudokuDao
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
+import com.a0100019.mypat.data.room.walk.Walk
 import com.a0100019.mypat.data.room.walk.WalkDao
 import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.data.room.world.WorldDao
@@ -79,6 +83,10 @@ class SettingViewModel @Inject constructor(
         val patDataList = patDao.getAllPatData()
         val worldDataList = worldDao.getAllWorldData()
         val letterDataList = letterDao.getAllLetterData()
+        val walkDataList = walkDao.getAllWalkData()
+        val englishDataList = englishDao.getOpenEnglishData()
+        val koreanIdiomDataList = koreanIdiomDao.getOpenKoreanIdiomData()
+        val diaryDataList = diaryDao.getAllDiaryData()
 
         reduce {
             state.copy(
@@ -87,7 +95,11 @@ class SettingViewModel @Inject constructor(
                 itemDataList = itemDataList,
                 patDataList = patDataList,
                 worldDataList = worldDataList,
-                letterDataList = letterDataList
+                letterDataList = letterDataList,
+                walkDataList = walkDataList,
+                englishDataList = englishDataList,
+                koreanIdiomDataList = koreanIdiomDataList,
+                diaryDataList = diaryDataList
             )
         }
     }
@@ -150,6 +162,11 @@ class SettingViewModel @Inject constructor(
         val itemDataList = state.itemDataList
         val patDataList = state.patDataList
         val worldDataList = state.worldDataList
+        val walkDataList = state.walkDataList
+        val englishDataList = state.englishDataList
+        val diaryDataList = state.diaryDataList
+        val koreanIdiomDataList = state.koreanIdiomDataList
+
         val batch = db.batch()
 
         val userData = mapOf(
@@ -230,7 +247,7 @@ class SettingViewModel @Inject constructor(
 
         val itemCollectionRef = db.collection("users")
             .document(userId)
-            .collection("pat")
+            .collection("item")
 
         itemDataList
             .filter { it.date != "0" }
@@ -244,6 +261,41 @@ class SettingViewModel @Inject constructor(
                 )
                 batch.set(docRef, data)
             }
+
+        val dailyCollectionRef = db.collection("users")
+            .document(userId)
+            .collection("daily")
+
+
+
+        val walkCollectionRef = db.collection("users")
+            .document(userId)
+            .collection("walk")
+
+        walkDataList
+            .forEach { walkData ->
+                val docRef = walkCollectionRef.document(walkData.id.toString())
+                val data = mapOf(
+                    "date" to walkData.date,
+                    "count" to walkData.count,
+                    "steps" to walkData.steps
+                )
+                batch.set(docRef, data)
+            }
+
+        val englishCollectionRef = db.collection("users")
+            .document(userId)
+            .collection("english")
+
+        englishDataList
+            .forEach { englishData ->
+                val docRef = englishCollectionRef.document(englishData.id.toString())
+                val data = mapOf(
+                    "date" to englishData.date,
+                    "state" to englishData.state,
+                )
+            }
+
 
 
 
@@ -521,6 +573,10 @@ data class SettingState(
     val patDataList: List<Pat> = emptyList(),
     val itemDataList: List<Item> = emptyList(),
     val worldDataList: List<World> = emptyList(),
+    val walkDataList: List<Walk> = emptyList(),
+    val englishDataList: List<English> = emptyList(),
+    val koreanIdiomDataList: List<KoreanIdiom> = emptyList(),
+    val diaryDataList: List<Diary> = emptyList(),
     val settingSituation: String = "",
     val imageUrl: String = "",
     val editText: String = "",

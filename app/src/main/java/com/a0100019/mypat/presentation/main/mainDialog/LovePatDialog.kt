@@ -3,6 +3,7 @@ package com.a0100019.mypat.presentation.main.mainDialog
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -26,25 +28,37 @@ import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.pet.Pat
 import com.a0100019.mypat.presentation.ui.image.etc.LoveHorizontalLine
+import com.a0100019.mypat.presentation.ui.image.item.DraggableItemImage
 import com.a0100019.mypat.presentation.ui.image.pat.DialogPatImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
 @Composable
 fun LovePatDialog(
     lovePatData: Pat,
+    onItemDrag: (String, Float, Float) -> Unit,
     
 ) {
 
     Dialog(
         onDismissRequest = {  }
     ) {
-        Box(
+        BoxWithConstraints(
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight(0.8f)
                 .background(Color.White, shape = RoundedCornerShape(16.dp))
                 .padding(16.dp)
         ) {
+
+            val density = LocalDensity.current
+
+            // Surface 크기 가져오기 (px → dp 변환)
+            val surfaceWidth = constraints.maxWidth
+            val surfaceHeight = constraints.maxHeight
+
+            val surfaceWidthDp = with(density) { surfaceWidth.toDp() }
+            val surfaceHeightDp = with(density) { surfaceHeight.toDp() }
+
             Column(modifier = Modifier.fillMaxSize()) {
 
                 Box(
@@ -66,6 +80,17 @@ fun LovePatDialog(
                     }
                 }
 
+                DraggableItemImage(
+                    itemUrl = "etc/hand.png",
+                    surfaceWidthDp = surfaceWidthDp,
+                    surfaceHeightDp = surfaceHeightDp,
+                    xFloat = itemData.x,
+                    yFloat = itemData.y,
+                    sizeFloat = 0.2f,
+                    onClick = {  }
+                ) { newXFloat, newYFloat ->
+                    onItemDrag(itemData.id.toString(), newXFloat, newYFloat)
+                }
 
 
             }
@@ -79,7 +104,8 @@ fun LovePatDialog(
 fun LovePatDialogPreview() {
     MypatTheme {
         LovePatDialog(
-            lovePatData = Pat(url = "pat/cat.json")
+            lovePatData = Pat(url = "pat/cat.json"),
+            onItemDrag = { id, newX, newY -> },
         )
     }
 }

@@ -227,6 +227,20 @@ class MainViewModel @Inject constructor(
 
     }
 
+    fun onLoveItemDrag(itemId: String, newX: Float, newY: Float) = intent {
+        val targetItem = state.itemDataList.find { it.id.toString() == itemId }
+        if (targetItem != null) {
+            val updatedItem = targetItem.copy(x = newX, y = newY)
+            val updatedItemDataList = state.itemDataList.toMutableList().apply {
+                set(indexOf(targetItem), updatedItem)
+            }
+
+            reduce {
+                state.copy(itemDataList = updatedItemDataList)
+            }
+        }
+    }
+
 
 }
 
