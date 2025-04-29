@@ -92,6 +92,7 @@ fun MainScreen(
         dialogPatIdChange = mainViewModel::dialogPatIdChange,
         onSituationChange = mainViewModel::onSituationChange,
         onLovePatChange = mainViewModel::onLovePatChange,
+        onLoveItemDrag = mainViewModel::onLoveItemDrag,
 
         mapUrl = mainState.mapData.value,
         patDataList = mainState.patDataList,
@@ -104,7 +105,10 @@ fun MainScreen(
         showLetterData = mainState.showLetterData,
         situation = mainState.situation,
         letterImages = mainState.letterImages,
-        lovePatData = mainState.lovePatData
+        lovePatData = mainState.lovePatData,
+        loveItemData1 = mainState.loveItemData1,
+        loveItemData2 = mainState.loveItemData2,
+        loveItemData3 = mainState.loveItemData3
 
     )
 
@@ -129,6 +133,8 @@ fun MainScreen(
     onLetterLinkClick: () -> Unit,
     onSituationChange: (String) -> Unit,
     onLovePatChange: (Int) -> Unit,
+    onLoveItemDrag: (String, Float, Float) -> Unit,
+
 
     mapUrl: String,
     patDataList: List<Pat>,
@@ -142,6 +148,9 @@ fun MainScreen(
     situation: String,
     letterImages: List<String>,
     lovePatData: Pat,
+    loveItemData1: Item,
+    loveItemData2: Item,
+    loveItemData3: Item,
 
     ) {
 
@@ -157,7 +166,11 @@ fun MainScreen(
 
     if(lovePatData.id != 0) {
         LovePatDialog(
-            lovePatData = lovePatData
+            lovePatData = lovePatData,
+            loveItemData1 = loveItemData1,
+            loveItemData2 = loveItemData2,
+            loveItemData3 = loveItemData3,
+            onItemDrag = onLoveItemDrag
         )
     }
 
@@ -304,7 +317,7 @@ fun MainScreenPreview() {
             patDataList = listOf(Pat(url = "pat/cat.json")),
             itemDataList = listOf(Item(url = "item/table.png")),
             dialogPatId = "0",
-            dialogPatIdChange = { },
+            dialogPatIdChange = {},
             userFlowDataList = flowOf(listOf(User(id = "money", value = "1000"), User(id = "cash", value = "100"))),
             patFlowWorldDataList = flowOf(emptyList()),
             worldDataList = emptyList(),
@@ -317,7 +330,13 @@ fun MainScreenPreview() {
             showLetterData = Letter(),
             letterImages = emptyList(),
             onLovePatChange = {},
-            lovePatData = Pat(url = "pat/cat.json")
+            lovePatData = Pat(url = "pat/cat.json"),
+            onLoveItemDrag = { id, newX, newY -> },
+            loveItemData1 = Item(id = 1, name = "쓰다듬기", url = "etc/hand.png", x = 0.2f, y = 0.7f, sizeFloat = 0.2f),
+            loveItemData2 = Item(id = 2, name = "장난감", url = "etc/arrow.png", x = 0.5f, y = 0.7f, sizeFloat = 0.2f),
+            loveItemData3 = Item(id = 3, name = "비행기", url = "etc/lock.png", x = 0.8f, y = 0.7f, sizeFloat = 0.2f),
+
+
         )
     }
 }

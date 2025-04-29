@@ -228,18 +228,69 @@ class MainViewModel @Inject constructor(
     }
 
     fun onLoveItemDrag(itemId: String, newX: Float, newY: Float) = intent {
-        val targetItem = state.itemDataList.find { it.id.toString() == itemId }
-        if (targetItem != null) {
-            val updatedItem = targetItem.copy(x = newX, y = newY)
-            val updatedItemDataList = state.itemDataList.toMutableList().apply {
-                set(indexOf(targetItem), updatedItem)
+        if(state.situation == "lovePatOnGoing"){
+            val targetItem = when (itemId) {
+                "1" -> state.loveItemData1
+                "2" -> state.loveItemData2
+                else -> state.loveItemData3
+            }
+
+            var updatedItem = targetItem.copy(x = newX, y = newY)
+
+            if (newY < 0.3f) {
+                if (targetItem.date.toInt() % 2 == 0) {
+                    if (newX > 0.4f) {
+                        updatedItem =
+                            updatedItem.copy(date = (targetItem.date.toInt() + 1).toString())
+                    }
+                } else {
+                    if (newX < 0.4f) {
+                        updatedItem =
+                            updatedItem.copy(date = (targetItem.date.toInt() + 1).toString())
+                    }
+                }
             }
 
             reduce {
-                state.copy(itemDataList = updatedItemDataList)
+                when (itemId) {
+                    "1" -> state.copy(loveItemData1 = updatedItem)
+                    "2" -> state.copy(loveItemData2 = updatedItem)
+                    else -> state.copy(loveItemData3 = updatedItem)
+                }
+
+            }
+
+            if (updatedItem.date.toInt() > 6) {
+                reduce {
+                    state.copy(situation = "lovePatStop")
+                }
+                lovePatCheck(itemId)
             }
         }
     }
+
+    fun lovePatCheck(itemId : String) = intent {
+        val successId = (1..3).random().toString()
+
+        if(successId == itemId) {
+            postSideEffect(MainSideEffect.Toast("성공"))
+            reduce {
+                state.copy(
+                    situation = "lovePatSuccess"
+                )
+            }
+        } else {
+            postSideEffect(MainSideEffect.Toast("실패"))
+            reduce {
+                state.copy(
+                    situation = "lovePatFail"
+                )
+            }
+        }
+    }
+
+
+
 
 
 }
@@ -260,7 +311,11 @@ data class MainState(
     val dialogPatId: String = "0",
     val showLetterData: Letter = Letter(),
     val situation: String = "",
-    val lovePatData: Pat = Pat(url = "")
+    val lovePatData: Pat = Pat(url = ""),
+    val loveItemData1: Item = Item(id = 1, name = "쓰다듬기", url = "etc/hand.png", x = 0.5f, y = 0.5f, sizeFloat = 0.2f),
+    val loveItemData2: Item = Item(id = 2, name = "장난감", url = "etc/arrow.png", x = 0.5f, y = 0.7f, sizeFloat = 0.2f),
+    val loveItemData3: Item = Item(id = 3, name = "비행기", url = "etc/lock.png", x = 0.8f, y = 0.7f, sizeFloat = 0.2f),
+    val loveAmount: Int = 100
 
     )
 
