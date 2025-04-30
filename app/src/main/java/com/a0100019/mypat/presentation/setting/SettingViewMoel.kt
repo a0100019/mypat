@@ -166,6 +166,7 @@ class SettingViewModel @Inject constructor(
         val englishDataList = state.englishDataList
         val diaryDataList = state.diaryDataList
         val koreanIdiomDataList = state.koreanIdiomDataList
+        val letterDataList = state.letterDataList
 
         val batch = db.batch()
 
@@ -177,11 +178,19 @@ class SettingViewModel @Inject constructor(
                 "warning" to userDataList.find {it.id == "community"}!!.value2
             ),
             "firstDate" to userDataList.find { it.id == "date"}!!.value3,
+            "game" to mapOf(
+                "firstGame" to userDataList.find { it.id == "firstGame"}!!.value,
+                "secondGame" to userDataList.find { it.id == "secondGame"}!!.value,
+                "thirdGameEasy" to userDataList.find { it.id == "thirdGame"}!!.value,
+                "thirdGameNormal" to userDataList.find { it.id == "thirdGame"}!!.value2,
+                "thirdGameHard" to userDataList.find { it.id == "thirdGame"}!!.value3,
+                ),
             "item" to mapOf(
                 "openItem" to itemDataList.count { it.date != "0"}.toString(),
                 "openItemSpace" to userDataList.find { it.id == "item"}!!.value2,
                 "useItem" to userDataList.find { it.id == "item"}!!.value3
             ),
+            "lastLogIn" to userDataList.find { it.id == "auth"}!!.value3,
             "map" to worldDataList.find { it.id == 1}!!.value,
             "money" to userDataList.find { it.id == "money"}!!.value,
             "name" to userDataList.find { it.id == "name"}!!.value,
@@ -190,6 +199,7 @@ class SettingViewModel @Inject constructor(
                 "openPatSpace" to userDataList.find { it.id == "pat"}!!.value2,
                 "usePat" to userDataList.find { it.id == "pat"}!!.value3
             ),
+            "tag" to userDataList.find { it.id == "auth"}!!.value2,
             "totalDate" to userDataList.find { it.id == "date"}!!.value2,
         )
 
@@ -262,40 +272,45 @@ class SettingViewModel @Inject constructor(
                 batch.set(docRef, data)
             }
 
-        val dailyCollectionRef = db.collection("users")
+        val letterCollectionRef = db.collection("users")
             .document(userId)
-            .collection("daily")
+            .collection("letter")
 
-
-
-        val walkCollectionRef = db.collection("users")
-            .document(userId)
-            .collection("walk")
-
-        walkDataList
-            .forEach { walkData ->
-                val docRef = walkCollectionRef.document(walkData.id.toString())
+        letterDataList
+            .forEach { letterData ->
+                val docRef = letterCollectionRef.document(letterData.id.toString())
                 val data = mapOf(
-                    "date" to walkData.date,
-                    "count" to walkData.count,
-                    "steps" to walkData.steps
+                    "date" to letterData.date,
+                    "state" to letterData.state
                 )
                 batch.set(docRef, data)
             }
 
-        val englishCollectionRef = db.collection("users")
+
+        val dailyCollectionRef = db.collection("users")
             .document(userId)
-            .collection("english")
+            .collection("daily")
 
-        englishDataList
-            .forEach { englishData ->
-                val docRef = englishCollectionRef.document(englishData.id.toString())
-                val data = mapOf(
-                    "date" to englishData.date,
-                    "state" to englishData.state,
+        for (id in 1..userDataList.find { it.id == "date" }!!.value2.toInt()) {
+            val docRef = dailyCollectionRef.document(id.toString())
+            val data = mapOf(
+                "date" to diaryDataList.find { it.id == id }!!.date,
+                "diary" to mapOf(
+                    "emotion" to diaryDataList.find { it.id == id }!!.emotion,
+                    "state" to diaryDataList.find { it.id == id }!!.state,
+                    "contents" to diaryDataList.find { it.id == id }!!.contents,
+                ),
+                "state" to mapOf(
+                    "english" to englishDataList.find { it.id == id}!!.state,
+                    "koreanIdiom" to koreanIdiomDataList.find { it.id == id}!!.state
+                ),
+                "walk" to mapOf(
+                    "count" to walkDataList.find { it.id == id}!!.count,
+                    "steps" to walkDataList.find { it.id == id}!!.steps,
                 )
-            }
-
+            )
+            batch.set(docRef, data)
+        }
 
 
 

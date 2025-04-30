@@ -93,6 +93,8 @@ fun MainScreen(
         onSituationChange = mainViewModel::onSituationChange,
         onLovePatChange = mainViewModel::onLovePatChange,
         onLoveItemDrag = mainViewModel::onLoveItemDrag,
+        onLovePatNextClick = mainViewModel::onLovePatNextClick,
+        onLovePatStopClick = mainViewModel::onLovePatStopClick,
 
         mapUrl = mainState.mapData.value,
         patDataList = mainState.patDataList,
@@ -108,7 +110,9 @@ fun MainScreen(
         lovePatData = mainState.lovePatData,
         loveItemData1 = mainState.loveItemData1,
         loveItemData2 = mainState.loveItemData2,
-        loveItemData3 = mainState.loveItemData3
+        loveItemData3 = mainState.loveItemData3,
+        loveAmount = mainState.loveAmount,
+        timer = mainState.timer
 
     )
 
@@ -134,7 +138,8 @@ fun MainScreen(
     onSituationChange: (String) -> Unit,
     onLovePatChange: (Int) -> Unit,
     onLoveItemDrag: (String, Float, Float) -> Unit,
-
+    onLovePatNextClick: () -> Unit,
+    onLovePatStopClick: () -> Unit,
 
     mapUrl: String,
     patDataList: List<Pat>,
@@ -151,6 +156,8 @@ fun MainScreen(
     loveItemData1: Item,
     loveItemData2: Item,
     loveItemData3: Item,
+    loveAmount: Int,
+    timer: String
 
     ) {
 
@@ -170,7 +177,11 @@ fun MainScreen(
             loveItemData1 = loveItemData1,
             loveItemData2 = loveItemData2,
             loveItemData3 = loveItemData3,
-            onItemDrag = onLoveItemDrag
+            onItemDrag = onLoveItemDrag,
+            situation = situation,
+            onLovePatNextClick = onLovePatNextClick,
+            onLovePatStopClick = onLovePatStopClick,
+            loveAmount = loveAmount
         )
     }
 
@@ -227,6 +238,9 @@ fun MainScreen(
                         .padding(end = 10.dp),
                     horizontalArrangement = Arrangement.End
                 ) {
+                    Text(
+                        text = timer
+                    )
                     Button(
                         onClick = onCommunityNavigateClick
                     ) {
@@ -335,6 +349,10 @@ fun MainScreenPreview() {
             loveItemData1 = Item(id = 1, name = "쓰다듬기", url = "etc/hand.png", x = 0.2f, y = 0.7f, sizeFloat = 0.2f),
             loveItemData2 = Item(id = 2, name = "장난감", url = "etc/arrow.png", x = 0.5f, y = 0.7f, sizeFloat = 0.2f),
             loveItemData3 = Item(id = 3, name = "비행기", url = "etc/lock.png", x = 0.8f, y = 0.7f, sizeFloat = 0.2f),
+            loveAmount = 100,
+            onLovePatNextClick = {},
+            onLovePatStopClick = {},
+            timer = "11:00"
 
 
         )

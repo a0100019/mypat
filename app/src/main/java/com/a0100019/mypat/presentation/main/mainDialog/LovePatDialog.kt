@@ -39,7 +39,11 @@ fun LovePatDialog(
     onItemDrag: (String, Float, Float) -> Unit,
     loveItemData1: Item,
     loveItemData2: Item,
-    loveItemData3: Item
+    loveItemData3: Item,
+    loveAmount: Int,
+    onLovePatNextClick: () -> Unit,
+    onLovePatStopClick: () -> Unit,
+    situation: String,
     
 ) {
 
@@ -88,41 +92,58 @@ fun LovePatDialog(
             }
 
 
-            DraggableItemImage(
-                itemUrl = loveItemData1.url,
-                surfaceWidthDp = surfaceWidthDp,
-                surfaceHeightDp = surfaceHeightDp,
-                xFloat = loveItemData1.x,
-                yFloat = loveItemData1.y,
-                sizeFloat = 0.2f,
-                onClick = {  }
-            ) { newXFloat, newYFloat ->
-                onItemDrag(loveItemData1.id.toString(), newXFloat, newYFloat)
+            if(situation == "lovePatOnGoing"){
+                DraggableItemImage(
+                    itemUrl = loveItemData1.url,
+                    surfaceWidthDp = surfaceWidthDp,
+                    surfaceHeightDp = surfaceHeightDp,
+                    xFloat = loveItemData1.x,
+                    yFloat = loveItemData1.y,
+                    sizeFloat = 0.2f,
+                    onClick = { }
+                ) { newXFloat, newYFloat ->
+                    onItemDrag(loveItemData1.id.toString(), newXFloat, newYFloat)
+                }
+
+                DraggableItemImage(
+                    itemUrl = loveItemData2.url,
+                    surfaceWidthDp = surfaceWidthDp,
+                    surfaceHeightDp = surfaceHeightDp,
+                    xFloat = loveItemData2.x,
+                    yFloat = loveItemData2.y,
+                    sizeFloat = 0.2f,
+                    onClick = { }
+                ) { newXFloat, newYFloat ->
+                    onItemDrag(loveItemData2.id.toString(), newXFloat, newYFloat)
+                }
+
+
+                DraggableItemImage(
+                    itemUrl = loveItemData3.url,
+                    surfaceWidthDp = surfaceWidthDp,
+                    surfaceHeightDp = surfaceHeightDp,
+                    xFloat = loveItemData3.x,
+                    yFloat = loveItemData3.y,
+                    sizeFloat = 0.2f,
+                    onClick = { }
+                ) { newXFloat, newYFloat ->
+                    onItemDrag(loveItemData3.id.toString(), newXFloat, newYFloat)
+                }
             }
 
-            DraggableItemImage(
-                itemUrl = loveItemData2.url,
-                surfaceWidthDp = surfaceWidthDp,
-                surfaceHeightDp = surfaceHeightDp,
-                xFloat = loveItemData2.x,
-                yFloat = loveItemData2.y,
-                sizeFloat = 0.2f,
-                onClick = {  }
-            ) { newXFloat, newYFloat ->
-                onItemDrag(loveItemData2.id.toString(), newXFloat, newYFloat)
-            }
+            when(situation) {
+                "lovePatSuccess" -> Button(
+                    onClick = onLovePatNextClick
+                ) {
+                    Text("한번 더")
+                }
 
+                "lovePatFail" -> Button(
+                    onClick = onLovePatStopClick
+                ) {
+                    Text("확인")
+                }
 
-            DraggableItemImage(
-                itemUrl = loveItemData3.url,
-                surfaceWidthDp = surfaceWidthDp,
-                surfaceHeightDp = surfaceHeightDp,
-                xFloat = loveItemData3.x,
-                yFloat = loveItemData3.y,
-                sizeFloat = 0.2f,
-                onClick = {  }
-            ) { newXFloat, newYFloat ->
-                onItemDrag(loveItemData3.id.toString(), newXFloat, newYFloat)
             }
 
 
@@ -140,7 +161,11 @@ fun LovePatDialogPreview() {
             onItemDrag = { id, newX, newY -> },
             loveItemData1 = Item(id = 1, name = "쓰다듬기", url = "etc/hand.png", x = 0.2f, y = 0.7f, sizeFloat = 0.2f),
             loveItemData2 = Item(id = 2, name = "장난감", url = "etc/hand.png", x = 0.5f, y = 0.7f, sizeFloat = 0.2f),
-            loveItemData3 = Item(id = 3, name = "비행기", url = "etc/hand.png", x = 0.8f, y = 0.7f, sizeFloat = 0.2f)
+            loveItemData3 = Item(id = 3, name = "비행기", url = "etc/hand.png", x = 0.8f, y = 0.7f, sizeFloat = 0.2f),
+            onLovePatNextClick = {},
+            onLovePatStopClick = {},
+            loveAmount = 100,
+            situation = "lovePatSuccess"
         )
     }
 }
