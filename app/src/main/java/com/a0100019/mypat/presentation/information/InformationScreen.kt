@@ -1,7 +1,6 @@
 package com.a0100019.mypat.presentation.information
 
 import android.widget.Toast
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -13,27 +12,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.data.room.item.Item
-import com.a0100019.mypat.data.room.pet.Pat
+import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
-import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
-import com.a0100019.mypat.presentation.ui.image.etc.KoreanIdiomImage
-import com.a0100019.mypat.presentation.ui.image.item.DraggableItemImage
 import com.a0100019.mypat.presentation.ui.image.item.WorldItemImage
-import com.a0100019.mypat.presentation.ui.image.pat.DraggablePatImage
-import com.a0100019.mypat.presentation.ui.image.pat.PatImage
 import com.a0100019.mypat.presentation.ui.image.pat.PatInformationImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
-import kotlinx.coroutines.flow.flowOf
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 

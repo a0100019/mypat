@@ -1,13 +1,12 @@
 package com.a0100019.mypat.presentation.ui.image.pat
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.a0100019.mypat.data.room.pet.Pat
+import com.a0100019.mypat.data.room.pat.Pat
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition

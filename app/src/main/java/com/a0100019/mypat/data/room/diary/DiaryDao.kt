@@ -17,6 +17,12 @@ interface DiaryDao {
     @Delete
     suspend fun delete(diary: Diary)
 
+    @Query("DELETE FROM diary_table")
+    suspend fun deleteAllDiary()
+
+    @Query("UPDATE sqlite_sequence SET seq = 0 WHERE name = 'diary_table'")
+    suspend fun resetDiaryPrimaryKey()
+
     @Update
     suspend fun update(diary: Diary)
 

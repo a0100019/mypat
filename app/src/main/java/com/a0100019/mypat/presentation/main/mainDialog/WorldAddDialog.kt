@@ -25,7 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.data.room.item.Item
-import com.a0100019.mypat.data.room.pet.Pat
+import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.presentation.ui.image.item.AddDialogItemImage
 import com.a0100019.mypat.presentation.ui.image.pat.AddDialogPatImage

@@ -22,7 +22,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.a0100019.mypat.data.room.item.Item
-import com.a0100019.mypat.data.room.pet.Pat
+import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.presentation.main.mainDialog.PatDialog
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage

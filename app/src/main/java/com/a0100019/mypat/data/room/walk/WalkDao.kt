@@ -18,6 +18,12 @@ interface WalkDao {
     @Delete
     suspend fun delete(walk: Walk)
 
+    @Query("DELETE FROM walk_table")
+    suspend fun deleteAllWalks()
+
+    @Query("UPDATE sqlite_sequence SET seq = 0 WHERE name = 'walk_table'")
+    suspend fun resetWalkPrimaryKey()
+
     @Update
     suspend fun update(walk: Walk)
 

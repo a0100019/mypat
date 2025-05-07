@@ -13,13 +13,12 @@ import com.a0100019.mypat.data.room.english.EnglishDao
 import com.a0100019.mypat.data.room.english.getEnglishInitialData
 import com.a0100019.mypat.data.room.item.ItemDao
 import com.a0100019.mypat.data.room.item.getItemInitialData
-import com.a0100019.mypat.data.room.pet.PatDao
+import com.a0100019.mypat.data.room.pat.PatDao
 import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiomDao
 import com.a0100019.mypat.data.room.koreanIdiom.getKoreanIdiomInitialData
 import com.a0100019.mypat.data.room.letter.LetterDao
 import com.a0100019.mypat.data.room.letter.getLetterInitialData
-import com.a0100019.mypat.data.room.pet.getPatInitialData
-import com.a0100019.mypat.data.room.sudoku.Sudoku
+import com.a0100019.mypat.data.room.pat.getPatInitialData
 import com.a0100019.mypat.data.room.sudoku.SudokuDao
 import com.a0100019.mypat.data.room.sudoku.getSudokuInitialData
 import com.a0100019.mypat.data.room.user.getUserInitialData

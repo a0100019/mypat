@@ -9,8 +9,8 @@ import com.a0100019.mypat.data.room.english.English
 import com.a0100019.mypat.data.room.english.EnglishDao
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.item.ItemDao
-import com.a0100019.mypat.data.room.pet.Pat
-import com.a0100019.mypat.data.room.pet.PatDao
+import com.a0100019.mypat.data.room.pat.Pat
+import com.a0100019.mypat.data.room.pat.PatDao
 import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiom
 import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiomDao
 import com.a0100019.mypat.data.room.letter.Letter

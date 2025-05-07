@@ -9,13 +9,12 @@ import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.item.ItemDao
 import com.a0100019.mypat.data.room.letter.Letter
 import com.a0100019.mypat.data.room.letter.LetterDao
-import com.a0100019.mypat.data.room.pet.Pat
-import com.a0100019.mypat.data.room.pet.PatDao
+import com.a0100019.mypat.data.room.pat.Pat
+import com.a0100019.mypat.data.room.pat.PatDao
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.data.room.world.WorldDao
-import com.a0100019.mypat.presentation.setting.SettingSideEffect
 import com.google.firebase.storage.FirebaseStorage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler

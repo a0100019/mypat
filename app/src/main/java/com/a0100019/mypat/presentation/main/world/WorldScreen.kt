@@ -26,7 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.data.room.item.Item
-import com.a0100019.mypat.data.room.pet.Pat
+import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.presentation.main.mainDialog.ItemSettingDialog

@@ -19,6 +19,9 @@ interface SudokuDao {
     @Delete
     suspend fun delete(sudoku: Sudoku)
 
+    @Query("DELETE FROM sudoku_table")
+    suspend fun deleteAllSudoku()
+
     //value 중 원하는 값 변경
     @Query("""
     UPDATE sudoku_table 

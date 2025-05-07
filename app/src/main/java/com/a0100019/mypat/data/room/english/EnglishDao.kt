@@ -18,6 +18,12 @@ interface EnglishDao {
     @Delete
     suspend fun delete(english: English)
 
+    @Query("DELETE FROM english_table")
+    suspend fun deleteAllEnglish()
+
+    @Query("UPDATE sqlite_sequence SET seq = 0 WHERE name = 'english_table'")
+    suspend fun resetEnglishPrimaryKey()
+
     @Update
     suspend fun update(english: English)
 

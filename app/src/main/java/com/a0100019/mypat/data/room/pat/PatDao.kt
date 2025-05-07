@@ -1,4 +1,4 @@
-package com.a0100019.mypat.data.room.pet
+package com.a0100019.mypat.data.room.pat
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -6,7 +6,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PatDao {
@@ -15,6 +14,12 @@ interface PatDao {
 
     @Delete
     suspend fun delete(pat: Pat)
+
+    @Query("DELETE FROM pat_table")
+    suspend fun deleteAllPats()
+
+    @Query("UPDATE sqlite_sequence SET seq = 0 WHERE name = 'pat_table'")
+    suspend fun resetPatPrimaryKey()
 
     @Update
     suspend fun update(item: Pat)
