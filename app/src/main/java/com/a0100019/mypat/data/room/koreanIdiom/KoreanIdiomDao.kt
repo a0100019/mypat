@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface KoreanIdiomDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(koreanIdiom: KoreanIdiom)
 
     @Delete
@@ -26,6 +26,9 @@ interface KoreanIdiomDao {
 
     @Update
     suspend fun update(koreanIdiom: KoreanIdiom)
+
+    @Query("UPDATE koreanIdiom_table SET date = :date, state = :state WHERE id = :id")
+    suspend fun updateDateAndState(id: Int, date: String, state: String)
 
     @Query("SELECT * FROM koreanIdiom_table ORDER BY id DESC")
     suspend fun getAllKoreanIdiomData(): List<KoreanIdiom>

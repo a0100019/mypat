@@ -10,7 +10,7 @@ import androidx.room.Update
 
 @Dao
 interface ItemDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(item: Item)
 
     @Delete

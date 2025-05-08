@@ -2,7 +2,9 @@ package com.a0100019.mypat.presentation.login
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import com.a0100019.mypat.data.room.diary.Diary
 import com.a0100019.mypat.data.room.diary.DiaryDao
+import com.a0100019.mypat.data.room.english.English
 import com.a0100019.mypat.data.room.english.EnglishDao
 import com.a0100019.mypat.data.room.item.ItemDao
 import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiomDao
@@ -12,6 +14,7 @@ import com.a0100019.mypat.data.room.sudoku.SudokuDao
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.walk.WalkDao
+import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.data.room.world.WorldDao
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
@@ -152,6 +155,65 @@ class LoginViewModel @Inject constructor(
                             userDao.update(id = "secondGame", value = secondGame)
                             userDao.update(id = "thirdGame", value = thirdGameEasy, value2 = thirdGameNormal, value3 = thirdGameHard)
 
+                            val itemMap = userDoc.get("item") as Map<String, String>
+//                            val openItem = itemMap["openItem"]
+                            val openItemSpace = itemMap["openItemSpace"]
+                            val useItem = itemMap["useItem"]
+                            userDao.update(id = "item", value2 = openItemSpace, value3 = useItem)
+
+                            val map = userDoc.getString("map")
+                            worldDao.insert(World(id = 1, value = map.toString(), type = "map"))
+
+                            val name = userDoc.getString("name")
+                            userDao.update(id = "name", value = name)
+                            val lastLogIn = userDoc.getString("lastLogIn")
+                            val tag = userDoc.getString("tag")
+                            userDao.update(id = "auth", value = it.uid, value2 = tag, value3 = lastLogIn)
+
+                            val patMap = userDoc.get("pat") as Map<String, String>
+                            val openPatSpace = patMap["openPatSpace"]
+                            val usePat = patMap["usePat"]
+                            userDao.update(id = "pat", value2 = openPatSpace, value3 = usePat)
+
+                            val worldMap = userDoc.get("world") as Map<String, Map<String, String>>
+                            for ((key, innerMap) in worldMap) {
+                                val id = innerMap["id"]
+                                val size = innerMap["size"]
+                                val type = innerMap["type"]
+                                val x = innerMap["x"]
+                                val y = innerMap["y"]
+
+                                worldDao.insert(World(value = id.toString(), type = type.toString()))
+//                                Log.d("Firestore", "[$key] color=$color, font=$font")
+                            }
+
+                            //daily 서브컬렉션
+                            val subCollectionSnapshot = db
+                                .collection("users")
+                                .document(it.uid)
+                                .collection("daily")
+                                .get()
+                                .await()
+
+                            for (doc in subCollectionSnapshot.documents) {
+                                val date = doc.getString("date")
+
+                                val diaryMap = doc.get("diary") as Map<String, String>
+                                val diaryContents = diaryMap["contents"]
+                                val diaryEmotion = diaryMap["emotion"]
+                                val diaryState = diaryMap["state"]
+                                diaryDao.insert(Diary(id = doc.id.toInt(), date = date.toString(), emotion = diaryEmotion.toString(), state = diaryState.toString(), contents = diaryContents.toString()))
+
+                                val stateMap = doc.get("state") as Map<String, String>
+                                val englishState = stateMap["english"]
+                                val koreanIdiomState = stateMap["koreanIdiom"]
+                                englishDao.updateDateAndState(id = doc.id.toInt(), date = date.toString(), state = englishState.toString())
+                                koreanIdiomDao.updateDateAndState(id = doc.id.toInt(), date = date.toString(), state = koreanIdiomState.toString())
+
+
+                                walk
+                            }
+
 
                         } else {
                             Log.w("login", "Firestore에 유저 문서가 없습니다")
@@ -169,6 +231,7 @@ class LoginViewModel @Inject constructor(
             postSideEffect(LoginSideEffect.Toast("로그인 실패: ${e.localizedMessage}"))
         } finally {
             reduce { state.copy(isLoggingIn = false) }
+            onNavigateToMainScreen()
         }
     }
 

@@ -9,7 +9,7 @@ import androidx.room.Update
 
 @Dao
 interface PatDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(pat: Pat)
 
     @Delete
