@@ -25,6 +25,9 @@ interface ItemDao {
     @Update
     suspend fun update(item: Item)
 
+    @Query("UPDATE item_table SET date = :date, x = :x, y = :y, sizeFloat = :size WHERE id = :id")
+    suspend fun updateItemData(id: Int, date: String, x: Float, y: Float, size: Float)
+
     @Query("SELECT * FROM item_table WHERE type != 'map' ORDER BY id DESC")
     suspend fun getAllItemData(): List<Item>
 

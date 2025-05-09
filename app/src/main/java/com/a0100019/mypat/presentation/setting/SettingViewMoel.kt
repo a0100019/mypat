@@ -256,53 +256,63 @@ class SettingViewModel @Inject constructor(
         //펫 데이터 저장
         val patCollectionRef = db.collection("users")
             .document(userId)
-            .collection("pat")
+            .collection("dataCollection")
 
+        val combinedPatData = mutableMapOf<String, Any>()
         patDataList
-            .filter { it.date != "0" }
-            .forEach { patData ->
-                val docRef = patCollectionRef.document(patData.id.toString())
-                val data = mapOf(
-                    "date" to patData.date,
-                    "love" to patData.love.toString(),
-                    "size" to patData.sizeFloat.toString(),
-                    "x" to patData.x.toString(),
-                    "y" to patData.y.toString()
-                )
-                batch.set(docRef, data)
-            }
+        .filter { it.date != "0" }
+        .forEach { patData ->
+            val docRef = patCollectionRef.document(patData.id.toString())
+            val data = mapOf(
+                "date" to patData.date,
+                "love" to patData.love.toString(),
+                "size" to patData.sizeFloat.toString(),
+                "x" to patData.x.toString(),
+                "y" to patData.y.toString()
+            )
+            combinedPatData[patData.id.toString()] = patMap
+            batch.set(docRef, data) // dlrj 이거 고쳐야돼!!
+        }
+
 
         val itemCollectionRef = db.collection("users")
             .document(userId)
-            .collection("item")
+            .collection("dataCollection")
 
+        val combinedItemData = mutableMapOf<String, Any>()
         itemDataList
             .filter { it.date != "0" }
             .forEach { itemData ->
-                val docRef = itemCollectionRef.document(itemData.id.toString())
-                val data = mapOf(
+                val itemMap = mapOf(
                     "date" to itemData.date,
                     "size" to itemData.sizeFloat.toString(),
                     "x" to itemData.x.toString(),
                     "y" to itemData.y.toString()
                 )
-                batch.set(docRef, data)
+                combinedItemData[itemData.id.toString()] = itemMap
             }
+        batch.set(itemCollectionRef.document("items"), combinedItemData)
+
 
         val letterCollectionRef = db.collection("users")
-            .document(userId)
-            .collection("letter")
+        .document(userId)
+        .collection("dataCollection")
 
-        letterDataList
-            .forEach { letterData ->
-                val docRef = letterCollectionRef.document(letterData.id.toString())
-                val data = mapOf(
-                    "date" to letterData.date,
-                    "state" to letterData.state
-                )
-                batch.set(docRef, data)
-            }
-
+        val combinedLetterData = mutableMapOf<String, Any>()
+        letterDataList.forEach { letterData ->
+            val letterMap = mapOf(
+                "date" to letterData.date,
+                "title" to letterData.title,
+                "image" to letterData.image,
+                "link" to letterData.link,
+                "reward" to letterData.reward,
+                "amount" to letterData.amount,
+                "state" to letterData.state,
+            )
+            combinedLetterData[letterData.id.toString()] = letterMap
+        }
+        // 하나의 문서에 전체 데이터를 저장
+        batch.set(letterCollectionRef.document("letters"), combinedLetterData)
 
         val sudokuCollectionRef = db.collection("users")
             .document(userId)

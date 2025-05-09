@@ -4,15 +4,16 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.a0100019.mypat.data.room.diary.Diary
 import com.a0100019.mypat.data.room.diary.DiaryDao
-import com.a0100019.mypat.data.room.english.English
 import com.a0100019.mypat.data.room.english.EnglishDao
 import com.a0100019.mypat.data.room.item.ItemDao
 import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiomDao
 import com.a0100019.mypat.data.room.letter.LetterDao
 import com.a0100019.mypat.data.room.pat.PatDao
+import com.a0100019.mypat.data.room.sudoku.Sudoku
 import com.a0100019.mypat.data.room.sudoku.SudokuDao
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
+import com.a0100019.mypat.data.room.walk.Walk
 import com.a0100019.mypat.data.room.walk.WalkDao
 import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.data.room.world.WorldDao
@@ -188,30 +189,118 @@ class LoginViewModel @Inject constructor(
                             }
 
                             //daily 서브컬렉션
-                            val subCollectionSnapshot = db
+                            val dailySubCollectionSnapshot = db
                                 .collection("users")
                                 .document(it.uid)
                                 .collection("daily")
                                 .get()
                                 .await()
 
-                            for (doc in subCollectionSnapshot.documents) {
-                                val date = doc.getString("date")
+                            for (dailyDoc in dailySubCollectionSnapshot.documents) {
+                                val date = dailyDoc.getString("date")
 
-                                val diaryMap = doc.get("diary") as Map<String, String>
+                                val diaryMap = dailyDoc.get("diary") as Map<String, String>
                                 val diaryContents = diaryMap["contents"]
                                 val diaryEmotion = diaryMap["emotion"]
                                 val diaryState = diaryMap["state"]
-                                diaryDao.insert(Diary(id = doc.id.toInt(), date = date.toString(), emotion = diaryEmotion.toString(), state = diaryState.toString(), contents = diaryContents.toString()))
+                                diaryDao.insert(Diary(id = dailyDoc.id.toInt(), date = date.toString(), emotion = diaryEmotion.toString(), state = diaryState.toString(), contents = diaryContents.toString()))
 
-                                val stateMap = doc.get("state") as Map<String, String>
+                                val stateMap = dailyDoc.get("state") as Map<String, String>
                                 val englishState = stateMap["english"]
                                 val koreanIdiomState = stateMap["koreanIdiom"]
-                                englishDao.updateDateAndState(id = doc.id.toInt(), date = date.toString(), state = englishState.toString())
-                                koreanIdiomDao.updateDateAndState(id = doc.id.toInt(), date = date.toString(), state = koreanIdiomState.toString())
+                                englishDao.updateDateAndState(id = dailyDoc.id.toInt(), date = date.toString(), state = englishState.toString())
+                                koreanIdiomDao.updateDateAndState(id = dailyDoc.id.toInt(), date = date.toString(), state = koreanIdiomState.toString())
 
+                                val walkMap = dailyDoc.get("walk") as Map<String, String>
+                                val walkCount = walkMap["count"]
+                                val walkSteps = walkMap["steps"]
+                                walkDao.insert(Walk(id = dailyDoc.id.toInt(), date = date.toString(), count = walkCount!!.toInt(), steps = walkSteps!!.toInt()))
 
-                                walk
+                            }
+
+                            //item 서브컬렉션
+                            val itemSubCollectionSnapshot = db
+                                .collection("users")
+                                .document(it.uid)
+                                .collection("item")
+                                .get()
+                                .await()
+
+                            for (itemDoc in itemSubCollectionSnapshot.documents) {
+
+                                val date = itemDoc.getString("date")
+                                val size = itemDoc.getString("size")
+                                val x = itemDoc.getString("x")
+                                val y = itemDoc.getString("y")
+                                itemDao.updateItemData(id = itemDoc.id.toInt(), date = date.toString(), x = x!!.toFloat(), y = y!!.toFloat(), size = size!!.toFloat())
+
+                            }
+
+                            //pat 서브컬렉션
+                            val patSubCollectionSnapshot = db
+                                .collection("users")
+                                .document(it.uid)
+                                .collection("pat")
+                                .get()
+                                .await()
+
+                            for (patDoc in patSubCollectionSnapshot.documents) {
+
+                                val date = patDoc.getString("date")
+                                val love = patDoc.getString("love")
+                                val size = patDoc.getString("size")
+                                val x = patDoc.getString("x")
+                                val y = patDoc.getString("y")
+                                patDao.updatePatData(id = patDoc.id.toInt(), date = date.toString(), love = love!!.toInt(), x = x!!.toFloat(), y = y!!.toFloat(), size = size!!.toFloat())
+
+                            }
+
+                            //sudoku 서브컬렉션
+                            val sudokuDoc = db
+                                .collection("users")
+                                .document(it.uid)
+                                .collection("sudoku")
+                                .document("sudoku")
+                                .get()
+                                .await()
+
+                            if (sudokuDoc.exists()) {
+                                val level = sudokuDoc.getString("level")
+                                val state = sudokuDoc.getString("state")
+                                val sudokuBoard = sudokuDoc.getString("sudokuBoard")
+                                val sudokuFirstBoard = sudokuDoc.getString("sudokuFirstBoard")
+                                val sudokuMemoBoard = sudokuDoc.getString("sudokuMemoBoard")
+                                val time = sudokuDoc.getString("time")
+                                sudokuDao.update(id = "sudokuBoard", value = sudokuBoard)
+                                sudokuDao.update(id = "sudokuFirstBoard", value = sudokuFirstBoard)
+                                sudokuDao.update(id = "sudokuMemoBoard", value = sudokuMemoBoard)
+                                sudokuDao.update(id = "time", value = time)
+                                sudokuDao.update(id = "level", value = level)
+                                sudokuDao.update(id = "state", value = state)
+                            }
+
+                            //letter 서브컬렉션
+                            val letterDoc = db
+                                .collection("users")
+                                .document(it.uid)
+                                .collection("letter")
+                                .document("sudoku")
+                                .get()
+                                .await()
+
+                            if (sudokuDoc.exists()) {
+                                val level = sudokuDoc.getString("level")
+                                val state = sudokuDoc.getString("state")
+                                val sudokuBoard = sudokuDoc.getString("sudokuBoard")
+                                val sudokuFirstBoard = sudokuDoc.getString("sudokuFirstBoard")
+                                val sudokuMemoBoard = sudokuDoc.getString("sudokuMemoBoard")
+                                val time = sudokuDoc.getString("time")
+                                sudokuDao.update(id = "sudokuBoard", value = sudokuBoard)
+                                sudokuDao.update(id = "sudokuFirstBoard", value = sudokuFirstBoard)
+                                sudokuDao.update(id = "sudokuMemoBoard", value = sudokuMemoBoard)
+                                sudokuDao.update(id = "time", value = time)
+                                sudokuDao.update(id = "level", value = level)
+                                sudokuDao.update(id = "state", value = state)
                             }
 
 

@@ -13,7 +13,7 @@ data class Pat(
     var x: Float = 0.5f,
     var y: Float = 0.5f,
     val minFloat: Float = 0.1f,
-    val sizeFloat: Float = 0.2f,
+    var sizeFloat: Float = 0.2f,
     val category: String = "1",
     val memo: String = "",
 

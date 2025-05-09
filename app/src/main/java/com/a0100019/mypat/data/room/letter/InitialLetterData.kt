@@ -11,7 +11,6 @@ fun getLetterInitialData(): List<Letter> {
         Letter(state = "lead", title = "3 편지", image = "sample.png@sample2.png", link = "naver.com", reward = "cash", amount = "100" ),
         Letter(state = "get", title = "4 편지", image = "sample.png@sample2.png", link = "naver.com", reward = "cash", amount = "100" ),
 
-
         // 더 많은 데이터를 여기에 추가...
     )
 }

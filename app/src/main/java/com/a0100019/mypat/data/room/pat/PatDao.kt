@@ -24,6 +24,9 @@ interface PatDao {
     @Update
     suspend fun update(item: Pat)
 
+    @Query("UPDATE pat_table SET date = :date, love = :love, x = :x, y = :y, sizeFloat = :size WHERE id = :id")
+    suspend fun updatePatData(id: Int, date: String, love: Int, x: Float, y: Float, size: Float)
+
     @Query("SELECT * FROM pat_table ORDER BY id DESC")
     suspend fun getAllPatData(): List<Pat>
 
