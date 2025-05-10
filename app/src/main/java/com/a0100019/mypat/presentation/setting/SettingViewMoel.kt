@@ -262,8 +262,7 @@ class SettingViewModel @Inject constructor(
         patDataList
         .filter { it.date != "0" }
         .forEach { patData ->
-            val docRef = patCollectionRef.document(patData.id.toString())
-            val data = mapOf(
+            val patMap = mapOf(
                 "date" to patData.date,
                 "love" to patData.love.toString(),
                 "size" to patData.sizeFloat.toString(),
@@ -271,8 +270,8 @@ class SettingViewModel @Inject constructor(
                 "y" to patData.y.toString()
             )
             combinedPatData[patData.id.toString()] = patMap
-            batch.set(docRef, data) // dlrj 이거 고쳐야돼!!
         }
+        batch.set(patCollectionRef.document("pats"), combinedPatData)
 
 
         val itemCollectionRef = db.collection("users")
@@ -316,7 +315,7 @@ class SettingViewModel @Inject constructor(
 
         val sudokuCollectionRef = db.collection("users")
             .document(userId)
-            .collection("sudoku")
+            .collection("dataCollection")
             .document("sudoku")
 
         val sudokuData = mapOf(
@@ -327,14 +326,11 @@ class SettingViewModel @Inject constructor(
             "level" to sudokuDataList.find {it.id == "level"}!!.value,
             "state" to sudokuDataList.find {it.id == "state"}!!.value
             )
-
         batch.set(sudokuCollectionRef, sudokuData)
 
-
-
-            val dailyCollectionRef = db.collection("users")
-            .document(userId)
-            .collection("daily")
+        val dailyCollectionRef = db.collection("users")
+        .document(userId)
+        .collection("daily")
 
         for (id in 1..userDataList.find { it.id == "date" }!!.value2.toInt()) {
             val docRef = dailyCollectionRef.document(id.toString())

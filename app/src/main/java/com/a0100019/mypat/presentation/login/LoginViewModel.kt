@@ -218,48 +218,68 @@ class LoginViewModel @Inject constructor(
 
                             }
 
-                            //item 서브컬렉션
-                            val itemSubCollectionSnapshot = db
+                            // 'items' 문서 안의 Map 필드들을 가져오기
+                            val itemsSnapshot = db
                                 .collection("users")
                                 .document(it.uid)
-                                .collection("item")
+                                .collection("dataCollection")
+                                .document("items")
                                 .get()
                                 .await()
 
-                            for (itemDoc in itemSubCollectionSnapshot.documents) {
+                            val itemsMap = itemsSnapshot.data ?: emptyMap()
 
-                                val date = itemDoc.getString("date")
-                                val size = itemDoc.getString("size")
-                                val x = itemDoc.getString("x")
-                                val y = itemDoc.getString("y")
-                                itemDao.updateItemData(id = itemDoc.id.toInt(), date = date.toString(), x = x!!.toFloat(), y = y!!.toFloat(), size = size!!.toFloat())
+                            for ((itemId, itemData) in itemsMap) {
+                                if (itemData is Map<*, *>) {
+                                    val date = itemData["date"] as? String ?: continue
+                                    val size = (itemData["size"] as? String)?.toFloatOrNull() ?: continue
+                                    val x = (itemData["x"] as? String)?.toFloatOrNull() ?: continue
+                                    val y = (itemData["y"] as? String)?.toFloatOrNull() ?: continue
 
+                                    itemDao.updateItemData(
+                                        id = itemId.toInt(),
+                                        date = date,
+                                        x = x,
+                                        y = y,
+                                        size = size
+                                    )
+                                }
                             }
 
-                            //pat 서브컬렉션
-                            val patSubCollectionSnapshot = db
+                            val patsSnapshot = db
                                 .collection("users")
                                 .document(it.uid)
-                                .collection("pat")
+                                .collection("dataCollection")
+                                .document("pats")
                                 .get()
                                 .await()
 
-                            for (patDoc in patSubCollectionSnapshot.documents) {
+                            val patsMap = patsSnapshot.data ?: emptyMap()
 
-                                val date = patDoc.getString("date")
-                                val love = patDoc.getString("love")
-                                val size = patDoc.getString("size")
-                                val x = patDoc.getString("x")
-                                val y = patDoc.getString("y")
-                                patDao.updatePatData(id = patDoc.id.toInt(), date = date.toString(), love = love!!.toInt(), x = x!!.toFloat(), y = y!!.toFloat(), size = size!!.toFloat())
+                            for ((patId, patData) in patsMap) {
+                                if (patData is Map<*, *>) {
+                                    val date = patData["date"] as? String ?: continue
+                                    val love = (patData["love"] as? String)?.toIntOrNull() ?: continue
+                                    val size = (patData["size"] as? String)?.toFloatOrNull() ?: continue
+                                    val x = (patData["x"] as? String)?.toFloatOrNull() ?: continue
+                                    val y = (patData["y"] as? String)?.toFloatOrNull() ?: continue
 
+                                    patDao.updatePatData(
+                                        id = patId.toIntOrNull() ?: continue,
+                                        date = date,
+                                        love = love,
+                                        x = x,
+                                        y = y,
+                                        size = size
+                                    )
+                                }
                             }
 
                             //sudoku 서브컬렉션
                             val sudokuDoc = db
                                 .collection("users")
                                 .document(it.uid)
-                                .collection("sudoku")
+                                .collection("dataCollection")
                                 .document("sudoku")
                                 .get()
                                 .await()
@@ -283,12 +303,34 @@ class LoginViewModel @Inject constructor(
                             val letterDoc = db
                                 .collection("users")
                                 .document(it.uid)
-                                .collection("letter")
-                                .document("sudoku")
+                                .collection("dataCollection")
+                                .document("letters")
                                 .get()
                                 .await()
 
-                            if (sudokuDoc.exists()) {
+                            val lettersMap = patsSnapshot.data ?: emptyMap()
+
+                            for ((letterId, letterData) in lettersMap) {
+                                //수정
+                                if (letterData is Map<*, *>) {
+                                    val date = patData["date"] as? String ?: continue
+                                    val love = (patData["love"] as? String)?.toIntOrNull() ?: continue
+                                    val size = (patData["size"] as? String)?.toFloatOrNull() ?: continue
+                                    val x = (patData["x"] as? String)?.toFloatOrNull() ?: continue
+                                    val y = (patData["y"] as? String)?.toFloatOrNull() ?: continue
+
+                                    patDao.updatePatData(
+                                        id = patId.toIntOrNull() ?: continue,
+                                        date = date,
+                                        love = love,
+                                        x = x,
+                                        y = y,
+                                        size = size
+                                    )
+                                }
+                            }
+
+                            if (letterDoc.exists()) {
                                 val level = sudokuDoc.getString("level")
                                 val state = sudokuDoc.getString("state")
                                 val sudokuBoard = sudokuDoc.getString("sudokuBoard")
