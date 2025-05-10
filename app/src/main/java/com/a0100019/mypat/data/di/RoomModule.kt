@@ -7,6 +7,8 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.a0100019.mypat.data.room.walk.WalkDao
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.Database
+import com.a0100019.mypat.data.room.allUser.AllUserDao
+import com.a0100019.mypat.data.room.allUser.getAllUserInitialData
 import com.a0100019.mypat.data.room.diary.DiaryDao
 import com.a0100019.mypat.data.room.diary.getDiaryInitialData
 import com.a0100019.mypat.data.room.english.EnglishDao
@@ -95,6 +97,10 @@ object RoomModule {
                         val letterInitialData = getLetterInitialData()
                         letterDao.insertAll(letterInitialData) // 대량 삽입
 
+                        val allUserDao = provideDatabase(context).allUserDao()
+                        val allUserInitialData = getAllUserInitialData()
+                        allUserDao.insertAll(allUserInitialData) // 대량 삽입
+
 
                     }
                 }
@@ -167,6 +173,11 @@ object RoomModule {
     @Provides
     fun provideLetterDao(database: Database): LetterDao {
         return database.letterDao()
+    }
+
+    @Provides
+    fun provideAllUserDao(database: Database): AllUserDao {
+        return database.allUserDao()
     }
 }
 
