@@ -26,16 +26,15 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.letter.Letter
-import com.a0100019.mypat.data.room.pet.Pat
+import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.world.World
-import com.a0100019.mypat.presentation.main.mainDialog.WorldAddDialog
+import com.a0100019.mypat.presentation.main.mainDialog.LovePatDialog
 import com.a0100019.mypat.presentation.main.management.ManagementViewModel
 import com.a0100019.mypat.presentation.setting.LetterViewDialog
-import com.a0100019.mypat.presentation.setting.SettingSideEffect
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
-import com.a0100019.mypat.presentation.world.WorldScreen
+import com.a0100019.mypat.presentation.main.world.WorldViewScreen
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import org.orbitmvi.orbit.compose.collectAsState
@@ -92,6 +91,10 @@ fun MainScreen(
         onLetterLinkClick = mainViewModel::onLetterLinkClick,
         dialogPatIdChange = mainViewModel::dialogPatIdChange,
         onSituationChange = mainViewModel::onSituationChange,
+        onLovePatChange = mainViewModel::onLovePatChange,
+        onLoveItemDrag = mainViewModel::onLoveItemDrag,
+        onLovePatNextClick = mainViewModel::onLovePatNextClick,
+        onLovePatStopClick = mainViewModel::onLovePatStopClick,
 
         mapUrl = mainState.mapData.value,
         patDataList = mainState.patDataList,
@@ -103,7 +106,13 @@ fun MainScreen(
         userDataList = mainState.userDataList,
         showLetterData = mainState.showLetterData,
         situation = mainState.situation,
-        letterImages = mainState.letterImages
+        letterImages = mainState.letterImages,
+        lovePatData = mainState.lovePatData,
+        loveItemData1 = mainState.loveItemData1,
+        loveItemData2 = mainState.loveItemData2,
+        loveItemData3 = mainState.loveItemData3,
+        loveAmount = mainState.loveAmount,
+        timer = mainState.timer
 
     )
 
@@ -127,6 +136,10 @@ fun MainScreen(
     onLetterCloseClick: () -> Unit,
     onLetterLinkClick: () -> Unit,
     onSituationChange: (String) -> Unit,
+    onLovePatChange: (Int) -> Unit,
+    onLoveItemDrag: (String, Float, Float) -> Unit,
+    onLovePatNextClick: () -> Unit,
+    onLovePatStopClick: () -> Unit,
 
     mapUrl: String,
     patDataList: List<Pat>,
@@ -139,6 +152,12 @@ fun MainScreen(
     showLetterData: Letter,
     situation: String,
     letterImages: List<String>,
+    lovePatData: Pat,
+    loveItemData1: Item,
+    loveItemData2: Item,
+    loveItemData3: Item,
+    loveAmount: Int,
+    timer: String
 
     ) {
 
@@ -149,6 +168,20 @@ fun MainScreen(
             onLetterGetClick = onLetterGetClick,
             clickLetterData = showLetterData,
             letterImages = letterImages
+        )
+    }
+
+    if(lovePatData.id != 0) {
+        LovePatDialog(
+            lovePatData = lovePatData,
+            loveItemData1 = loveItemData1,
+            loveItemData2 = loveItemData2,
+            loveItemData3 = loveItemData3,
+            onItemDrag = onLoveItemDrag,
+            situation = situation,
+            onLovePatNextClick = onLovePatNextClick,
+            onLovePatStopClick = onLovePatStopClick,
+            loveAmount = loveAmount
         )
     }
 
@@ -205,6 +238,9 @@ fun MainScreen(
                         .padding(end = 10.dp),
                     horizontalArrangement = Arrangement.End
                 ) {
+                    Text(
+                        text = timer
+                    )
                     Button(
                         onClick = onCommunityNavigateClick
                     ) {
@@ -228,6 +264,7 @@ fun MainScreen(
                     onThirdGameNavigateClick = onThirdGameNavigateClick,
                     patFlowWorldDataList = patFlowWorldDataList,
                     worldDataList = worldDataList,
+                    onLovePatChange = onLovePatChange
                 )
 
 
@@ -294,7 +331,7 @@ fun MainScreenPreview() {
             patDataList = listOf(Pat(url = "pat/cat.json")),
             itemDataList = listOf(Item(url = "item/table.png")),
             dialogPatId = "0",
-            dialogPatIdChange = { },
+            dialogPatIdChange = {},
             userFlowDataList = flowOf(listOf(User(id = "money", value = "1000"), User(id = "cash", value = "100"))),
             patFlowWorldDataList = flowOf(emptyList()),
             worldDataList = emptyList(),
@@ -305,7 +342,19 @@ fun MainScreenPreview() {
             onLetterCloseClick = {},
             situation = "",
             showLetterData = Letter(),
-            letterImages = emptyList()
+            letterImages = emptyList(),
+            onLovePatChange = {},
+            lovePatData = Pat(url = "pat/cat.json"),
+            onLoveItemDrag = { id, newX, newY -> },
+            loveItemData1 = Item(id = 1, name = "쓰다듬기", url = "etc/hand.png", x = 0.2f, y = 0.7f, sizeFloat = 0.2f),
+            loveItemData2 = Item(id = 2, name = "장난감", url = "etc/arrow.png", x = 0.5f, y = 0.7f, sizeFloat = 0.2f),
+            loveItemData3 = Item(id = 3, name = "비행기", url = "etc/lock.png", x = 0.8f, y = 0.7f, sizeFloat = 0.2f),
+            loveAmount = 100,
+            onLovePatNextClick = {},
+            onLovePatStopClick = {},
+            timer = "11:00"
+
+
         )
     }
 }

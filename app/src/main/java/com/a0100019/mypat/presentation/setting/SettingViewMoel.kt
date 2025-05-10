@@ -3,21 +3,36 @@ package com.a0100019.mypat.presentation.setting
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.a0100019.mypat.data.room.diary.Diary
 import com.a0100019.mypat.data.room.diary.DiaryDao
+import com.a0100019.mypat.data.room.diary.getDiaryInitialData
+import com.a0100019.mypat.data.room.english.English
 import com.a0100019.mypat.data.room.english.EnglishDao
+import com.a0100019.mypat.data.room.english.getEnglishInitialData
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.item.ItemDao
+import com.a0100019.mypat.data.room.item.getItemInitialData
+import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiom
 import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiomDao
+import com.a0100019.mypat.data.room.koreanIdiom.getKoreanIdiomInitialData
 import com.a0100019.mypat.data.room.letter.Letter
 import com.a0100019.mypat.data.room.letter.LetterDao
-import com.a0100019.mypat.data.room.pet.Pat
-import com.a0100019.mypat.data.room.pet.PatDao
+import com.a0100019.mypat.data.room.letter.getLetterInitialData
+import com.a0100019.mypat.data.room.pat.Pat
+import com.a0100019.mypat.data.room.pat.PatDao
+import com.a0100019.mypat.data.room.pat.getPatInitialData
+import com.a0100019.mypat.data.room.sudoku.Sudoku
 import com.a0100019.mypat.data.room.sudoku.SudokuDao
+import com.a0100019.mypat.data.room.sudoku.getSudokuInitialData
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
+import com.a0100019.mypat.data.room.user.getUserInitialData
+import com.a0100019.mypat.data.room.walk.Walk
 import com.a0100019.mypat.data.room.walk.WalkDao
+import com.a0100019.mypat.data.room.walk.getWalkInitialData
 import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.data.room.world.WorldDao
+import com.a0100019.mypat.data.room.world.getWorldInitialData
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
@@ -79,6 +94,11 @@ class SettingViewModel @Inject constructor(
         val patDataList = patDao.getAllPatData()
         val worldDataList = worldDao.getAllWorldData()
         val letterDataList = letterDao.getAllLetterData()
+        val walkDataList = walkDao.getAllWalkData()
+        val englishDataList = englishDao.getOpenEnglishData()
+        val koreanIdiomDataList = koreanIdiomDao.getOpenKoreanIdiomData()
+        val diaryDataList = diaryDao.getAllDiaryData()
+        val sudokuDataList = sudokuDao.getAllSudokuData()
 
         reduce {
             state.copy(
@@ -87,7 +107,12 @@ class SettingViewModel @Inject constructor(
                 itemDataList = itemDataList,
                 patDataList = patDataList,
                 worldDataList = worldDataList,
-                letterDataList = letterDataList
+                letterDataList = letterDataList,
+                walkDataList = walkDataList,
+                englishDataList = englishDataList,
+                koreanIdiomDataList = koreanIdiomDataList,
+                diaryDataList = diaryDataList,
+                sudokuDataList = sudokuDataList
             )
         }
     }
@@ -132,7 +157,8 @@ class SettingViewModel @Inject constructor(
         if (currentUser == null) {
             // ✅ 로그아웃 성공
             // 사용자 데이터 삭제
-            userDao.update(id = "auth", value = "0")
+//            userDao.update(id = "auth", value = "0")
+            roomDataClear()
             postSideEffect(SettingSideEffect.Toast("로그아웃 되었습니다"))
             postSideEffect(SettingSideEffect.NavigateToLoginScreen)
         } else {
@@ -144,12 +170,22 @@ class SettingViewModel @Inject constructor(
 
     fun dataSave() = intent {
 
+        try {
+            // ... 전체 dataSave() 내용
         val db = Firebase.firestore
         val userId = state.userDataList.find { it.id == "auth" }!!.value
         val userDataList = state.userDataList
         val itemDataList = state.itemDataList
         val patDataList = state.patDataList
         val worldDataList = state.worldDataList
+        val walkDataList = state.walkDataList
+        val englishDataList = state.englishDataList
+        val diaryDataList = state.diaryDataList
+        val koreanIdiomDataList = state.koreanIdiomDataList
+        val letterDataList = state.letterDataList
+        val sudokuDataList = state.sudokuDataList
+
+        val batch = db.batch()
 
         val userData = mapOf(
             "cash" to userDataList.find { it.id == "money"}!!.value2,
@@ -159,11 +195,19 @@ class SettingViewModel @Inject constructor(
                 "warning" to userDataList.find {it.id == "community"}!!.value2
             ),
             "firstDate" to userDataList.find { it.id == "date"}!!.value3,
+            "game" to mapOf(
+                "firstGame" to userDataList.find { it.id == "firstGame"}!!.value,
+                "secondGame" to userDataList.find { it.id == "secondGame"}!!.value,
+                "thirdGameEasy" to userDataList.find { it.id == "thirdGame"}!!.value,
+                "thirdGameNormal" to userDataList.find { it.id == "thirdGame"}!!.value2,
+                "thirdGameHard" to userDataList.find { it.id == "thirdGame"}!!.value3,
+                ),
             "item" to mapOf(
                 "openItem" to itemDataList.count { it.date != "0"}.toString(),
                 "openItemSpace" to userDataList.find { it.id == "item"}!!.value2,
                 "useItem" to userDataList.find { it.id == "item"}!!.value3
             ),
+            "lastLogIn" to userDataList.find { it.id == "auth"}!!.value3,
             "map" to worldDataList.find { it.id == 1}!!.value,
             "money" to userDataList.find { it.id == "money"}!!.value,
             "name" to userDataList.find { it.id == "name"}!!.value,
@@ -172,6 +216,7 @@ class SettingViewModel @Inject constructor(
                 "openPatSpace" to userDataList.find { it.id == "pat"}!!.value2,
                 "usePat" to userDataList.find { it.id == "pat"}!!.value3
             ),
+            "tag" to userDataList.find { it.id == "auth"}!!.value2,
             "totalDate" to userDataList.find { it.id == "date"}!!.value2,
         )
 
@@ -205,14 +250,118 @@ class SettingViewModel @Inject constructor(
             .toMap()
 
         val finalData = userData + mapOf("world" to worldMap)
-
-        val batch = Firebase.firestore.batch()
-
         val userDocRef = Firebase.firestore.collection("users").document(userId)
-
         batch.set(userDocRef, finalData, SetOptions.merge()) // 필드 기준 병합 저장
 
-// 커밋 실행
+        //펫 데이터 저장
+        val patCollectionRef = db.collection("users")
+            .document(userId)
+            .collection("dataCollection")
+
+        val combinedPatData = mutableMapOf<String, Any>()
+        patDataList
+        .filter { it.date != "0" }
+        .forEach { patData ->
+            val docRef = patCollectionRef.document(patData.id.toString())
+            val data = mapOf(
+                "date" to patData.date,
+                "love" to patData.love.toString(),
+                "size" to patData.sizeFloat.toString(),
+                "x" to patData.x.toString(),
+                "y" to patData.y.toString()
+            )
+            combinedPatData[patData.id.toString()] = patMap
+            batch.set(docRef, data) // dlrj 이거 고쳐야돼!!
+        }
+
+
+        val itemCollectionRef = db.collection("users")
+            .document(userId)
+            .collection("dataCollection")
+
+        val combinedItemData = mutableMapOf<String, Any>()
+        itemDataList
+            .filter { it.date != "0" }
+            .forEach { itemData ->
+                val itemMap = mapOf(
+                    "date" to itemData.date,
+                    "size" to itemData.sizeFloat.toString(),
+                    "x" to itemData.x.toString(),
+                    "y" to itemData.y.toString()
+                )
+                combinedItemData[itemData.id.toString()] = itemMap
+            }
+        batch.set(itemCollectionRef.document("items"), combinedItemData)
+
+
+        val letterCollectionRef = db.collection("users")
+        .document(userId)
+        .collection("dataCollection")
+
+        val combinedLetterData = mutableMapOf<String, Any>()
+        letterDataList.forEach { letterData ->
+            val letterMap = mapOf(
+                "date" to letterData.date,
+                "title" to letterData.title,
+                "image" to letterData.image,
+                "link" to letterData.link,
+                "reward" to letterData.reward,
+                "amount" to letterData.amount,
+                "state" to letterData.state,
+            )
+            combinedLetterData[letterData.id.toString()] = letterMap
+        }
+        // 하나의 문서에 전체 데이터를 저장
+        batch.set(letterCollectionRef.document("letters"), combinedLetterData)
+
+        val sudokuCollectionRef = db.collection("users")
+            .document(userId)
+            .collection("sudoku")
+            .document("sudoku")
+
+        val sudokuData = mapOf(
+            "sudokuBoard" to sudokuDataList.find {it.id == "sudokuBoard"}!!.value,
+            "sudokuFirstBoard" to sudokuDataList.find {it.id == "sudokuFirstBoard"}!!.value,
+            "sudokuMemoBoard" to sudokuDataList.find {it.id == "sudokuMemoBoard"}!!.value,
+            "time" to sudokuDataList.find {it.id == "time"}!!.value,
+            "level" to sudokuDataList.find {it.id == "level"}!!.value,
+            "state" to sudokuDataList.find {it.id == "state"}!!.value
+            )
+
+        batch.set(sudokuCollectionRef, sudokuData)
+
+
+
+            val dailyCollectionRef = db.collection("users")
+            .document(userId)
+            .collection("daily")
+
+        for (id in 1..userDataList.find { it.id == "date" }!!.value2.toInt()) {
+            val docRef = dailyCollectionRef.document(id.toString())
+            val data = mapOf(
+                "date" to diaryDataList.find { it.id == id }!!.date,
+                "diary" to mapOf(
+                    "emotion" to diaryDataList.find { it.id == id }!!.emotion,
+                    "state" to diaryDataList.find { it.id == id }!!.state,
+                    "contents" to diaryDataList.find { it.id == id }!!.contents,
+                ),
+                "state" to mapOf(
+                    "english" to englishDataList.find { it.id == id}!!.state,
+                    "koreanIdiom" to koreanIdiomDataList.find { it.id == id}!!.state
+                ),
+                "walk" to mapOf(
+                    "count" to walkDataList.find { it.id == id}!!.count,
+                    "steps" to walkDataList.find { it.id == id}!!.steps,
+                )
+            )
+            batch.set(docRef, data)
+        }
+
+
+
+        Log.d("Firestore", "batch.commit() 직전")
+
+// 전체 커밋 실행
         batch.commit()
             .addOnSuccessListener {
                 onSignOutClick()
@@ -221,6 +370,9 @@ class SettingViewModel @Inject constructor(
                 Log.e("Firestore", "저장 실패", it)
             }
 
+        } catch (e: Exception) {
+            Log.e("Firestore", "예외 발생", e)
+        }
     }
 
     fun onGoogleLoginClick(idToken: String) = intent {
@@ -265,13 +417,14 @@ class SettingViewModel @Inject constructor(
                     settingSituation = ""
                 )
             }
+
             val auth = FirebaseAuth.getInstance()
             val db = FirebaseFirestore.getInstance()
 
             val userDocRef =
                 db.collection("users").document(state.userDataList.find { it.id == "auth" }!!.value)
             val subCollections =
-                listOf("pat", "item", "diary", "code", "english", "game", "koreanIdiom", "walk")
+                listOf("pat", "item", "daily", "code", "letter", "sudoku")
 
             try {
                 // 1. 서브컬렉션 안의 문서 삭제
@@ -290,7 +443,7 @@ class SettingViewModel @Inject constructor(
                 auth.currentUser?.delete()
                     ?.addOnSuccessListener {
                         viewModelScope.launch {
-                            userDao.update(id = "auth", value = "0")
+                            roomDataClear()
                             postSideEffect(SettingSideEffect.Toast("계정이 삭제되었습니다."))
                             postSideEffect(SettingSideEffect.NavigateToLoginScreen)
                         }
@@ -310,6 +463,60 @@ class SettingViewModel @Inject constructor(
         }
 
     }
+
+    private fun roomDataClear() = intent {
+        // 모든 유저 데이터 삭제
+        userDao.deleteAllUsers()
+        // 초기 데이터 삽입
+        val initialUserData = getUserInitialData()
+        userDao.insertAll(initialUserData)
+
+        diaryDao.deleteAllDiary()
+        diaryDao.resetDiaryPrimaryKey()
+        val initialDiaryData = getDiaryInitialData()
+        diaryDao.insertAll(initialDiaryData)
+
+        englishDao.deleteAllEnglish()
+        englishDao.resetEnglishPrimaryKey()
+        val initialEnglishData = getEnglishInitialData()
+        englishDao.insertAll(initialEnglishData)
+
+        itemDao.deleteAllItems()
+        itemDao.resetItemPrimaryKey()
+        val initialItemData = getItemInitialData()
+        itemDao.insertAll(initialItemData)
+
+        koreanIdiomDao.deleteAllKoreanIdioms()
+        koreanIdiomDao.resetKoreanIdiomPrimaryKey()
+        val initialKoreanIdiomData = getKoreanIdiomInitialData()
+        koreanIdiomDao.insertAll(initialKoreanIdiomData)
+
+        letterDao.deleteAllLetters()
+        letterDao.resetLetterPrimaryKey()
+        val initialLetterData = getLetterInitialData()
+        letterDao.insertAll(initialLetterData)
+
+        patDao.deleteAllPats()
+        patDao.resetPatPrimaryKey()
+        val initialPatData = getPatInitialData()
+        patDao.insertAll(initialPatData)
+
+        sudokuDao.deleteAllSudoku()
+        val initialSudokuData = getSudokuInitialData()
+        sudokuDao.insertAll(initialSudokuData)
+
+        walkDao.deleteAllWalks()
+        walkDao.resetWalkPrimaryKey()
+        val initialWalkData = getWalkInitialData()
+        walkDao.insertAll(initialWalkData)
+
+        worldDao.deleteAllWorlds()
+        worldDao.resetWorldPrimaryKey()
+        val initialWorldData = getWorldInitialData()
+        worldDao.insertAll(initialWorldData)
+
+    }
+
 
     fun onCouponConfirmClick() = intent {
         val db = Firebase.firestore
@@ -486,12 +693,17 @@ data class SettingState(
     val patDataList: List<Pat> = emptyList(),
     val itemDataList: List<Item> = emptyList(),
     val worldDataList: List<World> = emptyList(),
+    val walkDataList: List<Walk> = emptyList(),
+    val englishDataList: List<English> = emptyList(),
+    val koreanIdiomDataList: List<KoreanIdiom> = emptyList(),
+    val diaryDataList: List<Diary> = emptyList(),
     val settingSituation: String = "",
     val imageUrl: String = "",
     val editText: String = "",
     val clickLetterData: Letter = Letter(),
     val letterDataList: List<Letter> = emptyList(),
-    val letterImages: List<String> = emptyList()
+    val letterImages: List<String> = emptyList(),
+    val sudokuDataList: List<Sudoku> = emptyList()
     )
 
 

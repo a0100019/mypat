@@ -8,6 +8,7 @@ fun getEnglishInitialData(): List<English> {
     return listOf(
         English(
             word = "pat",
+            state = "대기",
             meaning = "애완동물",
             example = "I hava a pat",
             exampleMeaning = "나는 애완동물을 가지고 있다.",
@@ -29,7 +30,6 @@ fun getEnglishInitialData(): List<English> {
         ),
         English(
             word = "pat",
-            state = "대기",
             meaning = "애완동물4",
             example = "I hava a pat",
             exampleMeaning = "나는 애완동물을 가지고 있다.",

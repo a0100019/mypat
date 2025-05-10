@@ -30,7 +30,7 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 
 @Composable
 fun DraggableItemImage(
-    worldIndex: String,
+    worldIndex: String = "",
     itemUrl: String,
     surfaceWidthDp: Dp,
     surfaceHeightDp: Dp,

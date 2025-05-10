@@ -1,4 +1,4 @@
-package com.a0100019.mypat.data.room.pet
+package com.a0100019.mypat.data.room.pat
 
 fun getPatInitialData(): List<Pat> {
     return listOf(

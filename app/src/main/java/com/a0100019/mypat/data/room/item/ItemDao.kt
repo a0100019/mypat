@@ -7,20 +7,26 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
-import com.a0100019.mypat.data.room.pet.Pat
-import com.a0100019.mypat.data.room.world.World
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ItemDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(item: Item)
 
     @Delete
     suspend fun delete(item: Item)
 
+    @Query("DELETE FROM item_table")
+    suspend fun deleteAllItems()
+
+    @Query("UPDATE sqlite_sequence SET seq = 0 WHERE name = 'item_table'")
+    suspend fun resetItemPrimaryKey()
+
     @Update
     suspend fun update(item: Item)
+
+    @Query("UPDATE item_table SET date = :date, x = :x, y = :y, sizeFloat = :size WHERE id = :id")
+    suspend fun updateItemData(id: Int, date: String, x: Float, y: Float, size: Float)
 
     @Query("SELECT * FROM item_table WHERE type != 'map' ORDER BY id DESC")
     suspend fun getAllItemData(): List<Item>

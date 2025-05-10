@@ -13,11 +13,14 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface SudokuDao {
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(sudoku: Sudoku)
 
     @Delete
     suspend fun delete(sudoku: Sudoku)
+
+    @Query("DELETE FROM sudoku_table")
+    suspend fun deleteAllSudoku()
 
     //value 중 원하는 값 변경
     @Query("""

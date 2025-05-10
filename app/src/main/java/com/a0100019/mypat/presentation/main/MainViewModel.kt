@@ -1,6 +1,7 @@
 package com.a0100019.mypat.presentation.main
 
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,20 +9,22 @@ import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.item.ItemDao
 import com.a0100019.mypat.data.room.letter.Letter
 import com.a0100019.mypat.data.room.letter.LetterDao
-import com.a0100019.mypat.data.room.pet.Pat
-import com.a0100019.mypat.data.room.pet.PatDao
+import com.a0100019.mypat.data.room.pat.Pat
+import com.a0100019.mypat.data.room.pat.PatDao
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.data.room.world.WorldDao
-import com.a0100019.mypat.presentation.setting.SettingSideEffect
 import com.google.firebase.storage.FirebaseStorage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -34,6 +37,7 @@ import org.orbitmvi.orbit.viewmodel.container
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import java.util.Calendar
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 
@@ -61,6 +65,7 @@ class MainViewModel @Inject constructor(
     // 뷰 모델 초기화 시 모든 user 데이터를 로드
     init {
         loadData()
+        startTenMinuteCountdown()
     }
 
     fun loadData() = intent {
@@ -155,6 +160,23 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun onLovePatChange(patId: Int) = intent {
+        if(patId == 0){
+            reduce {
+                state.copy(
+                    lovePatData = Pat(url = "")
+                )
+            }
+        } else {
+            reduce {
+                state.copy(
+                    lovePatData = state.patDataList.find { it.id == patId }!!,
+                    situation = "lovePatOnGoing"
+                )
+            }
+        }
+    }
+
     fun onSituationChange(situation: String) = intent {
         reduce {
             state.copy(
@@ -162,6 +184,8 @@ class MainViewModel @Inject constructor(
             )
         }
     }
+
+
 
     fun onLetterCloseClick() = intent {
 
@@ -209,6 +233,163 @@ class MainViewModel @Inject constructor(
 
     }
 
+    fun onLoveItemDrag(itemId: String, newX: Float, newY: Float) = intent {
+        if(state.situation == "lovePatOnGoing"){
+            val targetItem = when (itemId) {
+                "1" -> state.loveItemData1
+                "2" -> state.loveItemData2
+                else -> state.loveItemData3
+            }
+
+            var updatedItem = targetItem.copy(x = newX, y = newY)
+
+            if (newY < 0.3f) {
+                if (targetItem.date.toInt() % 2 == 0) {
+                    if (newX > 0.4f) {
+                        updatedItem =
+                            updatedItem.copy(date = (targetItem.date.toInt() + 1).toString())
+                    }
+                } else {
+                    if (newX < 0.4f) {
+                        updatedItem =
+                            updatedItem.copy(date = (targetItem.date.toInt() + 1).toString())
+                    }
+                }
+            }
+
+            reduce {
+                when (itemId) {
+                    "1" -> state.copy(loveItemData1 = updatedItem)
+                    "2" -> state.copy(loveItemData2 = updatedItem)
+                    else -> state.copy(loveItemData3 = updatedItem)
+                }
+
+            }
+
+            if (updatedItem.date.toInt() > 6) {
+                reduce {
+                    state.copy(situation = "lovePatStop")
+                }
+                lovePatCheck(itemId)
+            }
+        }
+    }
+
+    private fun lovePatCheck(itemId : String) = intent {
+        val successId = (1..3).random().toString()
+
+        if(successId == itemId) {
+            postSideEffect(MainSideEffect.Toast("성공"))
+            reduce {
+                state.copy(
+                    situation = "lovePatSuccess",
+                    loveAmount = state.loveAmount + 10
+                )
+            }
+        } else {
+            postSideEffect(MainSideEffect.Toast("실패"))
+            reduce {
+                state.copy(
+                    situation = "lovePatFail"
+                )
+            }
+        }
+    }
+
+    fun onLovePatNextClick() = intent {
+        reduce {
+            state.copy(
+                situation = "lovePatOnGoing",
+                loveItemData1 = state.loveItemData1.copy(x = 0.1f, y = 0.7f),
+                loveItemData2 = state.loveItemData2.copy(x = 0.4f, y = 0.7f),
+                loveItemData3 = state.loveItemData3.copy(x = 0.7f, y = 0.7f)
+            )
+        }
+    }
+
+    fun onLovePatStopClick() = intent {
+
+        patDao.update(state.lovePatData.copy(love = state.lovePatData.love + state.loveAmount))
+
+        val newWorldData = state.worldDataList.find { it.value == state.lovePatData.id.toString() && it.type == "pat" }
+        worldDao.update(newWorldData!!.copy(situation = ""))
+
+        reduce {
+            state.copy(
+                lovePatData = Pat(url = ""),
+                loveAmount = 100,
+                loveItemData1 = state.loveItemData1.copy(x = 0.1f, y = 0.7f, date = "0"),
+                loveItemData2 = state.loveItemData2.copy(x = 0.4f, y = 0.7f, date = "0"),
+                loveItemData3 = state.loveItemData3.copy(x = 0.7f, y = 0.7f, date = "0"),
+                situation = ""
+            )
+        }
+
+        loadData()
+    }
+
+    //하트 타이머
+    private var hasFiredThisCycle = false
+    private var timerJob: Job? = null
+    @SuppressLint("DefaultLocale")
+    private fun startTenMinuteCountdown() {
+        timerJob?.cancel()
+        timerJob = viewModelScope.launch {
+            while (isActive) {
+                val now = System.currentTimeMillis()
+                val calendar = Calendar.getInstance().apply {
+                    timeInMillis = now
+                }
+                val minute = calendar.get(Calendar.MINUTE)
+                val second = calendar.get(Calendar.SECOND)
+
+                val elapsedInCurrentBlock = (minute % 10) * 60 + second
+                val remainingSeconds = 600 - elapsedInCurrentBlock
+                val showRemainingSeconds = 600 - elapsedInCurrentBlock -1
+
+                val minutesLeft = showRemainingSeconds / 60
+                val secondsLeft = showRemainingSeconds % 60
+
+                val timeString = String.format("%01d:%02d", minutesLeft, secondsLeft)
+
+                intent {
+                    reduce { state.copy(timer = timeString) }
+                }
+
+                if (remainingSeconds <= 1 && !hasFiredThisCycle) {
+                    hasFiredThisCycle = true
+                    onTenMinuteTimerExpired()
+                    Log.e("MainViewModel", "타이머 만료 실행")
+                }
+
+                if (remainingSeconds > 1) {
+                    hasFiredThisCycle = false // 새 주기 시작
+                }
+
+
+                delay(1000L)
+            }
+        }
+    }
+
+    //하트 추가
+    private fun onTenMinuteTimerExpired() {
+        intent {
+            val patList = state.worldDataList.filter { it.type == "pat" && it.situation != "love" }
+            if (patList.isNotEmpty()) {
+                val targetPat = patList.random()
+                val updatedList = state.worldDataList.map {
+                    if (it.id == targetPat.id) it.copy(situation = "love") else it
+                }
+                reduce { state.copy(worldDataList = updatedList) }
+                postSideEffect(MainSideEffect.Toast("애정 타이머"))
+            } else {
+                postSideEffect(MainSideEffect.Toast("애정 타이머 실패"))
+            }
+        }
+    }
+
+
 
 }
 
@@ -227,7 +408,13 @@ data class MainState(
     val mapData: World = World(),
     val dialogPatId: String = "0",
     val showLetterData: Letter = Letter(),
-    val situation: String = ""
+    val situation: String = "",
+    val lovePatData: Pat = Pat(url = ""),
+    val loveItemData1: Item = Item(id = 1, name = "쓰다듬기", url = "etc/hand.png", x = 0.1f, y = 0.7f, sizeFloat = 0.2f),
+    val loveItemData2: Item = Item(id = 2, name = "장난감", url = "etc/arrow.png", x = 0.4f, y = 0.7f, sizeFloat = 0.2f),
+    val loveItemData3: Item = Item(id = 3, name = "비행기", url = "etc/lock.png", x = 0.7f, y = 0.7f, sizeFloat = 0.2f),
+    val loveAmount: Int = 100,
+    val timer: String = "10:00"
 
     )
 

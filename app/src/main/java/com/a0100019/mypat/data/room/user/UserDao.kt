@@ -11,11 +11,14 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface UserDao {
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(user: User)
 
     @Delete
     suspend fun delete(user: User)
+
+    @Query("DELETE FROM user_table")
+    suspend fun deleteAllUsers()
 
     //value 중 원하는 값 변경
     @Query("""

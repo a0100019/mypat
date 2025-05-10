@@ -12,14 +12,23 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface KoreanIdiomDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(koreanIdiom: KoreanIdiom)
 
     @Delete
     suspend fun delete(koreanIdiom: KoreanIdiom)
 
+    @Query("DELETE FROM koreanIdiom_table")
+    suspend fun deleteAllKoreanIdioms()
+
+    @Query("UPDATE sqlite_sequence SET seq = 0 WHERE name = 'koreanIdiom_table'")
+    suspend fun resetKoreanIdiomPrimaryKey()
+
     @Update
     suspend fun update(koreanIdiom: KoreanIdiom)
+
+    @Query("UPDATE koreanIdiom_table SET date = :date, state = :state WHERE id = :id")
+    suspend fun updateDateAndState(id: Int, date: String, state: String)
 
     @Query("SELECT * FROM koreanIdiom_table ORDER BY id DESC")
     suspend fun getAllKoreanIdiomData(): List<KoreanIdiom>

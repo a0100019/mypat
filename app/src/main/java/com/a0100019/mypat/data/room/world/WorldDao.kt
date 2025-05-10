@@ -10,11 +10,18 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface WorldDao {
-    @Insert
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(world: World)
 
     @Delete
     suspend fun delete(world: World)
+
+    @Query("DELETE FROM world_table")
+    suspend fun deleteAllWorlds()
+
+    @Query("UPDATE sqlite_sequence SET seq = 0 WHERE name = 'world_table'")
+    suspend fun resetWorldPrimaryKey()
 
     @Update
     suspend fun update(item: World)

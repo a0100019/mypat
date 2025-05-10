@@ -13,11 +13,17 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface LetterDao {
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(letter: Letter)
 
     @Delete
     suspend fun delete(letter: Letter)
+
+    @Query("DELETE FROM letter_table")
+    suspend fun deleteAllLetters()
+
+    @Query("UPDATE sqlite_sequence SET seq = 0 WHERE name = 'letter_table'")
+    suspend fun resetLetterPrimaryKey()
 
     @Update
     suspend fun update(letter: Letter)

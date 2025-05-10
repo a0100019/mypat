@@ -12,14 +12,23 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface EnglishDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(english: English)
 
     @Delete
     suspend fun delete(english: English)
 
+    @Query("DELETE FROM english_table")
+    suspend fun deleteAllEnglish()
+
+    @Query("UPDATE sqlite_sequence SET seq = 0 WHERE name = 'english_table'")
+    suspend fun resetEnglishPrimaryKey()
+
     @Update
     suspend fun update(english: English)
+
+    @Query("UPDATE english_table SET date = :date, state = :state WHERE id = :id")
+    suspend fun updateDateAndState(id: Int, date: String, state: String)
 
     @Query("SELECT * FROM english_table ORDER BY id DESC")
     suspend fun getAllEnglishData(): List<English>

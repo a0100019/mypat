@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 data class World(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     var value: String = "0",
-    val type: String = ""
+    val type: String = "",
+    var situation: String = ""
 //    touch = System.currentTimeMillis() // 현재 시간 저장
     )
