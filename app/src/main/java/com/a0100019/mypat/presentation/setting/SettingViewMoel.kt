@@ -420,7 +420,7 @@ class SettingViewModel @Inject constructor(
             val userDocRef =
                 db.collection("users").document(state.userDataList.find { it.id == "auth" }!!.value)
             val subCollections =
-                listOf("pat", "item", "daily", "code", "letter", "sudoku")
+                listOf("daily", "dataCollection")
 
             try {
                 // 1. 서브컬렉션 안의 문서 삭제

@@ -1,20 +1,16 @@
 package com.a0100019.mypat.presentation.community
 
 import android.widget.Toast
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.a0100019.mypat.presentation.ui.image.etc.KoreanIdiomImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -36,7 +32,7 @@ fun CommunityScreen(
     }
 
     CommunityScreen(
-        value = "스크린 나누기"
+        situation = "스크린 나누기"
     )
 }
 
@@ -44,23 +40,51 @@ fun CommunityScreen(
 
 @Composable
 fun CommunityScreen(
-    value : String
+    situation : String
 ) {
-    // Fullscreen container
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White), // Optional: Set background color
-        contentAlignment = Alignment.Center // Center content
+    Column(
+        modifier = Modifier.fillMaxSize()
     ) {
-        // Text in the center
+
         Text(
-            text = "로딩 중",
-            fontSize = 32.sp, // Large font size
-            fontWeight = FontWeight.Bold, // Bold text
-            color = Color.Black // Text color
+            text = "마을 구경하기"
         )
-        KoreanIdiomImage("koreanIdiomImage/jukmagow1.jpg")
+
+//        when(situation) {
+//            "마을" -> communityWorldScreen
+//        }
+
+        Row {
+            Button(
+                onClick = {}
+            ) {
+                Text("마을")
+            }
+
+            Button(
+                onClick = {}
+            ) {
+                Text("게임1")
+            }
+
+            Button(
+                onClick = {}
+            ) {
+                Text("게임2")
+            }
+
+            Button(
+                onClick = {}
+            ) {
+                Text("게임3")
+            }
+
+            Button(
+                onClick = {}
+            ) {
+                Text("채팅")
+            }
+        }
     }
 }
 
@@ -69,7 +93,7 @@ fun CommunityScreen(
 fun CommunityScreenPreview() {
     MypatTheme {
         CommunityScreen(
-            value = ""
+            situation = ""
         )
     }
 }

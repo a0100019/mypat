@@ -16,6 +16,9 @@ interface AllUserDao {
     @Delete
     suspend fun delete(allUser: AllUser)
 
+    @Query("DELETE FROM allUser_table")
+    suspend fun deleteAllUsers()
+
     @Update
     suspend fun update(allUser: AllUser)
 

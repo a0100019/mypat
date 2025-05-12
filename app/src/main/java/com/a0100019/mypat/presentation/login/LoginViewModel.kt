@@ -7,6 +7,7 @@ import com.a0100019.mypat.data.room.diary.DiaryDao
 import com.a0100019.mypat.data.room.english.EnglishDao
 import com.a0100019.mypat.data.room.item.ItemDao
 import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiomDao
+import com.a0100019.mypat.data.room.letter.Letter
 import com.a0100019.mypat.data.room.letter.LetterDao
 import com.a0100019.mypat.data.room.pat.PatDao
 import com.a0100019.mypat.data.room.sudoku.Sudoku
@@ -119,6 +120,7 @@ class LoginViewModel @Inject constructor(
             user?.let {
                 if (isNewUser) {
                     // 🔹 신규 사용자일 때만 실행되는 코드
+                    userDao.update(id = "auth", value = user.uid)
                     Log.e("login", "신규 사용자입니다")
                     postSideEffect(LoginSideEffect.Toast("처음 오신 것을 환영합니다!"))
 
@@ -177,14 +179,14 @@ class LoginViewModel @Inject constructor(
                             userDao.update(id = "pat", value2 = openPatSpace, value3 = usePat)
 
                             val worldMap = userDoc.get("world") as Map<String, Map<String, String>>
-                            for ((key, innerMap) in worldMap) {
+                            for ((index, innerMap) in worldMap) {
                                 val id = innerMap["id"]
                                 val size = innerMap["size"]
                                 val type = innerMap["type"]
                                 val x = innerMap["x"]
                                 val y = innerMap["y"]
 
-                                worldDao.insert(World(value = id.toString(), type = type.toString()))
+                                worldDao.insert(World(id = index.toInt()+2, value = id.toString(), type = type.toString()))
 //                                Log.d("Firestore", "[$key] color=$color, font=$font")
                             }
 
@@ -211,10 +213,10 @@ class LoginViewModel @Inject constructor(
                                 englishDao.updateDateAndState(id = dailyDoc.id.toInt(), date = date.toString(), state = englishState.toString())
                                 koreanIdiomDao.updateDateAndState(id = dailyDoc.id.toInt(), date = date.toString(), state = koreanIdiomState.toString())
 
-                                val walkMap = dailyDoc.get("walk") as Map<String, String>
-                                val walkCount = walkMap["count"]
-                                val walkSteps = walkMap["steps"]
-                                walkDao.insert(Walk(id = dailyDoc.id.toInt(), date = date.toString(), count = walkCount!!.toInt(), steps = walkSteps!!.toInt()))
+                                val walkMap = dailyDoc.get("walk") as? Map<*, *> ?: emptyMap<String, Any>()
+                                val walkCount = (walkMap["count"] as? Number)?.toInt()
+                                val walkSteps = (walkMap["steps"] as? Number)?.toInt()
+                                walkDao.insert(Walk(id = dailyDoc.id.toInt(), date = date.toString(), count = walkCount!!, steps = walkSteps!!))
 
                             }
 
@@ -300,7 +302,7 @@ class LoginViewModel @Inject constructor(
                             }
 
                             //letter 서브컬렉션
-                            val letterDoc = db
+                            val lettersSnapshot = db
                                 .collection("users")
                                 .document(it.uid)
                                 .collection("dataCollection")
@@ -308,41 +310,32 @@ class LoginViewModel @Inject constructor(
                                 .get()
                                 .await()
 
-                            val lettersMap = patsSnapshot.data ?: emptyMap()
+                            val lettersMap = lettersSnapshot.data ?: emptyMap()
 
                             for ((letterId, letterData) in lettersMap) {
                                 //수정
                                 if (letterData is Map<*, *>) {
-                                    val date = patData["date"] as? String ?: continue
-                                    val love = (patData["love"] as? String)?.toIntOrNull() ?: continue
-                                    val size = (patData["size"] as? String)?.toFloatOrNull() ?: continue
-                                    val x = (patData["x"] as? String)?.toFloatOrNull() ?: continue
-                                    val y = (patData["y"] as? String)?.toFloatOrNull() ?: continue
+                                    val date = letterData["date"] as? String ?: continue
+                                    val title = letterData["title"] as? String ?: continue
+                                    val image = letterData["image"] as? String ?: continue
+                                    val link = letterData["link"] as? String ?: continue
+                                    val reward = letterData["reward"] as? String ?: continue
+                                    val amount = letterData["amount"] as? String ?: continue
+                                    val state = letterData["state"] as? String ?: continue
 
-                                    patDao.updatePatData(
-                                        id = patId.toIntOrNull() ?: continue,
-                                        date = date,
-                                        love = love,
-                                        x = x,
-                                        y = y,
-                                        size = size
+                                    letterDao.update(
+                                        Letter(
+                                            id = letterId.toInt(),
+                                            date = date,
+                                            title = title,
+                                            image = image,
+                                            link = link,
+                                            reward = reward,
+                                            amount = amount,
+                                            state = state,
+                                        )
                                     )
                                 }
-                            }
-
-                            if (letterDoc.exists()) {
-                                val level = sudokuDoc.getString("level")
-                                val state = sudokuDoc.getString("state")
-                                val sudokuBoard = sudokuDoc.getString("sudokuBoard")
-                                val sudokuFirstBoard = sudokuDoc.getString("sudokuFirstBoard")
-                                val sudokuMemoBoard = sudokuDoc.getString("sudokuMemoBoard")
-                                val time = sudokuDoc.getString("time")
-                                sudokuDao.update(id = "sudokuBoard", value = sudokuBoard)
-                                sudokuDao.update(id = "sudokuFirstBoard", value = sudokuFirstBoard)
-                                sudokuDao.update(id = "sudokuMemoBoard", value = sudokuMemoBoard)
-                                sudokuDao.update(id = "time", value = time)
-                                sudokuDao.update(id = "level", value = level)
-                                sudokuDao.update(id = "state", value = state)
                             }
 
 
