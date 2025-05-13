@@ -10,10 +10,10 @@ fun getUserInitialData(): List<User> {
         User(id = "item", value = "5", value2 = "3", value3 = "1"),
         User(id = "name", value = "익명"),
         User(id = "auth"), // value2 는 테그, value3는 timeStemp
-        User(id = "englishLevel", value = "0"),
+        User(id = "etc"), // page, englishLevel,
         User(id = "firstGame", value = "0"), //
         User(id = "secondGame", value = "1000"), //
-        User(id = "thirdGame", value = "0"), //1은 쉬움, 2는 보통, 3은 어려움 개수
+        User(id = "thirdGame"), //1은 쉬움, 2는 보통, 3은 어려움 개수
         User(id = "community"), // 좋아요, 경고, 벤
 
         // 더 많은 데이터를 여기에 추가...

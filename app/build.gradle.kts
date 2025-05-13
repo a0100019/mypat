@@ -126,6 +126,10 @@ dependencies {
     implementation ("com.google.firebase:firebase-firestore-ktx")
     implementation ("com.google.firebase:firebase-storage-ktx")
 
+    //communityViewModel
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
+
+
 
 
 

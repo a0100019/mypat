@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import com.a0100019.mypat.data.room.pat.Pat
 
 @Dao
 interface AllUserDao {
@@ -18,6 +19,9 @@ interface AllUserDao {
 
     @Query("DELETE FROM allUser_table")
     suspend fun deleteAllUsers()
+
+    @Query("SELECT * FROM allUser_table ORDER BY lastLogIn DESC")
+    suspend fun getAllUserData(): List<AllUser>
 
     @Update
     suspend fun update(allUser: AllUser)

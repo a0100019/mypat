@@ -20,7 +20,7 @@ fun PatImage(
     xFloat: Float,
     yFloat: Float,
     sizeFloat: Float,
-    onClick: () -> Unit // 클릭 이벤트 콜백 추가
+    onClick: () -> Unit = {} // 클릭 이벤트 콜백 추가
 ) {
     // `assets` 폴더에서 Lottie 파일 로드
     val composition by rememberLottieComposition(
