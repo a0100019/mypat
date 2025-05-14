@@ -19,6 +19,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.a0100019.mypat.data.room.allUser.AllUser
+import com.a0100019.mypat.data.room.item.Item
+import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -40,16 +43,43 @@ fun CommunityScreen(
     }
 
     CommunityScreen(
-        situation = "스크린 나누기"
+        situation = communityState.situation,
+        patDataList = communityState.patDataList,
+        itemDataList = communityState.itemDataList,
+        page = communityState.page,
+        allUserDataList = communityState.allUserDataList,
+        allUserData1 = communityState.allUserData1,
+        allUserData2 = communityState.allUserData2,
+        allUserData3 = communityState.allUserData3,
+        allUserData4 = communityState.allUserData4,
+        allUserWorldDataList1 = communityState.allUserWorldDataList1,
+        allUserWorldDataList2 = communityState.allUserWorldDataList2,
+        allUserWorldDataList3 = communityState.allUserWorldDataList3,
+        allUserWorldDataList4 = communityState.allUserWorldDataList4,
+        onPageUpClick = communityViewModel::opPageUpClick
     )
 }
 
 
-
 @Composable
 fun CommunityScreen(
-    situation : String
+    situation : String,
+    patDataList: List<Pat> = emptyList(),
+    itemDataList: List<Item> = emptyList(),
+    page: Int = 0,
+    allUserDataList: List<AllUser> = emptyList(),
+    allUserData1: AllUser = AllUser(),
+    allUserData2: AllUser = AllUser(),
+    allUserData3: AllUser = AllUser(),
+    allUserData4: AllUser = AllUser(),
+    allUserWorldDataList1: List<String> = emptyList(),
+    allUserWorldDataList2: List<String> = emptyList(),
+    allUserWorldDataList3: List<String> = emptyList(),
+    allUserWorldDataList4: List<String> = emptyList(),
+
+    onPageUpClick: () -> Unit = {},
 ) {
+
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -68,13 +98,52 @@ fun CommunityScreen(
                         .weight(1f)
                         .clickable {
 
-                        }
+                        },
+                    userData = allUserData1,
+                    worldDataList = allUserWorldDataList1,
+                    patDataList = patDataList,
+                    itemDataList = itemDataList
                 )
-                CommunityWorldCard(modifier = Modifier.weight(1f))
+                CommunityWorldCard(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable {
+
+                        },
+                    userData = allUserData2,
+                    worldDataList = allUserWorldDataList2,
+                    patDataList = patDataList,
+                    itemDataList = itemDataList
+                )
             }
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                CommunityWorldCard(modifier = Modifier.weight(1f))
-                CommunityWorldCard(modifier = Modifier.weight(1f))
+                CommunityWorldCard(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable {
+
+                        },
+                    userData = allUserData3,
+                    worldDataList = allUserWorldDataList3,
+                    patDataList = patDataList,
+                    itemDataList = itemDataList
+                )
+                CommunityWorldCard(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable {
+
+                        },
+                    userData = allUserData4,
+                    worldDataList = allUserWorldDataList4,
+                    patDataList = patDataList,
+                    itemDataList = itemDataList
+                )
+            }
+            Button(
+                onClick = onPageUpClick
+            ) {
+                Text("다음")
             }
         }
 
@@ -119,7 +188,7 @@ fun CommunityScreen(
 fun CommunityScreenPreview() {
     MypatTheme {
         CommunityScreen(
-            situation = ""
+            situation = "world"
         )
     }
 }

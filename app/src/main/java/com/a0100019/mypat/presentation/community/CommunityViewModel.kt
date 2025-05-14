@@ -59,10 +59,18 @@ class CommunityViewModel @Inject constructor(
         val allUserData2 = allUserDataList[4*page + 1]
         val allUserData3 = allUserDataList[4*page + 2]
         val allUserData4 = allUserDataList[4*page + 3]
-        val allUserWorldDataList1: List<String> = AllUser::class.memberProperties
-            .filter { it.name.startsWith("worldData") }
-            .mapNotNull { it.get(allUserData1) as? String }
-
+        val allUserWorldDataList1: List<String> = allUserData1.worldData
+            .split("/")
+            .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
+        val allUserWorldDataList2: List<String> = allUserData2.worldData
+            .split("/")
+            .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
+        val allUserWorldDataList3: List<String> = allUserData3.worldData
+            .split("/")
+            .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
+        val allUserWorldDataList4: List<String> = allUserData4.worldData
+            .split("/")
+            .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
 
         reduce {
             state.copy(
@@ -70,13 +78,111 @@ class CommunityViewModel @Inject constructor(
                 patDataList = patDataList,
                 itemDataList = itemDataList,
                 allUserDataList =  allUserDataList,
-                page = page
+                page = page,
+                allUserData1 = allUserData1,
+                allUserData2 = allUserData2,
+                allUserData3 = allUserData3,
+                allUserData4 = allUserData4,
+                allUserWorldDataList1 = allUserWorldDataList1,
+                allUserWorldDataList2 = allUserWorldDataList2,
+                allUserWorldDataList3 = allUserWorldDataList3,
+                allUserWorldDataList4 = allUserWorldDataList4
             )
         }
     }
 
-}
 
+    fun opPageUpClick() = intent {
+
+        val page = state.page
+        val allUserDataList = state.allUserDataList
+
+        if (allUserDataList.size > page * 4 + 8) {
+            //다음 페이지
+            val allUserData1 = allUserDataList[4*page + 4]
+            val allUserData2 = allUserDataList[4*page + 5]
+            val allUserData3 = allUserDataList[4*page + 6]
+            val allUserData4 = allUserDataList[4*page + 7]
+            val allUserWorldDataList1: List<String> = allUserData1.worldData
+                .split("/")
+                .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
+            val allUserWorldDataList2: List<String> = allUserData2.worldData
+                .split("/")
+                .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
+            val allUserWorldDataList3: List<String> = allUserData3.worldData
+                .split("/")
+                .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
+            val allUserWorldDataList4: List<String> = allUserData4.worldData
+                .split("/")
+                .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
+
+            userDao.update(id = "etc", value = (page+1).toString())
+            reduce {
+                state.copy(
+                    page = page + 1,
+                    allUserData1 = allUserData1,
+                    allUserData2 = allUserData2,
+                    allUserData3 = allUserData3,
+                    allUserData4 = allUserData4,
+                    allUserWorldDataList1 = allUserWorldDataList1,
+                    allUserWorldDataList2 = allUserWorldDataList2,
+                    allUserWorldDataList3 = allUserWorldDataList3,
+                    allUserWorldDataList4 = allUserWorldDataList4
+                )
+            }
+
+        } else {
+            //첫 페이지
+
+            val allUserData1 = allUserDataList[4*page]
+            val allUserData2 = allUserDataList[4*page + 1]
+            val allUserData3 = allUserDataList[4*page + 2]
+            val allUserData4 = allUserDataList[4*page + 3]
+            val allUserWorldDataList1: List<String> = allUserData1.worldData
+                .split("/")
+                .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
+            val allUserWorldDataList2: List<String> = allUserData2.worldData
+                .split("/")
+                .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
+            val allUserWorldDataList3: List<String> = allUserData3.worldData
+                .split("/")
+                .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
+            val allUserWorldDataList4: List<String> = allUserData4.worldData
+                .split("/")
+                .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
+
+            userDao.update(id = "etc", value = "0")
+            reduce {
+                state.copy(
+                    page = 0,
+                    allUserData1 = allUserData1,
+                    allUserData2 = allUserData2,
+                    allUserData3 = allUserData3,
+                    allUserData4 = allUserData4,
+                    allUserWorldDataList1 = allUserWorldDataList1,
+                    allUserWorldDataList2 = allUserWorldDataList2,
+                    allUserWorldDataList3 = allUserWorldDataList3,
+                    allUserWorldDataList4 = allUserWorldDataList4
+                )
+            }
+        }
+
+    }
+
+    fun onSituationChange(newSituation: String) = intent {
+        reduce {
+            state.copy(
+                situation = newSituation
+            )
+        }
+    }
+
+    fun onUserClick() = intent {
+
+    }
+
+
+}
 
 @Immutable
 data class CommunityState(
@@ -93,7 +199,7 @@ data class CommunityState(
     val allUserWorldDataList2: List<String> = emptyList(),
     val allUserWorldDataList3: List<String> = emptyList(),
     val allUserWorldDataList4: List<String> = emptyList(),
-
+    val situation: String = "world"
     )
 
 

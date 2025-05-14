@@ -348,6 +348,7 @@ class LoginViewModel @Inject constructor(
                         postSideEffect(LoginSideEffect.Toast("유저 정보 로딩 실패"))
                     }
                 }
+                onNavigateToMainScreen()
             }
 
         } catch (e: Exception) {
@@ -355,7 +356,6 @@ class LoginViewModel @Inject constructor(
             postSideEffect(LoginSideEffect.Toast("로그인 실패: ${e.localizedMessage}"))
         } finally {
             reduce { state.copy(isLoggingIn = false) }
-            onNavigateToMainScreen()
         }
     }
 

@@ -1,6 +1,7 @@
 package com.a0100019.mypat.presentation.community
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -45,6 +46,7 @@ import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.image.item.WorldItemImage
 import com.a0100019.mypat.presentation.ui.image.pat.PatImage
+import com.a0100019.mypat.presentation.ui.image.pat.PatInformationImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
 @Composable
@@ -53,7 +55,6 @@ fun CommunityWorldCard(
     worldDataList: List<String> = emptyList(),
     patDataList: List<Pat> = emptyList(),
     itemDataList: List<Item> = emptyList(),
-    onCommunityWorldCard: (String) -> Unit = {},
     @SuppressLint("ModifierParameter") modifier: Modifier = Modifier
 ) {
     Card(
@@ -93,12 +94,13 @@ fun CommunityWorldCard(
                     val surfaceWidthDp = with(density) { surfaceWidth.toDp() }
                     val surfaceHeightDp = with(density) { surfaceHeight.toDp() }
 
+
                     worldDataList.forEach { data ->
                         val parts = data.split("@")
                         if (parts[2] == "pat") {
                             // pat일 때 처리
                             patDataList.find { it.id.toString() == parts[0] }?.let { patData ->
-                                PatImage(
+                                PatInformationImage(
                                     patUrl = patData.url,
                                     surfaceWidthDp = surfaceWidthDp,
                                     surfaceHeightDp = surfaceHeightDp,
@@ -160,7 +162,8 @@ fun CommunityWorldCardPreview() {
                 totalDate = "134",
             ),
             worldDataList = listOf("1@0.2@pat@0.25@0.69", "2@0.2@pat@0.25@0.569", "1@0.2@pat@0.125@0.69", "1@0.2@item@0.25@0.69", "2@0.2@item@0.125@0.769", "1@0.2@item@0.225@0.169", "1@0.2@pat@0.25@0.669", "2@0.2@pat@0.25@0.369", "2@0.3@pat@0.325@0.69", "1@0.2@pat@0.725@0.769", "1@0.2@item@0.425@0.669",
-            )
+            ),
+            patDataList = listOf(Pat(id = 1, url = "pat/cat.json"))
         )
     }
 }
