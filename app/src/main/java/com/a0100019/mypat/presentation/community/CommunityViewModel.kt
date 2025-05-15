@@ -20,7 +20,6 @@ import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
-import kotlin.reflect.full.memberProperties
 
 @HiltViewModel
 class CommunityViewModel @Inject constructor(
@@ -197,6 +196,12 @@ class CommunityViewModel @Inject constructor(
                 clickAllUserData = selectedUser,
                 clickAllUserWorldDataList = selectedUserWorldDataList)
         }
+    }
+
+    fun onLikeClick() = intent {
+
+        
+
     }
 
 

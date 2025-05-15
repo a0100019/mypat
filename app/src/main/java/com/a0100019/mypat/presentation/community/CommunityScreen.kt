@@ -60,7 +60,8 @@ fun CommunityScreen(
         clickAllUserWorldDataList = communityState.clickAllUserWorldDataList,
 
         onPageUpClick = communityViewModel::opPageUpClick,
-        onUserClick = communityViewModel::onUserClick
+        onUserClick = communityViewModel::onUserClick,
+        onLikeClick = communityViewModel::onLikeClick
     )
 }
 
@@ -84,7 +85,8 @@ fun CommunityScreen(
     clickAllUserWorldDataList: List<String> = emptyList(),
 
     onPageUpClick: () -> Unit = {},
-    onUserClick: (Int) -> Unit = {}
+    onUserClick: (Int) -> Unit = {},
+    onLikeClick: () -> Unit = {},
 ) {
 
     if(clickAllUserData.id != 0) {
@@ -93,7 +95,8 @@ fun CommunityScreen(
             clickAllUserData = clickAllUserData,
             clickAllUserWorldDataList = clickAllUserWorldDataList,
             patDataList = patDataList,
-            itemDataList = itemDataList
+            itemDataList = itemDataList,
+            onLikeClick = {}
         )
     }
 
