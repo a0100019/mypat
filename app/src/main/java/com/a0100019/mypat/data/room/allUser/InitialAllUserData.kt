@@ -86,6 +86,57 @@ fun getAllUserInitialData(): List<AllUser> {
             worldData = "1@0.2@pat@0.25@0.69/2@0.2@pat@0.25@0.569/1@0.2@pat@0.125@0.69/1@0.2@item@0.25@0.69/2@0.2@item@0.125@0.769/1@0.2@item@0.225@0.1691@0.2@pat@0.25@0.669/2@0.2@pat@0.25@0.369/2@0.3@pat@0.325@0.69/1@0.2@pat@0.725@0.769/1@0.2@item@0.425@0.669",
         ),
 
+        AllUser(
+            tag = "22",
+            lastLogIn = 342112,
+            ban = "0",
+            like = "54",
+            warning = "0",
+            firstDate = "2025-02-05",
+            openItem = "30",
+            openItemSpace = "10",
+            map = "map/forest.jpg",
+            name = "이222유빈",
+            openPat = "20",
+            openPatSpace = "10",
+            totalDate = "134",
+            worldData = "1@0.2@pat@0.25@0.69/2@0.2@pat@0.25@0.569/1@0.2@pat@0.125@0.69/1@0.2@item@0.25@0.69/2@0.2@item@0.125@0.769/1@0.2@item@0.225@0.1691@0.2@pat@0.25@0.669/2@0.2@pat@0.25@0.369/2@0.3@pat@0.325@0.69/1@0.2@pat@0.725@0.769/1@0.2@item@0.425@0.669",
+        ),
+
+        AllUser(
+            tag = "22",
+            lastLogIn = 342112,
+            ban = "0",
+            like = "54",
+            warning = "0",
+            firstDate = "2025-02-05",
+            openItem = "30",
+            openItemSpace = "10",
+            map = "map/forest.jpg",
+            name = "이222유빈",
+            openPat = "20",
+            openPatSpace = "10",
+            totalDate = "134",
+            worldData = "1@0.2@pat@0.25@0.69/2@0.2@pat@0.25@0.569/1@0.2@pat@0.125@0.69/1@0.2@item@0.25@0.69/2@0.2@item@0.125@0.769/1@0.2@item@0.225@0.1691@0.2@pat@0.25@0.669/2@0.2@pat@0.25@0.369/2@0.3@pat@0.325@0.69/1@0.2@pat@0.725@0.769/1@0.2@item@0.425@0.669",
+        ),
+
+        AllUser(
+            tag = "22",
+            lastLogIn = 342112,
+            ban = "0",
+            like = "54",
+            warning = "0",
+            firstDate = "2025-02-05",
+            openItem = "30",
+            openItemSpace = "10",
+            map = "map/forest.jpg",
+            name = "이222유빈",
+            openPat = "20",
+            openPatSpace = "10",
+            totalDate = "134",
+            worldData = "1@0.2@pat@0.25@0.69/2@0.2@pat@0.25@0.569/1@0.2@pat@0.125@0.69/1@0.2@item@0.25@0.69/2@0.2@item@0.125@0.769/1@0.2@item@0.225@0.1691@0.2@pat@0.25@0.669/2@0.2@pat@0.25@0.369/2@0.3@pat@0.325@0.69/1@0.2@pat@0.725@0.769/1@0.2@item@0.425@0.669",
+        ),
+
 
 
         // 더 많은 데이터를 여기에 추가...

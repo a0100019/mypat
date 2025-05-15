@@ -95,35 +95,38 @@ fun CommunityWorldCard(
                     val surfaceHeightDp = with(density) { surfaceHeight.toDp() }
 
 
-                    worldDataList.forEach { data ->
-                        val parts = data.split("@")
-                        if (parts[2] == "pat") {
-                            // pat일 때 처리
-                            patDataList.find { it.id.toString() == parts[0] }?.let { patData ->
-                                PatInformationImage(
-                                    patUrl = patData.url,
-                                    surfaceWidthDp = surfaceWidthDp,
-                                    surfaceHeightDp = surfaceHeightDp,
-                                    xFloat = parts[3].toFloat(),
-                                    yFloat = parts[4].toFloat(),
-                                    sizeFloat = parts[1].toFloat(),
-                                )
+                    if(worldDataList.isNotEmpty()){
+                        worldDataList.forEach { data ->
+                            val parts = data.split("@")
+                            if (parts[2] == "pat") {
+                                // pat일 때 처리
+                                patDataList.find { it.id.toString() == parts[0] }?.let { patData ->
+                                    PatInformationImage(
+                                        patUrl = patData.url,
+                                        surfaceWidthDp = surfaceWidthDp,
+                                        surfaceHeightDp = surfaceHeightDp,
+                                        xFloat = parts[3].toFloat(),
+                                        yFloat = parts[4].toFloat(),
+                                        sizeFloat = parts[1].toFloat(),
+                                    )
+                                }
+
+                            } else {
+                                // item일 때 처리
+                                itemDataList.find { it.id.toString() == parts[0] }
+                                    ?.let { itemData ->
+                                        WorldItemImage(
+                                            itemUrl = itemData.url,
+                                            surfaceWidthDp = surfaceWidthDp,
+                                            surfaceHeightDp = surfaceHeightDp,
+                                            xFloat = parts[3].toFloat(),
+                                            yFloat = parts[4].toFloat(),
+                                            sizeFloat = parts[1].toFloat(),
+                                        )
+                                    }
                             }
 
-                        } else {
-                            // item일 때 처리
-                            itemDataList.find { it.id.toString() == parts[0] }?.let { itemData ->
-                                WorldItemImage(
-                                    itemUrl = itemData.url,
-                                    surfaceWidthDp = surfaceWidthDp,
-                                    surfaceHeightDp = surfaceHeightDp,
-                                    xFloat = parts[3].toFloat(),
-                                    yFloat = parts[4].toFloat(),
-                                    sizeFloat = parts[1].toFloat(),
-                                )
-                            }
                         }
-
                     }
                 }
             }

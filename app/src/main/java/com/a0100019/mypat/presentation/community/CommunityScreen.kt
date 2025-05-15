@@ -56,7 +56,11 @@ fun CommunityScreen(
         allUserWorldDataList2 = communityState.allUserWorldDataList2,
         allUserWorldDataList3 = communityState.allUserWorldDataList3,
         allUserWorldDataList4 = communityState.allUserWorldDataList4,
-        onPageUpClick = communityViewModel::opPageUpClick
+        clickAllUserData = communityState.clickAllUserData,
+        clickAllUserWorldDataList = communityState.clickAllUserWorldDataList,
+
+        onPageUpClick = communityViewModel::opPageUpClick,
+        onUserClick = communityViewModel::onUserClick
     )
 }
 
@@ -76,9 +80,22 @@ fun CommunityScreen(
     allUserWorldDataList2: List<String> = emptyList(),
     allUserWorldDataList3: List<String> = emptyList(),
     allUserWorldDataList4: List<String> = emptyList(),
+    clickAllUserData: AllUser = AllUser(),
+    clickAllUserWorldDataList: List<String> = emptyList(),
 
     onPageUpClick: () -> Unit = {},
+    onUserClick: (Int) -> Unit = {}
 ) {
+
+    if(clickAllUserData.id != 0) {
+        CommunityUserDialog(
+            onClose = { onUserClick(0) },
+            clickAllUserData = clickAllUserData,
+            clickAllUserWorldDataList = clickAllUserWorldDataList,
+            patDataList = patDataList,
+            itemDataList = itemDataList
+        )
+    }
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -97,7 +114,7 @@ fun CommunityScreen(
                     modifier = Modifier
                         .weight(1f)
                         .clickable {
-
+                            onUserClick(1)
                         },
                     userData = allUserData1,
                     worldDataList = allUserWorldDataList1,
@@ -108,7 +125,7 @@ fun CommunityScreen(
                     modifier = Modifier
                         .weight(1f)
                         .clickable {
-
+                            onUserClick(2)
                         },
                     userData = allUserData2,
                     worldDataList = allUserWorldDataList2,
@@ -121,7 +138,7 @@ fun CommunityScreen(
                     modifier = Modifier
                         .weight(1f)
                         .clickable {
-
+                            onUserClick(3)
                         },
                     userData = allUserData3,
                     worldDataList = allUserWorldDataList3,
@@ -132,7 +149,7 @@ fun CommunityScreen(
                     modifier = Modifier
                         .weight(1f)
                         .clickable {
-
+                            onUserClick(4)
                         },
                     userData = allUserData4,
                     worldDataList = allUserWorldDataList4,
@@ -151,31 +168,36 @@ fun CommunityScreen(
 
         Row {
             Button(
-                onClick = {}
+                onClick = {},
+                enabled = situation != "world"
             ) {
                 Text("마을")
             }
 
             Button(
-                onClick = {}
+                onClick = {},
+                enabled = situation != "game1"
             ) {
                 Text("게임1")
             }
 
             Button(
-                onClick = {}
+                onClick = {},
+                enabled = situation != "game2"
             ) {
                 Text("게임2")
             }
 
             Button(
-                onClick = {}
+                onClick = {},
+                enabled = situation != "game3"
             ) {
                 Text("게임3")
             }
 
             Button(
-                onClick = {}
+                onClick = {},
+                enabled = situation != "chatting"
             ) {
                 Text("채팅")
             }

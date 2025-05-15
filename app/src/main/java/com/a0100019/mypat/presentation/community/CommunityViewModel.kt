@@ -177,9 +177,28 @@ class CommunityViewModel @Inject constructor(
         }
     }
 
-    fun onUserClick() = intent {
-
+    fun onUserClick(clickUserNumber: Int) = intent {
+        val selectedUser = when (clickUserNumber) {
+            1 -> state.allUserData1
+            2 -> state.allUserData2
+            3 -> state.allUserData3
+            4 -> state.allUserData4
+            else -> AllUser()
+        }
+        val selectedUserWorldDataList = when (clickUserNumber) {
+            1 -> state.allUserWorldDataList1
+            2 -> state.allUserWorldDataList2
+            3 -> state.allUserWorldDataList3
+            4 -> state.allUserWorldDataList4
+            else -> emptyList()
+        }
+        reduce {
+            state.copy(
+                clickAllUserData = selectedUser,
+                clickAllUserWorldDataList = selectedUserWorldDataList)
+        }
     }
+
 
 
 }
@@ -199,7 +218,9 @@ data class CommunityState(
     val allUserWorldDataList2: List<String> = emptyList(),
     val allUserWorldDataList3: List<String> = emptyList(),
     val allUserWorldDataList4: List<String> = emptyList(),
-    val situation: String = "world"
+    val situation: String = "world",
+    val clickAllUserData: AllUser = AllUser(),
+    val clickAllUserWorldDataList: List<String> = emptyList()
     )
 
 
