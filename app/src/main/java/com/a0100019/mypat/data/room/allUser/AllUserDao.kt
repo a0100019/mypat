@@ -23,6 +23,10 @@ interface AllUserDao {
     @Query("SELECT * FROM allUser_table ORDER BY lastLogIn DESC")
     suspend fun getAllUserData(): List<AllUser>
 
+    @Query("UPDATE allUser_table SET `like` = :newLike WHERE tag = :tag")
+    suspend fun updateLikeByTag(tag: String, newLike: String)
+
+
     @Update
     suspend fun update(allUser: AllUser)
 

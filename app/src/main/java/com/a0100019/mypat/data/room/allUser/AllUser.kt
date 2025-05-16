@@ -11,7 +11,7 @@ data class AllUser(
     val tag: String = "0",
     val lastLogIn: Long = 0,
     val ban: String = "0",
-    val like: String = "0",
+    var like: String = "0",
     val warning: String = "0",
     val firstDate: String = "0",
     val firstGame: String = "0",
@@ -27,7 +27,6 @@ data class AllUser(
     val openPatSpace: String = "0",
     val totalDate: String = "0",
     val worldData: String = "0",  // "id@size@type@x@y/id@size@type@x@y"
-
 
 )
 

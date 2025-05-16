@@ -85,7 +85,6 @@ fun CommunityUserDialog(
                         val surfaceWidthDp = with(density) { surfaceWidth.toDp() }
                         val surfaceHeightDp = with(density) { surfaceHeight.toDp() }
 
-
                         clickAllUserWorldDataList.forEach { data ->
                             val parts = data.split("@")
                             if (parts[2] == "pat") {

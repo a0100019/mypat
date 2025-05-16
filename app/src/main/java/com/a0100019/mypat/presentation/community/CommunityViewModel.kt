@@ -1,6 +1,8 @@
 package com.a0100019.mypat.presentation.community
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.a0100019.mypat.data.room.allUser.AllUser
 import com.a0100019.mypat.data.room.allUser.AllUserDao
 import com.a0100019.mypat.data.room.item.Item
@@ -10,14 +12,23 @@ import com.a0100019.mypat.data.room.pat.PatDao
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.world.WorldDao
+import com.a0100019.mypat.presentation.main.MainSideEffect
+import com.a0100019.mypat.presentation.setting.SettingSideEffect
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.SetOptions
+import com.google.firebase.firestore.firestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 
@@ -200,7 +211,85 @@ class CommunityViewModel @Inject constructor(
 
     fun onLikeClick() = intent {
 
-        
+        val db = Firebase.firestore
+        val myUid = state.userDataList.find { it.id == "auth" }!!.value
+        val today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")) // "20250516"
+        val docRef = db.collection("users").document(myUid).collection("community").document(today)
+        val tag = state.clickAllUserData.tag
+
+        docRef.get()
+            .addOnSuccessListener { documentSnapshot ->
+                if (documentSnapshot.exists()) {
+                    val likeList = documentSnapshot.get("like") as? List<String> ?: emptyList()
+
+                    if (!likeList.contains(tag)) {
+                        //FieldValue.arrayUnion(...): Firestore에서 배열에 중복 없이 값 추가할 때 사용.
+                        docRef.update("like", FieldValue.arrayUnion(tag))
+
+                        Firebase.firestore.collection("users")
+                        .whereEqualTo("tag", tag)
+                        .get()
+                        .addOnSuccessListener { querySnapshot ->
+                            for (document in querySnapshot.documents) {
+
+                                val community = document.get("community") as? Map<*, *>
+                                val likeValueStr = community?.get("like")?.toString()
+
+                                // 숫자로 변환 시도
+                                val likeValue = likeValueStr?.toIntOrNull()
+
+                                if (likeValue != null) {
+                                    val newLikeValue = likeValue + 1
+                                    val updatedCommunity = community.toMutableMap()
+                                    updatedCommunity["like"] = newLikeValue.toString()
+
+                                    document.reference.update("community", updatedCommunity)
+                                        .addOnSuccessListener {
+                                            Log.d("TAG", "like 값이 ${likeValue} → ${newLikeValue} 으로 업데이트됨")
+                                            viewModelScope.launch {
+                                                allUserDao.updateLikeByTag(tag = tag, newLike = newLikeValue.toString())
+                                            }
+                                        }
+                                        .addOnFailureListener { e ->
+                                            Log.e("TAG", "업데이트 실패: ${e.message}")
+                                        }
+                                } else {
+                                    Log.w("TAG", "like 필드가 숫자가 아닙니다: $likeValueStr")
+                                }
+                            }
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e("TAG", "문서 가져오기 실패: ${e.message}")
+                        }
+
+
+                        viewModelScope.launch {
+                            postSideEffect(CommunitySideEffect.Toast("좋아요를 눌렀습니다."))
+                        }
+                    } else {
+                        // 이미 존재할 때 Toast 띄우기
+                        viewModelScope.launch {
+                            postSideEffect(CommunitySideEffect.Toast("이미 좋아요를 눌렀습니다."))
+                        }
+                    }
+                } else {
+                    val newData = hashMapOf(
+                        "like" to listOf(tag)
+                    )
+                    docRef.set(newData)
+                    viewModelScope.launch {
+                        postSideEffect(CommunitySideEffect.Toast("좋아요를 눌렀습니다."))
+                    }
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("Firebase", "Error accessing community document", e)
+                viewModelScope.launch {
+                    postSideEffect(CommunitySideEffect.Toast("인터넷 오류."))
+                }
+            }
+
+        loadData()
 
     }
 
