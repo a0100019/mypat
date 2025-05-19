@@ -55,7 +55,7 @@ fun CommunityWorldCard(
     worldDataList: List<String> = emptyList(),
     patDataList: List<Pat> = emptyList(),
     itemDataList: List<Item> = emptyList(),
-    @SuppressLint("ModifierParameter") modifier: Modifier = Modifier
+    @SuppressLint("ModifierParameter") modifier: Modifier = Modifier,
 ) {
     Card(
         modifier = modifier,

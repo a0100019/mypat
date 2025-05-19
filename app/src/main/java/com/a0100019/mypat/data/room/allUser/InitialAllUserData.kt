@@ -16,6 +16,11 @@ fun getAllUserInitialData(): List<AllUser> {
             openPat = "20",
             openPatSpace = "10",
             totalDate = "134",
+            firstGame = "100",
+            secondGame = "100",
+            thirdGameEasy = "100",
+            thirdGameNormal = "100",
+            thirdGameHard = "100",
             worldData = "1@0.2@pat@0.25@0.69/2@0.2@pat@0.25@0.569/1@0.2@pat@0.125@0.69/1@0.2@item@0.25@0.69/2@0.2@item@0.125@0.769/1@0.2@item@0.225@0.1691@0.2@pat@0.25@0.669/2@0.2@pat@0.25@0.369/2@0.3@pat@0.325@0.69/1@0.2@pat@0.725@0.769/1@0.2@item@0.425@0.669",
         ),
 
@@ -33,6 +38,11 @@ fun getAllUserInitialData(): List<AllUser> {
             openPat = "20",
             openPatSpace = "10",
             totalDate = "134",
+            firstGame = "1000",
+            secondGame = "10",
+            thirdGameEasy = "10",
+            thirdGameNormal = "1010",
+            thirdGameHard = "100",
             worldData = "1@0.2@pat@0.25@0.69/2@0.2@pat@0.25@0.569/1@0.2@pat@0.125@0.69/1@0.2@item@0.25@0.69/2@0.2@item@0.125@0.769/1@0.2@item@0.225@0.1691@0.2@pat@0.25@0.669/2@0.2@pat@0.25@0.369/2@0.3@pat@0.325@0.69/1@0.2@pat@0.725@0.769/1@0.2@item@0.425@0.669",
         ),
 

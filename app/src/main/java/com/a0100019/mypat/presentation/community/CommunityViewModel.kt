@@ -63,6 +63,7 @@ class CommunityViewModel @Inject constructor(
         val patDataList = patDao.getAllPatData()
         val itemDataList = itemDao.getAllItemData()
         val allUserDataList = allUserDao.getAllUserData()
+        val allUserRankDataList = allUserDao.getAllUserData()
 
         val page = userDataList.find { it.id == "etc" }!!.value.toInt()
         val allUserData1 = allUserDataList[4*page]
@@ -96,7 +97,8 @@ class CommunityViewModel @Inject constructor(
                 allUserWorldDataList1 = allUserWorldDataList1,
                 allUserWorldDataList2 = allUserWorldDataList2,
                 allUserWorldDataList3 = allUserWorldDataList3,
-                allUserWorldDataList4 = allUserWorldDataList4
+                allUserWorldDataList4 = allUserWorldDataList4,
+                allUserRankDataList = allUserRankDataList
             )
         }
     }
@@ -181,11 +183,23 @@ class CommunityViewModel @Inject constructor(
 
     fun onSituationChange(newSituation: String) = intent {
         reduce {
+            val sortedList = when (newSituation) {
+                "firstGame" -> state.allUserRankDataList.sortedByDescending { it.firstGame.toInt() }
+                "secondGame" -> state.allUserRankDataList.sortedBy { it.secondGame.toInt() }
+                "thirdGameEasy" -> state.allUserRankDataList.sortedByDescending { it.thirdGameEasy.toInt() }
+                "thirdGameNormal" -> state.allUserRankDataList.sortedByDescending { it.thirdGameNormal.toInt() }
+                "thirdGameHard" -> state.allUserRankDataList.sortedByDescending { it.thirdGameHard.toInt() }
+
+                else -> state.allUserRankDataList
+            }
+
             state.copy(
-                situation = newSituation
+                situation = newSituation,
+                allUserRankDataList = sortedList
             )
         }
     }
+
 
     fun onUserClick(clickUserNumber: Int) = intent {
         val selectedUser = when (clickUserNumber) {
@@ -222,16 +236,90 @@ class CommunityViewModel @Inject constructor(
                 if (documentSnapshot.exists()) {
                     val likeList = documentSnapshot.get("like") as? List<String> ?: emptyList()
 
+                    //오늘 좋아요를 누르지 않은 사람
                     if (!likeList.contains(tag)) {
                         //FieldValue.arrayUnion(...): Firestore에서 배열에 중복 없이 값 추가할 때 사용.
                         docRef.update("like", FieldValue.arrayUnion(tag))
 
                         Firebase.firestore.collection("users")
+                            .whereEqualTo("tag", tag)
+                            .get()
+                            .addOnSuccessListener { querySnapshot ->
+                                val document = querySnapshot.documents.firstOrNull()
+
+                                if (document != null) {
+                                    val community = document.get("community") as? Map<*, *>
+                                    val likeValueStr = community?.get("like")?.toString()
+
+                                    // 숫자로 변환 시도
+                                    val likeValue = likeValueStr?.toIntOrNull()
+
+                                    if (likeValue != null) {
+                                        val newLikeValue = likeValue + 1
+                                        val updatedCommunity = community.toMutableMap()
+                                        updatedCommunity["like"] = newLikeValue.toString()
+
+                                        document.reference.update("community", updatedCommunity)
+                                            .addOnSuccessListener {
+                                                Log.d("TAG", "like 값이 $likeValue → $newLikeValue 으로 업데이트됨")
+                                                viewModelScope.launch {
+                                                    allUserDao.updateLikeByTag(tag = tag, newLike = newLikeValue.toString())
+                                                    reduce {
+                                                        state.copy(
+                                                            clickAllUserData = state.clickAllUserData.copy(
+                                                                like = (state.clickAllUserData.like.toInt() + 1).toString()
+                                                            )
+                                                        )
+                                                    }
+                                                }
+                                            }
+                                            .addOnFailureListener { e ->
+                                                Log.e("TAG", "업데이트 실패: ${e.message}")
+                                            }
+                                    } else {
+                                        Log.w("TAG", "like 필드가 숫자가 아닙니다: $likeValueStr")
+                                    }
+                                } else {
+                                    Log.w("TAG", "해당 태그를 가진 문서를 찾을 수 없습니다.")
+                                    viewModelScope.launch {
+                                        allUserDao.updateLikeByTag(tag = tag, newLike = (state.clickAllUserData.like.toInt() + 1).toString() )
+                                        reduce {
+                                            state.copy(
+                                                clickAllUserData = state.clickAllUserData.copy(
+                                                    like = (state.clickAllUserData.like.toInt() + 1).toString()
+                                                )
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                            .addOnFailureListener { e ->
+                                Log.e("TAG", "문서 가져오기 실패: ${e.message}")
+                            }
+
+                        viewModelScope.launch {
+                            postSideEffect(CommunitySideEffect.Toast("좋아요를 눌렀습니다."))
+                        }
+                    } else {
+                        // 이미 존재할 때 Toast 띄우기
+                        viewModelScope.launch {
+                            postSideEffect(CommunitySideEffect.Toast("이미 좋아요를 눌렀습니다."))
+                        }
+                    }
+                } else {
+                    //오늘 첫 좋아요
+                    val newData = hashMapOf(
+                        "like" to listOf(tag)
+                    )
+                    docRef.set(newData)
+
+                    Firebase.firestore.collection("users")
                         .whereEqualTo("tag", tag)
                         .get()
                         .addOnSuccessListener { querySnapshot ->
-                            for (document in querySnapshot.documents) {
+                            val document = querySnapshot.documents.firstOrNull()
 
+                            if (document != null) {
                                 val community = document.get("community") as? Map<*, *>
                                 val likeValueStr = community?.get("like")?.toString()
 
@@ -245,7 +333,7 @@ class CommunityViewModel @Inject constructor(
 
                                     document.reference.update("community", updatedCommunity)
                                         .addOnSuccessListener {
-                                            Log.d("TAG", "like 값이 ${likeValue} → ${newLikeValue} 으로 업데이트됨")
+                                            Log.d("TAG", "like 값이 $likeValue → $newLikeValue 으로 업데이트됨")
                                             viewModelScope.launch {
                                                 allUserDao.updateLikeByTag(tag = tag, newLike = newLikeValue.toString())
                                             }
@@ -256,6 +344,20 @@ class CommunityViewModel @Inject constructor(
                                 } else {
                                     Log.w("TAG", "like 필드가 숫자가 아닙니다: $likeValueStr")
                                 }
+                            } else {
+                                Log.w("TAG", "해당 태그를 가진 문서를 찾을 수 없습니다.")
+                                viewModelScope.launch {
+                                    allUserDao.updateLikeByTag(tag = tag, newLike = (state.clickAllUserData.like.toInt() + 1).toString() )
+                                    reduce {
+                                        state.copy(
+                                            clickAllUserData = state.clickAllUserData.copy(
+                                                like = (state.clickAllUserData.like.toInt() + 1).toString()
+                                            )
+                                        )
+                                    }
+
+                                }
+
                             }
                         }
                         .addOnFailureListener { e ->
@@ -263,20 +365,6 @@ class CommunityViewModel @Inject constructor(
                         }
 
 
-                        viewModelScope.launch {
-                            postSideEffect(CommunitySideEffect.Toast("좋아요를 눌렀습니다."))
-                        }
-                    } else {
-                        // 이미 존재할 때 Toast 띄우기
-                        viewModelScope.launch {
-                            postSideEffect(CommunitySideEffect.Toast("이미 좋아요를 눌렀습니다."))
-                        }
-                    }
-                } else {
-                    val newData = hashMapOf(
-                        "like" to listOf(tag)
-                    )
-                    docRef.set(newData)
                     viewModelScope.launch {
                         postSideEffect(CommunitySideEffect.Toast("좋아요를 눌렀습니다."))
                     }
@@ -292,8 +380,6 @@ class CommunityViewModel @Inject constructor(
         loadData()
 
     }
-
-
 
 }
 
@@ -314,7 +400,8 @@ data class CommunityState(
     val allUserWorldDataList4: List<String> = emptyList(),
     val situation: String = "world",
     val clickAllUserData: AllUser = AllUser(),
-    val clickAllUserWorldDataList: List<String> = emptyList()
+    val clickAllUserWorldDataList: List<String> = emptyList(),
+    val allUserRankDataList: List<AllUser> = emptyList()
     )
 
 
