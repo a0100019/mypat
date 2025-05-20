@@ -23,12 +23,17 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
+import org.orbitmvi.orbit.annotation.OrbitExperimental
+import org.orbitmvi.orbit.syntax.simple.blockingIntent
 import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.Date
+import java.util.Locale
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 
@@ -55,6 +60,7 @@ class CommunityViewModel @Inject constructor(
     // 뷰 모델 초기화 시 모든 user 데이터를 로드
     init {
         loadData()
+        loadChatMessages()
     }
 
     //room에서 데이터 가져옴
@@ -101,6 +107,52 @@ class CommunityViewModel @Inject constructor(
                 allUserRankDataList = allUserRankDataList
             )
         }
+    }
+
+    fun loadChatMessages() {
+        val todayDocId = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date())
+
+        Firebase.firestore.collection("chat")
+            .document(todayDocId)
+            .addSnapshotListener { snapshot, error ->
+                Log.d("CommunityViewModel", "채팅 스냅샷 수신됨")
+
+                if (error != null) {
+                    Log.e("CommunityViewModel", "채팅 데이터 에러: ${error.message}")
+                    return@addSnapshotListener
+                }
+
+                if (snapshot != null && snapshot.exists()) {
+                    val messages = snapshot.data?.mapNotNull { (key, value) ->
+                        val timestamp = key.toLongOrNull()
+                        if (timestamp == null) {
+                            Log.e("CommunityViewModel", "timestamp 변환 실패: $key")
+                            return@mapNotNull null
+                        }
+
+                        val map = value as? Map<*, *>
+                        val message = map?.get("message") as? String
+                        val name = map?.get("name") as? String
+
+                        if (message != null && name != null) {
+                            ChatMessage(timestamp, message, name)
+                        } else {
+                            null
+                        }
+                    }?.sortedBy { it.timestamp } ?: emptyList()
+
+                    // snapshotListener 안에서는 반드시 viewModelScope.launch로 감싸서 intent 사용
+                    viewModelScope.launch {
+                        intent {
+                            reduce {
+                                state.copy(chatMessages = messages)
+                            }
+                        }
+                    }
+                } else {
+                    Log.w("CommunityViewModel", "스냅샷은 존재하지 않음")
+                }
+            }
     }
 
 
@@ -220,6 +272,50 @@ class CommunityViewModel @Inject constructor(
             state.copy(
                 clickAllUserData = selectedUser,
                 clickAllUserWorldDataList = selectedUserWorldDataList)
+        }
+    }
+
+    fun onChatSubmitClick() = intent {
+        val currentMessage = state.newChat.trim()
+        val userName = state.userDataList.find { it.id == "name" }!!.value // 또는 상태에서 유저 이름을 가져올 수 있다면 사용
+        val userId = state.userDataList.find { it.id == "auth" }!!.value
+        val userTag = state.userDataList.find { it.id == "auth" }!!.value2
+        val userBan = state.userDataList.find { it.id == "community" }!!.value3
+
+        if (currentMessage.isEmpty()) return@intent
+
+        val timestamp = System.currentTimeMillis()
+        val todayDocId = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date())
+
+        val chatData = mapOf(
+            "message" to currentMessage,
+            "name" to userName,
+            "ban" to userBan,
+            "tag" to userTag,
+            "uid" to userId
+        )
+
+        Firebase.firestore.collection("chat")
+            .document(todayDocId)
+            .set(mapOf(timestamp.toString() to chatData), SetOptions.merge())
+            .addOnSuccessListener {
+                Log.d("ChatSubmit", "채팅 전송 성공 (merge)")
+            }
+            .addOnFailureListener { e ->
+                Log.e("ChatSubmit", "채팅 전송 실패: ${e.message}")
+            }
+
+        // 입력 필드 초기화
+        reduce {
+            state.copy(newChat = "")
+        }
+    }
+
+    //입력 가능하게 하는 코드
+    @OptIn(OrbitExperimental::class)
+    fun onChatTextChange(chatText: String) = blockingIntent {
+        reduce {
+            state.copy(newChat = chatText)
         }
     }
 
@@ -401,8 +497,17 @@ data class CommunityState(
     val situation: String = "world",
     val clickAllUserData: AllUser = AllUser(),
     val clickAllUserWorldDataList: List<String> = emptyList(),
-    val allUserRankDataList: List<AllUser> = emptyList()
-    )
+    val allUserRankDataList: List<AllUser> = emptyList(),
+    val newChat: String = "",
+    val chatMessages: List<ChatMessage> = emptyList()
+)
+
+@Immutable
+data class ChatMessage(
+    val timestamp: Long,
+    val message: String,
+    val name: String
+)
 
 
 //상태와 관련없는 것

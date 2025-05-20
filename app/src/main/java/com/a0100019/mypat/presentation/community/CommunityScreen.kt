@@ -1,23 +1,32 @@
 package com.a0100019.mypat.presentation.community
 
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -63,11 +72,15 @@ fun CommunityScreen(
         clickAllUserData = communityState.clickAllUserData,
         clickAllUserWorldDataList = communityState.clickAllUserWorldDataList,
         allUserRankDataList = communityState.allUserRankDataList,
+        chatMessages = communityState.chatMessages,
+        newChat = communityState.newChat,
 
         onPageUpClick = communityViewModel::opPageUpClick,
         onUserClick = communityViewModel::onUserClick,
         onLikeClick = communityViewModel::onLikeClick,
-        onSituationChange = communityViewModel::onSituationChange
+        onSituationChange = communityViewModel::onSituationChange,
+        onChatTextChange = communityViewModel::onChatTextChange,
+        onChatSubmitClick = communityViewModel::onChatSubmitClick
     )
 }
 
@@ -90,11 +103,16 @@ fun CommunityScreen(
     clickAllUserData: AllUser = AllUser(),
     clickAllUserWorldDataList: List<String> = emptyList(),
     allUserRankDataList: List<AllUser> = emptyList(),
+    chatMessages: List<ChatMessage> = emptyList(),
+    newChat: String = "",
 
     onPageUpClick: () -> Unit = {},
     onUserClick: (Int) -> Unit = {},
     onLikeClick: () -> Unit = {},
-    onSituationChange: (String) -> Unit = {}
+    onSituationChange: (String) -> Unit = {},
+    onChatTextChange: (String) -> Unit = {},
+    onChatSubmitClick: () -> Unit = {}
+
 ) {
 
     if(clickAllUserData.id != 0) {
@@ -178,6 +196,64 @@ fun CommunityScreen(
                     Text("다음")
                 }
             }
+
+            "chat" ->  Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(8.dp)
+            ) {
+                // 메시지 리스트
+                LazyColumn(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
+                    reverseLayout = true,
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    items(chatMessages.reversed()) { message ->
+                        // 말풍선 UI
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            Text(
+                                text = message.name,
+                                style = MaterialTheme.typography.labelSmall,
+                                modifier = Modifier.padding(start = 4.dp, bottom = 2.dp)
+                            )
+                            Box(
+                                modifier = Modifier
+                                    .background(Color(0xFFE0E0E0), RoundedCornerShape(8.dp))
+                                    .padding(8.dp)
+                            ) {
+                                Text(message.message)
+                            }
+                        }
+                    }
+                }
+
+                // 입력창 + 전송버튼
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TextField(
+                        value = newChat,
+                        onValueChange = onChatTextChange,
+                        modifier = Modifier.weight(1f),
+                        placeholder = { Text("메시지를 입력하세요") },
+                        maxLines = 4
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Button(
+                        onClick = onChatSubmitClick
+                    ) {
+                        Text("전송")
+                    }
+                }
+            }
+
 
             else -> LazyColumn(
                 modifier = Modifier.weight(1f),
@@ -266,8 +342,10 @@ fun CommunityScreen(
             }
 
             Button(
-                onClick = {},
-                enabled = situation != "chatting"
+                onClick = {
+                    onSituationChange("chat")
+                },
+                enabled = situation != "chat"
             ) {
                 Text("채팅")
             }
@@ -280,7 +358,8 @@ fun CommunityScreen(
 fun CommunityScreenPreview() {
     MypatTheme {
         CommunityScreen(
-            situation = "world"
+            situation = "chat",
+            chatMessages = listOf(ChatMessage(10202020, "a", "a"))
         )
     }
 }
