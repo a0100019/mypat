@@ -13,17 +13,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,10 +34,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.data.room.allUser.AllUser
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pat.Pat
+import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
-import kotlin.reflect.jvm.internal.impl.descriptors.deserialization.PlatformDependentDeclarationFilter.All
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun CommunityScreen(
@@ -74,13 +77,15 @@ fun CommunityScreen(
         allUserRankDataList = communityState.allUserRankDataList,
         chatMessages = communityState.chatMessages,
         newChat = communityState.newChat,
+        userDataList = communityState.userDataList,
 
         onPageUpClick = communityViewModel::opPageUpClick,
-        onUserClick = communityViewModel::onUserClick,
+        onUserWorldClick = communityViewModel::onUserWorldClick,
         onLikeClick = communityViewModel::onLikeClick,
         onSituationChange = communityViewModel::onSituationChange,
         onChatTextChange = communityViewModel::onChatTextChange,
-        onChatSubmitClick = communityViewModel::onChatSubmitClick
+        onChatSubmitClick = communityViewModel::onChatSubmitClick,
+        onUserRankClick = communityViewModel::onUserRankClick
     )
 }
 
@@ -105,19 +110,21 @@ fun CommunityScreen(
     allUserRankDataList: List<AllUser> = emptyList(),
     chatMessages: List<ChatMessage> = emptyList(),
     newChat: String = "",
+    userDataList: List<User> = emptyList(),
 
     onPageUpClick: () -> Unit = {},
-    onUserClick: (Int) -> Unit = {},
+    onUserWorldClick: (Int) -> Unit = {},
     onLikeClick: () -> Unit = {},
     onSituationChange: (String) -> Unit = {},
     onChatTextChange: (String) -> Unit = {},
-    onChatSubmitClick: () -> Unit = {}
+    onChatSubmitClick: () -> Unit = {},
+    onUserRankClick: (Int) -> Unit = {}
 
 ) {
 
     if(clickAllUserData.id != 0) {
         CommunityUserDialog(
-            onClose = { onUserClick(0) },
+            onClose = { onUserWorldClick(0) },
             clickAllUserData = clickAllUserData,
             clickAllUserWorldDataList = clickAllUserWorldDataList,
             patDataList = patDataList,
@@ -146,7 +153,7 @@ fun CommunityScreen(
                         modifier = Modifier
                             .weight(1f)
                             .clickable {
-                                onUserClick(1)
+                                onUserWorldClick(1)
                             },
                         userData = allUserData1,
                         worldDataList = allUserWorldDataList1,
@@ -157,7 +164,7 @@ fun CommunityScreen(
                         modifier = Modifier
                             .weight(1f)
                             .clickable {
-                                onUserClick(2)
+                                onUserWorldClick(2)
                             },
                         userData = allUserData2,
                         worldDataList = allUserWorldDataList2,
@@ -171,7 +178,7 @@ fun CommunityScreen(
                         modifier = Modifier
                             .weight(1f)
                             .clickable {
-                                onUserClick(3)
+                                onUserWorldClick(3)
                             },
                         userData = allUserData3,
                         worldDataList = allUserWorldDataList3,
@@ -182,7 +189,7 @@ fun CommunityScreen(
                         modifier = Modifier
                             .weight(1f)
                             .clickable {
-                                onUserClick(4)
+                                onUserWorldClick(4)
                             },
                         userData = allUserData4,
                         worldDataList = allUserWorldDataList4,
@@ -202,7 +209,7 @@ fun CommunityScreen(
                     .weight(1f)
                     .padding(8.dp)
             ) {
-                // 메시지 리스트
+
                 LazyColumn(
                     modifier = Modifier
                         .weight(1f)
@@ -211,23 +218,57 @@ fun CommunityScreen(
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     items(chatMessages.reversed()) { message ->
-                        // 말풍선 UI
-                        Column(modifier = Modifier.fillMaxWidth()) {
-                            Text(
-                                text = message.name,
-                                style = MaterialTheme.typography.labelSmall,
-                                modifier = Modifier.padding(start = 4.dp, bottom = 2.dp)
-                            )
-                            Box(
+                        val isMine = message.tag == userDataList.find { it.id == "auth"}!!.value2
+                        val alignment = if (isMine) Arrangement.End else Arrangement.Start
+                        val bubbleColor = if (isMine) Color(0xFFBBDEFB) else Color(0xFFE0E0E0)
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = alignment
+                        ) {
+                            Column(
                                 modifier = Modifier
-                                    .background(Color(0xFFE0E0E0), RoundedCornerShape(8.dp))
-                                    .padding(8.dp)
+                                    .widthIn(max = 280.dp)
+                                    .padding(horizontal = 8.dp),
+                                horizontalAlignment = if (isMine) Alignment.End else Alignment.Start
                             ) {
-                                Text(message.message)
+                                Row {
+                                    Text(
+                                        text = message.name,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        modifier = Modifier.padding(start = 4.dp, bottom = 2.dp)
+                                    )
+
+                                    Text(
+                                        text = "#" + message.tag,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        modifier = Modifier.padding(start = 4.dp, bottom = 2.dp)
+                                    )
+
+                                    // 시간 포맷
+                                    val time = remember(message.timestamp) {
+                                        SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(message.timestamp))
+                                    }
+
+                                    Text(
+                                        text = time,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        modifier = Modifier.padding(start = 4.dp, bottom = 2.dp)
+                                    )
+
+                                }
+                                Box(
+                                    modifier = Modifier
+                                        .background(bubbleColor, RoundedCornerShape(8.dp))
+                                        .padding(8.dp)
+                                ) {
+                                    Text(text = message.message)
+                                }
                             }
                         }
                     }
                 }
+
 
                 // 입력창 + 전송버튼
                 Row(
@@ -260,10 +301,14 @@ fun CommunityScreen(
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp) // 카드 간 간격
             ) {
-                items(allUserRankDataList) { user ->
+                itemsIndexed(allUserRankDataList) { index, user ->
                     CommunityRankingCard(
                         userData = user,
-                        situation = situation
+                        situation = situation,
+                        modifier = Modifier
+                            .clickable {
+                                onUserRankClick(index)
+                            }
                     )
                 }
             }
@@ -359,7 +404,7 @@ fun CommunityScreenPreview() {
     MypatTheme {
         CommunityScreen(
             situation = "chat",
-            chatMessages = listOf(ChatMessage(10202020, "a", "a"))
+            chatMessages = listOf(ChatMessage(10202020, "a", "a", tag = "0", ban = "0"), ChatMessage(10202020, "a11", "a11", tag = "1", ban = "0"))
         )
     }
 }

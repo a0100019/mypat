@@ -12,8 +12,6 @@ import com.a0100019.mypat.data.room.pat.PatDao
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.world.WorldDao
-import com.a0100019.mypat.presentation.main.MainSideEffect
-import com.a0100019.mypat.presentation.setting.SettingSideEffect
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.SetOptions
@@ -109,7 +107,7 @@ class CommunityViewModel @Inject constructor(
         }
     }
 
-    fun loadChatMessages() {
+    private fun loadChatMessages() {
         val todayDocId = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date())
 
         Firebase.firestore.collection("chat")
@@ -133,15 +131,16 @@ class CommunityViewModel @Inject constructor(
                         val map = value as? Map<*, *>
                         val message = map?.get("message") as? String
                         val name = map?.get("name") as? String
+                        val tag = map?.get("tag") as? String
+                        val ban = map?.get("ban") as? String
 
-                        if (message != null && name != null) {
-                            ChatMessage(timestamp, message, name)
+                        if (message != null && name != null && tag != null && ban != null && ban != "1") {
+                            ChatMessage(timestamp, message, name, tag, ban)
                         } else {
                             null
                         }
                     }?.sortedBy { it.timestamp } ?: emptyList()
 
-                    // snapshotListener 안에서는 반드시 viewModelScope.launch로 감싸서 intent 사용
                     viewModelScope.launch {
                         intent {
                             reduce {
@@ -154,7 +153,6 @@ class CommunityViewModel @Inject constructor(
                 }
             }
     }
-
 
     fun opPageUpClick() = intent {
 
@@ -252,8 +250,7 @@ class CommunityViewModel @Inject constructor(
         }
     }
 
-
-    fun onUserClick(clickUserNumber: Int) = intent {
+    fun onUserWorldClick(clickUserNumber: Int) = intent {
         val selectedUser = when (clickUserNumber) {
             1 -> state.allUserData1
             2 -> state.allUserData2
@@ -268,6 +265,19 @@ class CommunityViewModel @Inject constructor(
             4 -> state.allUserWorldDataList4
             else -> emptyList()
         }
+        reduce {
+            state.copy(
+                clickAllUserData = selectedUser,
+                clickAllUserWorldDataList = selectedUserWorldDataList)
+        }
+    }
+
+    fun onUserRankClick(userIndex: Int) = intent {
+        val selectedUser = state.allUserDataList.get(index = userIndex)
+        val selectedUserWorldDataList: List<String> = selectedUser.worldData
+            .split("/")
+            .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
+
         reduce {
             state.copy(
                 clickAllUserData = selectedUser,
@@ -314,8 +324,11 @@ class CommunityViewModel @Inject constructor(
     //입력 가능하게 하는 코드
     @OptIn(OrbitExperimental::class)
     fun onChatTextChange(chatText: String) = blockingIntent {
-        reduce {
-            state.copy(newChat = chatText)
+
+        if (chatText.length <= 50) {
+            reduce {
+                state.copy(newChat = chatText)
+            }
         }
     }
 
@@ -506,7 +519,9 @@ data class CommunityState(
 data class ChatMessage(
     val timestamp: Long,
     val message: String,
-    val name: String
+    val name: String,
+    val tag: String,
+    val ban: String
 )
 
 
