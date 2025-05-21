@@ -332,6 +332,49 @@ class CommunityViewModel @Inject constructor(
         }
     }
 
+    fun onBanClick(chatIndex: Int = -1) = intent {
+
+        //오늘 첫 신고인지 확인
+        if(){
+
+            //world신고
+            if (chatIndex == -1) {
+                val fromUID = state.userDataList.find { it.id == "auth" }!!.value
+
+                val userName = state.clickAllUserData.name
+                val userTag = state.clickAllUserData.tag
+
+                val timestamp = System.currentTimeMillis()
+                val todayDocId = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date())
+
+                val banData = mapOf(
+                    timestamp.toString() to mapOf(
+                        "fromUID" to fromUID,
+                        "name" to userName,
+                    )
+
+                )
+
+                Firebase.firestore.collection("ban")
+                    .document(todayDocId)
+                    .set(mapOf(userTag to banData), SetOptions.merge())
+                    .addOnSuccessListener {
+                        Log.d("BanSubmit", "벤 전송 성공 (merge)")
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("BanSubmit", "벤 전송 실패: ${e.message}")
+                    }
+
+            } else { // 채팅 신고
+
+            }
+
+
+
+        }
+
+    }
+
     fun onLikeClick() = intent {
 
         val db = Firebase.firestore

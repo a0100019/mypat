@@ -20,7 +20,7 @@ interface AllUserDao {
     @Query("DELETE FROM allUser_table")
     suspend fun deleteAllUsers()
 
-    @Query("SELECT * FROM allUser_table WHERE ban != '1' ORDER BY lastLogIn DESC")
+    @Query("SELECT * FROM allUser_table WHERE ban == '0' ORDER BY lastLogIn DESC")
     suspend fun getAllUserData(): List<AllUser>
 
     @Query("UPDATE allUser_table SET `like` = :newLike WHERE tag = :tag")

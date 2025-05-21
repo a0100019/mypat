@@ -46,6 +46,7 @@ fun CommunityUserDialog(
     patDataList: List<Pat> = emptyList(),
     itemDataList: List<Item> = emptyList(),
     onLikeClick: () -> Unit = {},
+    onBanClick: () -> Unit = {}
 ) {
 
     Dialog(
@@ -128,6 +129,13 @@ fun CommunityUserDialog(
                     )
                     Text(
                         text = clickAllUserData.like
+                    )
+                    JustImage(
+                        filePath = "etc/ban.png",
+                        modifier = Modifier
+                            .clickable {
+                                onBanClick()
+                            }
                     )
                 }
 
