@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
@@ -35,6 +36,8 @@ import com.a0100019.mypat.data.room.allUser.AllUser
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
+import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
+import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -78,6 +81,7 @@ fun CommunityScreen(
         chatMessages = communityState.chatMessages,
         newChat = communityState.newChat,
         userDataList = communityState.userDataList,
+        alertState = communityState.alertState,
 
         onPageUpClick = communityViewModel::opPageUpClick,
         onUserWorldClick = communityViewModel::onUserWorldClick,
@@ -85,7 +89,9 @@ fun CommunityScreen(
         onSituationChange = communityViewModel::onSituationChange,
         onChatTextChange = communityViewModel::onChatTextChange,
         onChatSubmitClick = communityViewModel::onChatSubmitClick,
-        onUserRankClick = communityViewModel::onUserRankClick
+        onUserRankClick = communityViewModel::onUserRankClick,
+        onBanClick = communityViewModel::onBanClick,
+        alertStateChange = communityViewModel::alertStateChange
     )
 }
 
@@ -111,6 +117,7 @@ fun CommunityScreen(
     chatMessages: List<ChatMessage> = emptyList(),
     newChat: String = "",
     userDataList: List<User> = emptyList(),
+    alertState: String = "",
 
     onPageUpClick: () -> Unit = {},
     onUserWorldClick: (Int) -> Unit = {},
@@ -118,7 +125,9 @@ fun CommunityScreen(
     onSituationChange: (String) -> Unit = {},
     onChatTextChange: (String) -> Unit = {},
     onChatSubmitClick: () -> Unit = {},
-    onUserRankClick: (Int) -> Unit = {}
+    onUserRankClick: (Int) -> Unit = {},
+    onBanClick: (Int) -> Unit = {},
+    alertStateChange: (String) -> Unit = {},
 
 ) {
 
@@ -131,7 +140,21 @@ fun CommunityScreen(
             itemDataList = itemDataList,
             onLikeClick = {
                 onLikeClick()
+            },
+            onBanClick = {
+                alertStateChange("-1")
             }
+        )
+    }
+
+    if(alertState != "") {
+        SimpleAlertDialog(
+            onConfirm = {
+                onBanClick(alertState.toInt())
+                alertStateChange("")
+            },
+            onDismiss = { alertStateChange("") },
+            text = "신고하시겠습니까?"
         )
     }
 
@@ -217,7 +240,7 @@ fun CommunityScreen(
                     reverseLayout = true,
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    items(chatMessages.reversed()) { message ->
+                    itemsIndexed(chatMessages.reversed()) { index, message ->
                         val isMine = message.tag == userDataList.find { it.id == "auth"}!!.value2
                         val alignment = if (isMine) Arrangement.End else Arrangement.Start
                         val bubbleColor = if (isMine) Color(0xFFBBDEFB) else Color(0xFFE0E0E0)
@@ -255,6 +278,17 @@ fun CommunityScreen(
                                         style = MaterialTheme.typography.labelSmall,
                                         modifier = Modifier.padding(start = 4.dp, bottom = 2.dp)
                                     )
+
+                                    if(!isMine) {
+                                        JustImage(
+                                            filePath = "etc/ban.png",
+                                            modifier = Modifier
+                                                .size(10.dp)
+                                                .clickable {
+                                                    alertStateChange(index.toString())
+                                                }
+                                        )
+                                    }
 
                                 }
                                 Box(
@@ -294,7 +328,6 @@ fun CommunityScreen(
                     }
                 }
             }
-
 
             else -> LazyColumn(
                 modifier = Modifier.weight(1f),
@@ -347,7 +380,6 @@ fun CommunityScreen(
 
             }
         }
-
 
         Row {
             Button(
@@ -404,6 +436,7 @@ fun CommunityScreenPreview() {
     MypatTheme {
         CommunityScreen(
             situation = "chat",
+            userDataList = listOf(User(id = "auth")),
             chatMessages = listOf(ChatMessage(10202020, "a", "a", tag = "0", ban = "0"), ChatMessage(10202020, "a11", "a11", tag = "1", ban = "0"))
         )
     }

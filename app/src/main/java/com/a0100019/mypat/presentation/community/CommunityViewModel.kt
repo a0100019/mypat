@@ -134,7 +134,7 @@ class CommunityViewModel @Inject constructor(
                         val tag = map?.get("tag") as? String
                         val ban = map?.get("ban") as? String
 
-                        if (message != null && name != null && tag != null && ban != null && ban != "1") {
+                        if (message != null && name != null && tag != null && ban == "0") {
                             ChatMessage(timestamp, message, name, tag, ban)
                         } else {
                             null
@@ -332,47 +332,137 @@ class CommunityViewModel @Inject constructor(
         }
     }
 
-    fun onBanClick(chatIndex: Int = -1) = intent {
+    fun onBanClick(chatIndex: Int) = intent {
 
-        //오늘 첫 신고인지 확인
-        if(){
+        //신고자 UID
+        val fromUID = state.userDataList.find { it.id == "auth" }!!.value
+        //오늘 날짜
+        val todayDocId = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date())
 
-            //world신고
-            if (chatIndex == -1) {
-                val fromUID = state.userDataList.find { it.id == "auth" }!!.value
+        Firebase.firestore
+            .collection("users")
+            .document(fromUID)
+            .get()
+            .addOnSuccessListener { document ->
+                val communityMap = document.get("community") as? Map<*, *>
+                val warningValue = communityMap?.get("warning") as? String
 
-                val userName = state.clickAllUserData.name
-                val userTag = state.clickAllUserData.tag
+                if (warningValue == "0") {
+                    // 🔽 warning 값이 "0"일 때 실행 되는 코드 = 0이 아니면 신고를 많이해서 막아놓은 것
+                    Log.d("Firestore", "warning = 0 -> 처리 실행")
+                    // 원하는 작업 수행
 
-                val timestamp = System.currentTimeMillis()
-                val todayDocId = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date())
+                    //world신고
+                    if (chatIndex == -1) {
 
-                val banData = mapOf(
-                    timestamp.toString() to mapOf(
-                        "fromUID" to fromUID,
-                        "name" to userName,
-                    )
+                        val banData = mapOf(
+                            System.currentTimeMillis().toString() to mapOf(
+                                "fromUID" to fromUID,
+                                "name" to state.clickAllUserData.name,
+                            )
 
-                )
+                        )
 
-                Firebase.firestore.collection("ban")
-                    .document(todayDocId)
-                    .set(mapOf(userTag to banData), SetOptions.merge())
-                    .addOnSuccessListener {
-                        Log.d("BanSubmit", "벤 전송 성공 (merge)")
+                        Firebase.firestore.collection("ban")
+                            .document(todayDocId)
+                            .set(mapOf(state.clickAllUserData.tag to banData), SetOptions.merge())
+                            .addOnSuccessListener {
+                                Log.d("BanSubmit", "벤 전송 성공 (merge)")
+                            }
+                            .addOnFailureListener { e ->
+                                Log.e("BanSubmit", "벤 전송 실패: ${e.message}")
+                            }
+
+                    } else { // 채팅 신고
+                        val messageData = state.chatMessages[state.chatMessages.lastIndex - chatIndex]
+                        // Step 1: ban 컬렉션 확인
+                        Firebase.firestore.collection("ban")
+                            .document(todayDocId)
+                            .get()
+                            .addOnSuccessListener { banSnapshot ->
+                                val banData = banSnapshot.data
+
+                                val matched = banData?.any { (_, nestedMap) ->
+                                    (nestedMap as? Map<*, *>)?.values?.any { value ->
+                                        val map = value as? Map<*, *>
+                                        val time = map?.get("time") as? Long
+                                        val firstFromUID = map?.get("fromUID") as? String
+
+                                        if (time == messageData.timestamp && firstFromUID == fromUID) {
+                                            viewModelScope.launch {
+                                                postSideEffect(CommunitySideEffect.Toast("이미 신고가 접수되었습니다."))
+                                            }
+                                            return@addOnSuccessListener  // 함수 조기 종료
+                                        }
+
+                                        time == messageData.timestamp
+                                    } == true
+                                } ?: false
+
+                                // 🔐 ban 1스택이 있을 때만 실행
+                                if (matched) {
+                                    Firebase.firestore.collection("chat")
+                                        .document(todayDocId)
+                                        .update(
+                                            messageData.timestamp.toString() + ".ban", "1"
+                                        )
+                                        .addOnSuccessListener {
+                                            Log.d("ChatUpdate", "ban 값 업데이트 성공")
+                                        }
+                                        .addOnFailureListener { e ->
+                                            Log.e("ChatUpdate", "ban 업데이트 실패: ${e.message}")
+                                        }
+                                }
+
+
+                                // 2. ban 컬렉션에 추가
+                                val banDataToSend = mapOf(
+                                    System.currentTimeMillis().toString() to mapOf(
+                                        "fromUID" to fromUID,
+                                        "message" to messageData.message,
+                                        "name" to state.clickAllUserData.name,
+                                        "time" to messageData.timestamp
+                                    )
+                                )
+
+                                Firebase.firestore.collection("ban")
+                                    .document(todayDocId)
+                                    .set(mapOf(state.clickAllUserData.tag to banDataToSend), SetOptions.merge())
+                                    .addOnSuccessListener {
+                                        Log.d("BanSubmit", "벤 전송 성공 (merge)")
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Log.e("BanSubmit", "벤 전송 실패: ${e.message}")
+                                    }
+
+
+                            }
+                            .addOnFailureListener { e ->
+                                Log.e("BanCheck", "ban 문서 불러오기 실패: ${e.message}")
+                            }
+}
+
+                    viewModelScope.launch {
+                        postSideEffect(CommunitySideEffect.Toast("신고가 접수되었습니다."))
                     }
-                    .addOnFailureListener { e ->
-                        Log.e("BanSubmit", "벤 전송 실패: ${e.message}")
-                    }
 
-            } else { // 채팅 신고
+                }
 
+            }
+            .addOnFailureListener { e ->
+                Log.e("Firestore", "문서 가져오기 실패: ${e.message}")
             }
 
 
 
-        }
+    }
 
+    fun alertStateChange(alertState: String) = intent {
+        reduce {
+            state.copy(
+                alertState = alertState
+            )
+        }
     }
 
     fun onLikeClick() = intent {
@@ -555,7 +645,8 @@ data class CommunityState(
     val clickAllUserWorldDataList: List<String> = emptyList(),
     val allUserRankDataList: List<AllUser> = emptyList(),
     val newChat: String = "",
-    val chatMessages: List<ChatMessage> = emptyList()
+    val chatMessages: List<ChatMessage> = emptyList(),
+    val alertState: String = ""
 )
 
 @Immutable
