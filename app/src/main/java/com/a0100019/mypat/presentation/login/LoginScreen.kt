@@ -219,7 +219,10 @@ fun LoginScreen(
                 verticalArrangement = Arrangement.Bottom,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("화면 터치해서 시작")
+                Text(
+                    text = "화면 터치해서 시작",
+                    style = MaterialTheme.typography.headlineLarge
+                )
                 Spacer(modifier = Modifier.size(70.dp))
 
             }

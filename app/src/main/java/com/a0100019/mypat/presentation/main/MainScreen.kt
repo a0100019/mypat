@@ -35,6 +35,7 @@ import com.a0100019.mypat.presentation.setting.LetterViewDialog
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import com.a0100019.mypat.presentation.main.world.WorldViewScreen
+import com.a0100019.mypat.presentation.ui.component.CuteIconButton
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import org.orbitmvi.orbit.compose.collectAsState
@@ -201,20 +202,18 @@ fun MainScreen(
                         .padding(10.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Button(
-                        onClick = onInformationNavigateClick
-                    ) {
-                        Text("내 정보")
-                    }
-
+                    CuteIconButton(
+                        text = "내 정보",
+                        icon = i,
+                        onClick = onInformationNavigateClick,
+                    )
                     val users by userFlowDataList.collectAsState(initial = emptyList())
                     Text("money : ${users.find { it.id == "money" }?.value} | cash : ${users.find { it.id == "money" }?.value2}")
 
-                    Button(
-                        onClick = onSettingNavigateClick
-                    ) {
-                        Text("설정")
-                    }
+                    CuteIconButton(
+                        onClick = onSettingNavigateClick,
+                        text = "설정"
+                    )
 
                 }
 
@@ -241,16 +240,14 @@ fun MainScreen(
                     Text(
                         text = timer
                     )
-                    Button(
+                    CuteIconButton(
+                        text = "커뮤니티",
                         onClick = onCommunityNavigateClick
-                    ) {
-                        Text("커뮤니티")
-                    }
-                    Button(
+                    )
+                    CuteIconButton(
+                        text = "꾸미기 모드",
                         onClick = onWorldNavigateClick
-                    ) {
-                        Text("꾸미기 모드")
-                    }
+                    )
                 }
 
                 WorldViewScreen(
@@ -277,13 +274,12 @@ fun MainScreen(
                         .fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Button(
+                    CuteIconButton(
+                        text = "일일 루틴",
                         modifier = Modifier
                             .fillMaxWidth(0.5f),
                         onClick = onDailyNavigateClick
-                    ) {
-                        Text("일일 루틴")
-                    }
+                    )
                 }
 
                 Row(
@@ -292,18 +288,16 @@ fun MainScreen(
                         .padding(bottom = 10.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    Button(
+                    CuteIconButton(
+                        text = "상점",
                         modifier = Modifier,
                         onClick = onStoreNavigateClick
-                    ) {
-                        Text("상점")
-                    }
-                    Button(
+                    )
+                    CuteIconButton(
+                        text = "도감",
                         modifier = Modifier,
                         onClick = onIndexNavigateClick
-                    ) {
-                        Text("도감")
-                    }
+                    )
                 }
 
             }
