@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.a0100019.mypat.R
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.layout.fillMaxWidth
 
 @Composable
 fun CuteIconButton(
@@ -62,25 +63,31 @@ fun CuteIconButton(
     )
 
     Box(
-        modifier = modifier
+        modifier = Modifier
             .graphicsLayer {
                 scaleX = scale
                 scaleY = scale
             }
             .clickable(
                 interactionSource = interactionSource,
-                indication = rememberRipple(bounded = true, color = Color(0xFF5A3A22).copy(alpha = 0.2f)),
+                indication = rememberRipple(
+                    bounded = true,
+                    color = Color.White
+                ),
                 onClick = onClick
             )
+
     ) {
         Surface(
+            modifier = modifier, // ← 이거 추가!
             shape = RoundedCornerShape(16.dp),
             color = Color(0xFFFFF8E7),
             border = BorderStroke(3.dp, Color(0xFF5A3A22)),
             shadowElevation = 6.dp,
         ) {
             Column(
-                modifier = Modifier.padding(8.dp),
+                modifier = Modifier
+                    .padding(8.dp),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -88,7 +95,7 @@ fun CuteIconButton(
                     Image(
                         painter = painterResource(id = it),
                         contentDescription = null,
-                        modifier = Modifier.size(40.dp)
+                        modifier = Modifier.size(30.dp)
                     )
                 }
                 Spacer(modifier = Modifier.height(6.dp))
@@ -118,7 +125,6 @@ fun CuteIconButton(
 @Preview(showBackground = true)
 @Composable
 fun CuteButtonPreview() {
-    val icon = painterResource(id = R.drawable.heart) // 귀여운 하트 아이콘
 
     CuteIconButton(
             text = "Love",

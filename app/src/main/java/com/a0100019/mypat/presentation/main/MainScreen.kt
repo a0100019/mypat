@@ -24,6 +24,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.letter.Letter
 import com.a0100019.mypat.data.room.pat.Pat
@@ -204,7 +205,7 @@ fun MainScreen(
                 ) {
                     CuteIconButton(
                         text = "내 정보",
-                        icon = i,
+                        iconResId = R.drawable.information,
                         onClick = onInformationNavigateClick,
                     )
                     val users by userFlowDataList.collectAsState(initial = emptyList())
@@ -278,7 +279,8 @@ fun MainScreen(
                         text = "일일 루틴",
                         modifier = Modifier
                             .fillMaxWidth(0.5f),
-                        onClick = onDailyNavigateClick
+                        onClick = onDailyNavigateClick,
+                        showBadge = true
                     )
                 }
 

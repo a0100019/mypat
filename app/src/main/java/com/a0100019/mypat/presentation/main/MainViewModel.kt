@@ -300,9 +300,9 @@ class MainViewModel @Inject constructor(
         reduce {
             state.copy(
                 situation = "lovePatOnGoing",
-                loveItemData1 = state.loveItemData1.copy(x = 0.1f, y = 0.7f),
-                loveItemData2 = state.loveItemData2.copy(x = 0.4f, y = 0.7f),
-                loveItemData3 = state.loveItemData3.copy(x = 0.7f, y = 0.7f)
+                loveItemData1 = state.loveItemData1.copy(x = 0.1f, y = 0.7f, date = "0"),
+                loveItemData2 = state.loveItemData2.copy(x = 0.4f, y = 0.7f, date = "0"),
+                loveItemData3 = state.loveItemData3.copy(x = 0.7f, y = 0.7f, date = "0")
             )
         }
     }
