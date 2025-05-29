@@ -231,12 +231,15 @@ fun MainScreen(
                 }
             }
 
-            Column {
+            Column(
+                modifier = Modifier
+                    .padding(10.dp)
+            ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(end = 10.dp),
-                    horizontalArrangement = Arrangement.End
+                        .padding(10.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.End)
                 ) {
                     Text(
                         text = timer
@@ -269,7 +272,9 @@ fun MainScreen(
             }
 
 
-            Column {
+            Column(
+
+            ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -278,7 +283,8 @@ fun MainScreen(
                     CuteIconButton(
                         text = "일일 루틴",
                         modifier = Modifier
-                            .fillMaxWidth(0.5f),
+                            .fillMaxWidth(0.5f)
+                            .padding(bottom = 10.dp),
                         onClick = onDailyNavigateClick,
                         showBadge = true
                     )
@@ -288,19 +294,27 @@ fun MainScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 10.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                    horizontalArrangement = Arrangement.spacedBy(10.dp) // 버튼 간 간격
                 ) {
+
                     CuteIconButton(
                         text = "상점",
-                        modifier = Modifier,
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth(0.3f),
                         onClick = onStoreNavigateClick
                     )
+
                     CuteIconButton(
                         text = "도감",
-                        modifier = Modifier,
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth(0.3f),
                         onClick = onIndexNavigateClick
                     )
+
                 }
+
 
             }
 

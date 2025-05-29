@@ -1,5 +1,6 @@
 package com.a0100019.mypat.presentation.main.world
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -66,7 +68,10 @@ fun WorldViewScreen(
         modifier = Modifier
             .fillMaxWidth() // 가로 크기는 최대
             .aspectRatio(1 / 1.25f), // 세로가 가로의 1.25배
-        color = Color.Gray
+        shape = RoundedCornerShape(16.dp),
+        color = Color(0xFFFFF8E7),
+        border = BorderStroke(3.dp, Color(0xFF5A3A22)),
+        shadowElevation = 6.dp,
     ) {
 
         Box(

@@ -81,8 +81,8 @@ fun CuteIconButton(
         Surface(
             modifier = modifier, // ← 이거 추가!
             shape = RoundedCornerShape(16.dp),
-            color = Color(0xFFFFF8E7),
-            border = BorderStroke(3.dp, Color(0xFF5A3A22)),
+            color = MaterialTheme.colorScheme.background,
+            border = BorderStroke(3.dp, MaterialTheme.colorScheme.onPrimaryContainer),
             shadowElevation = 6.dp,
         ) {
             Column(
