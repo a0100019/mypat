@@ -19,6 +19,7 @@ import com.a0100019.mypat.presentation.index.IndexItemDialog
 import com.a0100019.mypat.presentation.index.IndexMapDialog
 import com.a0100019.mypat.presentation.index.IndexPatDialog
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
+import com.a0100019.mypat.presentation.ui.component.CuteIconButton
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -212,39 +213,40 @@ fun StoreScreen(
         }
         LazyColumn {
             item {
-                Button(onClick = { onSimpleDialog("알을 뽑으시겠습니까?") }) {
-                    Text("알 뽑기 100원")
-                }
+                CuteIconButton(
+                    onClick = { onSimpleDialog("알을 뽑으시겠습니까?") },
+                    text = "알 뽑기 100원"
+                )
             }
             item {
-                Button(onClick = { onSimpleDialog("아이템을 뽑으시겠습니까?")}) {
-                    Text("아이템 뽑기")
-                }
+                CuteIconButton(
+                    onClick = { onSimpleDialog("아이템을 뽑으시겠습니까?")},
+                    text = "아이템 뽑기"
+                )
             }
             item {
-                Button(onClick = { onSimpleDialog("펫 칸 늘리기") }) {
-                    Text("펫 칸 늘리기 10cash")
-                }
+                CuteIconButton(
+                    onClick = { onSimpleDialog("펫 칸 늘리기") },
+                    text = "펫 칸 늘리기 10cash"
+                )
             }
             item {
-                Button(onClick = { onSimpleDialog("아이템 칸 늘리기") }) {
-                    Text("아이템 칸 늘리기")
-                }
+                CuteIconButton(
+                    onClick = { onSimpleDialog("아이템 칸 늘리기") },
+                    text = "아이템 칸 늘리기"
+                )
             }
             item {
-                Button(onClick = {}) {
-                    Text("광고 제거")
-                }
+                CuteIconButton(
+                    onClick = {changeShowDialog("name")},
+                    text = "닉네임 변경"
+                )
             }
             item {
-                Button(onClick = {changeShowDialog("name")}) {
-                    Text("닉네임 변경")
-                }
-            }
-            item {
-                Button(onClick = {onSimpleDialog("화폐 변경")}) {
-                    Text("화폐 변경")
-                }
+                CuteIconButton(
+                    onClick = {onSimpleDialog("화폐 변경")},
+                    text = "화폐 변경"
+                )
             }
         }
 

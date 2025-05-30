@@ -52,16 +52,6 @@ fun KoreanReadyDialog(
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxHeight(0.3f)
-                        .fillMaxWidth()
-                        .background(Color.Gray, shape = RoundedCornerShape(16.dp))
-                        .padding(16.dp)
-                ) {
-                    KoreanIdiomImage(koreanData.image)
-                }
-
                 Text(
                     text = koreanData.idiom,
                     style = MaterialTheme.typography.headlineMedium,

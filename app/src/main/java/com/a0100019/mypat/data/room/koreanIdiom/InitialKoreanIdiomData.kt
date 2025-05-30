@@ -13,7 +13,6 @@ fun getKoreanIdiomInitialData(): List<KoreanIdiom> {
             korean2 = "말 마",
             korean3 = "연고 고",
             korean4 = "벗 우",
-            image = "koreanIdiomImage/jukmagow1.jpg"
         ),
         KoreanIdiom(
             idiom = "竹馬故友",
@@ -24,7 +23,6 @@ fun getKoreanIdiomInitialData(): List<KoreanIdiom> {
             korean2 = "말 마",
             korean3 = "연고 고",
             korean4 = "벗 우",
-            image = "koreanIdiomImage/jukmagow1.jpg"
         ),
         KoreanIdiom(
             idiom = "竹馬故友",
@@ -35,7 +33,6 @@ fun getKoreanIdiomInitialData(): List<KoreanIdiom> {
             korean2 = "말 마",
             korean3 = "연고 고",
             korean4 = "벗 우",
-            image = "koreanIdiomImage/jukmagow1.jpg"
         ),
         KoreanIdiom(
             idiom = "竹馬故友",
@@ -46,7 +43,6 @@ fun getKoreanIdiomInitialData(): List<KoreanIdiom> {
             korean2 = "말 마",
             korean3 = "연고 고",
             korean4 = "벗 우",
-            image = "koreanIdiomImage/jukmagow1.jpg"
         ),
         KoreanIdiom(
             idiom = "竹馬故友",
@@ -57,7 +53,6 @@ fun getKoreanIdiomInitialData(): List<KoreanIdiom> {
             korean2 = "말 마",
             korean3 = "연고 고",
             korean4 = "벗 우",
-            image = "koreanIdiomImage/jukmagow1.jpg"
         ),
         KoreanIdiom(
             idiom = "竹馬故友",
@@ -68,7 +63,6 @@ fun getKoreanIdiomInitialData(): List<KoreanIdiom> {
             korean2 = "말 마",
             korean3 = "연고 고",
             korean4 = "벗 우",
-            image = "koreanIdiomImage/jukmagow1.jpg"
         ),
         KoreanIdiom(
             idiom = "竹馬故友",
@@ -79,7 +73,6 @@ fun getKoreanIdiomInitialData(): List<KoreanIdiom> {
             korean2 = "말 마",
             korean3 = "연고 고",
             korean4 = "벗 우",
-            image = "koreanIdiomImage/jukmagow1.jpg"
         ),
     )
 }

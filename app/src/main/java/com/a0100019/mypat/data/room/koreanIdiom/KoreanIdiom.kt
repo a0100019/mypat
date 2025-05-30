@@ -15,5 +15,4 @@ data class KoreanIdiom(
     val korean2: String = "2",
     val korean3: String = "3",
     val korean4: String = "4",
-    val image: String = "koreanIdiomImage/jukmagow1.jpg",
 )

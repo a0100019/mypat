@@ -76,16 +76,6 @@ fun KoreanDialog(
                     )
                 }
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxHeight(0.3f)
-                        .fillMaxWidth()
-                        .background(Color.Gray, shape = RoundedCornerShape(16.dp))
-                        .padding(16.dp)
-                ) {
-                    KoreanIdiomImage(koreanData.image)
-                }
-
                 Text(
                     text = koreanData.korean,
                     style = MaterialTheme.typography.headlineMedium,

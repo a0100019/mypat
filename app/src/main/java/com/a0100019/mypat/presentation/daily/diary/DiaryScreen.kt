@@ -1,6 +1,7 @@
 package com.a0100019.mypat.presentation.daily.diary
 
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,8 +16,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -28,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.data.room.diary.Diary
+import com.a0100019.mypat.presentation.ui.component.CuteIconButton
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
@@ -132,7 +136,15 @@ fun DiaryScreen(
             Button(
                 onClick = {
                     onDialogStateChange("감정")
-                }
+                },
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                ),
+                elevation = ButtonDefaults.buttonElevation(
+                    defaultElevation = 6.dp
+                ),
+                border = BorderStroke(3.dp, MaterialTheme.colorScheme.onPrimaryContainer)
             ) {
                 JustImage(
                     filePath = emotionFilter,
@@ -140,13 +152,13 @@ fun DiaryScreen(
                 )
             }
 
-            Button(
+
+            CuteIconButton(
                 onClick = {
                     onDialogStateChange("검색")
-                }
-            ) {
-                Text("검색")
-            }
+                },
+                text = "검색"
+            )
         }
         LazyColumn(
             modifier = Modifier.fillMaxSize(),

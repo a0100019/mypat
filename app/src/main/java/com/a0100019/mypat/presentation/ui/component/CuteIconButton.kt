@@ -46,12 +46,15 @@ import androidx.compose.ui.unit.sp
 import com.a0100019.mypat.R
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.ui.unit.Dp
+
 
 @Composable
 fun CuteIconButton(
     text: String = "",
-    @DrawableRes iconResId: Int? = null,
+    @DrawableRes iconResId: Int? = null, //R.drawable.heart
     showBadge: Boolean = false,
+    imageSize: Dp = 30.dp,
     onClick: () -> Unit = {},
     @SuppressLint("ModifierParameter") modifier: Modifier = Modifier
 ) {
@@ -95,7 +98,7 @@ fun CuteIconButton(
                     Image(
                         painter = painterResource(id = it),
                         contentDescription = null,
-                        modifier = Modifier.size(30.dp)
+                        modifier = Modifier.size(imageSize)
                     )
                 }
                 Spacer(modifier = Modifier.height(6.dp))

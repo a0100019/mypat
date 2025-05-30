@@ -15,6 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.presentation.loading.LoadingViewModel
+import com.a0100019.mypat.presentation.ui.component.CuteIconButton
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
 @Composable
@@ -64,47 +65,41 @@ fun DailyScreen(
                     .padding(top = 24.dp, start = 10.dp, end = 10.dp)
                     .fillMaxHeight()
             ){
-                Button(
+                CuteIconButton(
+                    text = "만보기",
                     modifier = Modifier
                         .padding(top = 8.dp)
                         .fillMaxWidth(),
                     onClick = onWalkNavigateClick
-                ) {
-                    Text("만보기")
-                }
-                Button(
+                )
+                CuteIconButton(
+                    text = "일기",
                     modifier = Modifier
                         .padding(top = 8.dp)
                         .fillMaxWidth(),
                     onClick = onDiaryNavigateClick
-                ) {
-                    Text("일기")
-                }
-                Button(
+                )
+                CuteIconButton(
+                    text = "영단어",
                     modifier = Modifier
                         .padding(top = 8.dp)
                         .fillMaxWidth(),
                     onClick = onEnglishNavigateClick
-                ) {
-                    Text("영단어")
-                }
-                Button(
+                )
+                CuteIconButton(
+                    text = "사자성어",
                     modifier = Modifier
                         .padding(top = 8.dp)
                         .fillMaxWidth(),
                     onClick = onKoreanNavigateClick
-                ) {
-                    Text("사자성어")
-                }
-                Button(
+                )
+                CuteIconButton(
+                    text = "커뮤니티 구경하기",
                     modifier = Modifier
                         .padding(top = 8.dp)
                         .fillMaxWidth(),
                     onClick = {  }
-                ) {
-                    Text("커뮤니티 구경하기")
-                }
-
+                )
             }
         }
     }

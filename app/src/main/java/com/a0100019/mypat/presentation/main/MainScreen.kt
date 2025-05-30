@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -283,7 +284,7 @@ fun MainScreen(
                     CuteIconButton(
                         text = "일일 루틴",
                         modifier = Modifier
-                            .fillMaxWidth(0.5f)
+                            .fillMaxWidth(0.7f)
                             .padding(bottom = 10.dp),
                         onClick = onDailyNavigateClick,
                         showBadge = true
@@ -292,26 +293,38 @@ fun MainScreen(
 
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 10.dp),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp) // 버튼 간 간격
+                        .padding(bottom = 10.dp)
+                        .fillMaxWidth(),
+//                    horizontalArrangement = Arrangement.spacedBy(10.dp) // 버튼 간 간격
                 ) {
 
-                    CuteIconButton(
-                        text = "상점",
+                    Row(
+                        horizontalArrangement = Arrangement.End,
                         modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth(0.3f),
-                        onClick = onStoreNavigateClick
-                    )
+                            .weight(0.4f)
+                    ){
+                        CuteIconButton(
+                            text = "상점",
+                            modifier = Modifier
+                                .fillMaxWidth(0.6f),
+                            onClick = onStoreNavigateClick
+                        )
 
-                    CuteIconButton(
-                        text = "도감",
+                    }
+
+                    Spacer(modifier = Modifier.weight(0.2f))
+
+                    Row(
                         modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth(0.3f),
-                        onClick = onIndexNavigateClick
-                    )
+                            .weight(0.4f)
+                    ){
+                        CuteIconButton(
+                            text = "도감",
+                            modifier = Modifier
+                                .fillMaxWidth(0.6f),
+                            onClick = onIndexNavigateClick
+                        )
+                    }
 
                 }
 
