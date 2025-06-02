@@ -47,7 +47,7 @@ fun WalkLineChart(
         .steps(pointsData.size - 1)
         .labelData { i ->
             if (i == 0) {
-                "오늘"
+                "today"
             } else {
                 if(mode == "일"){
                     walkDataList.getOrNull(i - 1)?.date?.let { date ->
@@ -74,7 +74,7 @@ fun WalkLineChart(
                 1 -> "1/4"
                 2 -> "2/4"
                 3 -> "3/4"
-                4 -> "최고기록"
+                4 -> "최고"
                 else -> ""
             }
         }

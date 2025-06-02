@@ -101,7 +101,7 @@ fun MypatTheme(
         }
 
 //        darkTheme -> DarkColorScheme
-        darkTheme -> darkScheme
+        darkTheme -> lightScheme
         else -> lightScheme
     }
 
