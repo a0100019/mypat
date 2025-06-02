@@ -130,8 +130,11 @@ class KoreanViewModel @Inject constructor(
     }
 
     fun onFailDialogCloseClick() = intent {
+        val newClickKoreanData = state.clickKoreanData
+        newClickKoreanData!!.state = "대기"
         reduce {
             state.copy(
+                clickKoreanData = newClickKoreanData,
                 clickKoreanDataState = "대기"
             )
         }

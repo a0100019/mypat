@@ -46,16 +46,21 @@ fun KoreanReadyDialog(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.8f)
+//                .fillMaxHeight(0.8f)
                 .background(Color.White, shape = RoundedCornerShape(16.dp))
                 .padding(16.dp)
         ) {
-            Column(modifier = Modifier.fillMaxSize()) {
+            Column(
+//                modifier = Modifier.fillMaxSize()
+            ) {
 
                 Text(
                     text = koreanData.idiom,
-                    style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.padding(16.dp),
+                    style = MaterialTheme.typography.headlineLarge,
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .align(Alignment.CenterHorizontally)
+                    ,
                     color = Color.Black
                 )
 
@@ -86,7 +91,7 @@ fun KoreanReadyDialog(
                     onClick = onSubmitClick,
                     modifier = Modifier
                         .align(Alignment.End)
-                        .padding(16.dp)
+//                        .padding(16.dp)
                 ) {
                     Text("제출")
                 }

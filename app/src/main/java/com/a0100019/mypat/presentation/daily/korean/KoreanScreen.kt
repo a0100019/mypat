@@ -124,30 +124,27 @@ fun KoreanScreen(
             koreanData = clickKoreanData,
             onClose = onFailDialogCloseClick,
             onStateChangeClick = onStateChangeClick,
-            koreanDataState = clickKoreanDataState
+            koreanDataState = clickKoreanDataState,
+            date = false
         )
     }
 
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
+        
         // Text in the center
         Text(
             text = "사자성어",
-            fontSize = 32.sp, // Large font size
-            fontWeight = FontWeight.Bold, // Bold text
-            color = Color.Black // Text color
-        )
-
-        CuteIconButton (
-            onClick = onFilterClick,
-            text = "필터",
-            imageSize = 20.dp,
-            iconResId = if(filter == "일반") R.drawable.star_gray else R.drawable.star_yellow
+            style = MaterialTheme.typography.displayMedium, // Large font size
+            color = Color.Black,
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(top = 20.dp)
         )
 
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.weight(1f),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp) // 카드 사이 간격 추가
         ) {
@@ -238,6 +235,17 @@ fun KoreanScreen(
 
             }
         }
+
+        CuteIconButton (
+            onClick = onFilterClick,
+            text = " 필터 ",
+            imageSize = 20.dp,
+            iconResId = if(filter == "일반") R.drawable.star_gray else R.drawable.star_yellow,
+            modifier = Modifier
+                .padding(20.dp)
+                .align(Alignment.End)
+        )
+
     }
 }
 

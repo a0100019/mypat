@@ -3,6 +3,7 @@ package com.a0100019.mypat.presentation.daily.korean
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -40,6 +41,7 @@ fun KoreanDialog(
     koreanData: KoreanIdiom,
     onStateChangeClick: () -> Unit,
     koreanDataState: String,
+    date: Boolean = true
 ) {
 
     Dialog(
@@ -48,11 +50,13 @@ fun KoreanDialog(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.8f)
+//                .fillMaxHeight(0.8f)
                 .background(Color.White, shape = RoundedCornerShape(16.dp))
                 .padding(16.dp)
         ) {
-            Column(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
 
                 if(koreanDataState == "완료"){
                     Image(
@@ -62,7 +66,7 @@ fun KoreanDialog(
                             .size(20.dp)
                             .clickable {
                                 onStateChangeClick()
-                                       },
+                            },
                     )
                 } else if(koreanDataState == "별"){
                     Image(
@@ -78,41 +82,59 @@ fun KoreanDialog(
 
                 Text(
                     text = koreanData.korean,
-                    style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.padding(16.dp),
+                    style = MaterialTheme.typography.headlineLarge,
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .align(Alignment.CenterHorizontally)
+                    ,
                     color = Color.Black
                 )
 
                 Text(
                     text = koreanData.idiom,
-                    style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.padding(16.dp),
+                    style = MaterialTheme.typography.headlineLarge,
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .align(Alignment.CenterHorizontally)
+                    ,
                     color = Color.Black
                 )
 
-                Row {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceAround,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 10.dp, end = 10.dp)
+                ) {
                     Text(koreanData.korean1)
                     Text(koreanData.korean2)
                     Text(koreanData.korean3)
                     Text(koreanData.korean4)
                 }
 
-
-                Text(text = koreanData.meaning)
-
-
-                Text("획득 날짜 : ${koreanData.date}")
-
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // 추가로 원하는 Composable 요소
+                Text(
+                    text = koreanData.meaning,
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                )
 
+                Spacer(modifier = Modifier.height(32.dp))
+
+                if(date) {
+                    Text(
+                        text = "획득 날짜 : ${koreanData.date}",
+                        modifier = Modifier
+//                        .align(Alignment.End)
+                    )
+                }
 
                 Button(
                     onClick = onClose,
                     modifier = Modifier
                         .align(Alignment.End)
-                        .padding(16.dp)
+//                        .padding(16.dp)
                 ) {
                     Text("Close")
                 }

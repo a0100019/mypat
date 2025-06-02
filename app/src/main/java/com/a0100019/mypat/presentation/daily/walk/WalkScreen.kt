@@ -181,7 +181,9 @@ fun WalkScreen(
                             "일" -> "일일 걸음 수"
                             "주" -> "주 평균 걸음 수"
                             else -> "월 평균 걸음 수"
-                        }
+                        },
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
 
                 )
             }
