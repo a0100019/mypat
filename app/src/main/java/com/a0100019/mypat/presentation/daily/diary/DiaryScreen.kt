@@ -80,8 +80,6 @@ fun DiaryScreen(
     )
 }
 
-
-
 @Composable
 fun DiaryScreen(
     diaryDataList: List<Diary>,
@@ -266,6 +264,7 @@ fun DiaryScreen(
                                 overflow = TextOverflow.Ellipsis,
                                 modifier = Modifier
                                     .padding(start = 6.dp, end = 6.dp)
+                                    .fillMaxWidth()
                             )
 
                         }

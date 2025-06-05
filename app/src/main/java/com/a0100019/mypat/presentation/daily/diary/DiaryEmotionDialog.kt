@@ -2,20 +2,24 @@ package com.a0100019.mypat.presentation.daily.diary
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -54,8 +58,10 @@ fun DiaryEmotionDialog(
                     //.fillMaxHeight(0.5f)
                 ) {
                     LazyVerticalGrid(
-                        columns = GridCells.Fixed(5),
-                        // modifier = Modifier.height(70.dp) // 높이를 적절히 조정
+                        columns = GridCells.Fixed(4),
+                        contentPadding = PaddingValues(4.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),    // 세로 간격
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),  // 가로 간격
                     ) {
 
                         item {
@@ -69,62 +75,89 @@ fun DiaryEmotionDialog(
 
                         item {
                             JustImage(
-                                filePath = "etc/arrow.png",
+                                filePath = "emotion/exciting.png",
                                 modifier = Modifier.clickable {
-                                    onEmotionClick("etc/arrow.png")
+                                    onEmotionClick("emotion/exciting.png")
                                 }
                             )
                         }
 
                         item {
                             JustImage(
-                                filePath = "emotion/smile.png",
+                                filePath = "emotion/love.png",
                                 modifier = Modifier.clickable {
-                                    onEmotionClick("emotion/smile.png")
+                                    onEmotionClick("emotion/love.png")
                                 }
                             )
                         }
 
                         item {
                             JustImage(
-                                filePath = "emotion/smile.png",
+                                filePath = "emotion/thinking.png",
                                 modifier = Modifier.clickable {
-                                    onEmotionClick("emotion/smile.png")
+                                    onEmotionClick("emotion/thinking.png")
                                 }
                             )
                         }
 
                         item {
                             JustImage(
-                                filePath = "emotion/smile.png",
+                                filePath = "emotion/neutral.png",
                                 modifier = Modifier.clickable {
-                                    onEmotionClick("emotion/smile.png")
+                                    onEmotionClick("emotion/neutral.png")
                                 }
                             )
                         }
 
-                        if(removeEmotion){
-                            item {
-                                JustImage(
-                                    filePath = "etc/snowball.png",
-                                    modifier = Modifier.clickable {
-                                        onEmotionClick("etc/snowball.png")
-                                    }
-                                )
+                        item {
+                            JustImage(
+                                filePath = "emotion/sad.png",
+                                modifier = Modifier.clickable {
+                                    onEmotionClick("emotion/sad.png")
+                                }
+                            )
+                        }
+
+                        item {
+                            JustImage(
+                                filePath = "emotion/cry.png",
+                                modifier = Modifier.clickable {
+                                    onEmotionClick("emotion/cry.png")
+                                }
+                            )
+                        }
+
+                        item {
+                            JustImage(
+                                filePath = "emotion/angry.png",
+                                modifier = Modifier.clickable {
+                                    onEmotionClick("emotion/angry.png")
+                                }
+                            )
+                        }
+
+                        if (removeEmotion) {
+                            item(span = { GridItemSpan(4) }) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    JustImage(
+                                        filePath = "emotion/allEmotion.png",
+                                        modifier = Modifier
+                                            .size(50.dp) // ← 크기 고정
+                                            .clickable {
+                                                onEmotionClick("emotion/allEmotion.png")
+                                            }
+                                    )
+                                }
                             }
                         }
+
                     }
 
                 }
-//
-//                Button(
-//                    onClick = onClose
-//                ) {
-//                    Text(
-//                        text = "취소"
-//                    )
-//                }
-
 
             }
         }
@@ -139,7 +172,8 @@ fun DiaryEmotionDialogPreview() {
     MypatTheme {
         DiaryEmotionDialog(
             onClose = {},
-            onEmotionClick = {}
+            onEmotionClick = {},
+            removeEmotion = true
         )
     }
 }

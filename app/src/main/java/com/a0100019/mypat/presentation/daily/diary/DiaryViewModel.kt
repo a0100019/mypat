@@ -46,7 +46,7 @@ class DiaryViewModel @Inject constructor(
     }
 
     //room에서 데이터 가져옴
-    private fun loadData() = intent {
+    fun loadData() = intent {
 // 병렬로 실행할 작업들을 viewModelScope.launch로 묶음
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -60,8 +60,9 @@ class DiaryViewModel @Inject constructor(
                         state.copy(
                             userDataList = userDataList,
                             diaryDataList = diaryDataList,
-                            diaryFilterDataList = diaryDataList
-
+                            diaryFilterDataList = diaryDataList,
+                            dialogState = "",
+                            clickDiaryData = null
                         )
                     }
                 }
@@ -81,10 +82,11 @@ class DiaryViewModel @Inject constructor(
         }
 
         if(diaryData.state == "대기") {
-            val writeDiaryData = Diary(id = diaryData.id, date = diaryData.date, state = "완료", contents = "", emotion = "")
+            val writeDiaryData = Diary(id = diaryData.id, date = diaryData.date, state = "완료", contents = "", emotion = "emotion/smile.png")
             reduce {
                 state.copy(
                     writeDiaryData = writeDiaryData,
+                    firstWrite = true
                 )
             }
             postSideEffect(DiarySideEffect.NavigateToDiaryWriteScreen)
@@ -93,12 +95,15 @@ class DiaryViewModel @Inject constructor(
                 state.copy(clickDiaryData = diaryData)
             }
         }
+
     }
 
     fun onDiaryChangeClick() = intent {
         reduce {
             state.copy(
                 writeDiaryData = state.clickDiaryData!!,
+                writePossible = true,
+                firstWrite = false
             )
         }
         postSideEffect(DiarySideEffect.NavigateToDiaryWriteScreen)
@@ -114,10 +119,18 @@ class DiaryViewModel @Inject constructor(
     }
 
     fun onDiaryFinishClick() = intent {
+        println("내용 길이: ${state.writeDiaryData.contents.length}")
+
         if(state.writeDiaryData.contents.length > 9){
 
             //보상
-            userDao.update(id = "money", value = (state.userDataList.find { it.id == "money" }!!.value.toInt() + 100).toString())
+            if(state.firstWrite){
+                userDao.update(
+                    id = "money",
+                    value = (state.userDataList.find { it.id == "money" }!!.value.toInt() + 100).toString()
+                )
+                postSideEffect(DiarySideEffect.Toast("보상 획득!"))
+            }
 
             diaryDao.update(state.writeDiaryData)
             reduce {
@@ -162,7 +175,6 @@ class DiaryViewModel @Inject constructor(
         }
     }
 
-
     //검색
     fun onSearchClick() = intent {
         val newDiaryDataList = state.diaryDataList.filter { it.contents.contains(state.searchText) }
@@ -179,7 +191,7 @@ class DiaryViewModel @Inject constructor(
 
     fun onSearchClearClick() = intent {
         var newDiaryDataList = state.diaryDataList
-        if(state.emotionFilter != "etc/snowball.png") {
+        if(state.emotionFilter != "emotion/allEmotion.png") {
             newDiaryDataList = newDiaryDataList.filter { it.emotion == state.emotionFilter }
         }
         reduce {
@@ -190,7 +202,6 @@ class DiaryViewModel @Inject constructor(
             )
         }
     }
-
 
     fun onDialogStateChange(string: String) = intent {
         reduce {
@@ -211,7 +222,7 @@ class DiaryViewModel @Inject constructor(
 
     fun onEmotionFilterClick(emotion: String) = intent {
         var newDiaryDataList = state.diaryDataList.filter { it.contents.contains(state.searchText) }
-        if(emotion != "etc/snowball.png") {
+        if(emotion != "emotion/allEmotion.png") {
             newDiaryDataList = newDiaryDataList.filter { it.emotion == emotion }
         }
         reduce {
@@ -231,7 +242,6 @@ class DiaryViewModel @Inject constructor(
         }
     }
 
-
 }
 
 @Immutable
@@ -246,7 +256,8 @@ data class DiaryState(
     val isError: Boolean = false,
     val searchText: String = "",
     val dialogState: String = "",
-    val emotionFilter: String = "etc/snowball.png"
+    val emotionFilter: String = "emotion/allEmotion.png",
+    val firstWrite: Boolean = true
 )
 
 //상태와 관련없는 것
