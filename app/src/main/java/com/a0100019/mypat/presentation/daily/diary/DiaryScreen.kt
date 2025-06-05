@@ -7,11 +7,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,16 +24,19 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.data.room.diary.Diary
 import com.a0100019.mypat.presentation.ui.component.CuteIconButton
+import com.a0100019.mypat.presentation.ui.component.SparkleText
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
@@ -122,16 +127,27 @@ fun DiaryScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White), // Optional: Set background color
+        ,
+
     ) {
         // Text in the center
-        Row {
-            Text(
-                text = "일기장",
-                fontSize = 32.sp, // Large font size
-                fontWeight = FontWeight.Bold, // Bold text
-                color = Color.Black // Text color
-            )
+
+        Text(
+            text = "일기장",
+            style = MaterialTheme.typography.displayMedium, // Large font size
+            color = Color.Black,
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(top = 20.dp)
+        )
+
+        Row(
+            modifier = Modifier
+                .align(Alignment.End)
+                .padding(end = 16.dp)
+            ,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
 
             Button(
                 onClick = {
@@ -141,9 +157,6 @@ fun DiaryScreen(
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.background
                 ),
-                elevation = ButtonDefaults.buttonElevation(
-                    defaultElevation = 6.dp
-                ),
                 border = BorderStroke(3.dp, MaterialTheme.colorScheme.onPrimaryContainer)
             ) {
                 JustImage(
@@ -152,6 +165,7 @@ fun DiaryScreen(
                 )
             }
 
+            Spacer(modifier = Modifier.width(8.dp))
 
             CuteIconButton(
                 onClick = {
@@ -160,6 +174,7 @@ fun DiaryScreen(
                 text = "검색"
             )
         }
+
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(16.dp),
@@ -170,49 +185,89 @@ fun DiaryScreen(
                 val monthChange = index > 0 && diaryData.date.substring(5, 7) != diaryDataList[index -1].date.substring(5, 7)
 
                 if(monthChange) {
-                    Text(diaryData.date.substring(0,7))
+                    Text(
+                        text = diaryData.date.substring(0,7),
+                        modifier = Modifier
+                            .padding(start = 16.dp)
+                    )
                 }
 
                 if(diaryData.state =="대기") {
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(50.dp)
-                            .padding(horizontal = 8.dp)
-                            .background(color = Color.Cyan),
-                        shape = RoundedCornerShape(12.dp), // 둥근 테두리
-                        elevation = CardDefaults.elevatedCardElevation(4.dp), // 그림자 효과
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        elevation = CardDefaults.elevatedCardElevation(6.dp),
                         onClick = { onDiaryClick(diaryData) },
-
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant
+                        )
                     ) {
-                        Column(
-                            modifier = Modifier.fillMaxSize()
+                        Row(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(diaryData.date)
-                            Text("눌러서 일기를 작성해주세요")
+
+                            Column(
+                                modifier = Modifier
+                                    .padding(6.dp)
+                            ) {
+                                Text(diaryData.date)
+                                Text("눌러서 일기를 작성해주세요")
+                            }
+
+                            Spacer(modifier = Modifier.weight(1f))
+
+                            SparkleText(
+                                text = "new!!",
+                                fontSize = 20,
+                                modifier = Modifier
+                                    .padding(end = 32.dp)
+                            )
+
                         }
                     }
                 } else {
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(100.dp)
-                            .padding(horizontal = 8.dp),
-                        shape = RoundedCornerShape(12.dp), // 둥근 테두리
-                        elevation = CardDefaults.elevatedCardElevation(4.dp), // 그림자 효과
-                        onClick = { onDiaryClick(diaryData) }
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        elevation = CardDefaults.elevatedCardElevation(6.dp),
+                        onClick = { onDiaryClick(diaryData) },
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant
+                        )
                     ) {
                         Column(
-                            modifier = Modifier.fillMaxSize()
+                            modifier = Modifier
+                                .fillMaxSize()
+                            ,
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Row {
-                                Text(diaryData.date)
+                                Text(
+                                    text = diaryData.date,
+                                    modifier = Modifier
+                                        .padding(start = 6.dp)
+                                    )
+                                Spacer(modifier = Modifier.weight(1f))
                                 JustImage(
                                     filePath = diaryData.emotion,
-                                    modifier = Modifier.size(20.dp)
+                                    modifier = Modifier
+                                        .size(25.dp)
+                                        .padding(end = 8.dp)
                                 )
                             }
-                            Text(diaryData.contents)
+                            Text(
+                                text = diaryData.contents,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier
+                                    .padding(start = 6.dp, end = 6.dp)
+                            )
+
                         }
                     }
                 }
@@ -243,7 +298,7 @@ fun DiaryScreenPreview() {
 
             diaryDataList = listOf(
                 Diary(date = "2025-02-07", emotion = "", contents = ""),
-                Diary(date = "2025-02-06", emotion = "happy", contents = "안녕안녕안녕"),
+                Diary(date = "2025-02-06", emotion = "emotion/smile.png", contents = "안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕안녕", state = "완료"),
                 Diary(date = "2025-02-07", emotion = "", contents = ""),
                 Diary(date = "2025-02-06", emotion = "happy", contents = "안녕안녕안녕"),
                 Diary(date = "2025-02-07", emotion = "", contents = ""),

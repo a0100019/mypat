@@ -1,5 +1,6 @@
 package com.a0100019.mypat.presentation.ui.component
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -22,7 +23,8 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun SparkleText(
     text: String = "text",
-    fontSize: Int = 14
+    fontSize: Int = 14,
+    @SuppressLint("ModifierParameter") modifier: Modifier = Modifier,
 ) {
     val infiniteTransition = rememberInfiniteTransition()
     val alpha by infiniteTransition.animateFloat(
@@ -38,7 +40,7 @@ fun SparkleText(
         text = text,
         color = Color.Red,
         fontWeight = FontWeight.Bold,
-        modifier = Modifier
+        modifier = modifier
             .alpha(alpha)
             .background(Color.Yellow, shape = RoundedCornerShape(4.dp))
             .padding(horizontal = 6.dp, vertical = 2.dp),
