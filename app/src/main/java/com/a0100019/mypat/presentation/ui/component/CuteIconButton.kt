@@ -56,6 +56,7 @@ fun CuteIconButton(
     showBadge: Boolean = false,
     imageSize: Dp = 30.dp,
     onClick: () -> Unit = {},
+    style: TextStyle = MaterialTheme.typography.titleMedium,
     @SuppressLint("ModifierParameter") modifier: Modifier = Modifier
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -104,7 +105,7 @@ fun CuteIconButton(
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
                     text = text,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = style,
                     color = Color(0xFF5A3A22),
                 )
             }

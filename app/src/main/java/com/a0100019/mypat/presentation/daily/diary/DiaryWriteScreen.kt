@@ -7,9 +7,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -20,7 +24,6 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,29 +34,22 @@ import com.a0100019.mypat.presentation.ui.component.CuteIconButton
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
-
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.runtime.*
+import androidx.compose.ui.platform.*
+import androidx.compose.ui.text.input.ImeAction
 
 @Composable
 fun DiaryWriteScreen(
     diaryViewModel: DiaryViewModel = hiltViewModel(),
     popBackStack: () -> Unit
-
 ) {
-
-    val diaryState : DiaryState = diaryViewModel.collectAsState().value
-
+    val diaryState: DiaryState = diaryViewModel.collectAsState().value
     val context = LocalContext.current
 
-//    diaryViewModel.collectSideEffect { sideEffect ->
-//        when (sideEffect) {
-//            is DiarySideEffect.Toast -> Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
-//        }
-//    }
-
-    //화면 꺼졌을 때 실행하는 코드
     DisposableEffect(Unit) {
         onDispose {
-            // 화면이 사라질 때 호출됨 (뒤로가기 포함)
             diaryViewModel.loadData()
         }
     }
@@ -63,7 +59,6 @@ fun DiaryWriteScreen(
         writePossible = diaryState.writePossible,
         isError = diaryState.isError,
         dialogState = diaryState.dialogState,
-
         onContentsTextChange = diaryViewModel::onContentsTextChange,
         onDiaryFinishClick = diaryViewModel::onDiaryFinishClick,
         popBackStack = popBackStack,
@@ -78,42 +73,53 @@ fun DiaryWriteScreen(
     writePossible: Boolean,
     isError: Boolean,
     dialogState: String,
-
     onDiaryFinishClick: () -> Unit,
     onContentsTextChange: (String) -> Unit,
     popBackStack: () -> Unit,
     emotionChangeClick: (String) -> Unit,
     onDialogStateChange: (String) -> Unit,
 ) {
-
-    when(dialogState) {
-        "emotion" -> DiaryEmotionDialog(
-            onClose = {},
+    if (dialogState == "emotion") {
+        DiaryEmotionDialog(
+            onClose = { onDialogStateChange("") },
             onEmotionClick = emotionChangeClick
         )
     }
 
-    // Fullscreen container
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
     ) {
         Text(
             text = "일기장",
-            style = MaterialTheme.typography.displayMedium, // Large font size
+            style = MaterialTheme.typography.displayMedium,
             color = Color.Black,
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(top = 20.dp)
+        )
+
+        val configuration = LocalConfiguration.current
+        val screenHeightDp = configuration.screenHeightDp
+        val halfHeightDp = (screenHeightDp * 0.5).dp
+        OutlinedTextField(
+            value = writeDiaryData.contents,
+            onValueChange = onContentsTextChange,
+            label = { Text("내용") },
+            isError = isError,
+            placeholder = { Text("내용을 10자 이상 입력하세요") },
+            shape = RoundedCornerShape(8.dp),
+            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Default),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(halfHeightDp)
+                .padding(bottom = 16.dp)
         )
 
         Box(
-            modifier = Modifier
-                .fillMaxWidth()
-            ,
+            modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.Center
         ) {
-
-            // 가운데 텍스트
             Text(
                 text = writeDiaryData.date,
                 style = MaterialTheme.typography.headlineMedium,
@@ -127,7 +133,6 @@ fun DiaryWriteScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-
                 Button(
                     onClick = { onDialogStateChange("emotion") },
                     shape = RoundedCornerShape(16.dp),
@@ -142,33 +147,16 @@ fun DiaryWriteScreen(
                     )
                 }
 
-                // 오른쪽 버튼
                 CuteIconButton(
-                    modifier = Modifier,
                     onClick = {
                         onDiaryFinishClick()
-                        if (writePossible) {
-                            popBackStack()
-                        }
+                        if (writePossible) popBackStack()
                     },
                     text = "작성 완료"
                 )
-
             }
         }
 
-        OutlinedTextField(
-            value = writeDiaryData.contents,
-            onValueChange = onContentsTextChange,
-            label = { Text("내용") },
-            isError = isError,
-            placeholder = { Text("내용을 10자 이상 입력하세요") },
-            shape = RoundedCornerShape(8.dp), // 테두리를 둥글게
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-                .weight(1f)
-        )
 
     }
 }
@@ -178,16 +166,19 @@ fun DiaryWriteScreen(
 fun DiaryWriteScreenPreview() {
     MypatTheme {
         DiaryWriteScreen(
-            writeDiaryData = Diary(date = "2025-02-06", emotion = "emotion/smile.png", contents = "안녕안녕안녕"),
+            writeDiaryData = Diary(
+                date = "2025-02-06",
+                emotion = "emotion/smile.png",
+                contents = "안녕안녕안녕"
+            ),
             onContentsTextChange = {},
-            onDiaryFinishClick =  {},
+            onDiaryFinishClick = {},
             popBackStack = {},
             writePossible = false,
             isError = false,
             emotionChangeClick = {},
             dialogState = "",
             onDialogStateChange = {}
-
-            )
+        )
     }
 }

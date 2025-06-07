@@ -41,6 +41,10 @@ import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.TextStyle
+import java.util.Locale
 
 @Composable
 fun DiaryScreen(
@@ -211,8 +215,32 @@ fun DiaryScreen(
                                 modifier = Modifier
                                     .padding(6.dp)
                             ) {
-                                Text(diaryData.date)
-                                Text("눌러서 일기를 작성해주세요")
+                                Row {
+                                    Text(
+                                        text = diaryData.date,
+                                        style = MaterialTheme.typography.bodyLarge
+                                    )
+
+                                    //요일 알려주는 코드
+                                    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                                    val date = LocalDate.parse(diaryData.date, formatter)
+                                    Text(
+                                        text = date.dayOfWeek.getDisplayName(
+                                            TextStyle.FULL,
+                                            Locale.KOREAN
+                                        ),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier
+                                            .padding(start = 6.dp)
+                                    )
+                                }
+
+                                Text(
+                                    text = "눌러서 일기를 작성해주세요",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier
+                                        .padding(top = 6.dp)
+                                    )
                             }
 
                             Spacer(modifier = Modifier.weight(1f))
@@ -244,12 +272,27 @@ fun DiaryScreen(
                             ,
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Row {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
                                 Text(
                                     text = diaryData.date,
+                                    style = MaterialTheme.typography.bodyLarge,
                                     modifier = Modifier
                                         .padding(start = 6.dp)
                                     )
+                                //요일 알려주는 코드
+                                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                                val date = LocalDate.parse(diaryData.date, formatter)
+                                Text(
+                                    text = date.dayOfWeek.getDisplayName(
+                                        TextStyle.FULL,
+                                        Locale.KOREAN
+                                    ),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier
+                                        .padding(start = 6.dp)
+                                )
                                 Spacer(modifier = Modifier.weight(1f))
                                 JustImage(
                                     filePath = diaryData.emotion,
@@ -260,7 +303,8 @@ fun DiaryScreen(
                             }
                             Text(
                                 text = diaryData.contents,
-                                maxLines = 2,
+                                style = MaterialTheme.typography.bodyMedium,
+                                maxLines = 3,
                                 overflow = TextOverflow.Ellipsis,
                                 modifier = Modifier
                                     .padding(start = 6.dp, end = 6.dp)
