@@ -26,6 +26,7 @@ import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pat.Pat
+import com.a0100019.mypat.presentation.ui.component.CuteIconButton
 import com.a0100019.mypat.presentation.ui.image.etc.LoveHorizontalLine
 import com.a0100019.mypat.presentation.ui.image.item.DraggableItemImage
 import com.a0100019.mypat.presentation.ui.image.pat.DialogPatImage
@@ -87,6 +88,19 @@ fun LovePatDialog(
 
                 }
 
+                when(situation) {
+                    "lovePatSuccess" -> CuteIconButton(
+                        onClick = onLovePatNextClick,
+                        text = "한번 더"
+                    )
+
+                    "lovePatFail" -> CuteIconButton(
+                        onClick = onLovePatStopClick,
+                        text = "확인"
+                    )
+
+                }
+
             }
 
 
@@ -129,26 +143,12 @@ fun LovePatDialog(
                 }
             }
 
-            when(situation) {
-                "lovePatSuccess" -> Button(
-                    onClick = onLovePatNextClick
-                ) {
-                    Text("한번 더")
-                }
 
-                "lovePatFail" -> Button(
-                    onClick = onLovePatStopClick
-                ) {
-                    Text("확인")
-                }
-
-            }
 
 
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable

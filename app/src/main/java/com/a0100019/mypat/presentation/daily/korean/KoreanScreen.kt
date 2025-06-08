@@ -236,15 +236,17 @@ fun KoreanScreen(
             }
         }
 
-        CuteIconButton (
-            onClick = onFilterClick,
-            text = " 필터 ",
-            imageSize = 20.dp,
-            iconResId = if(filter == "일반") R.drawable.star_gray else R.drawable.star_yellow,
-            modifier = Modifier
-                .padding(20.dp)
-                .align(Alignment.End)
-        )
+        Row {
+            Spacer(modifier = Modifier.weight(1f))
+            CuteIconButton(
+                onClick = onFilterClick,
+                text = " 필터 ",
+                imageSize = 20.dp,
+                iconResId = if (filter == "일반") R.drawable.star_gray else R.drawable.star_yellow,
+                modifier = Modifier
+                    .padding(20.dp)
+            )
+        }
 
     }
 }

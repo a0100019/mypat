@@ -15,8 +15,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,6 +34,7 @@ import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiom
+import com.a0100019.mypat.presentation.ui.component.CuteIconButton
 import com.a0100019.mypat.presentation.ui.image.etc.KoreanIdiomImage
 import com.a0100019.mypat.presentation.ui.image.item.ItemImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
@@ -44,67 +49,58 @@ fun KoreanDialog(
     date: Boolean = true
 ) {
 
-    Dialog(
-        onDismissRequest = onClose
-    ) {
-        Box(
+    Dialog(onDismissRequest = onClose) {
+        Card(
             modifier = Modifier
                 .fillMaxWidth()
-//                .fillMaxHeight(0.8f)
-                .background(Color.White, shape = RoundedCornerShape(16.dp))
-                .padding(16.dp)
+                .padding(16.dp), // Dialog 바깥 여백
+            shape = RoundedCornerShape(16.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White)
         ) {
             Column(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+                    .padding(20.dp)
             ) {
 
-                if(koreanDataState == "완료"){
+                // ⭐ 별 아이콘
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    val starIcon = if (koreanDataState == "별") R.drawable.star_yellow else R.drawable.star_gray
                     Image(
-                        painter = painterResource(id = R.drawable.star_gray),
-                        contentDescription = "Sample Vector Image",
+                        painter = painterResource(id = starIcon),
+                        contentDescription = "Star Icon",
                         modifier = Modifier
-                            .size(20.dp)
-                            .clickable {
-                                onStateChangeClick()
-                            },
-                    )
-                } else if(koreanDataState == "별"){
-                    Image(
-                        painter = painterResource(id = R.drawable.star_yellow),
-                        contentDescription = "Sample Vector Image",
-                        modifier = Modifier
-                            .size(20.dp)
-                            .clickable {
-                                onStateChangeClick()
-                            },
+                            .size(24.dp)
+                            .align(Alignment.TopEnd)
+                            .clickable { onStateChangeClick() }
                     )
                 }
 
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // 큰 텍스트들
                 Text(
                     text = koreanData.korean,
                     style = MaterialTheme.typography.headlineLarge,
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .align(Alignment.CenterHorizontally)
-                    ,
-                    color = Color.Black
+                    color = Color.Black,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
 
                 Text(
                     text = koreanData.idiom,
-                    style = MaterialTheme.typography.headlineLarge,
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .align(Alignment.CenterHorizontally)
-                    ,
-                    color = Color.Black
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = Color.DarkGray,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
 
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // 단어 4개
                 Row(
-                    horizontalArrangement = Arrangement.SpaceAround,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 10.dp, end = 10.dp)
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(koreanData.korean1)
                     Text(koreanData.korean2)
@@ -112,36 +108,42 @@ fun KoreanDialog(
                     Text(koreanData.korean4)
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
+                // 의미
                 Text(
                     text = koreanData.meaning,
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    color = Color.Black
                 )
 
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
-                if(date) {
+                // 날짜
+                if (date) {
                     Text(
                         text = "획득 날짜 : ${koreanData.date}",
-                        modifier = Modifier
-//                        .align(Alignment.End)
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.align(Alignment.End),
+                        color = Color.Gray
                     )
                 }
 
-                Button(
-                    onClick = onClose,
-                    modifier = Modifier
-                        .align(Alignment.End)
-//                        .padding(16.dp)
-                ) {
-                    Text("Close")
-                }
+                Spacer(modifier = Modifier.height(24.dp))
 
+                Row {
+                    Spacer(modifier = Modifier.weight(1f))
+                    CuteIconButton(
+                        onClick = onClose,
+                        text = "닫기",
+                        modifier = Modifier
+                    )
+                }
             }
         }
     }
+
 }
 
 

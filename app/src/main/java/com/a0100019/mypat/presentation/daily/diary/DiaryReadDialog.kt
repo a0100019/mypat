@@ -70,7 +70,7 @@ fun DiaryReadDialog(
                         text = date.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.KOREAN),
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier
-                            .padding(start = 6.dp)
+                            .padding(start = 12.dp)
                         )
 
                     Spacer(modifier = Modifier.weight(1f))
