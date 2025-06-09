@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -79,129 +80,334 @@ fun InformationScreen(
 
     ) {
 
-    Column(
+    Surface (
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
-                ,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        // 이름, 좋아요
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text("이름", style = MaterialTheme.typography.labelMedium)
-            Text("#${userDataList.find { it.id == "name" }?.value2}")
-            Text("좋아요 ${userDataList.find { it.id == "like" }?.value}개")
-        }
-
-        // 미니맵 뷰
-        Surface(
+            .padding(6.dp)
+        ,
+        shape = RoundedCornerShape(16.dp),
+        color = Color(0xFFFFF8E7),
+        border = BorderStroke(2.dp, Color(0xFF5A3A22)),
+        shadowElevation = 8.dp,
+    ){
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(1f / 1.25f),
-            shape = RoundedCornerShape(16.dp),
-            color = Color(0xFFFFF8E7),
-            border = BorderStroke(2.dp, Color(0xFF5A3A22)),
-            shadowElevation = 8.dp
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Box(modifier = Modifier.fillMaxSize()) {
-                JustImage(
-                    filePath = mapUrl,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.FillBounds
+            // 이름, 좋아요
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 6.dp)
+                ,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "${userDataList.find { it.id == "name" }?.value}",
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier
+                            .padding(start = 10.dp, end = 6.dp)
+                    )
+                    Text(
+                        text = "#${userDataList.find { it.id == "auth" }?.value2}",
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                }
+                Text(
+                    text = "좋아요 ${userDataList.find { it.id == "community" }?.value}개",
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier
+                        .padding(end = 10.dp)
                 )
+            }
 
-                BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-                    val density = LocalDensity.current
-                    val surfaceWidthDp = with(density) { constraints.maxWidth.toDp() }
-                    val surfaceHeightDp = with(density) { constraints.maxHeight.toDp() }
+            // 미니맵 뷰
+            Surface(
+                modifier = Modifier
+                    .weight(1f)
+                    .aspectRatio(1f / 1.25f)
+                    .padding(start = 6.dp, end = 6.dp),
+                shape = RoundedCornerShape(16.dp),
+                color = Color(0xFFFFF8E7),
+                border = BorderStroke(2.dp, Color(0xFF5A3A22)),
+                shadowElevation = 8.dp,
+            ) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    JustImage(
+                        filePath = mapUrl,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.FillBounds
+                    )
 
-                    itemDataList.forEach {
-                        WorldItemImage(
-                            itemUrl = it.url,
-                            surfaceWidthDp = surfaceWidthDp,
-                            surfaceHeightDp = surfaceHeightDp,
-                            xFloat = it.x,
-                            yFloat = it.y,
-                            sizeFloat = it.sizeFloat
-                        )
-                    }
+                    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+                        val density = LocalDensity.current
+                        val surfaceWidthDp = with(density) { constraints.maxWidth.toDp() }
+                        val surfaceHeightDp = with(density) { constraints.maxHeight.toDp() }
 
-                    patDataList.forEach {
-                        PatInformationImage(
-                            patUrl = it.url,
-                            surfaceWidthDp = surfaceWidthDp,
-                            surfaceHeightDp = surfaceHeightDp,
-                            xFloat = it.x,
-                            yFloat = it.y,
-                            sizeFloat = it.sizeFloat
-                        )
+                        itemDataList.forEach {
+                            WorldItemImage(
+                                itemUrl = it.url,
+                                surfaceWidthDp = surfaceWidthDp,
+                                surfaceHeightDp = surfaceHeightDp,
+                                xFloat = it.x,
+                                yFloat = it.y,
+                                sizeFloat = it.sizeFloat
+                            )
+                        }
+
+                        patDataList.forEach {
+                            PatInformationImage(
+                                patUrl = it.url,
+                                surfaceWidthDp = surfaceWidthDp,
+                                surfaceHeightDp = surfaceHeightDp,
+                                xFloat = it.x,
+                                yFloat = it.y,
+                                sizeFloat = it.sizeFloat
+                            )
+                        }
                     }
                 }
             }
-        }
 
-        // 수집 정보 (펫, 아이템, 맵)
-        InfoCard(label = "펫", value = "${allPatDataList.count { it.date != "0" }}/${allPatDataList.size}")
-        InfoCard(label = "아이템", value = "${allItemDataList.count { it.date != "0" }}/${allItemDataList.size}")
-        InfoCard(label = "맵", value = "${allMapDataList.count { it.date != "0" }}/${allMapDataList.size}")
+            Column(
+                modifier = Modifier
+                    .weight(0.6f),
+                verticalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    tonalElevation = 2.dp,
+                    color = Color(0xFFF9F3EA)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "도감",
+                            style = MaterialTheme.typography.titleLarge,
+                            modifier = Modifier
+                                .padding(bottom = 6.dp)
+                        )
 
-        // 게임 점수
-        GameScoreRow("컬링", userDataList.find { it.id == "firstGame" }?.value ?: "0", "14등")
-        GameScoreRow("블록게임", userDataList.find { it.id == "secondGame" }?.value ?: "0", "14등")
-        GameScoreRow("sudoku", userDataList.find { it.id == "thirdGame" }?.value ?: "0", "14등")
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceAround,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        ) {
+                            Row {
+                                Text(
+                                    text = "펫",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier
+                                        .padding(end = 6.dp)
+                                )
+                                Text(
+                                    text = "${allPatDataList.count { it.date != "0" }}/${allPatDataList.size}",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
 
-        // 접속 정보
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text("최초 접속", style = MaterialTheme.typography.labelMedium)
-            Text(userDataList.find { it.id == "date" }?.value2 ?: "-")
-        }
+                            Row {
+                                Text(
+                                    text = "아이템",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier
+                                        .padding(end = 6.dp)
+                                )
+                                Text(
+                                    text = "${allItemDataList.count { it.date != "0" }}/${allItemDataList.size}",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text("접속일", style = MaterialTheme.typography.labelMedium)
-            Text("${userDataList.find { it.id == "date" }?.value3 ?: "-"}일")
+                            Row {
+                                Text(
+                                    text = "맵",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier
+                                        .padding(end = 6.dp)
+                                )
+                                Text(
+                                    text = "${allMapDataList.count { it.date != "0" }}/${allMapDataList.size}",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
+                        }
+
+                    }
+                }
+
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    tonalElevation = 2.dp,
+                    color = Color(0xFFF9F3EA)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "게임",
+                            style = MaterialTheme.typography.titleLarge,
+                            modifier = Modifier
+                                .padding(bottom = 6.dp)
+                        )
+
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceAround,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        ) {
+                            Row {
+                                Text(
+                                    text = "슈팅",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier
+                                        .padding(end = 6.dp)
+                                )
+                                Text(
+                                    text = userDataList.find { it.id == "firstGame" }?.value ?: "0",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier
+                                        .padding(end = 6.dp)
+                                )
+                                Text(
+                                    text = userDataList.find { it.id == "firstGame" }?.value ?: "0",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
+
+                            Row {
+                                Text(
+                                    text = "블록",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier
+                                        .padding(end = 6.dp)
+                                )
+                                Text(
+                                    text = userDataList.find { it.id == "secondGame" }?.value
+                                        ?: "0",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier
+                                        .padding(end = 6.dp)
+                                )
+                                Text(
+                                    text = userDataList.find { it.id == "firstGame" }?.value ?: "0",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
+
+                        }
+
+                        Text(
+                            text = "스도쿠",
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier
+                                .padding(top = 8.dp, bottom = 6.dp)
+                        )
+
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceAround,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        ) {
+                            Row {
+                                Text(
+                                    text = "쉬움",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier
+                                        .padding(end = 6.dp)
+                                )
+                                Text(
+                                    text = userDataList.find { it.id == "thirdGame" }?.value ?: "0",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
+
+                            Row {
+                                Text(
+                                    text = "보통",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier
+                                        .padding(end = 6.dp)
+                                )
+                                Text(
+                                    text = userDataList.find { it.id == "thirdGame" }?.value2
+                                        ?: "0",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
+
+                            Row {
+                                Text(
+                                    text = "어려움",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier
+                                        .padding(end = 6.dp)
+                                )
+                                Text(
+                                    text = userDataList.find { it.id == "thirdGame" }?.value3
+                                        ?: "0",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
+
+                        }
+
+                    }
+                }
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {// 접속 정보
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "마을 탄생일",
+                        style = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier
+                            .padding(end = 6.dp)
+                    )
+                    Text(
+                        text = userDataList.find { it.id == "date" }?.value3 ?: "2015-03-12",
+                        style = MaterialTheme.typography.labelMedium
+                    )
+                }
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "접속일",
+                        style = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier
+                            .padding(end = 6.dp)
+                    )
+                    Text(
+                        text = "${userDataList.find { it.id == "date" }?.value2 ?: "-"}일",
+                        style = MaterialTheme.typography.labelMedium
+                    )
+                }
+            }
         }
     }
 }
 
-@Composable
-fun InfoCard(label: String, value: String) {
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        tonalElevation = 2.dp,
-        color = Color(0xFFF9F3EA)
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(label, style = MaterialTheme.typography.bodyMedium)
-            Text(value, style = MaterialTheme.typography.bodyMedium)
-        }
-    }
-}
-
-@Composable
-fun GameScoreRow(gameName: String, score: String, rank: String) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(gameName, style = MaterialTheme.typography.labelMedium)
-        Text("$score 점")
-        Text(rank)
-    }
-}
 
 @Preview(showBackground = true)
 @Composable
