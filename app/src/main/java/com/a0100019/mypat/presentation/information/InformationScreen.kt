@@ -1,6 +1,9 @@
 package com.a0100019.mypat.presentation.information
 
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -8,14 +11,20 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pat.Pat
@@ -73,136 +82,125 @@ fun InformationScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .padding(16.dp)
+                ,
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Row {
-            Text(
-                text = "이름"
-            )
-            Text(
-                text = "#${userDataList.find { it.id == "name" }?.value2}"
-            )
-            Text(
-                text = "좋아요 ${userDataList.find { it.id == "like" }?.value}개"
-            )
-        }
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth() // 가로 크기는 최대
-                .aspectRatio(1 / 1.25f), // 세로가 가로의 1.25배
-            contentAlignment = Alignment.Center // Center content
+        // 이름, 좋아요
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            JustImage(
-                filePath = mapUrl,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.FillBounds
-            )
+            Text("이름", style = MaterialTheme.typography.labelMedium)
+            Text("#${userDataList.find { it.id == "name" }?.value2}")
+            Text("좋아요 ${userDataList.find { it.id == "like" }?.value}개")
+        }
 
-            BoxWithConstraints(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                val density = LocalDensity.current
+        // 미니맵 뷰
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(1f / 1.25f),
+            shape = RoundedCornerShape(16.dp),
+            color = Color(0xFFFFF8E7),
+            border = BorderStroke(2.dp, Color(0xFF5A3A22)),
+            shadowElevation = 8.dp
+        ) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                JustImage(
+                    filePath = mapUrl,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.FillBounds
+                )
 
-                // Surface 크기 가져오기 (px → dp 변환)
-                val surfaceWidth = constraints.maxWidth
-                val surfaceHeight = constraints.maxHeight
+                BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+                    val density = LocalDensity.current
+                    val surfaceWidthDp = with(density) { constraints.maxWidth.toDp() }
+                    val surfaceHeightDp = with(density) { constraints.maxHeight.toDp() }
 
-                val surfaceWidthDp = with(density) { surfaceWidth.toDp() }
-                val surfaceHeightDp = with(density) { surfaceHeight.toDp() }
-
-                itemDataList.map { itemData ->
-
+                    itemDataList.forEach {
                         WorldItemImage(
-                            itemUrl = itemData.url,
+                            itemUrl = it.url,
                             surfaceWidthDp = surfaceWidthDp,
                             surfaceHeightDp = surfaceHeightDp,
-                            xFloat = itemData.x,
-                            yFloat = itemData.y,
-                            sizeFloat = itemData.sizeFloat
+                            xFloat = it.x,
+                            yFloat = it.y,
+                            sizeFloat = it.sizeFloat
                         )
+                    }
 
-                }
-
-                patDataList.map { patData ->
-
+                    patDataList.forEach {
                         PatInformationImage(
-                            patUrl = patData.url,
+                            patUrl = it.url,
                             surfaceWidthDp = surfaceWidthDp,
                             surfaceHeightDp = surfaceHeightDp,
-                            xFloat = patData.x,
-                            yFloat = patData.y,
-                            sizeFloat = patData.sizeFloat,
+                            xFloat = it.x,
+                            yFloat = it.y,
+                            sizeFloat = it.sizeFloat
                         )
-
+                    }
                 }
-
-
             }
-
         }
 
-        Row {
-            Text(
-                text = "펫"
-            )
-            Text("${allPatDataList.count { it.date != "0" }}/${allPatDataList.size}")
+        // 수집 정보 (펫, 아이템, 맵)
+        InfoCard(label = "펫", value = "${allPatDataList.count { it.date != "0" }}/${allPatDataList.size}")
+        InfoCard(label = "아이템", value = "${allItemDataList.count { it.date != "0" }}/${allItemDataList.size}")
+        InfoCard(label = "맵", value = "${allMapDataList.count { it.date != "0" }}/${allMapDataList.size}")
+
+        // 게임 점수
+        GameScoreRow("컬링", userDataList.find { it.id == "firstGame" }?.value ?: "0", "14등")
+        GameScoreRow("블록게임", userDataList.find { it.id == "secondGame" }?.value ?: "0", "14등")
+        GameScoreRow("sudoku", userDataList.find { it.id == "thirdGame" }?.value ?: "0", "14등")
+
+        // 접속 정보
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text("최초 접속", style = MaterialTheme.typography.labelMedium)
+            Text(userDataList.find { it.id == "date" }?.value2 ?: "-")
         }
 
-        Row {
-            Text(
-                text = "아이템"
-            )
-            Text("${allItemDataList.count { it.date != "0" }}/${allItemDataList.size}")
-            Text(
-                text = "맵"
-            )
-            Text("${allMapDataList.count { it.date != "0" }}/${allMapDataList.size}")
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text("접속일", style = MaterialTheme.typography.labelMedium)
+            Text("${userDataList.find { it.id == "date" }?.value3 ?: "-"}일")
         }
-
-        Row {
-            Text(
-                text = "컬링"
-            )
-            Text("${userDataList.find { it.id == "firstGame" }?.value}점")
-            Text(
-                text = "14등"
-            )
-        }
-
-        Row {
-            Text(
-                text = "블록게임"
-            )
-            Text("${userDataList.find { it.id == "secondGame" }?.value}점")
-            Text(
-                text = "14등"
-            )
-        }
-
-        Row {
-            Text(
-                text = "sudoku"
-            )
-            Text("${userDataList.find { it.id == "thirdGame" }?.value}점")
-            Text(
-                text = "14등"
-            )
-        }
-
-        Row {
-            Text(
-                text = "최초 접속"
-            )
-            Text("${userDataList.find { it.id == "date" }?.value2}")
-
-            Text(
-                text = "접속일"
-            )
-            Text("${userDataList.find { it.id == "date" }?.value3}일")
-        }
-
     }
+}
 
+@Composable
+fun InfoCard(label: String, value: String) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        tonalElevation = 2.dp,
+        color = Color(0xFFF9F3EA)
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(label, style = MaterialTheme.typography.bodyMedium)
+            Text(value, style = MaterialTheme.typography.bodyMedium)
+        }
+    }
+}
+
+@Composable
+fun GameScoreRow(gameName: String, score: String, rank: String) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(gameName, style = MaterialTheme.typography.labelMedium)
+        Text("$score 점")
+        Text(rank)
+    }
 }
 
 @Preview(showBackground = true)

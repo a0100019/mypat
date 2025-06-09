@@ -1,6 +1,7 @@
 package com.a0100019.mypat.presentation.information
 
 import androidx.lifecycle.ViewModel
+import com.a0100019.mypat.data.room.allUser.AllUserDao
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.item.ItemDao
 import com.a0100019.mypat.data.room.pat.Pat
@@ -26,7 +27,8 @@ class InformationViewModel @Inject constructor(
     private val userDao: UserDao,
     private val worldDao: WorldDao,
     private val patDao: PatDao,
-    private val itemDao: ItemDao
+    private val itemDao: ItemDao,
+    private val allUserDao: AllUserDao
 
     ) : ViewModel(), ContainerHost<InformationState, InformationSideEffect> {
 
@@ -68,6 +70,7 @@ class InformationViewModel @Inject constructor(
         val allMapDataList = itemDao.getAllMapData()
         val allPatDataList = patDao.getAllPatData()
         val allItemDataList = itemDao.getAllItemData()
+        val allUserDataList = allUserDao.getAllUserData()
 
         reduce {
             state.copy(

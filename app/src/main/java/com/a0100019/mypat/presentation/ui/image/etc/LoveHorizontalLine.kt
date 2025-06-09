@@ -13,9 +13,9 @@ fun LoveHorizontalLine(
     totalValue: Int = 10000,
     plusValue: Int = 0
 ) {
+
     val valuePercentage = ((value.toFloat() - plusValue.toFloat()) / totalValue.toFloat()).coerceIn(0f, 1f)
     val plusValuePercentage = (value.toFloat() / totalValue.toFloat()).coerceIn(0f, 1f)
-
 
     Canvas(
         modifier = Modifier

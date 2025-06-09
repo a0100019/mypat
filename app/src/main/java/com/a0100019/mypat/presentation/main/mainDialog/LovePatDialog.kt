@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -52,7 +53,7 @@ fun LovePatDialog(
         BoxWithConstraints(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.8f)
+//                .fillMaxHeight(0.6f)
                 .background(Color.White, shape = RoundedCornerShape(16.dp))
                 .padding(16.dp)
         ) {
@@ -83,15 +84,21 @@ fun LovePatDialog(
                             modifier = Modifier.size(20.dp),
                         )
                         Text("애정도 ${lovePatData.love / 100}")
-                        LoveHorizontalLine(lovePatData.love)
+                        LoveHorizontalLine(
+                            value = lovePatData.love,
+                            plusValue = loveAmount,
+                            )
                     }
 
                 }
 
                 when(situation) {
+
                     "lovePatSuccess" -> CuteIconButton(
                         onClick = onLovePatNextClick,
-                        text = "한번 더"
+                        text = "한번 더",
+                        modifier = Modifier
+                            .fillMaxWidth(0.5f)
                     )
 
                     "lovePatFail" -> CuteIconButton(
@@ -103,8 +110,15 @@ fun LovePatDialog(
 
             }
 
-
             if(situation == "lovePatOnGoing"){
+
+                Text(
+                    text = "장난감을 흔들어주세요!",
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                )
+
                 DraggableItemImage(
                     itemUrl = loveItemData1.url,
                     surfaceWidthDp = surfaceWidthDp,
@@ -129,7 +143,6 @@ fun LovePatDialog(
                     onItemDrag(loveItemData2.id.toString(), newXFloat, newYFloat)
                 }
 
-
                 DraggableItemImage(
                     itemUrl = loveItemData3.url,
                     surfaceWidthDp = surfaceWidthDp,
@@ -142,10 +155,7 @@ fun LovePatDialog(
                     onItemDrag(loveItemData3.id.toString(), newXFloat, newYFloat)
                 }
             }
-
-
-
-
+            
         }
     }
 }
