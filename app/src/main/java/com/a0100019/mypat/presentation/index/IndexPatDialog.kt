@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.pat.Pat
+import com.a0100019.mypat.presentation.ui.component.CuteIconButton
 import com.a0100019.mypat.presentation.ui.image.etc.LoveHorizontalLine
 import com.a0100019.mypat.presentation.ui.image.pat.DialogPatImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
@@ -43,36 +44,47 @@ fun IndexPatDialog(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.8f)
+//                .fillMaxHeight(0.8f)
                 .background(Color.White, shape = RoundedCornerShape(16.dp))
                 .padding(16.dp)
         ) {
-            Column(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier
+            ) {
+
+                Text(
+                    text = patData.name,
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier
+                        .padding(bottom = 16.dp)
+                        .align(Alignment.CenterHorizontally)
+                    ,
+                    color = Color.Black
+                )
 
                 Box(
                     modifier = Modifier
                         .fillMaxHeight(0.3f)
                         .fillMaxWidth()
                         .background(Color.Gray, shape = RoundedCornerShape(16.dp))
-                        .padding(16.dp)
+                        .padding(start = 16.dp, end = 16.dp,)
                 ) {
-                    DialogPatImage(patData.url)
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Image(
                             painter = painterResource(id = R.drawable.heart),
                             contentDescription = "Sample Vector Image",
                             modifier = Modifier.size(20.dp),
                         )
-                        Text("애정도 ${patData.love/100}")
+                        Text(" ${patData.love / 100} ")
                         LoveHorizontalLine(patData.love)
                     }
+                    DialogPatImage(patData.url)
+
                 }
-                Text(
-                    text = patData.name,
-                    style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.padding(16.dp),
-                    color = Color.Black
-                )
+
+                Text("획득 날짜 : ${patData.date}")
+                Text("애정도 : ${patData.love}")
+                Text("같이 플레이 한 게임 수 : ${patData.gameCount}")
 
                 LazyColumn(
                     modifier = Modifier
@@ -90,24 +102,15 @@ fun IndexPatDialog(
                             )
                     }
                 }
-                Text("획득 날짜 : ${patData.date}")
-                Text("애정도 : 1500")
-                Text("같이 플레이 한 게임 수 : 1000")
-                Text("총 게임 최고 기록 : 155,300")
-                Text("퍼즐 게임 최고 기록 : 155,300")
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // 추가로 원하는 Composable 요소
-
-
-                Button(
-                    onClick = onClose,
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .padding(16.dp)
-                ) {
-                    Text("Close")
+                Row {
+                    Spacer(modifier = Modifier.weight(1f))
+                    CuteIconButton(
+                        onClick = onClose,
+                        text = " 닫기 "
+                    )
                 }
 
             }

@@ -267,7 +267,8 @@ class SettingViewModel @Inject constructor(
                 "love" to patData.love.toString(),
                 "size" to patData.sizeFloat.toString(),
                 "x" to patData.x.toString(),
-                "y" to patData.y.toString()
+                "y" to patData.y.toString(),
+                "gameCount" to patData.gameCount.toString()
             )
             combinedPatData[patData.id.toString()] = patMap
         }

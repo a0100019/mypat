@@ -14,7 +14,7 @@ data class Pat(
     var y: Float = 0.5f,
     val minFloat: Float = 0.1f,
     var sizeFloat: Float = 0.2f,
-    val category: String = "1",
+    var gameCount: Int = 0,
     val memo: String = "",
 
     )

@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,6 +28,7 @@ import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.world.World
+import com.a0100019.mypat.presentation.ui.component.CuteIconButton
 import com.a0100019.mypat.presentation.ui.image.item.AddDialogItemImage
 import com.a0100019.mypat.presentation.ui.image.pat.AddDialogPatImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
@@ -57,9 +59,22 @@ fun WorldAddDialog(
                 .background(Color.White, shape = RoundedCornerShape(16.dp))
                 .padding(16.dp)
         ) {
-            Column(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
 
-                Text(addDialogChange)
+                Text(
+                    text = when(addDialogChange) {
+                        "pat" -> "펫"
+                        "item" -> "아이템"
+                        else -> "맵"
+                    },
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier
+                        .padding(bottom = 12.dp)
+                    )
+
                 Box(
                     modifier = Modifier
                         .weight(1f)
@@ -84,10 +99,16 @@ fun WorldAddDialog(
                                                 onAddPatClick(id)
                                             }
                                         )
-                                        if (worldDataList.any { it.value == allPatDataList[index].id.toString() && it.type == "pat" }) {
-                                            Text("선택")
-                                        }
                                         Text(allPatDataList[index].name)
+                                        if (worldDataList.any { it.value == allPatDataList[index].id.toString() && it.type == "pat" }) {
+                                            Text(
+                                                text = worldDataList.indexOfFirst { it.value == allPatDataList[index].id.toString() && it.type == "pat" }.toString()
+                                            )
+                                        } else {
+                                            Text(
+                                                text = ""
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -103,10 +124,16 @@ fun WorldAddDialog(
                                                 onAddItemClick(id)
                                             }
                                         )
-                                        if (worldDataList.any { it.value == allItemDataList[index].id.toString() && it.type == "item"}) {
-                                            Text("선택")
-                                        }
                                         Text(allItemDataList[index].name)
+                                        if (worldDataList.any { it.value == allItemDataList[index].id.toString() && it.type == "item"}) {
+                                            Text(
+                                                text = worldDataList.indexOfFirst { it.value == allItemDataList[index].id.toString() && it.type == "item" }.toString()
+                                            )
+                                        } else {
+                                            Text(
+                                                text = ""
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -119,10 +146,12 @@ fun WorldAddDialog(
                                             itemData = allMapDataList[index],
                                             onAddItemImageClick = onSelectMapImageClick
                                         )
+                                        Text(allMapDataList[index].name)
                                         if (mapWorldData.value == allMapDataList[index].url) {
                                             Text("선택")
+                                        } else {
+                                            Text("")
                                         }
-                                        Text(allMapDataList[index].name)
                                     }
                                 }
                             }
@@ -133,25 +162,25 @@ fun WorldAddDialog(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Row(
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxWidth()
                 ) {
-                    Button(
+                    CuteIconButton(
+                        text = " 다음 ",
                         onClick = onAddDialogChangeClick,
                         modifier = Modifier
                             .padding(16.dp)
-                    ) {
-                        Text("바꾸기")
-                    }
+                    )
 
-                    Button(
+                    CuteIconButton(
+                        text = " 확인 ",
                         onClick = onClose,
                         modifier = Modifier
                             .padding(16.dp)
-                    ) {
-                        Text("Close")
-                    }
-                }
+                    )
 
+                }
 
             }
         }

@@ -265,6 +265,7 @@ class LoginViewModel @Inject constructor(
                                     val size = (patData["size"] as? String)?.toFloatOrNull() ?: continue
                                     val x = (patData["x"] as? String)?.toFloatOrNull() ?: continue
                                     val y = (patData["y"] as? String)?.toFloatOrNull() ?: continue
+                                    val gameCount = (patData["gameCount"] as? String)?.toIntOrNull() ?: continue
 
                                     patDao.updatePatData(
                                         id = patId.toIntOrNull() ?: continue,
@@ -272,7 +273,8 @@ class LoginViewModel @Inject constructor(
                                         love = love,
                                         x = x,
                                         y = y,
-                                        size = size
+                                        size = size,
+                                        gameCount = gameCount
                                     )
                                 }
                             }
