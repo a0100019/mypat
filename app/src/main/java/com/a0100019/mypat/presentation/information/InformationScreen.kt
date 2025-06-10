@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -61,7 +62,8 @@ fun InformationScreen(
         allPatDataList = informationState.allPatDataList,
         allItemDataList = informationState.allItemDataList,
         allMapDataList = informationState.allMapDataList,
-        userDataList = informationState.userData
+        userDataList = informationState.userData,
+        gameRankList = informationState.gameRankList
 
         )
 }
@@ -76,7 +78,8 @@ fun InformationScreen(
     allPatDataList: List<Pat>,
     allItemDataList: List<Item>,
     allMapDataList: List<Item>,
-    userDataList: List<User>
+    userDataList: List<User>,
+    gameRankList: List<String> = listOf("-", "-", "-", "-", "-")
 
     ) {
 
@@ -278,13 +281,13 @@ fun InformationScreen(
                                         .padding(end = 6.dp)
                                 )
                                 Text(
-                                    text = userDataList.find { it.id == "firstGame" }?.value ?: "0",
+                                    text = userDataList.find { it.id == "firstGame" }?.value + "점",
                                     style = MaterialTheme.typography.bodyMedium,
                                     modifier = Modifier
                                         .padding(end = 6.dp)
                                 )
                                 Text(
-                                    text = userDataList.find { it.id == "firstGame" }?.value ?: "0",
+                                    text = gameRankList[0] + "등",
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                             }
@@ -297,19 +300,24 @@ fun InformationScreen(
                                         .padding(end = 6.dp)
                                 )
                                 Text(
-                                    text = userDataList.find { it.id == "secondGame" }?.value
-                                        ?: "0",
+                                    text = userDataList.find { it.id == "secondGame" }?.value + "초",
                                     style = MaterialTheme.typography.bodyMedium,
                                     modifier = Modifier
                                         .padding(end = 6.dp)
                                 )
                                 Text(
-                                    text = userDataList.find { it.id == "firstGame" }?.value ?: "0",
+                                    text = gameRankList[1] + "등",
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                             }
 
                         }
+
+                        Divider(
+                            color = Color.LightGray,
+                            thickness = 1.dp,
+                            modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 8.dp)
+                        )
 
                         Text(
                             text = "스도쿠",
@@ -331,7 +339,13 @@ fun InformationScreen(
                                         .padding(end = 6.dp)
                                 )
                                 Text(
-                                    text = userDataList.find { it.id == "thirdGame" }?.value ?: "0",
+                                    text = userDataList.find { it.id == "thirdGame" }?.value + "개",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier
+                                        .padding(end = 6.dp)
+                                )
+                                Text(
+                                    text = gameRankList[2] + "등",
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                             }
@@ -344,8 +358,13 @@ fun InformationScreen(
                                         .padding(end = 6.dp)
                                 )
                                 Text(
-                                    text = userDataList.find { it.id == "thirdGame" }?.value2
-                                        ?: "0",
+                                    text = userDataList.find { it.id == "thirdGame" }?.value2 + "개",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier
+                                        .padding(end = 6.dp)
+                                )
+                                Text(
+                                    text = gameRankList[3] + "등",
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                             }
@@ -358,8 +377,13 @@ fun InformationScreen(
                                         .padding(end = 6.dp)
                                 )
                                 Text(
-                                    text = userDataList.find { it.id == "thirdGame" }?.value3
-                                        ?: "0",
+                                    text = userDataList.find { it.id == "thirdGame" }?.value3 + "개",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier
+                                        .padding(end = 6.dp)
+                                )
+                                Text(
+                                    text = gameRankList[4] + "등",
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                             }

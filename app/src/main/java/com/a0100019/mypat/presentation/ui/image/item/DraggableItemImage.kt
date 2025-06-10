@@ -56,9 +56,7 @@ fun DraggableItemImage(
         )
 
         // LottieAnimation을 클릭 가능한 Modifier로 감쌉니다.
-        LottieAnimation(
-            composition = composition,
-            iterations = Int.MAX_VALUE,
+        Box(
             modifier = Modifier
                 .size(imageSize)
                 .offset(x = xOffset, y = yOffset)
@@ -77,8 +75,13 @@ fun DraggableItemImage(
                         )
                     }
                 }
-        )
-        Text(worldIndex)
+        ){
+            LottieAnimation(
+                composition = composition,
+                iterations = Int.MAX_VALUE,
+            )
+            Text(worldIndex)
+        }
 
     } else {
         val context = LocalContext.current
@@ -97,9 +100,7 @@ fun DraggableItemImage(
         }
 
         if (bitmap != null) {
-            Image(
-                bitmap = bitmap!!.asImageBitmap(),
-                contentDescription = "Asset Image",
+            Box(
                 modifier = Modifier
                     .size(imageSize)
                     .offset(x = xOffset, y = yOffset)
@@ -118,8 +119,13 @@ fun DraggableItemImage(
                             )
                         }
                     }
-            )
-            Text(worldIndex)
+            ) {
+                Image(
+                    bitmap = bitmap!!.asImageBitmap(),
+                    contentDescription = "Asset Image",
+                )
+                Text(worldIndex)
+            }
         } else {
             // Placeholder while loading or on error
             Box(

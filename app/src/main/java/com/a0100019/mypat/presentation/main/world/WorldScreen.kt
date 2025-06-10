@@ -1,17 +1,22 @@
 package com.a0100019.mypat.presentation.main.world
 
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,6 +40,7 @@ import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.image.pat.DraggablePatImage
 import com.a0100019.mypat.presentation.main.mainDialog.PatSettingDialog
 import com.a0100019.mypat.presentation.main.mainDialog.WorldAddDialog
+import com.a0100019.mypat.presentation.ui.component.CuteIconButton
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -172,96 +178,130 @@ fun WorldScreen(
         )
     }
 
-    Column {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+        ,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
 
-        Row(
+        Text(
+            text = "꾸미기",
+            style = MaterialTheme.typography.headlineLarge,
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(end = 10.dp),
-            horizontalArrangement = Arrangement.End
-        ) {
-            Text("Pat ${userDataList.find { it.id == "pat" }?.value3} / ${userDataList.find { it.id == "pat" }?.value2}  " +
-                    "Item ${userDataList.find { it.id == "item" }?.value3} / ${userDataList.find { it.id == "item" }?.value2}")
-        }
+                .padding(top = 16.dp)
+        )
 
-
-        Surface(
+        Column(
             modifier = Modifier
-                .fillMaxWidth() // 가로 크기는 최대
-                .aspectRatio(1 / 1.25f), // 세로가 가로의 1.25배
-            color = Color.Gray
+                .weight(1f),
+            verticalArrangement = Arrangement.Center
         ) {
 
-            Box(
+            Row(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.White), // Optional: Set background color
-                contentAlignment = Alignment.Center // Center content
+                    .fillMaxWidth()
+                    .padding(end = 16.dp, bottom = 6.dp),
+                horizontalArrangement = Arrangement.End
             ) {
-                JustImage(
-                    filePath = mapUrl,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.FillBounds
+                Text(
+                    text = "Pat ${userDataList.find { it.id == "pat" }?.value3} / ${userDataList.find { it.id == "pat" }?.value2}   " +
+                            "Item ${userDataList.find { it.id == "item" }?.value3} / ${userDataList.find { it.id == "item" }?.value2}",
+                    style = MaterialTheme.typography.bodyMedium
                 )
+            }
 
-                BoxWithConstraints(
-                    modifier = Modifier.fillMaxSize()
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth() // 가로 크기는 최대
+                    .aspectRatio(1 / 1.25f)
+                    .padding(start = 10.dp, end = 10.dp),
+                shape = RoundedCornerShape(16.dp),
+                color = Color(0xFFFFF8E7),
+                border = BorderStroke(3.dp, Color(0xFF5A3A22)),
+                shadowElevation = 6.dp,
+            ) {
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.White), // Optional: Set background color
+                    contentAlignment = Alignment.Center // Center content
                 ) {
-                    val density = LocalDensity.current
+                    JustImage(
+                        filePath = mapUrl,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.FillBounds
+                    )
 
-                    // Surface 크기 가져오기 (px → dp 변환)
-                    val surfaceWidth = constraints.maxWidth
-                    val surfaceHeight = constraints.maxHeight
+                    BoxWithConstraints(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        val density = LocalDensity.current
 
-                    val surfaceWidthDp = with(density) { surfaceWidth.toDp() }
-                    val surfaceHeightDp = with(density) { surfaceHeight.toDp() }
+                        // Surface 크기 가져오기 (px → dp 변환)
+                        val surfaceWidth = constraints.maxWidth
+                        val surfaceHeight = constraints.maxHeight
 
-                    worldDataList.forEachIndexed { index, worldData ->
-                        key("${worldData.id}_${worldData.type}") {
-                            if (worldData.type == "pat") {
-                                patDataList.find { it.id.toString() == worldData.value }
-                                    ?.let { patData ->
+                        val surfaceWidthDp = with(density) { surfaceWidth.toDp() }
+                        val surfaceHeightDp = with(density) { surfaceHeight.toDp() }
 
-                                        DraggablePatImage(
-                                            worldIndex = index.toString(),
-                                            patUrl = patData.url,
-                                            surfaceWidthDp = surfaceWidthDp,
-                                            surfaceHeightDp = surfaceHeightDp,
-                                            xFloat = patData.x,
-                                            yFloat = patData.y,
-                                            sizeFloat = patData.sizeFloat,
-                                            onClick = { dialogPatIdChange(patData.id.toString()) }
-                                        ) { newXFloat, newYFloat ->
-                                            onPatDrag(patData.id.toString(), newXFloat, newYFloat)
+                        worldDataList.forEachIndexed { index, worldData ->
+                            key("${worldData.id}_${worldData.type}") {
+                                if (worldData.type == "pat") {
+                                    patDataList.find { it.id.toString() == worldData.value }
+                                        ?.let { patData ->
+
+                                            DraggablePatImage(
+                                                worldIndex = index.toString(),
+                                                patUrl = patData.url,
+                                                surfaceWidthDp = surfaceWidthDp,
+                                                surfaceHeightDp = surfaceHeightDp,
+                                                xFloat = patData.x,
+                                                yFloat = patData.y,
+                                                sizeFloat = patData.sizeFloat,
+                                                onClick = { dialogPatIdChange(patData.id.toString()) }
+                                            ) { newXFloat, newYFloat ->
+                                                onPatDrag(
+                                                    patData.id.toString(),
+                                                    newXFloat,
+                                                    newYFloat
+                                                )
+                                            }
+
                                         }
 
-                                    }
-                            } else {
-                                itemDataList.find { it.id.toString() == worldData.value }
-                                    ?.let { itemData ->
+                                } else {
+                                    itemDataList.find { it.id.toString() == worldData.value }
+                                        ?.let { itemData ->
 
-                                        DraggableItemImage(
-                                            worldIndex = index.toString(),
-                                            itemUrl = itemData.url,
-                                            surfaceWidthDp = surfaceWidthDp,
-                                            surfaceHeightDp = surfaceHeightDp,
-                                            xFloat = itemData.x,
-                                            yFloat = itemData.y,
-                                            sizeFloat = itemData.sizeFloat,
-                                            onClick = { dialogItemIdChange(itemData.id.toString()) }
-                                        ) { newXFloat, newYFloat ->
-                                            onItemDrag(itemData.id.toString(), newXFloat, newYFloat)
+                                            DraggableItemImage(
+                                                worldIndex = index.toString(),
+                                                itemUrl = itemData.url,
+                                                surfaceWidthDp = surfaceWidthDp,
+                                                surfaceHeightDp = surfaceHeightDp,
+                                                xFloat = itemData.x,
+                                                yFloat = itemData.y,
+                                                sizeFloat = itemData.sizeFloat,
+                                                onClick = { dialogItemIdChange(itemData.id.toString()) }
+                                            ) { newXFloat, newYFloat ->
+                                                onItemDrag(
+                                                    itemData.id.toString(),
+                                                    newXFloat,
+                                                    newYFloat
+                                                )
+                                            }
+
                                         }
-
-                                    }
+                                }
                             }
                         }
+
                     }
 
                 }
 
             }
-
         }
 
         Column {
@@ -270,13 +310,13 @@ fun WorldScreen(
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
-                Button(
+                CuteIconButton(
                     modifier = Modifier
-                        .fillMaxWidth(0.5f),
-                    onClick = onShowAddDialogClick
-                ) {
-                    Text("추가 하기")
-                }
+                        .fillMaxWidth(0.7f)
+                        .padding(bottom = 10.dp),
+                    onClick = onShowAddDialogClick,
+                    text = "수정 하기"
+                )
             }
 
             Row(
@@ -285,17 +325,32 @@ fun WorldScreen(
                     .padding(bottom = 10.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                Button(
-                    modifier = Modifier,
-                    onClick = onMainNavigateClick
+
+                Row(
+                    horizontalArrangement = Arrangement.End,
+                    modifier = Modifier
+                        .weight(0.4f)
                 ) {
-                    Text("취소")
+                    CuteIconButton(
+                        modifier = Modifier
+                            .fillMaxWidth(0.6f),
+                        onClick = onMainNavigateClick,
+                        text = "취소"
+                    )
                 }
-                Button(
-                    modifier = Modifier,
-                    onClick = onWorldSelectClick
+
+                Spacer(modifier = Modifier.weight(0.2f))
+
+                Row(
+                    modifier = Modifier
+                        .weight(0.4f)
                 ) {
-                    Text("확인")
+                    CuteIconButton(
+                        modifier = Modifier
+                            .fillMaxWidth(0.6f),
+                        onClick = onWorldSelectClick,
+                        text = "확인"
+                    )
                 }
             }
 
@@ -315,11 +370,11 @@ fun WorldScreenPreview() {
             itemDataList = listOf(Item(url = "item/table.png")),
             dialogPatId = "0",
             dialogItemId = "0",
-            dialogPatIdChange = { },
+            dialogPatIdChange = {},
             dialogItemIdChange = {},
-            onPatSizeUpClick = { },
+            onPatSizeUpClick = {},
             onItemSizeUpClick = {},
-            onPatSizeDownClick = { },
+            onPatSizeDownClick = {},
             onItemSizeDownClick = {},
             onItemDrag = { id, newX, newY -> },
             onPatDrag = { id, newX, newY -> },
