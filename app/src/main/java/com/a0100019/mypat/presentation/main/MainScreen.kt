@@ -240,11 +240,21 @@ fun MainScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(10.dp),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.End)
+                    horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.End),
+                    verticalAlignment = Alignment.Bottom
                 ) {
-                    Text(
-                        text = timer
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        JustImage(
+                            filePath = "etc/loveBubble.json",
+                            modifier = Modifier.size(30.dp)
+                        )
+                        Text(
+                            text = timer
+                        )
+                    }
+                    Spacer(modifier = Modifier.weight(1f))
                     CuteIconButton(
                         text = "커뮤니티",
                         onClick = onCommunityNavigateClick

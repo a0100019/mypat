@@ -159,17 +159,22 @@ fun CommunityScreen(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
         Text(
-            text = "마을 구경하기"
+            text = "마을 구경하기",
+            style = MaterialTheme.typography.headlineLarge,
+            modifier = Modifier
+                .padding(top = 12.dp)
         )
 
         when (situation) {
             "world" -> Column(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.weight(1f).padding(16.dp)
             ) {
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     CommunityWorldCard(
@@ -435,7 +440,7 @@ fun CommunityScreen(
 fun CommunityScreenPreview() {
     MypatTheme {
         CommunityScreen(
-            situation = "chat",
+            situation = "world",
             userDataList = listOf(User(id = "auth")),
             chatMessages = listOf(ChatMessage(10202020, "a", "a", tag = "0", ban = "0"), ChatMessage(10202020, "a11", "a11", tag = "1", ban = "0"))
         )

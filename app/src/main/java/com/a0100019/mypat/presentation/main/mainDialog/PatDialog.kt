@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.pat.Pat
+import com.a0100019.mypat.presentation.ui.component.CuteIconButton
 import com.a0100019.mypat.presentation.ui.image.pat.DialogPatImage
 import com.a0100019.mypat.presentation.ui.image.etc.LoveHorizontalLine
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
@@ -47,11 +48,21 @@ fun PatDialog(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.8f)
                 .background(Color.White, shape = RoundedCornerShape(16.dp))
                 .padding(16.dp)
         ) {
-            Column(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier
+                ,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+
+                Text(
+                    text = patData.name,
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier.padding(bottom = 16.dp),
+                    color = Color.Black
+                )
 
                 Box(
                     modifier = Modifier
@@ -67,31 +78,8 @@ fun PatDialog(
                             contentDescription = "Sample Vector Image",
                             modifier = Modifier.size(20.dp),
                         )
-                        Text("애정도 ${patFlowData?.love?.div(100)}")
+                        Text(" ${patFlowData?.love?.div(100)} ")
                         patFlowData?.love?.let { LoveHorizontalLine(it) }
-                    }
-                }
-                Text(
-                    text = patData.name,
-                    style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.padding(16.dp),
-                    color = Color.Black
-                )
-
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxHeight(0.3f)
-                        .fillMaxWidth()
-                        .background(Color.Gray, shape = RoundedCornerShape(16.dp))
-                        .padding(16.dp)
-                ) {
-                    item {
-                        Text(
-                            text = patData.memo,
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.padding(16.dp),
-
-                            )
                     }
                 }
 
@@ -100,36 +88,38 @@ fun PatDialog(
                 // 추가로 원하는 Composable 요소
                 Text("미니 게임")
 //        Spacer(modifier = Modifier.height(16.dp))
-                Button(
+                CuteIconButton(
+                    text = "총 게임",
                     onClick = onFirstGameNavigateClick,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("총 게임")
-                }
-
-                Button(
-                    onClick = onSecondGameNavigateClick,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("피하기 게임")
-                }
-
-                Button(
-                    onClick = onThirdGameNavigateClick,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("맞추기 게임")
-                }
-
-                Button(
-                    onClick = onClose,
                     modifier = Modifier
-                        .align(Alignment.End)
-                        .padding(16.dp)
-                ) {
-                    Text("Close")
-                }
+                        .fillMaxWidth()
+                        .padding(bottom = 6.dp)
+                )
+                CuteIconButton(
+                    text = "피하기 게임",
+                    onClick = onSecondGameNavigateClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 6.dp)
+                )
+                CuteIconButton(
+                    text = "맞추기 게임",
+                    onClick = onThirdGameNavigateClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 6.dp)
+                )
 
+                Row {
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    CuteIconButton(
+                        text = " 닫기 ",
+                        onClick = onClose,
+                        modifier = Modifier
+                            .padding(top = 16.dp)
+                    )
+                }
             }
         }
     }
