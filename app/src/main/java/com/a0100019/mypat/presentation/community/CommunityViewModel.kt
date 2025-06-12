@@ -68,6 +68,7 @@ class CommunityViewModel @Inject constructor(
         val itemDataList = itemDao.getAllItemData()
         val allUserDataList = allUserDao.getAllUserData()
         val allUserRankDataList = allUserDao.getAllUserData()
+        val allMapCount = itemDao.getAllMapData().size.toString()
 
         val page = userDataList.find { it.id == "etc" }!!.value.toInt()
         val allUserData1 = allUserDataList[4*page]
@@ -102,7 +103,8 @@ class CommunityViewModel @Inject constructor(
                 allUserWorldDataList2 = allUserWorldDataList2,
                 allUserWorldDataList3 = allUserWorldDataList3,
                 allUserWorldDataList4 = allUserWorldDataList4,
-                allUserRankDataList = allUserRankDataList
+                allUserRankDataList = allUserRankDataList,
+                allMapCount = allMapCount
             )
         }
     }
@@ -646,7 +648,8 @@ data class CommunityState(
     val allUserRankDataList: List<AllUser> = emptyList(),
     val newChat: String = "",
     val chatMessages: List<ChatMessage> = emptyList(),
-    val alertState: String = ""
+    val alertState: String = "",
+    val allMapCount: String = ""
 )
 
 @Immutable

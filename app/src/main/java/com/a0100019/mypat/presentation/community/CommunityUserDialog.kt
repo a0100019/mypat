@@ -1,8 +1,10 @@
 package com.a0100019.mypat.presentation.community
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -16,6 +18,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -46,7 +49,9 @@ fun CommunityUserDialog(
     patDataList: List<Pat> = emptyList(),
     itemDataList: List<Item> = emptyList(),
     onLikeClick: () -> Unit = {},
-    onBanClick: () -> Unit = {}
+    onBanClick: () -> Unit = {},
+    allUserDataList: List<AllUser> = emptyList(),
+    allMapCount: String = "0"
 ) {
 
     Dialog(
@@ -59,13 +64,53 @@ fun CommunityUserDialog(
                 .background(Color.White, shape = RoundedCornerShape(16.dp))
                 .padding(16.dp)
         ) {
-            Column {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                ,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+
+                // 이름, 좋아요
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 6.dp)
+                    ,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = clickAllUserData.name,
+                            style = MaterialTheme.typography.titleLarge,
+                            modifier = Modifier
+                                .padding(start = 10.dp, end = 6.dp)
+                        )
+                        Text(
+                            text = " #" + clickAllUserData.tag,
+                            style = MaterialTheme.typography.titleSmall
+                        )
+                    }
+                    Text(
+                        text = "좋아요 ${clickAllUserData.like}개",
+                        style = MaterialTheme.typography.titleSmall,
+                        modifier = Modifier
+                            .padding(end = 10.dp)
+                    )
+                }
 
                 Surface(
                     modifier = Modifier
-                        .fillMaxWidth() // 가로 크기는 최대
-                        .aspectRatio(1 / 1.25f), // 세로가 가로의 1.25배
-                    color = Color.Gray
+                        .weight(1f)
+                        .aspectRatio(1f / 1.25f)
+                        .padding(start = 6.dp, end = 6.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    color = Color(0xFFFFF8E7),
+                    border = BorderStroke(2.dp, Color(0xFF5A3A22)),
+                    shadowElevation = 8.dp,
                 ) {
 
                     JustImage(
@@ -119,6 +164,240 @@ fun CommunityUserDialog(
                     }
                 }
 
+                Column(
+                    modifier = Modifier
+                        .weight(0.6f),
+                    verticalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        tonalElevation = 2.dp,
+                        color = Color(0xFFF9F3EA)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp, vertical = 12.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "도감",
+                                style = MaterialTheme.typography.titleLarge,
+                                modifier = Modifier
+                                    .padding(bottom = 6.dp)
+                            )
+
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceAround,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            ) {
+                                Row {
+                                    Text(
+                                        text = "펫",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier
+                                            .padding(end = 6.dp)
+                                    )
+                                    Text(
+                                        text = "${clickAllUserData.openPat}/${patDataList.size}",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                }
+
+                                Row {
+                                    Text(
+                                        text = "아이템",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier
+                                            .padding(end = 6.dp)
+                                    )
+                                    Text(
+                                        text = "${clickAllUserData.openItem}/${itemDataList.size}",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                }
+
+                                Row {
+                                    Text(
+                                        text = "맵",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier
+                                            .padding(end = 6.dp)
+                                    )
+                                    Text(
+                                        text = "${clickAllUserData.openMap}/${allMapCount}",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                }
+                            }
+
+                        }
+                    }
+
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        tonalElevation = 2.dp,
+                        color = Color(0xFFF9F3EA)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp, vertical = 12.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "게임",
+                                style = MaterialTheme.typography.titleLarge,
+                                modifier = Modifier
+                                    .padding(bottom = 6.dp)
+                            )
+
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceAround,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            ) {
+                                Row {
+                                    Text(
+                                        text = "슈팅",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier
+                                            .padding(end = 6.dp)
+                                    )
+                                    Text(
+                                        text = clickAllUserData.firstGame + "점",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier
+                                            .padding(end = 6.dp)
+                                    )
+                                    val firstGameRank = allUserDataList
+                                        .map { it.firstGame }        // 점수만 추출
+                                        .sortedDescending()          // 높은 점수 순으로 정렬
+                                        .indexOfFirst { it <= clickAllUserData.firstGame } + 1  // myScore보다 작거나 같은 첫 점수의 순위
+                                    Text(
+                                        text = firstGameRank.toString() + "등",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                }
+
+                                Row {
+                                    Text(
+                                        text = "블록",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier
+                                            .padding(end = 6.dp)
+                                    )
+                                    Text(
+                                        text = clickAllUserData.secondGame + "점",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier
+                                            .padding(end = 6.dp)
+                                    )
+                                    val secondGameRank = allUserDataList
+                                        .map { it.secondGame }        // 점수만 추출
+                                        .sortedDescending()          // 높은 점수 순으로 정렬
+                                        .indexOfFirst { it <= clickAllUserData.secondGame } + 1  // myScore보다 작거나 같은 첫 점수의 순위
+                                    Text(
+                                        text = secondGameRank.toString() + "등",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                }
+                            }
+
+                            Divider(
+                                color = Color.LightGray,
+                                thickness = 1.dp,
+                                modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 8.dp)
+                            )
+
+                            Text(
+                                text = "스도쿠",
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier
+                                    .padding(top = 8.dp, bottom = 6.dp)
+                            )
+
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceAround,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            ) {
+                                Row {
+                                    Text(
+                                        text = "쉬움",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier
+                                            .padding(end = 6.dp)
+                                    )
+                                    Text(
+                                        text = clickAllUserData.thirdGameEasy + "개",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier
+                                            .padding(end = 6.dp)
+                                    )
+                                    val thirdGameEasyRank = allUserDataList
+                                        .map { it.thirdGameEasy }        // 점수만 추출
+                                        .sortedDescending()          // 높은 점수 순으로 정렬
+                                        .indexOfFirst { it <= clickAllUserData.thirdGameEasy } + 1  // myScore보다 작거나 같은 첫 점수의 순위
+                                    Text(
+                                        text = thirdGameEasyRank.toString() + "등",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                }
+
+                                Row {
+                                    Text(
+                                        text = "보통",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier
+                                            .padding(end = 6.dp)
+                                    )
+                                    Text(
+                                        text = clickAllUserData.thirdGameNormal + "개",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier
+                                            .padding(end = 6.dp)
+                                    )
+                                    val thirdGameNormalRank = allUserDataList
+                                        .map { it.thirdGameNormal }        // 점수만 추출
+                                        .sortedDescending()          // 높은 점수 순으로 정렬
+                                        .indexOfFirst { it <= clickAllUserData.thirdGameNormal } + 1  // myScore보다 작거나 같은 첫 점수의 순위
+                                    Text(
+                                        text = thirdGameNormalRank.toString() + "등",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                }
+
+                                Row {
+                                    Text(
+                                        text = "어려움",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier
+                                            .padding(end = 6.dp)
+                                    )
+                                    Text(
+                                        text = clickAllUserData.thirdGameHard + "개",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier
+                                            .padding(end = 6.dp)
+                                    )
+                                    val thirdGameHardRank = allUserDataList
+                                        .map { it.thirdGameHard }        // 점수만 추출
+                                        .sortedDescending()          // 높은 점수 순으로 정렬
+                                        .indexOfFirst { it <= clickAllUserData.thirdGameHard } + 1  // myScore보다 작거나 같은 첫 점수의 순위
+                                    Text(
+                                        text = thirdGameHardRank.toString() + "등",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                }
+
+                            }
+
+                        }
+                    }
+                }
+
                 Row {
                     JustImage(
                         filePath = "etc/arrow.png",
@@ -159,11 +438,9 @@ fun CommunityUserDialogPreview() {
                 warning = "0",
                 firstDate = "2025-02-05",
                 openItem = "30",
-                openItemSpace = "10",
                 map = "map/forest.jpg",
                 name = "이222유빈",
                 openPat = "20",
-                openPatSpace = "10",
                 totalDate = "134",
                 worldData = "1@0.2@pat@0.25@0.69/2@0.2@pat@0.25@0.569/1@0.2@pat@0.125@0.69/1@0.2@item@0.25@0.69/2@0.2@item@0.125@0.769/1@0.2@item@0.225@0.1691@0.2@pat@0.25@0.669/2@0.2@pat@0.25@0.369/2@0.3@pat@0.325@0.69/1@0.2@pat@0.725@0.769/1@0.2@item@0.425@0.669",
             ),

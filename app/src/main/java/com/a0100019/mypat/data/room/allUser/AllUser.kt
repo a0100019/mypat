@@ -20,11 +20,10 @@ data class AllUser(
     val thirdGameNormal: String = "0",
     val thirdGameHard: String = "0",
     val openItem: String = "0",
-    val openItemSpace: String = "0",
     val map: String = "0",
     val name: String = "0",
     val openPat: String = "0",
-    val openPatSpace: String = "0",
+    val openMap: String = "0",
     val totalDate: String = "0",
     val worldData: String = "0",  // "id@size@type@x@y/id@size@type@x@y"
 

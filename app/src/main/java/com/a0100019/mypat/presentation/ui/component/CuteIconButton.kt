@@ -48,11 +48,10 @@ import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.ui.unit.Dp
 
-
 @Composable
 fun CuteIconButton(
     text: String = "",
-    @DrawableRes iconResId: Int? = null, //R.drawable.heart
+    @DrawableRes iconResId: Int? = null,
     showBadge: Boolean = false,
     imageSize: Dp = 30.dp,
     onClick: () -> Unit = {},
@@ -66,55 +65,46 @@ fun CuteIconButton(
         label = "scale"
     )
 
-    Box(
-        modifier = Modifier
+    Surface(
+        shape = RoundedCornerShape(16.dp),
+        color = MaterialTheme.colorScheme.background,
+        border = BorderStroke(3.dp, MaterialTheme.colorScheme.onPrimaryContainer),
+        shadowElevation = 6.dp,
+        modifier = modifier // ← 여기로 옮김
             .graphicsLayer {
                 scaleX = scale
                 scaleY = scale
             }
             .clickable(
                 interactionSource = interactionSource,
-                indication = rememberRipple(
-                    bounded = true,
-                    color = Color.White
-                ),
+                indication = rememberRipple(bounded = true, color = Color.White),
                 onClick = onClick
             )
-
     ) {
-        Surface(
-            modifier = modifier, // ← 이거 추가!
-            shape = RoundedCornerShape(16.dp),
-            color = MaterialTheme.colorScheme.background,
-            border = BorderStroke(3.dp, MaterialTheme.colorScheme.onPrimaryContainer),
-            shadowElevation = 6.dp,
+        Column(
+            modifier = Modifier.padding(8.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
-                modifier = Modifier
-                    .padding(8.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                iconResId?.let {
-                    Image(
-                        painter = painterResource(id = it),
-                        contentDescription = null,
-                        modifier = Modifier.size(imageSize)
-                    )
-                }
-                Spacer(modifier = Modifier.height(6.dp))
-                Text(
-                    text = text,
-                    style = style,
-                    color = Color(0xFF5A3A22),
+            iconResId?.let {
+                Image(
+                    painter = painterResource(id = it),
+                    contentDescription = null,
+                    modifier = Modifier.size(imageSize)
                 )
             }
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                text = text,
+                style = style,
+                color = Color(0xFF5A3A22),
+            )
         }
+
 
         if (showBadge) {
             Box(
                 modifier = Modifier
-                    .align(Alignment.TopEnd)
                     .offset(x = 6.dp, y = (-6).dp)
                     .size(16.dp)
                     .background(Color.Red, shape = CircleShape)
@@ -122,6 +112,7 @@ fun CuteIconButton(
             )
         }
     }
+
 }
 
 

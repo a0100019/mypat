@@ -132,7 +132,9 @@ fun CommunityWorldCard(
                 }
             }
             Spacer(modifier = Modifier.height(12.dp))
-            Row {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Text(
                     text = userData.name,
                     style = MaterialTheme.typography.bodyLarge,

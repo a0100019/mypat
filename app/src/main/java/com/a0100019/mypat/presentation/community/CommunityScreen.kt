@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -37,6 +38,7 @@ import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
+import com.a0100019.mypat.presentation.ui.component.CuteIconButton
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
@@ -82,6 +84,7 @@ fun CommunityScreen(
         newChat = communityState.newChat,
         userDataList = communityState.userDataList,
         alertState = communityState.alertState,
+        allMapCount = communityState.allMapCount,
 
         onPageUpClick = communityViewModel::opPageUpClick,
         onUserWorldClick = communityViewModel::onUserWorldClick,
@@ -118,6 +121,7 @@ fun CommunityScreen(
     newChat: String = "",
     userDataList: List<User> = emptyList(),
     alertState: String = "",
+    allMapCount: String = "0",
 
     onPageUpClick: () -> Unit = {},
     onUserWorldClick: (Int) -> Unit = {},
@@ -143,7 +147,9 @@ fun CommunityScreen(
             },
             onBanClick = {
                 alertStateChange("-1")
-            }
+            },
+            allUserDataList = allUserDataList,
+            allMapCount = allMapCount
         )
     }
 
@@ -165,18 +171,33 @@ fun CommunityScreen(
     ) {
 
         Text(
-            text = "마을 구경하기",
-            style = MaterialTheme.typography.headlineLarge,
+            text = when(situation) {
+                "world" -> "마을 구경하기"
+                "chat" -> "채팅"
+                "firstGame" -> "게임1"
+                "secondGame" -> "게임2"
+                "thirdGameEasy" -> "게임3 - 쉬움"
+                "thirdGameNormal" -> "게임3 - 보통"
+                else -> "게임3 - 어려움"
+            },
+            style = MaterialTheme.typography.displayMedium,
             modifier = Modifier
                 .padding(top = 12.dp)
         )
 
         when (situation) {
             "world" -> Column(
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.weight(1f).padding(16.dp)
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(16.dp)
             ) {
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier
+                        .padding(bottom = 12.dp)
+                ) {
                     CommunityWorldCard(
                         modifier = Modifier
                             .weight(1f)
@@ -225,11 +246,12 @@ fun CommunityScreen(
                         itemDataList = itemDataList
                     )
                 }
-                Button(
-                    onClick = onPageUpClick
-                ) {
-                    Text("다음")
-                }
+                CuteIconButton(
+                    onClick = onPageUpClick,
+                    text = " 다음 ",
+                    modifier = Modifier
+                        .padding(top = 6.dp)
+                )
             }
 
             "chat" ->  Column(
@@ -326,11 +348,10 @@ fun CommunityScreen(
 
                     Spacer(modifier = Modifier.width(8.dp))
 
-                    Button(
-                        onClick = onChatSubmitClick
-                    ) {
-                        Text("전송")
-                    }
+                    CuteIconButton(
+                        onClick = onChatSubmitClick,
+                        text = "전송"
+                    )
                 }
             }
 
@@ -354,82 +375,100 @@ fun CommunityScreen(
         }
 
         if(situation in listOf("thirdGameEasy", "thirdGameNormal", "thirdGameHard")) {
-            Row {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(0.5f)  // 전체 너비 사용
+            ) {
+                CuteIconButton(
+                    onClick = { onSituationChange("thirdGameEasy") },
+                    text = "쉬움",
+                    modifier = Modifier.weight(1f)
+                )
 
-                Button(
-                    onClick = {
-                        onSituationChange("thirdGameEasy")
-                    },
-                    enabled = situation != "thirdGameEasy"
-                ) {
-                    Text("쉬움")
-                }
+                CuteIconButton(
+                    onClick = { onSituationChange("thirdGameNormal") },
+                    text = "보통",
+                    modifier = Modifier.weight(1f)
+                )
 
-                Button(
-                    onClick = {
-                        onSituationChange("thirdGameNormal")
-                    },
-                    enabled = situation != "thirdGameNormal"
-                ) {
-                    Text("보통")
-                }
-
-                Button(
-                    onClick = {
-                        onSituationChange("thirdGameHard")
-                    },
-                    enabled = situation != "thirdGameHard"
-                ) {
-                    Text("어려움")
-                }
-
+                CuteIconButton(
+                    onClick = { onSituationChange("thirdGameHard") },
+                    text = "어려움",
+                    modifier = Modifier.weight(1f)
+                )
             }
+
         }
 
         Row {
-            Button(
-                onClick = {
-                    onSituationChange("world")
-                },
-                enabled = situation != "world"
-            ) {
-                Text("마을")
+            Surface(
+                modifier = Modifier
+                    .weight(1f)
+            ){
+                CuteIconButton(
+                    onClick = {
+                        onSituationChange("world")
+                    },
+                    text = "마을",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
             }
 
-            Button(
-                onClick = {
-                    onSituationChange("firstGame")
-                },
-                enabled = situation != "firstGame"
+            Surface(
+                modifier = Modifier
+                    .weight(1f)
             ) {
-                Text("게임1")
+                CuteIconButton(
+                    onClick = {
+                        onSituationChange("firstGame")
+                    },
+                    text = "게임1",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
             }
 
-            Button(
-                onClick = {
-                    onSituationChange("secondGame")
-                },
-                enabled = situation != "secondGame"
-            ) {
-                Text("게임2")
+            Surface(
+                modifier = Modifier
+                    .weight(1f)
+            ){
+                CuteIconButton(
+                    onClick = {
+                        onSituationChange("secondGame")
+                    },
+                    text = "게임2",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
             }
 
-            Button(
-                onClick = {
-                    onSituationChange("thirdGameEasy")
-                },
-                enabled = situation !in listOf("thirdGameEasy", "thirdGameNormal", "thirdGameHard")
-            ) {
-                Text("게임3")
+            Surface(
+                modifier = Modifier
+                    .weight(1f)
+            ){
+                CuteIconButton(
+                    onClick = {
+                        onSituationChange("thirdGameEasy")
+                    },
+                    text = "게임3",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
             }
 
-            Button(
-                onClick = {
-                    onSituationChange("chat")
-                },
-                enabled = situation != "chat"
+            Surface(
+                modifier = Modifier
+                    .weight(1f)
             ) {
-                Text("채팅")
+                CuteIconButton(
+                    onClick = {
+                        onSituationChange("chat")
+                    },
+                    text = "채팅",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
             }
         }
     }
