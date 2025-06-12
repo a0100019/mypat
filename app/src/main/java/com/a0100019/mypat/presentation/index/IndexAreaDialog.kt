@@ -21,14 +21,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.a0100019.mypat.data.room.item.Item
+import com.a0100019.mypat.data.room.area.Area
 import com.a0100019.mypat.presentation.ui.image.item.ItemImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
 @Composable
-fun IndexMapDialog(
+fun IndexAreaDialog(
     onClose: () -> Unit,
-    mapData: Item,
+    areaData: Area,
     ) {
         Dialog(
             onDismissRequest = onClose
@@ -49,10 +49,10 @@ fun IndexMapDialog(
                             .background(Color.Gray, shape = RoundedCornerShape(16.dp))
                             .padding(16.dp)
                     ) {
-                        ItemImage(mapData.url)
+                        ItemImage(areaData.url)
                     }
                     Text(
-                        text = mapData.name,
+                        text = areaData.name,
                         style = MaterialTheme.typography.headlineMedium,
                         modifier = Modifier.padding(16.dp),
                         color = Color.Black
@@ -67,14 +67,14 @@ fun IndexMapDialog(
                     ) {
                         item {
                             Text(
-                                text = mapData.memo,
+                                text = areaData.memo,
                                 style = MaterialTheme.typography.bodyMedium,
                                 modifier = Modifier.padding(16.dp),
 
                                 )
                         }
                     }
-                    Text("획득 날짜 : ${mapData.date}")
+                    Text("획득 날짜 : ${areaData.date}")
 
                     Spacer(modifier = Modifier.height(16.dp))
 
@@ -100,10 +100,10 @@ fun IndexMapDialog(
     @Composable
     fun IndexMapDialogPreview() {
         MypatTheme {
-            IndexMapDialog(
+            IndexAreaDialog(
                 onClose = {},
-                mapData = Item(
-                    url = "map/forest.jpg",
+                areaData = Area(
+                    url = "area/forest.jpg",
                     name = "숲",
                     memo = "귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다."
                 ),

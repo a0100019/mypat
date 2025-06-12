@@ -20,6 +20,8 @@ import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiomDao
 import com.a0100019.mypat.data.room.koreanIdiom.getKoreanIdiomInitialData
 import com.a0100019.mypat.data.room.letter.LetterDao
 import com.a0100019.mypat.data.room.letter.getLetterInitialData
+import com.a0100019.mypat.data.room.area.AreaDao
+import com.a0100019.mypat.data.room.area.getAreaInitialData
 import com.a0100019.mypat.data.room.pat.getPatInitialData
 import com.a0100019.mypat.data.room.sudoku.SudokuDao
 import com.a0100019.mypat.data.room.sudoku.getSudokuInitialData
@@ -100,6 +102,10 @@ object RoomModule {
                         val allUserInitialData = getAllUserInitialData()
                         allUserDao.insertAll(allUserInitialData) // 대량 삽입
 
+                        val areaDao = provideDatabase(context).areaDao()
+                        val areaInitialData = getAreaInitialData()
+                        areaDao.insertAll(areaInitialData) // 대량 삽입
+
 
                     }
                 }
@@ -177,6 +183,11 @@ object RoomModule {
     @Provides
     fun provideAllUserDao(database: Database): AllUserDao {
         return database.allUserDao()
+    }
+
+    @Provides
+    fun provideAreaDao(database: Database): AreaDao {
+        return database.areaDao()
     }
 }
 

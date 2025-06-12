@@ -2,14 +2,12 @@ package com.a0100019.mypat.presentation.information
 
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -29,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.data.room.item.Item
+import com.a0100019.mypat.data.room.area.Area
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
@@ -58,10 +57,10 @@ fun InformationScreen(
     InformationScreen(
         patDataList = informationState.patDataList,
         itemDataList = informationState.itemDataList,
-        mapUrl = informationState.mapData?.value ?: "",
+        areaUrl = informationState.areaData?.value ?: "",
         allPatDataList = informationState.allPatDataList,
         allItemDataList = informationState.allItemDataList,
-        allMapDataList = informationState.allMapDataList,
+        allAreaDataList = informationState.allAreaDataList,
         userDataList = informationState.userData,
         gameRankList = informationState.gameRankList
 
@@ -72,12 +71,12 @@ fun InformationScreen(
 
 @Composable
 fun InformationScreen(
-    mapUrl : String,
+    areaUrl : String,
     patDataList : List<Pat>,
     itemDataList : List<Item>,
     allPatDataList: List<Pat>,
     allItemDataList: List<Item>,
-    allMapDataList: List<Item>,
+    allAreaDataList: List<Area>,
     userDataList: List<User>,
     gameRankList: List<String> = listOf("-", "-", "-", "-", "-")
 
@@ -144,7 +143,7 @@ fun InformationScreen(
             ) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     JustImage(
-                        filePath = mapUrl,
+                        filePath = areaUrl,
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.FillBounds
                     )
@@ -241,7 +240,7 @@ fun InformationScreen(
                                         .padding(end = 6.dp)
                                 )
                                 Text(
-                                    text = "${allMapDataList.count { it.date != "0" }}/${allMapDataList.size}",
+                                    text = "${allAreaDataList.count { it.date != "0" }}/${allAreaDataList.size}",
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                             }
@@ -438,12 +437,12 @@ fun InformationScreen(
 fun InformationScreenPreview() {
     MypatTheme {
         InformationScreen(
-            mapUrl = "map/beach.jpg",
+            areaUrl = "area/beach.jpg",
             patDataList = listOf(Pat(url = "pat/cat.json")),
             itemDataList = listOf(Item(url = "item/table.png")),
             allPatDataList = listOf(Pat(url = "pat/cat.json")),
             allItemDataList = listOf(Item(url = "item/table.png")),
-            allMapDataList = listOf(Item(url = "item/forest.png")),
+            allAreaDataList = listOf(Area(url = "area/forest.png")),
             userDataList = listOf(User(id = "firstGame"))
         )
     }

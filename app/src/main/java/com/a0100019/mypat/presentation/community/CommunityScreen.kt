@@ -16,10 +16,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -84,7 +82,7 @@ fun CommunityScreen(
         newChat = communityState.newChat,
         userDataList = communityState.userDataList,
         alertState = communityState.alertState,
-        allMapCount = communityState.allMapCount,
+        allAreaCount = communityState.allAreaCount,
 
         onPageUpClick = communityViewModel::opPageUpClick,
         onUserWorldClick = communityViewModel::onUserWorldClick,
@@ -121,7 +119,7 @@ fun CommunityScreen(
     newChat: String = "",
     userDataList: List<User> = emptyList(),
     alertState: String = "",
-    allMapCount: String = "0",
+    allAreaCount: String = "0",
 
     onPageUpClick: () -> Unit = {},
     onUserWorldClick: (Int) -> Unit = {},
@@ -133,7 +131,7 @@ fun CommunityScreen(
     onBanClick: (Int) -> Unit = {},
     alertStateChange: (String) -> Unit = {},
 
-) {
+    ) {
 
     if(clickAllUserData.id != 0) {
         CommunityUserDialog(
@@ -149,7 +147,7 @@ fun CommunityScreen(
                 alertStateChange("-1")
             },
             allUserDataList = allUserDataList,
-            allMapCount = allMapCount
+            allMapCount = allAreaCount
         )
     }
 

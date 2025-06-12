@@ -1,7 +1,6 @@
 package com.a0100019.mypat.presentation.community
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,10 +13,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -31,10 +27,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import coil.compose.rememberAsyncImagePainter
 import com.a0100019.mypat.data.room.allUser.AllUser
 import com.a0100019.mypat.data.room.item.Item
-import com.a0100019.mypat.data.room.letter.Letter
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.image.item.WorldItemImage
@@ -438,7 +432,7 @@ fun CommunityUserDialogPreview() {
                 warning = "0",
                 firstDate = "2025-02-05",
                 openItem = "30",
-                map = "map/forest.jpg",
+                map = "area/forest.jpg",
                 name = "이222유빈",
                 openPat = "20",
                 totalDate = "134",

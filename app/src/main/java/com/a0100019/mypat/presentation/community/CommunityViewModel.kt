@@ -7,6 +7,7 @@ import com.a0100019.mypat.data.room.allUser.AllUser
 import com.a0100019.mypat.data.room.allUser.AllUserDao
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.item.ItemDao
+import com.a0100019.mypat.data.room.area.AreaDao
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.pat.PatDao
 import com.a0100019.mypat.data.room.user.User
@@ -41,7 +42,8 @@ class CommunityViewModel @Inject constructor(
     private val worldDao: WorldDao,
     private val patDao: PatDao,
     private val itemDao: ItemDao,
-    private val allUserDao: AllUserDao
+    private val allUserDao: AllUserDao,
+    private val areaDao: AreaDao
 ) : ViewModel(), ContainerHost<CommunityState, CommunitySideEffect> {
 
     override val container: Container<CommunityState, CommunitySideEffect> = container(
@@ -68,7 +70,7 @@ class CommunityViewModel @Inject constructor(
         val itemDataList = itemDao.getAllItemData()
         val allUserDataList = allUserDao.getAllUserData()
         val allUserRankDataList = allUserDao.getAllUserData()
-        val allMapCount = itemDao.getAllMapData().size.toString()
+        val allAreaCount = areaDao.getAllAreaData().size.toString()
 
         val page = userDataList.find { it.id == "etc" }!!.value.toInt()
         val allUserData1 = allUserDataList[4*page]
@@ -104,7 +106,7 @@ class CommunityViewModel @Inject constructor(
                 allUserWorldDataList3 = allUserWorldDataList3,
                 allUserWorldDataList4 = allUserWorldDataList4,
                 allUserRankDataList = allUserRankDataList,
-                allMapCount = allMapCount
+                allAreaCount = allAreaCount
             )
         }
     }
@@ -455,8 +457,6 @@ class CommunityViewModel @Inject constructor(
                 Log.e("Firestore", "문서 가져오기 실패: ${e.message}")
             }
 
-
-
     }
 
     fun alertStateChange(alertState: String) = intent {
@@ -649,7 +649,7 @@ data class CommunityState(
     val newChat: String = "",
     val chatMessages: List<ChatMessage> = emptyList(),
     val alertState: String = "",
-    val allMapCount: String = ""
+    val allAreaCount: String = ""
 )
 
 @Immutable

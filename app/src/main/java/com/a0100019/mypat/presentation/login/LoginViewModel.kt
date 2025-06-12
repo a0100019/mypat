@@ -9,8 +9,8 @@ import com.a0100019.mypat.data.room.item.ItemDao
 import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiomDao
 import com.a0100019.mypat.data.room.letter.Letter
 import com.a0100019.mypat.data.room.letter.LetterDao
+import com.a0100019.mypat.data.room.area.AreaDao
 import com.a0100019.mypat.data.room.pat.PatDao
-import com.a0100019.mypat.data.room.sudoku.Sudoku
 import com.a0100019.mypat.data.room.sudoku.SudokuDao
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
@@ -45,6 +45,7 @@ class LoginViewModel @Inject constructor(
     private val walkDao: WalkDao,
     private val worldDao: WorldDao,
     private val letterDao: LetterDao,
+    private val areaDao: AreaDao
 ) : ViewModel(), ContainerHost<LoginState, LoginSideEffect> {
 
     override val container: Container<LoginState, LoginSideEffect> = container(
@@ -159,13 +160,12 @@ class LoginViewModel @Inject constructor(
                             userDao.update(id = "thirdGame", value = thirdGameEasy, value2 = thirdGameNormal, value3 = thirdGameHard)
 
                             val itemMap = userDoc.get("item") as Map<String, String>
-//                            val openItem = itemMap["openItem"]
                             val openItemSpace = itemMap["openItemSpace"]
                             val useItem = itemMap["useItem"]
                             userDao.update(id = "item", value2 = openItemSpace, value3 = useItem)
 
-                            val map = userDoc.getString("map")
-                            worldDao.insert(World(id = 1, value = map.toString(), type = "map"))
+                            val map = userDoc.getString("area")
+                            worldDao.insert(World(id = 1, value = map.toString(), type = "area"))
 
                             val name = userDoc.getString("name")
                             userDao.update(id = "name", value = name)
@@ -244,6 +244,28 @@ class LoginViewModel @Inject constructor(
                                         x = x,
                                         y = y,
                                         size = size
+                                    )
+                                }
+                            }
+
+                            // 'items' 문서 안의 Map 필드들을 가져오기
+                            val areasSnapshot = db
+                                .collection("users")
+                                .document(it.uid)
+                                .collection("dataCollection")
+                                .document("areas")
+                                .get()
+                                .await()
+
+                            val areasMap = areasSnapshot.data ?: emptyMap()
+
+                            for ((areaId, areaData) in areasMap) {
+                                if (areaData is Map<*, *>) {
+                                    val date = areaData["date"] as? String ?: continue
+
+                                    areaDao.updateAreaData(
+                                        id = areaId.toInt(),
+                                        date = date,
                                     )
                                 }
                             }

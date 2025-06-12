@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.item.ItemDao
+import com.a0100019.mypat.data.room.area.Area
+import com.a0100019.mypat.data.room.area.AreaDao
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.pat.PatDao
 import com.a0100019.mypat.data.room.user.User
@@ -34,7 +36,8 @@ class StoreViewModel @Inject constructor(
     private val userDao: UserDao,
     private val worldDao: WorldDao,
     private val patDao: PatDao,
-    private val itemDao: ItemDao
+    private val itemDao: ItemDao,
+    private val areaDao: AreaDao
 
 ) : ViewModel(), ContainerHost<StoreState, StoreSideEffect> {
 
@@ -63,7 +66,7 @@ class StoreViewModel @Inject constructor(
                 // 모든 오픈 된 데이터 가져오기
                 val allClosePatDataList = patDao.getAllClosePatData()
                 val allCloseItemDataList = itemDao.getAllCloseItemData()
-                val allCloseMapDataList = itemDao.getAllCloseMapData()
+                val allCloseMapDataList = areaDao.getAllCloseMapData()
 
                 // 펫 월드 데이터 리스트 가져오기
                 val patWorldDataList = worldDao.getWorldDataListByType(type = "pat")
@@ -78,7 +81,7 @@ class StoreViewModel @Inject constructor(
                 withContext(Dispatchers.Main) {
                     reduce {
                         state.copy(
-                            allCloseMapDataList = allCloseMapDataList,
+                            allCloseAreaDataList = allCloseMapDataList,
                             allClosePatDataList = allClosePatDataList,
                             allCloseItemDataList = allCloseItemDataList,
                             patWorldDataList = patWorldDataList,
@@ -283,6 +286,11 @@ class StoreViewModel @Inject constructor(
                 .shuffled()
                 .take(5)
                 .toMutableList()
+
+            if(randomItemList.size == 0) {
+                postSideEffect(StoreSideEffect.Toast("모든 아이템을 모두 얻었습니다!"))
+                return@intent
+            }
             // 부족한 경우 기본 객체 추가 (예: 빈 Pat 객체)
             while (randomItemList.size < 5) {
                 randomItemList.add(Item(url = "")) // Pat.default()는 적절한 기본 객체로 변경
@@ -406,7 +414,7 @@ data class StoreState(
     val userData: List<User> = emptyList(),
     val allClosePatDataList: List<Pat> = emptyList(),
     val allCloseItemDataList: List<Item> = emptyList(),
-    val allCloseMapDataList: List<Item> = emptyList(),
+    val allCloseAreaDataList: List<Area> = emptyList(),
     val patWorldDataList: List<World> = emptyList(),
     val itemWorldDataList: List<World> = emptyList(),
     val patStoreDataList: List<Pat> = emptyList(),

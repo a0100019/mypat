@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.item.ItemDao
+import com.a0100019.mypat.data.room.area.Area
+import com.a0100019.mypat.data.room.area.AreaDao
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.pat.PatDao
 import com.a0100019.mypat.data.room.user.User
@@ -33,7 +35,8 @@ class WorldViewModel @Inject constructor(
     private val userDao: UserDao,
     private val worldDao: WorldDao,
     private val patDao: PatDao,
-    private val itemDao: ItemDao
+    private val itemDao: ItemDao,
+    private val areaDao: AreaDao
 
 ) : ViewModel(), ContainerHost<WorldState, WorldSideEffect> {
 
@@ -58,7 +61,7 @@ class WorldViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 // 맵 데이터 가져오기
-                val mapData = worldDao.getWorldDataById(1)
+                val areaData = worldDao.getWorldDataById(1)
 
                 //월드 데이터 가져오기
                 val worldDataList = worldDao.getAllWorldData().drop(1)
@@ -74,7 +77,7 @@ class WorldViewModel @Inject constructor(
                 // 모든 오픈 된 데이터 가져오기
                 val allPatDataList = patDao.getAllOpenPatData()
                 val allItemDataList = itemDao.getAllOpenItemData()
-                val allMapDataList = itemDao.getAllOpenMapData()
+                val allAreaDataList = areaDao.getAllOpenAreaData()
 
                 val userFlowDataList = userDao.getAllUserDataFlow()
                 val userDataList = userDao.getAllUserData()
@@ -83,11 +86,11 @@ class WorldViewModel @Inject constructor(
                 withContext(Dispatchers.Main) {
                     reduce {
                         state.copy(
-                            mapData = mapData,
+                            areaData = areaData,
                             patDataList = allPatDataList,
                             userFlowDataList = userFlowDataList,
                             itemDataList = allItemDataList,
-                            allMapDataList = allMapDataList,
+                            allAreaDataList = allAreaDataList,
                             patFlowWorldDataList = patFlowWorldDataList,
                             worldDataList = worldDataList,
                             userDataList = userDataList
@@ -105,7 +108,7 @@ class WorldViewModel @Inject constructor(
     fun onAddDialogChangeClick() = intent {
         val newValue = when(state.addDialogChange) {
             "pat" -> "item"
-            "item" -> "map"
+            "item" -> "area"
             else -> "pat"
         }
         reduce {
@@ -143,7 +146,7 @@ class WorldViewModel @Inject constructor(
         state.worldDataList.forEach { world ->
             worldDao.insert(world)
         }
-        state.mapData.let { worldDao.update(it) }
+        state.areaData.let { worldDao.update(it) }
         userDao.updateUsers(state.userDataList)
 
         postSideEffect(WorldSideEffect.NavigateToMainScreen)
@@ -367,11 +370,11 @@ class WorldViewModel @Inject constructor(
 
 
     fun onSelectMapImageClick(mapId: String) = intent {
-        val newUrl = state.allMapDataList.find { it.id == mapId.toInt() }?.url ?: ""
+        val newUrl = state.allAreaDataList.find { it.id == mapId.toInt() }?.url ?: ""
 
         reduce {
             state.copy(
-                mapData = state.mapData.copy(value = newUrl) // 기존 객체를 유지하면서 value만 변경
+                areaData = state.areaData.copy(value = newUrl) // 기존 객체를 유지하면서 value만 변경
             )
         }
     }
@@ -383,12 +386,12 @@ data class WorldState(
     val userFlowDataList: Flow<List<User>> = flowOf(emptyList()),
     val patDataList: List<Pat> = emptyList(),
     val itemDataList: List<Item> = emptyList(),
-    val allMapDataList: List<Item> = emptyList(),
+    val allAreaDataList: List<Area> = emptyList(),
     val patFlowWorldDataList: Flow<List<Pat>> = flowOf(emptyList()),
     val worldDataList: List<World> = emptyList(),
     val userDataList: List<User> = emptyList(),
 
-    val mapData: World = World(),
+    val areaData: World = World(),
     val dialogPatId: String = "0",
     val dialogItemId: String = "0",
     val showWorldAddDialog: Boolean = false,

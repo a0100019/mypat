@@ -9,6 +9,8 @@ import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.item.ItemDao
 import com.a0100019.mypat.data.room.letter.Letter
 import com.a0100019.mypat.data.room.letter.LetterDao
+import com.a0100019.mypat.data.room.area.Area
+import com.a0100019.mypat.data.room.area.AreaDao
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.pat.PatDao
 import com.a0100019.mypat.data.room.user.User
@@ -47,7 +49,8 @@ class MainViewModel @Inject constructor(
     private val worldDao: WorldDao,
     private val patDao: PatDao,
     private val itemDao: ItemDao,
-    private val letterDao: LetterDao
+    private val letterDao: LetterDao,
+    private val areaDao: AreaDao
 
 ) : ViewModel(), ContainerHost<MainState, MainSideEffect> {
 
@@ -89,7 +92,7 @@ class MainViewModel @Inject constructor(
                 // 모든 오픈 된 데이터 가져오기
                 val allPatDataList = patDao.getAllOpenPatData()
                 val allItemDataList = itemDao.getAllOpenItemData()
-                val allMapDataList = itemDao.getAllOpenMapData()
+                val allMapDataList = areaDao.getAllOpenAreaData()
 
                 val userFlowDataList = userDao.getAllUserDataFlow()
                 val userDataList = userDao.getAllUserData()
@@ -138,7 +141,7 @@ class MainViewModel @Inject constructor(
                             patDataList = allPatDataList,
                             userFlowDataList = userFlowDataList,
                             itemDataList = allItemDataList,
-                            allMapDataList = allMapDataList,
+                            allAreaDataList = allMapDataList,
                             patFlowWorldDataList = patFlowWorldDataList,
                             worldDataList = worldDataList,
                             userDataList = userDataList,
@@ -398,7 +401,7 @@ data class MainState(
     val userFlowDataList: Flow<List<User>> = flowOf(emptyList()),
     val patDataList: List<Pat> = emptyList(),
     val itemDataList: List<Item> = emptyList(),
-    val allMapDataList: List<Item> = emptyList(),
+    val allAreaDataList: List<Area> = emptyList(),
     val patFlowWorldDataList: Flow<List<Pat>> = flowOf(emptyList()),
     val worldDataList: List<World> = emptyList(),
     val userDataList: List<User> = emptyList(),

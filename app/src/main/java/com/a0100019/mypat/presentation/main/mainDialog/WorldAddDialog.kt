@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,9 +25,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.data.room.item.Item
+import com.a0100019.mypat.data.room.area.Area
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.presentation.ui.component.CuteIconButton
+import com.a0100019.mypat.presentation.ui.image.etc.AddDialogMapImage
 import com.a0100019.mypat.presentation.ui.image.item.AddDialogItemImage
 import com.a0100019.mypat.presentation.ui.image.pat.AddDialogPatImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
@@ -39,7 +40,7 @@ fun WorldAddDialog(
     onClose: () -> Unit,
     allPatDataList: List<Pat>,
     allItemDataList: List<Item>,
-    allMapDataList: List<Item>,
+    allAreaDataList: List<Area>,
     mapWorldData: World,
     onSelectMapImageClick: (String) -> Unit,
     onAddDialogChangeClick: () -> Unit,
@@ -138,16 +139,16 @@ fun WorldAddDialog(
                                 }
                             }
                             else -> {
-                                items(allMapDataList.size) { index ->
+                                items(allAreaDataList.size) { index ->
                                     Column(
                                         horizontalAlignment = Alignment.CenterHorizontally
                                     ) {
-                                        AddDialogItemImage(
-                                            itemData = allMapDataList[index],
-                                            onAddItemImageClick = onSelectMapImageClick
+                                        AddDialogMapImage(
+                                            areaData = allAreaDataList[index],
+                                            onAddMapImageClick = onSelectMapImageClick
                                         )
-                                        Text(allMapDataList[index].name)
-                                        if (mapWorldData.value == allMapDataList[index].url) {
+                                        Text(allAreaDataList[index].name)
+                                        if (mapWorldData.value == allAreaDataList[index].url) {
                                             Text("선택")
                                         } else {
                                             Text("")
@@ -198,7 +199,7 @@ fun WorldAddDialogPreview() {
             allItemDataList = listOf(Item(url = "item/table.png", name = "책상")),
             addDialogChange = "pat",
             onAddDialogChangeClick = {},
-            allMapDataList = listOf(Item(url = "item/table.png")),
+            allAreaDataList = listOf(Area()),
             mapWorldData = World(id = 1),
             onSelectMapImageClick = {},
             worldDataList = emptyList(),

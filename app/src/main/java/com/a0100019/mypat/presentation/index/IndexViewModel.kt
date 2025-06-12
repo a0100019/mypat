@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.item.ItemDao
+import com.a0100019.mypat.data.room.area.Area
+import com.a0100019.mypat.data.room.area.AreaDao
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.pat.PatDao
 import com.a0100019.mypat.data.room.world.WorldDao
@@ -26,7 +28,8 @@ import javax.inject.Inject
 class IndexViewModel @Inject constructor(
     private val worldDao: WorldDao,
     private val patDao: PatDao,
-    private val itemDao: ItemDao
+    private val itemDao: ItemDao,
+    private val areaDao: AreaDao
 ) : ViewModel(), ContainerHost<IndexState, IndexSideEffect> {
 
     override val container: Container<IndexState, IndexSideEffect> = container(
@@ -50,7 +53,7 @@ class IndexViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 // 맵 데이터 가져오기
-                val allMapDataList = itemDao.getAllMapData()
+                val allAreaDataList = areaDao.getAllAreaData()
 
                 // 모든 펫 데이터 가져오기
                 val allPatDataList = patDao.getAllPatData()
@@ -61,7 +64,7 @@ class IndexViewModel @Inject constructor(
                 withContext(Dispatchers.Main) {
                     reduce {
                         state.copy(
-                            allMapDataList = allMapDataList,
+                            allAreaDataList = allAreaDataList,
                             allPatDataList = allPatDataList,
                             allItemDataList = allItemDataList
                         )
@@ -90,7 +93,7 @@ class IndexViewModel @Inject constructor(
                     state.copy(dialogItemIndex = index)
                 }
                 else -> {
-                    state.copy(dialogMapIndex = index)
+                    state.copy(dialogAreaIndex = index)
                 }
             }
         }
@@ -101,7 +104,7 @@ class IndexViewModel @Inject constructor(
             state.copy(
                 dialogPatIndex = -1,
                 dialogItemIndex = -1,
-                dialogMapIndex = -1
+                dialogAreaIndex = -1
             )
         }
     }
@@ -116,12 +119,12 @@ class IndexViewModel @Inject constructor(
 data class IndexState(
     val allPatDataList: List<Pat> = emptyList(),
     val allItemDataList: List<Item> = emptyList(),
-    val allMapDataList: List<Item> = emptyList(),
+    val allAreaDataList: List<Area> = emptyList(),
 
     val typeChange: String = "pat",
     val dialogPatIndex: Int = -1,
     val dialogItemIndex: Int = -1,
-    val dialogMapIndex: Int = -1,
+    val dialogAreaIndex: Int = -1,
 )
 
 

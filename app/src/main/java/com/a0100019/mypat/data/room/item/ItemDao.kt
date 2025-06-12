@@ -28,30 +28,21 @@ interface ItemDao {
     @Query("UPDATE item_table SET date = :date, x = :x, y = :y, sizeFloat = :size WHERE id = :id")
     suspend fun updateItemData(id: Int, date: String, x: Float, y: Float, size: Float)
 
-    @Query("SELECT * FROM item_table WHERE type != 'map' ORDER BY id DESC")
+    @Query("SELECT * FROM item_table ORDER BY id DESC")
     suspend fun getAllItemData(): List<Item>
 
-    @Query("SELECT * FROM item_table WHERE type != 'map' AND date != '0' ORDER BY id DESC")
+    @Query("SELECT * FROM item_table WHERE date != '0' ORDER BY id DESC")
     suspend fun getAllOpenItemData(): List<Item>
 
-    @Query("SELECT * FROM item_table WHERE type != 'map' AND date == '0' ORDER BY id DESC")
+    @Query("SELECT * FROM item_table WHERE date == '0' ORDER BY id DESC")
     suspend fun getAllCloseItemData(): List<Item>
-
-    @Query("SELECT * FROM item_table WHERE type = 'map' ORDER BY id DESC")
-    suspend fun getAllMapData(): List<Item>
-
-    @Query("SELECT * FROM item_table WHERE type = 'map' AND date != '0' ORDER BY id DESC")
-    suspend fun getAllOpenMapData(): List<Item>
-
-    @Query("SELECT * FROM item_table WHERE type = 'map' AND date == '0' ORDER BY id DESC")
-    suspend fun getAllCloseMapData(): List<Item>
 
     @Query("SELECT * FROM item_table WHERE id = :id")
     suspend fun getItemDataById(id: String): Item
 
     //초기에 데이터 한번에 넣기 위한 코드
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(users: List<Item>)
+    suspend fun insertAll(items: List<Item>)
 
     // 특정 필드만 업데이트하는 쿼리
     @Query("UPDATE item_table SET x = :x, y = :y WHERE id = :id")

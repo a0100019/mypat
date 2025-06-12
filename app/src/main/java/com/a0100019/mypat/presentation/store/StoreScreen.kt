@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -16,7 +15,7 @@ import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.presentation.index.IndexItemDialog
-import com.a0100019.mypat.presentation.index.IndexMapDialog
+import com.a0100019.mypat.presentation.index.IndexAreaDialog
 import com.a0100019.mypat.presentation.index.IndexPatDialog
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
 import com.a0100019.mypat.presentation.ui.component.CuteIconButton
@@ -146,9 +145,9 @@ fun StoreScreen(
     }
 
     if (newMap != null) {
-        IndexMapDialog(
+        IndexAreaDialog(
             onClose = onDialogCloseClick,
-            mapData = newMap,
+            areaData = newMap,
         )
     }
 

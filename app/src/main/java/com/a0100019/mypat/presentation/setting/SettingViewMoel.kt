@@ -18,6 +18,7 @@ import com.a0100019.mypat.data.room.koreanIdiom.getKoreanIdiomInitialData
 import com.a0100019.mypat.data.room.letter.Letter
 import com.a0100019.mypat.data.room.letter.LetterDao
 import com.a0100019.mypat.data.room.letter.getLetterInitialData
+import com.a0100019.mypat.data.room.area.AreaDao
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.pat.PatDao
 import com.a0100019.mypat.data.room.pat.getPatInitialData
@@ -68,6 +69,7 @@ class SettingViewModel @Inject constructor(
     private val walkDao: WalkDao,
     private val worldDao: WorldDao,
     private val letterDao: LetterDao,
+    private val areaDao: AreaDao
 ) : ViewModel(), ContainerHost<SettingState, SettingSideEffect> {
 
     override val container: Container<SettingState, SettingSideEffect> = container(
@@ -99,6 +101,7 @@ class SettingViewModel @Inject constructor(
         val koreanIdiomDataList = koreanIdiomDao.getOpenKoreanIdiomData()
         val diaryDataList = diaryDao.getAllDiaryData()
         val sudokuDataList = sudokuDao.getAllSudokuData()
+        val mapDataList = areaDao.getAllMapData()
 
         reduce {
             state.copy(
@@ -112,7 +115,8 @@ class SettingViewModel @Inject constructor(
                 englishDataList = englishDataList,
                 koreanIdiomDataList = koreanIdiomDataList,
                 diaryDataList = diaryDataList,
-                sudokuDataList = sudokuDataList
+                sudokuDataList = sudokuDataList,
+                areaDataList = mapDataList
             )
         }
     }
@@ -184,6 +188,7 @@ class SettingViewModel @Inject constructor(
         val koreanIdiomDataList = state.koreanIdiomDataList
         val letterDataList = state.letterDataList
         val sudokuDataList = state.sudokuDataList
+        val mapDataList = state.areaDataList
 
         val batch = db.batch()
 
@@ -208,7 +213,7 @@ class SettingViewModel @Inject constructor(
                 "useItem" to userDataList.find { it.id == "item"}!!.value3
             ),
             "lastLogIn" to userDataList.find { it.id == "auth"}!!.value3,
-            "map" to worldDataList.find { it.id == 1}!!.value,
+            "area" to worldDataList.find { it.id == 1}!!.value,
             "money" to userDataList.find { it.id == "money"}!!.value,
             "name" to userDataList.find { it.id == "name"}!!.value,
             "pat" to mapOf(
@@ -274,7 +279,6 @@ class SettingViewModel @Inject constructor(
         }
         batch.set(patCollectionRef.document("pats"), combinedPatData)
 
-
         val itemCollectionRef = db.collection("users")
             .document(userId)
             .collection("dataCollection")
@@ -293,6 +297,20 @@ class SettingViewModel @Inject constructor(
             }
         batch.set(itemCollectionRef.document("items"), combinedItemData)
 
+        val mapCollectionRef = db.collection("users")
+            .document(userId)
+            .collection("dataCollection")
+
+        val combinedMapData = mutableMapOf<String, Any>()
+        mapDataList
+            .filter { it.date != "0" }
+            .forEach { mapData ->
+                val mapMap = mapOf(
+                    "date" to mapData.date,
+                )
+                combinedMapData[mapData.id.toString()] = mapMap
+            }
+        batch.set(mapCollectionRef.document("maps"), combinedMapData)
 
         val letterCollectionRef = db.collection("users")
         .document(userId)
@@ -700,7 +718,8 @@ data class SettingState(
     val clickLetterData: Letter = Letter(),
     val letterDataList: List<Letter> = emptyList(),
     val letterImages: List<String> = emptyList(),
-    val sudokuDataList: List<Sudoku> = emptyList()
+    val sudokuDataList: List<Sudoku> = emptyList(),
+    val areaDataList: List<com.a0100019.mypat.data.room.area.Area> = emptyList()
     )
 
 

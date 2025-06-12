@@ -175,7 +175,7 @@ fun WorldViewScreen(
 fun WorldViewScreenPreview() {
     MypatTheme {
         WorldViewScreen(
-            mapUrl = "map/beach.jpg",
+            mapUrl = "area/beach.jpg",
             patDataList = listOf(Pat(id = 1, url = "pat/cat.json")),
             itemDataList = listOf(Item(url = "item/table.png")),
             dialogPatId = "0",

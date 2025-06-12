@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Button
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -360,7 +359,7 @@ fun MainScreenPreview() {
             onFirstGameNavigateClick = {},
             onSecondGameNavigateClick = {},
             onThirdGameNavigateClick = {},
-            mapUrl = "map/forest.jpg",
+            mapUrl = "area/forest.jpg",
             patDataList = listOf(Pat(url = "pat/cat.json")),
             itemDataList = listOf(Item(url = "item/table.png")),
             dialogPatId = "0",

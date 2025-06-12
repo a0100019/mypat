@@ -13,9 +13,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -31,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.data.room.item.Item
+import com.a0100019.mypat.data.room.area.Area
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.world.World
@@ -73,7 +72,7 @@ fun WorldScreen(
 
         dialogItemId = worldState.dialogItemId,
         dialogPatId = worldState.dialogPatId,
-        mapUrl = worldState.mapData.value,
+        mapUrl = worldState.areaData.value,
 
         dialogPatIdChange = worldViewModel::dialogPatIdChange,
         dialogItemIdChange = worldViewModel::dialogItemIdChange,
@@ -85,8 +84,8 @@ fun WorldScreen(
         onPatDrag = worldViewModel::onPatDrag,
         worldDataDelete = worldViewModel::worldDataDelete,
         addDialogChange = worldState.addDialogChange,
-        mapWorldData = worldState.mapData,
-        allMapDataList = worldState.allMapDataList,
+        mapWorldData = worldState.areaData,
+        allAreaDataList = worldState.allAreaDataList,
         showWorldAddDialog = worldState.showWorldAddDialog,
         onShowAddDialogClick = worldViewModel::onShowAddDialogClick,
         onAddPatClick = worldViewModel::onAddPatClick,
@@ -107,7 +106,7 @@ fun WorldScreen(
     itemDataList : List<Item>,
     worldDataList : List<World>,
     userDataList: List<User>,
-    allMapDataList: List<Item>,
+    allAreaDataList: List<Area>,
 
     dialogPatId : String,
     dialogItemId : String,
@@ -144,7 +143,7 @@ fun WorldScreen(
             onAddDialogChangeClick = onAddDialogChangeClick,
             onSelectMapImageClick = onSelectMapImageClick,
             mapWorldData = mapWorldData,
-            allMapDataList = allMapDataList,
+            allAreaDataList = allAreaDataList,
             worldDataList = worldDataList,
             onAddItemClick = onAddItemClick,
             onAddPatClick = onAddPatClick
@@ -365,7 +364,7 @@ fun WorldScreen(
 fun WorldScreenPreview() {
     MypatTheme {
         WorldScreen(
-            mapUrl = "map/beach.jpg",
+            mapUrl = "area/beach.jpg",
             patDataList = listOf(Pat(url = "pat/cat.json")),
             itemDataList = listOf(Item(url = "item/table.png")),
             dialogPatId = "0",
@@ -391,7 +390,7 @@ fun WorldScreenPreview() {
             mapWorldData = World(),
             showWorldAddDialog = false,
             addDialogChange = "",
-            allMapDataList = emptyList(),
+            allAreaDataList = emptyList(),
         )
     }
 }

@@ -1,7 +1,6 @@
 package com.a0100019.mypat.presentation.index
 
 import android.widget.Toast
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,10 +10,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -23,13 +20,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.data.room.item.Item
+import com.a0100019.mypat.data.room.area.Area
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.presentation.ui.component.CuteIconButton
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
@@ -58,7 +55,7 @@ fun IndexScreen(
     IndexScreen(
         allPatDataList = indexState.allPatDataList,
         allItemDataList = indexState.allItemDataList,
-        allMapDataList = indexState.allMapDataList,
+        allAreaDataList = indexState.allAreaDataList,
 
         onTypeChangeClick = indexViewModel::onTypeChangeClick,
         onCloseDialog = indexViewModel::onCloseDialog,
@@ -67,7 +64,7 @@ fun IndexScreen(
         typeChange = indexState.typeChange,
         dialogPatIndex = indexState.dialogPatIndex,
         dialogItemIndex = indexState.dialogItemIndex,
-        dialogMapIndex = indexState.dialogMapIndex
+        dialogAreaIndex = indexState.dialogAreaIndex
     )
 }
 
@@ -77,7 +74,7 @@ fun IndexScreen(
 fun IndexScreen(
     allPatDataList: List<Pat>,
     allItemDataList: List<Item>,
-    allMapDataList: List<Item>,
+    allAreaDataList: List<Area>,
 
     onTypeChangeClick: (String) -> Unit,
     onCloseDialog: () -> Unit,
@@ -86,7 +83,7 @@ fun IndexScreen(
     typeChange: String,
     dialogPatIndex: Int,
     dialogItemIndex: Int,
-    dialogMapIndex: Int
+    dialogAreaIndex: Int
 ) {
 
     // 다이얼로그 표시
@@ -100,10 +97,10 @@ fun IndexScreen(
             onClose = onCloseDialog,
             itemData = allItemDataList.getOrNull(dialogItemIndex)!!
         )
-    } else if(dialogMapIndex != -1 && typeChange == "map") {
-        IndexMapDialog(
+    } else if(dialogAreaIndex != -1 && typeChange == "area") {
+        IndexAreaDialog(
             onClose = onCloseDialog,
-            mapData = allMapDataList.getOrNull(dialogMapIndex)!!
+            areaData = allAreaDataList.getOrNull(dialogAreaIndex)!!
         )
     }
 
@@ -163,7 +160,7 @@ fun IndexScreen(
                             .padding(12.dp)
                     )
                     Text(
-                        text = "${allMapDataList.count {it.date != "0"}}/${allMapDataList.size}",
+                        text = "${allAreaDataList.count {it.date != "0"}}/${allAreaDataList.size}",
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier
                             .padding(12.dp)
@@ -304,7 +301,7 @@ fun IndexScreen(
                         .fillMaxWidth()
                         .weight(1f)
                 ) {
-                    items(allMapDataList.size) { index ->
+                    items(allAreaDataList.size) { index ->
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -315,7 +312,7 @@ fun IndexScreen(
                         ) {
 
                             Box {
-                                if(allMapDataList[index].date == "0") {
+                                if(allAreaDataList[index].date == "0") {
                                     JustImage(
                                         filePath = "etc/lock.png",
                                         modifier = Modifier
@@ -339,12 +336,12 @@ fun IndexScreen(
                                             .fillMaxWidth(),
                                         contentAlignment = Alignment.Center
                                     ) {
-                                        ItemImage(allMapDataList[index].url)
+                                        ItemImage(allAreaDataList[index].url)
                                     }
 
                                     // 텍스트
                                     Text(
-                                        text = allMapDataList[index].name,
+                                        text = allAreaDataList[index].name,
                                         modifier = Modifier
                                             .padding(top = 8.dp) // 이미지와의 간격 설정
                                             .fillMaxWidth(),
@@ -394,7 +391,7 @@ fun IndexScreen(
                         .weight(1f)
                 ) {
                     CuteIconButton(
-                        onClick = { onTypeChangeClick("map") },
+                        onClick = { onTypeChangeClick("area") },
                         text = "맵",
                         modifier = Modifier
                             .fillMaxWidth()
@@ -412,14 +409,14 @@ fun IndexScreenPreview() {
         IndexScreen(
             allPatDataList = listOf(Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json")),
             allItemDataList = listOf(Item(url = "item/table.png")),
-            allMapDataList = listOf(Item(url = "item/forest.png")),
+            allAreaDataList = listOf(Area(url = "area/forest.png")),
             onTypeChangeClick = {},
             typeChange = "pat",
             dialogPatIndex = -1,
             onCloseDialog = {},
             onCardClick = {},
             dialogItemIndex = -1,
-            dialogMapIndex = -1,
+            dialogAreaIndex = -1,
         )
     }
 }

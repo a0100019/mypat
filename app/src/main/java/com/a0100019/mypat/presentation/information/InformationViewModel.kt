@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import com.a0100019.mypat.data.room.allUser.AllUserDao
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.item.ItemDao
+import com.a0100019.mypat.data.room.area.Area
+import com.a0100019.mypat.data.room.area.AreaDao
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.pat.PatDao
 import com.a0100019.mypat.data.room.user.User
@@ -28,7 +30,8 @@ class InformationViewModel @Inject constructor(
     private val worldDao: WorldDao,
     private val patDao: PatDao,
     private val itemDao: ItemDao,
-    private val allUserDao: AllUserDao
+    private val allUserDao: AllUserDao,
+    private val areaDao: AreaDao
 
     ) : ViewModel(), ContainerHost<InformationState, InformationSideEffect> {
 
@@ -52,7 +55,7 @@ class InformationViewModel @Inject constructor(
     private fun loadData() = intent {
 
         // 맵 데이터 가져오기
-        val mapData = worldDao.getWorldDataById(1)
+        val areaData = worldDao.getWorldDataById(1)
 
         // 펫 월드 데이터 리스트 가져오기
         val patWorldDataList = worldDao.getWorldDataListByType(type = "pat") ?: emptyList()
@@ -67,7 +70,7 @@ class InformationViewModel @Inject constructor(
         }
 
         val userDataList = userDao.getAllUserData()
-        val allMapDataList = itemDao.getAllMapData()
+        val allAreaDataList = areaDao.getAllAreaData()
         val allPatDataList = patDao.getAllPatData()
         val allItemDataList = itemDao.getAllItemData()
         val allUserDataList = allUserDao.getAllUserData()
@@ -116,11 +119,11 @@ class InformationViewModel @Inject constructor(
 
         reduce {
             state.copy(
-                mapData = mapData,
+                areaData = areaData,
                 patDataList = patDataList,
                 itemDataList = itemDataList,
                 userData = userDataList,
-                allMapDataList = allMapDataList,
+                allAreaDataList = allAreaDataList,
                 allPatDataList = allPatDataList,
                 allItemDataList = allItemDataList
             )
@@ -140,11 +143,11 @@ data class InformationState(
     val itemDataList: List<Item> = emptyList(),
     val allPatDataList: List<Pat> = emptyList(),
     val allItemDataList: List<Item> = emptyList(),
-    val allMapDataList: List<Item> = emptyList(),
+    val allAreaDataList: List<Area> = emptyList(),
 
     val gameRankList: List<String> = listOf("-", "-", "-", "-", "-"),
 
-    val mapData: World? = null,
+    val areaData: World? = null,
 
     )
 
