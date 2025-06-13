@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiom
 import com.a0100019.mypat.data.room.user.User
+import com.a0100019.mypat.presentation.ui.component.CuteIconButton
 import com.a0100019.mypat.presentation.ui.image.etc.KoreanIdiomImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
@@ -46,7 +47,12 @@ fun NameChangeDialog(
                 .background(Color.White, shape = RoundedCornerShape(16.dp))
                 .padding(16.dp)
         ) {
-            Column(modifier = Modifier) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                ,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
 
                 Text(
                     text = "닉네임 변경",
@@ -79,21 +85,19 @@ fun NameChangeDialog(
                 // 추가로 원하는 Composable 요소
 
                 Row {
-                    Button(
+                    CuteIconButton(
+                        text = " 취소 ",
                         onClick = onClose,
                         modifier = Modifier
                             .padding(16.dp)
-                    ) {
-                        Text("취소")
-                    }
+                    )
 
-                    Button(
+                    CuteIconButton(
+                        text = " 확인 ",
                         onClick = onConfirmClick,
                         modifier = Modifier
                             .padding(16.dp)
-                    ) {
-                        Text("확인")
-                    }
+                    )
                 }
 
             }

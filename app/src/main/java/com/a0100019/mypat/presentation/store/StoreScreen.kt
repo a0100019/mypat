@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.a0100019.mypat.data.room.area.Area
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
@@ -53,7 +54,6 @@ fun StoreScreen(
         onPatStoreClick = storeViewModel::onPatStoreClick,
         onPatEggClick = storeViewModel::onPatEggClick,
         onPatSelectClick = storeViewModel::onPatSelectClick,
-        onPatAdvertisementClick = storeViewModel::onPatAdvertisementClick,
         onItemClick = storeViewModel::onItemClick,
         onItemStoreClick = storeViewModel::onItemStoreClick,
         onItemSelectClick = storeViewModel::onItemSelectClick,
@@ -62,7 +62,7 @@ fun StoreScreen(
         newPat = storeState.newPat,
         userData = storeState.userData,
         newItem = storeState.newItem,
-        newMap = storeState.newMap,
+        newArea = storeState.newArea,
         showDialog = storeState.showDialog,
         simpleDialogState = storeState.simpleDialogState,
         newName = storeState.newName,
@@ -71,7 +71,8 @@ fun StoreScreen(
         patSelectIndexList = storeState.patSelectIndexList,
         selectPatData = storeState.selectPatData,
         selectItemData = storeState.selectItemData,
-        itemStoreDataList = storeState.itemStoreDataList,
+        selectAreaData = storeState.selectAreaData,
+        shuffledItemDataList = storeState.shuffledItemDataList,
 
     )
 }
@@ -91,16 +92,15 @@ fun StoreScreen(
     onMoneyChangeClick: () -> Unit,
     onPatStoreClick: () -> Unit,
     onPatEggClick: (Int) -> Unit,
-    onPatAdvertisementClick: () -> Unit,
     onPatSelectClick: () -> Unit,
-    onItemClick: (Int) -> Unit,
+    onItemClick: (String) -> Unit,
     onItemStoreClick: () -> Unit,
     onItemSelectClick: () -> Unit,
     onItemSelectCloseClick: () -> Unit,
 
     newPat: Pat?,
     newItem: Item?,
-    newMap: Item?,
+    newArea: Area?,
     userData: List<User>,
     showDialog: String,
     simpleDialogState: String,
@@ -110,12 +110,12 @@ fun StoreScreen(
     patSelectIndexList: List<Int>,
     selectPatData: Pat?,
     selectItemData: Item?,
-    itemStoreDataList: List<Item>?
+    selectAreaData: Area?,
+    shuffledItemDataList: List<String>?
 ) {
 
     if (selectPatData != null) {
         PatSelectDialog(
-            onAdvertisementClick = onPatAdvertisementClick,
             onSelectClick = onPatSelectClick,
             patData = selectPatData
         )
@@ -125,7 +125,15 @@ fun StoreScreen(
         ItemSelectDialog(
             onCloseClick = onItemSelectCloseClick,
             onSelectClick = onItemSelectClick,
-            itemData = selectItemData
+            itemData = "${selectItemData.url}@${selectItemData.name}"
+        )
+    }
+
+    if (selectAreaData != null) {
+        ItemSelectDialog(
+            onCloseClick = onItemSelectCloseClick,
+            onSelectClick = onItemSelectClick,
+            itemData = "${selectAreaData.url}@${selectAreaData.name}"
         )
     }
 
@@ -144,10 +152,10 @@ fun StoreScreen(
         )
     }
 
-    if (newMap != null) {
+    if (newArea != null) {
         IndexAreaDialog(
             onClose = onDialogCloseClick,
-            areaData = newMap,
+            areaData = newArea,
         )
     }
 
@@ -178,7 +186,7 @@ fun StoreScreen(
         )
         "itemStore" -> ItemStoreDialog(
             onClose = { },
-            itemData = itemStoreDataList,
+            itemData = shuffledItemDataList,
             onItemClick = onItemClick,
             onAdvertisementClick = {  }
         )
@@ -269,7 +277,6 @@ fun StoreScreenPreview() {
             onPatStoreClick = {},
             onPatEggClick = {},
             onPatSelectClick = {},
-            onPatAdvertisementClick = {},
             onItemClick = {},
             onItemStoreClick = {},
             onItemSelectClick = {},
@@ -279,15 +286,16 @@ fun StoreScreenPreview() {
             userData = emptyList(),
             showDialog = "",
             simpleDialogState = "",
-            newMap = null,
+            newArea = null,
             newItem = null,
             newName = "",
             patEggDataList = emptyList(),
             patStoreDataList = emptyList(),
             patSelectIndexList = emptyList(),
             selectPatData = null,
-            itemStoreDataList = emptyList(),
-            selectItemData = null
+            shuffledItemDataList = emptyList(),
+            selectItemData = null,
+            selectAreaData = null
 
         )
     }

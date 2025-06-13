@@ -2,6 +2,7 @@ package com.a0100019.mypat.presentation.store
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.yml.charts.common.extensions.isNotNull
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.item.ItemDao
 import com.a0100019.mypat.data.room.area.Area
@@ -66,7 +67,7 @@ class StoreViewModel @Inject constructor(
                 // 모든 오픈 된 데이터 가져오기
                 val allClosePatDataList = patDao.getAllClosePatData()
                 val allCloseItemDataList = itemDao.getAllCloseItemData()
-                val allCloseMapDataList = areaDao.getAllCloseMapData()
+                val allCloseAreaDataList = areaDao.getAllCloseAreaData()
 
                 // 펫 월드 데이터 리스트 가져오기
                 val patWorldDataList = worldDao.getWorldDataListByType(type = "pat")
@@ -81,12 +82,15 @@ class StoreViewModel @Inject constructor(
                 withContext(Dispatchers.Main) {
                     reduce {
                         state.copy(
-                            allCloseAreaDataList = allCloseMapDataList,
+                            allCloseAreaDataList = allCloseAreaDataList,
                             allClosePatDataList = allClosePatDataList,
                             allCloseItemDataList = allCloseItemDataList,
                             patWorldDataList = patWorldDataList,
                             itemWorldDataList = itemWorldDataList,
                             userData = userDataList,
+                            selectAreaData = null,
+                            selectItemData = null,
+                            selectPatData = null
                         )
                     }
                 }
@@ -109,13 +113,18 @@ class StoreViewModel @Inject constructor(
         reduce {
             state.copy(
                 newPat = null,
-                newMap = null,
+                newArea = null,
                 newItem = null,
                 newName = "",
                 showDialog = "",
                 simpleDialogState = "",
                 selectPatData = null,
                 selectItemData = null,
+                selectAreaData = null,
+                patEggDataList = emptyList(),
+                patSelectIndexList = emptyList(),
+                patStoreDataList = emptyList(),
+                patSelectDataList = emptyList(),
             )
         }
     }
@@ -123,7 +132,7 @@ class StoreViewModel @Inject constructor(
     fun onPatRoomUpClick() = intent {
         val moneyField = state.userData.find { it.id == "money" }
         val patRoomField = state.userData.find { it.id == "pat" }
-        val emptyRoom = patRoomField?.value2!!.toInt() > patRoomField.value3.toInt()
+        val emptyRoom = patRoomField?.value!!.toInt() > patRoomField.value2.toInt()
 
         //돈 있는지
         if(moneyField!!.value.toInt() >= 10) {
@@ -131,7 +140,7 @@ class StoreViewModel @Inject constructor(
             //빈방 있는지
             if(emptyRoom) {
 
-                userDao.update(id = "pat", value3 = (patRoomField.value3.toInt() + 1).toString())
+                userDao.update(id = "pat", value3 = (patRoomField.value2.toInt() + 1).toString())
                 userDao.update(id = moneyField.id, value = (moneyField.value.toInt() - 10).toString())
                 reduce {
                     state.copy(
@@ -152,7 +161,7 @@ class StoreViewModel @Inject constructor(
     fun onItemRoomUpClick() = intent {
         val moneyField = state.userData.find { it.id == "money" }
         val itemRoomField = state.userData.find { it.id == "item" }
-        val emptyRoom = itemRoomField?.value2!!.toInt() > itemRoomField.value3.toInt()
+        val emptyRoom = itemRoomField?.value!!.toInt() > itemRoomField.value2.toInt()
 
         //돈 있는지
         if(moneyField!!.value.toInt() >= 10) {
@@ -160,7 +169,7 @@ class StoreViewModel @Inject constructor(
             //빈방 있는지
             if(emptyRoom) {
 
-                userDao.update(id = "item", value3 = (itemRoomField.value3.toInt() + 1).toString())
+                userDao.update(id = "item", value3 = (itemRoomField.value2.toInt() + 1).toString())
                 userDao.update(id = moneyField.id, value = (moneyField.value.toInt() - 10).toString())
                 reduce {
                     state.copy(
@@ -245,33 +254,60 @@ class StoreViewModel @Inject constructor(
         }
     }
 
+    fun onItemClick(itemData: String) = intent {
 
-    fun onItemClick(index: Int) = intent {
-        reduce {
-            state.copy(
-                selectItemData = state.itemStoreDataList[index]
-            )
+        val parts = itemData.split("@")
+
+        if(parts[0] == "item"){
+            reduce {
+                state.copy(
+                    selectItemData = state.allCloseItemDataList.find { it.id == parts[1].toInt() }
+                )
+            }
+        } else {
+            reduce {
+                state.copy(
+                    selectAreaData = state.allCloseAreaDataList.find { it.id == parts[1].toInt() }
+                )
+            }
         }
     }
 
     fun onItemSelectClick() = intent {
-        val selectItem = state.selectItemData
-        val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) // 현재 날짜 가져오기
-        selectItem?.date = currentDate // 날짜 업데이트
+        if(state.selectItemData.isNotNull()){
+            val selectItem = state.selectItemData
+            val currentDate =
+                LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) // 현재 날짜 가져오기
+            selectItem?.date = currentDate // 날짜 업데이트
 
-        selectItem?.let { itemDao.update(it) }
-        reduce {
-            state.copy(
-                newItem = selectItem
-            )
+            selectItem?.let { itemDao.update(it) }
+            reduce {
+                state.copy(
+                    newItem = selectItem
+                )
+            }
+            loadData()
+        } else {
+            val selectArea = state.selectAreaData
+            val currentDate =
+                LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) // 현재 날짜 가져오기
+            selectArea?.date = currentDate // 날짜 업데이트
+
+            selectArea?.let { areaDao.update(it) }
+            reduce {
+                state.copy(
+                    newArea = selectArea
+                )
+            }
+            loadData()
         }
-        loadData()
     }
 
     fun onItemSelectCloseClick() = intent {
         reduce {
             state.copy(
-                selectItemData = null
+                selectItemData = null,
+                selectAreaData = null
             )
         }
     }
@@ -282,24 +318,27 @@ class StoreViewModel @Inject constructor(
         if(moneyField!!.value2.toInt() >= 1){
             moneyField.value2 = (moneyField.value2.toInt() - 1).toString()
 
-            val randomItemList = state.allCloseItemDataList
+            val shuffledItemDataList: MutableList<String> = (
+                    state.allCloseItemDataList.map { "item@${it.id}@${it.url}@${it.name}" } +
+                            state.allCloseAreaDataList.map { "area@${it.id}@${it.url}@${it.name}" }
+                    )
                 .shuffled()
                 .take(5)
                 .toMutableList()
 
-            if(randomItemList.size == 0) {
-                postSideEffect(StoreSideEffect.Toast("모든 아이템을 모두 얻었습니다!"))
+            if(shuffledItemDataList.isEmpty()) {
+                postSideEffect(StoreSideEffect.Toast("아이템을 모두 얻었습니다!"))
                 return@intent
             }
-            // 부족한 경우 기본 객체 추가 (예: 빈 Pat 객체)
-            while (randomItemList.size < 5) {
-                randomItemList.add(Item(url = "")) // Pat.default()는 적절한 기본 객체로 변경
+            // 부족한 경우 기본 객체 추가
+            while (shuffledItemDataList.size < 5) {
+                shuffledItemDataList.add("@@@")
             }
 
             userDao.update(id = moneyField.id, value2 = moneyField.value2)
             reduce {
                 state.copy(
-                    itemStoreDataList = randomItemList,
+                    shuffledItemDataList = shuffledItemDataList,
                     showDialog = "itemStore"
                 )
             }
@@ -319,6 +358,12 @@ class StoreViewModel @Inject constructor(
                 .shuffled()
                 .take(5)
                 .toMutableList()
+
+            if(randomPatList.isEmpty()) {
+                postSideEffect(StoreSideEffect.Toast("모든 팻을 얻었습니다!"))
+                return@intent
+            }
+
             // 부족한 경우 기본 객체 추가 (예: 빈 Pat 객체)
             while (randomPatList.size < 5) {
                 randomPatList.add(Pat(url = "")) // Pat.default()는 적절한 기본 객체로 변경
@@ -350,7 +395,7 @@ class StoreViewModel @Inject constructor(
         selectPat?.let { patDao.update(it) }
         reduce {
             state.copy(
-                newPat = selectPat
+                newPat = selectPat,
             )
         }
         loadData()
@@ -388,28 +433,21 @@ class StoreViewModel @Inject constructor(
             )
         }
 
-
-
-    }
-
-    fun onPatAdvertisementClick() = intent {
-
     }
 
 }
-
-
 
 @Immutable
 data class StoreState(
     val newPat: Pat? = null,
     val newItem: Item? = null,
-    val newMap: Item? = null,
+    val newArea: Area? = null,
     val showDialog: String = "",
     val simpleDialogState: String = "",
     val newName: String = "",
     val selectPatData: Pat? = null,
     val selectItemData: Item? = null,
+    val selectAreaData: Area? = null,
 
     val userData: List<User> = emptyList(),
     val allClosePatDataList: List<Pat> = emptyList(),
@@ -421,11 +459,9 @@ data class StoreState(
     val patEggDataList: List<Pat> = emptyList(),
     val patSelectDataList: List<Pat> = emptyList(),
     val patSelectIndexList: List<Int> = emptyList(),
-    val itemStoreDataList: List<Item> = emptyList()
-
+    val shuffledItemDataList: List<String> = emptyList()
 
     )
-
 
 //상태와 관련없는 것
 sealed interface StoreSideEffect{

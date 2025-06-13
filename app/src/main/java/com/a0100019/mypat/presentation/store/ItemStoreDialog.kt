@@ -15,8 +15,10 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,8 +34,8 @@ import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 @Composable
 fun ItemStoreDialog(
     onClose: () -> Unit,
-    itemData: List<Item>?,
-    onItemClick: (Int) -> Unit,
+    itemData: List<String>?,
+    onItemClick: (String) -> Unit,
     onAdvertisementClick: () -> Unit,
 ) {
 
@@ -43,15 +45,28 @@ fun ItemStoreDialog(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.8f)
                 .background(Color.White, shape = RoundedCornerShape(16.dp))
                 .padding(16.dp)
         ) {
-            Column(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier
+                ,
+                horizontalAlignment = Alignment.CenterHorizontally
+                ) {
 
-                Text(text = "아이템 뽑기")
+                Text(
+                    text = "아이템 뽑기",
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier
+                        .padding(bottom = 6.dp)
+                    )
 
-                Text(text = "선택해주세요")
+                Text(
+                    text = "원하는 아이템을 선택해주세요",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier
+                        .padding(6.dp)
+                    )
 
                 Box(
                     modifier = Modifier
@@ -63,32 +78,31 @@ fun ItemStoreDialog(
                         columns = GridCells.Fixed(5),
                         // modifier = Modifier.height(70.dp) // 높이를 적절히 조정
                     ) {
+
                         items(itemData!!.take(5).withIndex().toList()) { (index, item) ->
+
+                            val part = item.split("@")
+
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
                                 JustImage(
-                                    filePath = item.url,
+                                    filePath = part[2],
                                     modifier = Modifier
                                         .size(50.dp)
                                         .clickable {
-                                            onItemClick(index)
+                                            onItemClick(item)
                                         }
                                 )
-                            Text(
-                                text = item.name,
-                                fontSize = 10.sp
-                            )
+                                Text(
+                                    text = part[3],
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
                         }
                     }
 
                 }
-
-                Button(
-                    onClick = onAdvertisementClick
-                ) {
-                    Text(
-                        text = "새로 고침"
-                    )
-                }
-
 
             }
         }
@@ -103,7 +117,7 @@ fun ItemStoreDialogPreview() {
     MypatTheme {
         ItemStoreDialog(
             onClose = {},
-            itemData = listOf(Item(url = "pat/cat.json"),Item(url = "pat/cat.json"),Item(url = "pat/cat.json"),Item(url = "pat/cat.json"),Item(url = "pat/cat.json")),
+            itemData = listOf("item@1@pat/cat.json@고양이"),
             onItemClick = {},
             onAdvertisementClick = {}
         )

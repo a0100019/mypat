@@ -11,20 +11,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.data.room.pat.Pat
+import com.a0100019.mypat.presentation.ui.component.CuteIconButton
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
 @Composable
 fun PatSelectDialog(
-    onAdvertisementClick: () -> Unit,
     onSelectClick: () -> Unit,
     patData: Pat,
 ) {
@@ -34,43 +36,36 @@ fun PatSelectDialog(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.8f)
                 .background(Color.White, shape = RoundedCornerShape(16.dp))
                 .padding(16.dp)
         ) {
-            Column(modifier = Modifier.fillMaxSize()) {
-
-                Text(
-                    text = "선택하시겠습니까?"
-                )
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                ,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
 
                 Box {
                     JustImage(
                         filePath = patData.url,
-                        modifier = Modifier.size(50.dp)
+                        modifier = Modifier.size(200.dp)
                     )
                 }
 
                 Text(
-                    text = patData.name
+                    text = patData.name,
+                    style = MaterialTheme.typography.headlineMedium
                 )
 
                 Row {
-                    Button(
-                        onClick = onAdvertisementClick,
-                        modifier = Modifier
-                            .padding(16.dp)
-                    ) {
-                        Text("광고보기")
-                    }
 
-                    Button(
+                    CuteIconButton(
+                        text = "획득하기!",
                         onClick = onSelectClick,
                         modifier = Modifier
                             .padding(16.dp)
-                    ) {
-                        Text("선택하기")
-                    }
+                    )
 
                 }
 
@@ -85,7 +80,6 @@ fun PatSelectDialog(
 fun PatSelectDialogPreview() {
     MypatTheme {
         PatSelectDialog(
-            onAdvertisementClick = {},
             onSelectClick = {},
             patData = Pat(name = "고양이", url = "pat/cat.json")
         )

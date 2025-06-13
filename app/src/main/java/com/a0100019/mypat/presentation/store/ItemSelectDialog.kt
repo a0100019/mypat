@@ -11,14 +11,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.data.room.item.Item
+import com.a0100019.mypat.presentation.ui.component.CuteIconButton
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
@@ -26,7 +29,7 @@ import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 fun ItemSelectDialog(
     onCloseClick: () -> Unit,
     onSelectClick: () -> Unit,
-    itemData: Item,
+    itemData: String,
 ) {
     Dialog(
         onDismissRequest = onCloseClick
@@ -34,43 +37,48 @@ fun ItemSelectDialog(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.8f)
                 .background(Color.White, shape = RoundedCornerShape(16.dp))
                 .padding(16.dp)
         ) {
-            Column(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                ,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
 
                 Text(
-                    text = "선택하시겠습니까?"
+                    text = "선택하시겠습니까?",
+                    style = MaterialTheme.typography.headlineMedium
                 )
+
+                val part = itemData.split("@")
 
                 Box {
                     JustImage(
-                        filePath = itemData.url,
-                        modifier = Modifier.size(50.dp)
+                        filePath = part[0],
+                        modifier = Modifier.size(200.dp)
                     )
                 }
 
                 Text(
-                    text = itemData.name
+                    text = part[1],
+                    style = MaterialTheme.typography.titleLarge
                 )
 
                 Row {
-                    Button(
+                    CuteIconButton(
+                        text = " 취소 ",
                         onClick = onCloseClick,
                         modifier = Modifier
-                            .padding(16.dp)
-                    ) {
-                        Text("취소")
-                    }
-
-                    Button(
+                            .padding(top = 16.dp)
+                    )
+                    CuteIconButton(
+                        text = " 선택 ",
                         onClick = onSelectClick,
                         modifier = Modifier
-                            .padding(16.dp)
-                    ) {
-                        Text("선택하기")
-                    }
+                            .padding(top = 16.dp)
+                    )
 
                 }
 
@@ -87,7 +95,7 @@ fun ItemSelectDialogPreview() {
         ItemSelectDialog(
             onCloseClick = {},
             onSelectClick = {},
-            itemData = Item(name = "고양이", url = "pat/cat.json")
+            itemData = "pat/cat.json@고양이"
         )
     }
 }

@@ -3,6 +3,7 @@ package com.a0100019.mypat.presentation.setting
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.a0100019.mypat.data.room.area.Area
 import com.a0100019.mypat.data.room.diary.Diary
 import com.a0100019.mypat.data.room.diary.DiaryDao
 import com.a0100019.mypat.data.room.diary.getDiaryInitialData
@@ -101,7 +102,7 @@ class SettingViewModel @Inject constructor(
         val koreanIdiomDataList = koreanIdiomDao.getOpenKoreanIdiomData()
         val diaryDataList = diaryDao.getAllDiaryData()
         val sudokuDataList = sudokuDao.getAllSudokuData()
-        val mapDataList = areaDao.getAllMapData()
+        val areaDataList = areaDao.getAllAreaData()
 
         reduce {
             state.copy(
@@ -116,7 +117,7 @@ class SettingViewModel @Inject constructor(
                 koreanIdiomDataList = koreanIdiomDataList,
                 diaryDataList = diaryDataList,
                 sudokuDataList = sudokuDataList,
-                areaDataList = mapDataList
+                areaDataList = areaDataList
             )
         }
     }
@@ -188,7 +189,7 @@ class SettingViewModel @Inject constructor(
         val koreanIdiomDataList = state.koreanIdiomDataList
         val letterDataList = state.letterDataList
         val sudokuDataList = state.sudokuDataList
-        val mapDataList = state.areaDataList
+        val areaDataList = state.areaDataList
 
         val batch = db.batch()
 
@@ -302,15 +303,15 @@ class SettingViewModel @Inject constructor(
             .collection("dataCollection")
 
         val combinedMapData = mutableMapOf<String, Any>()
-        mapDataList
+        areaDataList
             .filter { it.date != "0" }
-            .forEach { mapData ->
-                val mapMap = mapOf(
-                    "date" to mapData.date,
+            .forEach { areaData ->
+                val areaMap = mapOf(
+                    "date" to areaData.date,
                 )
-                combinedMapData[mapData.id.toString()] = mapMap
+                combinedMapData[areaData.id.toString()] = areaMap
             }
-        batch.set(mapCollectionRef.document("maps"), combinedMapData)
+        batch.set(mapCollectionRef.document("areas"), combinedMapData)
 
         val letterCollectionRef = db.collection("users")
         .document(userId)
@@ -719,7 +720,7 @@ data class SettingState(
     val letterDataList: List<Letter> = emptyList(),
     val letterImages: List<String> = emptyList(),
     val sudokuDataList: List<Sudoku> = emptyList(),
-    val areaDataList: List<com.a0100019.mypat.data.room.area.Area> = emptyList()
+    val areaDataList: List<Area> = emptyList()
     )
 
 
