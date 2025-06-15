@@ -5,7 +5,6 @@ import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiom
 import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiomDao
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
-import com.a0100019.mypat.presentation.store.StoreSideEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import org.orbitmvi.orbit.Container
@@ -46,49 +45,16 @@ class KoreanViewModel @Inject constructor(
     //room에서 데이터 가져옴
     private fun loadData() = intent {
         val koreanDataList = koreanDao.getOpenKoreanIdiomData()
+        val allKoreanDataList = koreanDao.getAllKoreanIdiomData()
 
         reduce {
             state.copy(
                 koreanDataList = koreanDataList,
-
+                allKoreanDataList = allKoreanDataList
             )
         }
     }
 
-    fun onSubmitClick() = intent {
-        if(state.koreanText == state.clickKoreanData!!.korean) {
-
-            val newClickKoreanData = state.clickKoreanData
-            newClickKoreanData!!.state = "완료"
-
-            koreanDao.update(newClickKoreanData)
-
-            reduce {
-                state.copy(
-                    clickKoreanData = null,
-                    koreanText = "",
-                    clickKoreanDataState = ""
-                )
-            }
-
-            //보상
-            userDao.update(id = "money", value = (state.userData.find { it.id == "money" }!!.value.toInt() + 100).toString())
-
-            postSideEffect(KoreanSideEffect.Toast("정답입니다 money+100"))
-        } else {
-            val newClickKoreanData = state.clickKoreanData
-            newClickKoreanData!!.state = "오답"
-            reduce {
-                state.copy(
-                    koreanText = "",
-                    clickKoreanData = newClickKoreanData,
-                    clickKoreanDataState = "오답"
-                )
-            }
-            postSideEffect(KoreanSideEffect.Toast("오답입니다."))
-        }
-
-    }
 
     fun onFilterClick() = intent {
 
@@ -118,13 +84,140 @@ class KoreanViewModel @Inject constructor(
                 clickKoreanDataState = koreanIdiom.state
             )
         }
+
+        if(koreanIdiom.state == "대기") {
+            val allKoreanDataList = state.allKoreanDataList
+
+            val koreanCharacterList = mutableListOf<String>()
+
+            // 1. korean1~korean4 추가
+            listOf(
+                koreanIdiom.korean1,
+                koreanIdiom.korean2,
+                koreanIdiom.korean3,
+                koreanIdiom.korean4
+            ).forEach {
+                if (it !in koreanCharacterList) koreanCharacterList.add(it)
+            }
+
+            while (koreanCharacterList.size < 10) {
+
+                // 2. 랜덤 하나 추가
+                val randomKoreanData = allKoreanDataList.shuffled().firstOrNull()
+                // 3. 다시 korean1~4 추가 (중복 제외)
+                listOf(
+                    randomKoreanData!!.korean1,
+                    randomKoreanData.korean2,
+                    randomKoreanData.korean3,
+                    randomKoreanData.korean4
+                ).forEach {
+                    if (koreanCharacterList.size < 10 && it !in koreanCharacterList) koreanCharacterList.add(it)
+                }
+
+            }
+
+            reduce {
+                state.copy(
+                    koreanCharacterList = koreanCharacterList
+                )
+            }
+
+        }
+
+    }
+
+    fun onKoreanCharacterClick(koreanCharacter: String) = intent {
+
+        if(state.koreanCharacter1 == "") {
+            reduce {
+                state.copy(
+                    koreanCharacter1 = koreanCharacter
+                )
+            }
+        } else if(state.koreanCharacter2 == "") {
+            reduce {
+                state.copy(
+                    koreanCharacter2 = koreanCharacter
+                )
+            }
+        } else if(state.koreanCharacter3 == "") {
+            reduce {
+                state.copy(
+                    koreanCharacter3 = koreanCharacter
+                )
+            }
+        } else if(state.koreanCharacter4 == "") {
+            reduce {
+                state.copy(
+                    koreanCharacter4 = koreanCharacter
+                )
+            }
+        }
+
+    }
+
+    fun onSubmitClick() = intent {
+
+        val clickKoreanData = state.clickKoreanData
+
+        val rightCount = listOf(
+            state.koreanCharacter1 == clickKoreanData!!.korean1,
+            state.koreanCharacter2 == clickKoreanData.korean2,
+            state.koreanCharacter3 == clickKoreanData.korean3,
+            state.koreanCharacter4 == clickKoreanData.korean4
+        ).count { it }
+
+        if( rightCount == 4 ) {
+
+            val newClickKoreanData = state.clickKoreanData
+            newClickKoreanData!!.state = "완료"
+
+            koreanDao.update(newClickKoreanData)
+
+            reduce {
+                state.copy(
+                    clickKoreanData = null,
+                    koreanText = "",
+                    clickKoreanDataState = "",
+                    koreanCharacter1 = "",
+                    koreanCharacter2 = "",
+                    koreanCharacter3 = "",
+                    koreanCharacter4 = ""
+                )
+            }
+
+            //보상
+            userDao.update(id = "money", value = (state.userData.find { it.id == "money" }!!.value.toInt() + 100).toString())
+
+            postSideEffect(KoreanSideEffect.Toast("정답입니다 money+100"))
+        } else {
+            val newClickKoreanData = state.clickKoreanData
+            newClickKoreanData!!.state = "오답"
+            reduce {
+                state.copy(
+                    koreanText = "",
+                    clickKoreanData = newClickKoreanData,
+                    clickKoreanDataState = "오답",
+                    koreanCharacter1 = "",
+                    koreanCharacter2 = "",
+                    koreanCharacter3 = "",
+                    koreanCharacter4 = ""
+                )
+            }
+            postSideEffect(KoreanSideEffect.Toast("오답입니다 (${rightCount}개 일치)"))
+        }
+
     }
 
     fun onCloseClick() = intent {
         reduce {
             state.copy(
                 clickKoreanData = null,
-                clickKoreanDataState = ""
+                clickKoreanDataState = "",
+                koreanCharacter1 = "",
+                koreanCharacter2 = "",
+                koreanCharacter3 = "",
+                koreanCharacter4 = ""
             )
         }
     }
@@ -179,12 +272,18 @@ class KoreanViewModel @Inject constructor(
 data class KoreanState(
     val userData: List<User> = emptyList(),
     val koreanDataList: List<KoreanIdiom> = emptyList(),
+    val allKoreanDataList: List<KoreanIdiom> = emptyList(),
+    val koreanCharacterList: List<String> = emptyList(),
 
     val clickKoreanData: KoreanIdiom? = null,
     val todayKoreanData: KoreanIdiom = KoreanIdiom(),
     val filter: String = "일반",
     val clickKoreanDataState: String = "",
     val koreanText: String = "",
+    val koreanCharacter1: String = "",
+    val koreanCharacter2: String = "",
+    val koreanCharacter3: String = "",
+    val koreanCharacter4: String = "",
 
 )
 

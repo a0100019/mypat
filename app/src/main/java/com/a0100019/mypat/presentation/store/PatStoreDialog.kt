@@ -27,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -65,10 +66,11 @@ fun PatStoreDialog(
                     text = "펫 뽑기",
                     style = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier
-                        .padding(bottom = 6.dp)
+                        .padding(bottom = 12.dp)
                     )
 
-                Row(
+
+                Column(
                     modifier = Modifier
                         .background(
                             color = MaterialTheme.colorScheme.surfaceVariant,
@@ -80,37 +82,48 @@ fun PatStoreDialog(
                             shape = RoundedCornerShape(12.dp)
                         )
                         .padding(6.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    repeat(5) {
-                        Surface(
-                            shape = RoundedCornerShape(10.dp),
-                            tonalElevation = 4.dp,
-                            shadowElevation = 4.dp,
-                            color = MaterialTheme.colorScheme.surface,
-                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-                            modifier = Modifier
-                        ) {
-                            Column(
-                                modifier = Modifier,
-                                horizontalAlignment = Alignment.CenterHorizontally
+                    Row(
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        repeat(5) { index ->
+                            Surface(
+                                shape = RoundedCornerShape(10.dp),
+                                tonalElevation = 4.dp,
+                                shadowElevation = 4.dp,
+                                color = MaterialTheme.colorScheme.surface,
+                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                                modifier = Modifier
                             ) {
-                                DialogPatImage(
-                                    patUrl = patData!![it].url,
-                                    modifier = Modifier.size(45.dp)
-                                )
-                                Text(
-                                    text = patData[it].name,
-                                    fontSize = 13.sp,
-                                    style = MaterialTheme.typography.labelMedium,
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
+                                Column(
+                                    modifier = Modifier,
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    DialogPatImage(
+                                        patUrl = patData!![index].url,
+                                        modifier = Modifier.size(45.dp)
+                                    )
+                                }
+                            }
+
+                            if (index < 4) {
+                                Spacer(modifier = Modifier.width(4.dp))
                             }
                         }
                     }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Text(
+                        text = "후보 펫",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
                 }
 
-                Spacer(modifier = Modifier.size(6.dp))
+                Spacer(modifier = Modifier.size(16.dp))
 
                 Box(
                     modifier = Modifier
@@ -138,29 +151,22 @@ fun PatStoreDialog(
                                 ) {
                                     DialogPatImage(
                                         patUrl = pat.url,
-                                        modifier = Modifier.size(30.dp)
-                                    )
-                                    Text(
-                                        text = pat.name, // 인덱스 표시
-                                        fontSize = 10.sp,
-                                        modifier = Modifier
+                                        modifier = Modifier.size(50.dp)
                                     )
                                 }
                             }
                         }
                     }
 
-
                 }
 
-//                Button(
-//                    onClick = onClose,
-//                    modifier = Modifier
-//                        .align(Alignment.End)
-//                        .padding(16.dp)
-//                ) {
-//                    Text("다시 하기")
-//                }
+                Spacer(modifier = Modifier.size(16.dp))
+
+                Text(
+                    text = "알을 눌러 부화시켜 주세요\n같은 펫 2개가 열리면 펫을 획득합니다",
+                    textAlign = TextAlign.Center,
+
+                )
 
             }
         }
@@ -168,14 +174,13 @@ fun PatStoreDialog(
 
 }
 
-
 @Preview(showBackground = true)
 @Composable
 fun PatStoreDialogPreview() {
     MypatTheme {
         PatStoreDialog(
             onClose = {},
-            patData = listOf(Pat(url = "pat/cat.json", name = "고양이"),Pat(url = "pat/cat.json"),Pat(url = "pat/cat.json"),Pat(url = "pat/cat.json"),Pat(url = "pat/cat.json")),
+            patData = listOf(Pat(url = "pat/cat.json", name = "고양이ㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁ"),Pat(url = "pat/cat.json"),Pat(url = "pat/cat.json"),Pat(url = "pat/cat.json"),Pat(url = "pat/cat.json")),
             patEggData = listOf(Pat(url = "pat/cat.json"),Pat(url = "pat/cat.json"),Pat(url = "pat/cat.json"),Pat(url = "pat/cat.json"),Pat(url = "pat/cat.json"),Pat(url = "pat/cat.json"),Pat(url = "pat/cat.json"),Pat(url = "pat/cat.json"),Pat(url = "pat/cat.json"),Pat(url = "pat/cat.json"),Pat(url = "pat/cat.json"),),
             onPatEggClick = {},
             selectIndexList = emptyList()

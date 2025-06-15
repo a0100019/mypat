@@ -80,7 +80,9 @@ fun DraggableItemImage(
                 composition = composition,
                 iterations = Int.MAX_VALUE,
             )
-            Text(worldIndex)
+            Text(
+                text = (worldIndex.toInt() + 1).toString()
+            )
         }
 
     } else {
@@ -124,7 +126,11 @@ fun DraggableItemImage(
                     bitmap = bitmap!!.asImageBitmap(),
                     contentDescription = "Asset Image",
                 )
-                Text(worldIndex)
+                if(worldIndex != ""){
+                    Text(
+                        text = (worldIndex.toInt() + 1).toString()
+                    )
+                }
             }
         } else {
             // Placeholder while loading or on error

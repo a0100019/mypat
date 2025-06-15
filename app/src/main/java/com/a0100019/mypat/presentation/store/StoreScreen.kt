@@ -198,12 +198,12 @@ fun StoreScreen(
             onDismiss = { onSimpleDialog("") },
             onConfirm = {
                 when(simpleDialogState) {
-                    "알을 뽑으시겠습니까?" -> onPatStoreClick()
+                    "펫을 뽑으시겠습니까?" -> onPatStoreClick()
                     "아이템을 뽑으시겠습니까?" -> onItemStoreClick()
-                    "펫 칸 늘리기" -> onPatRoomUpClick()
-                    "아이템 칸 늘리기" -> onItemRoomUpClick()
+                    "펫 공간을 늘리겠습니까?" -> onPatRoomUpClick()
+                    "아이템 공간을 늘리겠습니까?" -> onItemRoomUpClick()
                     "가능한 닉네임입니다 변경하겠습니까?" -> onNameChangeClick()
-                    "화폐 변경" -> onMoneyChangeClick()
+                    "화폐를 변경하겠습니까?" -> onMoneyChangeClick()
                 }
                 onSimpleDialog("")
             },
@@ -221,8 +221,8 @@ fun StoreScreen(
         LazyColumn {
             item {
                 CuteIconButton(
-                    onClick = { onSimpleDialog("알을 뽑으시겠습니까?") },
-                    text = "알 뽑기 100원"
+                    onClick = { onSimpleDialog("펫을 뽑으시겠습니까?") },
+                    text = "펫 뽑기 100원"
                 )
             }
             item {
@@ -233,14 +233,14 @@ fun StoreScreen(
             }
             item {
                 CuteIconButton(
-                    onClick = { onSimpleDialog("펫 칸 늘리기") },
-                    text = "펫 칸 늘리기 10cash"
+                    onClick = { onSimpleDialog("펫 공간을 늘리겠습니까?") },
+                    text = "펫 공간 늘리기 10cash"
                 )
             }
             item {
                 CuteIconButton(
-                    onClick = { onSimpleDialog("아이템 칸 늘리기") },
-                    text = "아이템 칸 늘리기"
+                    onClick = { onSimpleDialog("아이템 공간을 늘리겠습니까?") },
+                    text = "아이템 공간 늘리기"
                 )
             }
             item {
@@ -251,8 +251,8 @@ fun StoreScreen(
             }
             item {
                 CuteIconButton(
-                    onClick = {onSimpleDialog("화폐 변경")},
-                    text = "화폐 변경"
+                    onClick = {onSimpleDialog("화폐를 변경하겠습니까?")},
+                    text = "화폐 변경 1d -> 100s"
                 )
             }
         }

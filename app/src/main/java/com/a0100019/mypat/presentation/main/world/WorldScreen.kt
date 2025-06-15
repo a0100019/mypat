@@ -146,7 +146,8 @@ fun WorldScreen(
             allAreaDataList = allAreaDataList,
             worldDataList = worldDataList,
             onAddItemClick = onAddItemClick,
-            onAddPatClick = onAddPatClick
+            onAddPatClick = onAddPatClick,
+            userDataList = userDataList
         )
     }
 

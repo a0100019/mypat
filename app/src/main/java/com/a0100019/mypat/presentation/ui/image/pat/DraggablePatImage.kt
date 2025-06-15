@@ -84,8 +84,11 @@ fun DraggablePatImage(
                 composition = composition,
                 progress = lottieAnimationState.progress
             )
-            Text(worldIndex)
-
+            if(worldIndex != ""){
+                Text(
+                    text = (worldIndex.toInt() + 1).toString()
+                )
+            }
         }
     } else {
         // Placeholder while loading or on error

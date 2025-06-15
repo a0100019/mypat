@@ -2,6 +2,7 @@ package com.a0100019.mypat.presentation.main.mainDialog
 
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,6 +28,7 @@ import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.area.Area
 import com.a0100019.mypat.data.room.pat.Pat
+import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.presentation.ui.component.CuteIconButton
 import com.a0100019.mypat.presentation.ui.image.etc.AddDialogMapImage
@@ -48,6 +50,7 @@ fun WorldAddDialog(
     worldDataList: List<World>,
     onAddPatClick: (String) -> Unit,
     onAddItemClick: (String) -> Unit,
+    userDataList: List<User> = emptyList()
 ) {
 
     Dialog(
@@ -76,6 +79,14 @@ fun WorldAddDialog(
                         .padding(bottom = 12.dp)
                     )
 
+                Text(
+                    text = when(addDialogChange) {
+                        "pat" -> "${userDataList.find { it.id == "pat" }?.value3} / ${userDataList.find { it.id == "pat" }?.value2}"
+                        "item" -> "${userDataList.find { it.id == "item" }?.value3} / ${userDataList.find { it.id == "item" }?.value2}"
+                        else -> ""
+                    },
+                )
+
                 Box(
                     modifier = Modifier
                         .weight(1f)
@@ -90,75 +101,105 @@ fun WorldAddDialog(
                         when (addDialogChange) {
                             "pat" -> {
                                 items(allPatDataList.size) { index ->
+                                    val isSelected = worldDataList.any {
+                                        it.value == allPatDataList[index].id.toString() && it.type == "pat"
+                                    }
+
+                                    val selectedOrder = worldDataList.indexOfFirst {
+                                        it.value == allPatDataList[index].id.toString() && it.type == "pat"
+                                    }.takeIf { it >= 0 }?.plus(1)?.toString() ?: ""
+
                                     Column(
-                                        horizontalAlignment = Alignment.CenterHorizontally
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        modifier = Modifier
+                                            .border(
+                                                width = 2.dp,
+                                                color = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
+                                                shape = RoundedCornerShape(8.dp)
+                                            )
+                                            .padding(4.dp)
                                     ) {
                                         AddDialogPatImage(
                                             patData = allPatDataList[index],
                                             onAddPatImageClick = { id ->
-                                                // 여기에 id랑 type(pat) 활용하는 로직
                                                 onAddPatClick(id)
                                             }
                                         )
                                         Text(allPatDataList[index].name)
-                                        if (worldDataList.any { it.value == allPatDataList[index].id.toString() && it.type == "pat" }) {
-                                            Text(
-                                                text = worldDataList.indexOfFirst { it.value == allPatDataList[index].id.toString() && it.type == "pat" }.toString()
-                                            )
-                                        } else {
-                                            Text(
-                                                text = ""
-                                            )
-                                        }
+                                        Text(text = selectedOrder)
                                     }
+
                                 }
                             }
                             "item" -> {
                                 items(allItemDataList.size) { index ->
+                                    val isSelected = worldDataList.any {
+                                        it.value == allItemDataList[index].id.toString() && it.type == "item"
+                                    }
+
+                                    val selectedOrder = worldDataList.indexOfFirst {
+                                        it.value == allItemDataList[index].id.toString() && it.type == "item"
+                                    }.takeIf { it >= 0 }?.plus(1)?.toString() ?: ""
+
                                     Column(
-                                        horizontalAlignment = Alignment.CenterHorizontally
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        modifier = Modifier
+                                            .border(
+                                                width = 2.dp,
+                                                color = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
+                                                shape = RoundedCornerShape(8.dp)
+                                            )
+                                            .padding(4.dp)
                                     ) {
                                         AddDialogItemImage(
                                             itemData = allItemDataList[index],
                                             onAddItemImageClick = { id ->
-                                                // 여기에 id랑 type(pat) 활용하는 로직
                                                 onAddItemClick(id)
                                             }
                                         )
                                         Text(allItemDataList[index].name)
-                                        if (worldDataList.any { it.value == allItemDataList[index].id.toString() && it.type == "item"}) {
-                                            Text(
-                                                text = worldDataList.indexOfFirst { it.value == allItemDataList[index].id.toString() && it.type == "item" }.toString()
-                                            )
-                                        } else {
-                                            Text(
-                                                text = ""
-                                            )
-                                        }
+                                        Text(text = selectedOrder)
                                     }
+
                                 }
                             }
                             else -> {
                                 items(allAreaDataList.size) { index ->
+
+                                    val isSelected = mapWorldData.value == allAreaDataList[index].url
+
                                     Column(
-                                        horizontalAlignment = Alignment.CenterHorizontally
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        modifier = Modifier
+                                            .border(
+                                                width = 2.dp,
+                                                color = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
+                                                shape = RoundedCornerShape(8.dp)
+                                            )
+                                            .padding(4.dp) // 테두리 안쪽 여백
                                     ) {
                                         AddDialogMapImage(
                                             areaData = allAreaDataList[index],
                                             onAddMapImageClick = onSelectMapImageClick
                                         )
                                         Text(allAreaDataList[index].name)
-                                        if (mapWorldData.value == allAreaDataList[index].url) {
+                                        if (isSelected) {
                                             Text("선택")
                                         } else {
                                             Text("")
                                         }
                                     }
+
+
                                 }
                             }
                         }
                     }
                 }
+
+                Text(
+                    text = "숫자가 높을 수록 상단에 배치됩니다"
+                )
 
                 Spacer(modifier = Modifier.height(16.dp))
 

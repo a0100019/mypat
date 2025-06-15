@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -51,7 +52,9 @@ fun KoreanReadyDialog(
                 .padding(16.dp)
         ) {
             Column(
-//                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    ,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
                 Text(
@@ -64,7 +67,46 @@ fun KoreanReadyDialog(
                     color = Color.Black
                 )
 
-                Text(text = koreanData.meaning)
+                Text(
+                    text = koreanData.meaning,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                    )
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(0.5f)
+                ) {
+                    Text(
+                        text = "안",
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier
+                            .weight(1f)
+                    )
+
+                    Text(
+                        text = "안",
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier
+                            .weight(1f)
+                    )
+
+                    Text(
+                        text = "안",
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier
+                            .weight(1f)
+                    )
+
+                    Text(
+                        text = "안",
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier
+                            .weight(1f)
+                    )
+
+                }
 
                 OutlinedTextField(
                     value = koreanText,
@@ -81,7 +123,6 @@ fun KoreanReadyDialog(
                         .fillMaxWidth()
                         .padding(8.dp)
                 )
-
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -100,7 +141,6 @@ fun KoreanReadyDialog(
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable
