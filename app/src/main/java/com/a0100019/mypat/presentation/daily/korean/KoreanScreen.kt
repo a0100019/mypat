@@ -67,16 +67,20 @@ fun KoreanScreen(
         koreanDataList = koreanState.koreanDataList,
         clickKoreanData = koreanState.clickKoreanData,
         clickKoreanDataState = koreanState.clickKoreanDataState,
-        koreanText = koreanState.koreanText,
         filter = koreanState.filter,
+        koreanCharacter1 = koreanState.koreanCharacter1,
+        koreanCharacter2 = koreanState.koreanCharacter2,
+        koreanCharacter3 = koreanState.koreanCharacter3,
+        koreanCharacter4 = koreanState.koreanCharacter4,
+        informationText = koreanState.informationText,
 
         onKoreanClick = koreanViewModel::onKoreanClick,
         onFilterClick = koreanViewModel::onFilterClick,
         onCloseClick = koreanViewModel::onCloseClick,
         onStateChangeClick = koreanViewModel::onStateChangeClick,
-        onKoreanTextChange = koreanViewModel::onKoreanTextChange,
         onSubmitClick = koreanViewModel::onSubmitClick,
-        onFailDialogCloseClick = koreanViewModel::onFailDialogCloseClick
+        onKoreanDeleteClick = koreanViewModel::onKoreanDeleteClick,
+        onKoreanCharacterClick = koreanViewModel::onKoreanCharacterClick
     )
 }
 
@@ -85,26 +89,38 @@ fun KoreanScreen(
     koreanDataList : List<KoreanIdiom>,
     clickKoreanData : KoreanIdiom?,
     clickKoreanDataState : String,
-    koreanText : String,
     filter: String = "일반",
+    koreanCharacter1: String = "",
+    koreanCharacter2: String = "",
+    koreanCharacter3: String = "",
+    koreanCharacter4: String = "",
+    informationText: String = "",
 
     onKoreanClick : (KoreanIdiom) -> Unit,
     onFilterClick : () -> Unit,
     onCloseClick : () -> Unit,
     onStateChangeClick : () -> Unit,
-    onKoreanTextChange : (String) -> Unit,
     onSubmitClick : () -> Unit,
-    onFailDialogCloseClick: () -> Unit,
+    onKoreanCharacterClick: (String) -> Unit = {},
+    onKoreanDeleteClick: () -> Unit = {},
+
+
 ) {
 
     // 다이얼로그 표시
-    if (clickKoreanData != null && clickKoreanDataState == "대기") {
+    if (clickKoreanData != null && clickKoreanDataState in listOf("대기", "오답")) {
         KoreanReadyDialog(
             koreanData = clickKoreanData,
             onClose = onCloseClick,
-            onKoreanTextChange = onKoreanTextChange,
-            koreanText = koreanText,
-            onSubmitClick = onSubmitClick
+            onSubmitClick = onSubmitClick,
+            koreanCharacter1 = koreanCharacter1,
+            koreanCharacter2 = koreanCharacter2,
+            koreanCharacter3 = koreanCharacter3,
+            koreanCharacter4 = koreanCharacter4,
+            informationText = informationText,
+            onKoreanCharacterClick = onKoreanCharacterClick,
+            onKoreanDeleteClick = onKoreanDeleteClick,
+
         )
     } else if(clickKoreanData != null && clickKoreanDataState in listOf("완료", "별")) {
         KoreanDialog(
@@ -112,14 +128,6 @@ fun KoreanScreen(
             onClose = onCloseClick,
             onStateChangeClick = onStateChangeClick,
             koreanDataState = clickKoreanDataState
-        )
-    } else if(clickKoreanData != null && clickKoreanDataState == "오답" ) {
-        KoreanDialog(
-            koreanData = clickKoreanData,
-            onClose = onFailDialogCloseClick,
-            onStateChangeClick = onStateChangeClick,
-            koreanDataState = clickKoreanDataState,
-            date = false
         )
     }
 
@@ -220,7 +228,7 @@ fun KoreanScreen(
                             SparkleText(
                                 text = "new!!",
                                 fontSize = 20
-                            )
+                                )
 
                         }
                     }
@@ -258,10 +266,8 @@ fun KoreanScreenPreview() {
             onCloseClick = {},
             onStateChangeClick = {},
             clickKoreanDataState = "",
-            koreanText = "",
-            onKoreanTextChange = {},
             onSubmitClick = {},
-            onFailDialogCloseClick = {}
+
 
         )
     }

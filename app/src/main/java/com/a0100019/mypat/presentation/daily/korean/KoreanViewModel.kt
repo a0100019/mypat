@@ -118,7 +118,8 @@ class KoreanViewModel @Inject constructor(
 
             reduce {
                 state.copy(
-                    koreanCharacterList = koreanCharacterList
+                    koreanCharacterList = koreanCharacterList,
+                    informationText = "아래 카드를 눌러 사자성어를 입력해주세요"
                 )
             }
 
@@ -177,12 +178,12 @@ class KoreanViewModel @Inject constructor(
             reduce {
                 state.copy(
                     clickKoreanData = null,
-                    koreanText = "",
                     clickKoreanDataState = "",
                     koreanCharacter1 = "",
                     koreanCharacter2 = "",
                     koreanCharacter3 = "",
-                    koreanCharacter4 = ""
+                    koreanCharacter4 = "",
+                    informationText = "아래 카드를 눌러 사자성어를 입력해주세요"
                 )
             }
 
@@ -193,20 +194,56 @@ class KoreanViewModel @Inject constructor(
         } else {
             val newClickKoreanData = state.clickKoreanData
             newClickKoreanData!!.state = "오답"
+
+            val informationText =
+                state.koreanCharacter1.last().toString() +
+                state.koreanCharacter2.last() +
+                state.koreanCharacter3.last() +
+                state.koreanCharacter4.last() +
+                " : 오답 (${rightCount}개 일치)"
+
             reduce {
                 state.copy(
-                    koreanText = "",
                     clickKoreanData = newClickKoreanData,
                     clickKoreanDataState = "오답",
                     koreanCharacter1 = "",
                     koreanCharacter2 = "",
                     koreanCharacter3 = "",
-                    koreanCharacter4 = ""
+                    koreanCharacter4 = "",
+                    informationText = informationText
                 )
             }
             postSideEffect(KoreanSideEffect.Toast("오답입니다 (${rightCount}개 일치)"))
         }
 
+    }
+
+    fun onKoreanDeleteClick() = intent {
+        if(state.koreanCharacter4 != "") {
+            reduce {
+                state.copy(
+                    koreanCharacter4 = ""
+                )
+            }
+        } else if(state.koreanCharacter3 != "") {
+            reduce {
+                state.copy(
+                    koreanCharacter3 = ""
+                )
+            }
+        } else if(state.koreanCharacter2 != "") {
+            reduce {
+                state.copy(
+                    koreanCharacter2 = ""
+                )
+            }
+        } else {
+            reduce {
+                state.copy(
+                    koreanCharacter1 = ""
+                )
+            }
+        }
     }
 
     fun onCloseClick() = intent {
@@ -217,18 +254,7 @@ class KoreanViewModel @Inject constructor(
                 koreanCharacter1 = "",
                 koreanCharacter2 = "",
                 koreanCharacter3 = "",
-                koreanCharacter4 = ""
-            )
-        }
-    }
-
-    fun onFailDialogCloseClick() = intent {
-        val newClickKoreanData = state.clickKoreanData
-        newClickKoreanData!!.state = "대기"
-        reduce {
-            state.copy(
-                clickKoreanData = newClickKoreanData,
-                clickKoreanDataState = "대기"
+                koreanCharacter4 = "",
             )
         }
     }
@@ -256,15 +282,6 @@ class KoreanViewModel @Inject constructor(
     }
 
 
-    //아이디 입력 가능하게 하는 코드
-    @OptIn(OrbitExperimental::class)
-    fun onKoreanTextChange(koreanText: String) = blockingIntent {
-        reduce {
-            state.copy(koreanText = koreanText)
-        }
-    }
-
-
 }
 
 
@@ -279,11 +296,11 @@ data class KoreanState(
     val todayKoreanData: KoreanIdiom = KoreanIdiom(),
     val filter: String = "일반",
     val clickKoreanDataState: String = "",
-    val koreanText: String = "",
     val koreanCharacter1: String = "",
     val koreanCharacter2: String = "",
     val koreanCharacter3: String = "",
     val koreanCharacter4: String = "",
+    val informationText: String = "아래 카드를 눌러 사자성어를 입력해주세요"
 
 )
 

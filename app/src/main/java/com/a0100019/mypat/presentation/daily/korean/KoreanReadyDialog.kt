@@ -3,6 +3,7 @@ package com.a0100019.mypat.presentation.daily.korean
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,22 +24,33 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiom
+import com.a0100019.mypat.presentation.ui.component.CuteIconButton
 import com.a0100019.mypat.presentation.ui.image.etc.KoreanIdiomImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
 @Composable
 fun KoreanReadyDialog(
+
     onClose: () -> Unit,
     koreanData: KoreanIdiom,
-    onKoreanTextChange: (String) -> Unit,
-    koreanText: String,
+    onKoreanDeleteClick: () -> Unit = {},
     onSubmitClick: () -> Unit,
+    koreanCharacterList: List<String> = emptyList(),
+    koreanCharacter1: String = "",
+    koreanCharacter2: String = "",
+    koreanCharacter3: String = "",
+    koreanCharacter4: String = "",
+    onKoreanCharacterClick: (String) -> Unit = {},
+    informationText: String = "",
+
+
 ) {
 
     Dialog(
@@ -79,28 +91,28 @@ fun KoreanReadyDialog(
                         .fillMaxWidth(0.5f)
                 ) {
                     Text(
-                        text = "안",
+                        text = koreanCharacter1.last().toString(),
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier
                             .weight(1f)
                     )
 
                     Text(
-                        text = "안",
+                        text = koreanCharacter2.last().toString(),
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier
                             .weight(1f)
                     )
 
                     Text(
-                        text = "안",
+                        text = koreanCharacter3.last().toString(),
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier
                             .weight(1f)
                     )
 
                     Text(
-                        text = "안",
+                        text = koreanCharacter4.last().toString(),
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier
                             .weight(1f)
@@ -108,34 +120,61 @@ fun KoreanReadyDialog(
 
                 }
 
-                OutlinedTextField(
-                    value = koreanText,
-                    onValueChange = onKoreanTextChange,
-                    label = { Text("사자성어") },
-                    placeholder = { Text("사자성어를 입력하세요") },
-                    singleLine = true,
-//            colors = TextFieldDefaults.outlinedTextFieldColors(
-//                focusedBorderColor = Color.Blue,
-//                unfocusedBorderColor = Color.Gray
-//            ),
-                    shape = RoundedCornerShape(8.dp), // 테두리를 둥글게
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
+                Text(
+                    text = informationText,
+                    style = MaterialTheme.typography.titleSmall
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                val rows = koreanCharacterList.chunked(5) // 한 줄에 5개씩
 
-                // 추가로 원하는 Composable 요소
+                Column {
+                    rows.forEach { row ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            row.forEach { word ->
+                                val lastChar = word.takeLast(1)
+                                val front = word.dropLast(2)
 
-                Button(
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    modifier = Modifier
+                                        .clickable {
+                                            onKoreanCharacterClick(word)
+                                        }
+                                ) {
+                                    Text(
+                                        text = lastChar,
+                                        style = MaterialTheme.typography.titleMedium,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                    Text(
+                                        text = front,
+                                        style = MaterialTheme.typography.titleSmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(8.dp)) // 줄 간 간격
+                    }
+                }
+
+                CuteIconButton(
+                    text = "제출",
                     onClick = onSubmitClick,
                     modifier = Modifier
                         .align(Alignment.End)
 //                        .padding(16.dp)
-                ) {
-                    Text("제출")
-                }
+                )
+
+                CuteIconButton(
+                    text = "x",
+                    onClick = onKoreanDeleteClick,
+
+                )
 
             }
         }
@@ -149,9 +188,7 @@ fun KoreanReadyDialogPreview() {
         KoreanReadyDialog(
             onClose = {},
             koreanData = KoreanIdiom(),
-            koreanText = "",
-            onKoreanTextChange = {},
-            onSubmitClick = {}
+            onSubmitClick = {},
         )
     }
 }
