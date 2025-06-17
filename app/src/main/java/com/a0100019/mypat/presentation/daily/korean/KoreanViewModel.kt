@@ -202,9 +202,8 @@ class KoreanViewModel @Inject constructor(
                 )
 
                 postSideEffect(KoreanSideEffect.Toast("정답입니다 money+100"))
+
             } else {
-                val newClickKoreanData = state.clickKoreanData
-                newClickKoreanData!!.state = "오답"
 
                 val informationText =
                     state.koreanCharacter1.last().toString() +
@@ -215,8 +214,6 @@ class KoreanViewModel @Inject constructor(
 
                 reduce {
                     state.copy(
-                        clickKoreanData = newClickKoreanData,
-                        clickKoreanDataState = "오답",
                         koreanCharacter1 = "",
                         koreanCharacter2 = "",
                         koreanCharacter3 = "",

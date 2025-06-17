@@ -1,24 +1,19 @@
-package com.a0100019.mypat.presentation.daily.korean
+package com.a0100019.mypat.presentation.daily.english
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -34,20 +29,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.R
-import com.a0100019.mypat.data.room.item.Item
+import com.a0100019.mypat.data.room.english.English
 import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiom
 import com.a0100019.mypat.presentation.ui.component.CuteIconButton
-import com.a0100019.mypat.presentation.ui.image.etc.KoreanIdiomImage
-import com.a0100019.mypat.presentation.ui.image.item.ItemImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
-
 @Composable
-fun KoreanDialog(
-    onClose: () -> Unit,
-    koreanData: KoreanIdiom,
-    onStateChangeClick: () -> Unit,
-    koreanDataState: String,
+fun EnglishDialog(
+    onClose: () -> Unit = {},
+    english: English = English(),
+    onStateChangeClick: () -> Unit = {},
+    englishDataState: String = "완료",
 ) {
 
     Dialog(onDismissRequest = onClose) {
@@ -68,7 +60,7 @@ fun KoreanDialog(
 
                 // ⭐ 별 아이콘
                 Box(modifier = Modifier.fillMaxWidth()) {
-                    val starIcon = if (koreanDataState == "별") R.drawable.star_yellow else R.drawable.star_gray
+                    val starIcon = if (englishDataState == "별") R.drawable.star_yellow else R.drawable.star_gray
                     Image(
                         painter = painterResource(id = starIcon),
                         contentDescription = "Star Icon",
@@ -79,60 +71,35 @@ fun KoreanDialog(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(32.dp))
 
                 // 큰 텍스트들
                 Text(
-                    text = koreanData.korean,
+                    text = english.word,
                     style = MaterialTheme.typography.headlineLarge,
                     color = Color.Black,
                     letterSpacing = 6.sp, // 글자 간격 추가
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
 
-                Spacer(modifier = Modifier.size(16.dp))
+                Spacer(modifier = Modifier.size(32.dp))
 
                 Text(
-                    text = koreanData.idiom,
+                    text = english.meaning,
                     style = MaterialTheme.typography.headlineMedium,
                     color = Color.DarkGray,
                     letterSpacing = 12.sp, // 글자 간격 추가
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // 단어 4개
-                Row(
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(koreanData.korean1)
-                    Text(koreanData.korean2)
-                    Text(koreanData.korean3)
-                    Text(koreanData.korean4)
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                // 의미
-                Text(
-                    text = koreanData.meaning,
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
-                    color = Color.Black,
-                    textAlign = TextAlign.Center
-                )
-
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Text(
-                    text = "획득 날짜 : ${koreanData.date}",
+                    text = "획득 날짜 : ${english.date}",
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.align(Alignment.End),
                     color = Color.Gray
                 )
-
 
                 Spacer(modifier = Modifier.height(24.dp))
 
@@ -150,16 +117,11 @@ fun KoreanDialog(
 
 }
 
-
 @Preview(showBackground = true)
 @Composable
-fun KoreanDialogPreview() {
+fun EnglishDialogPreview() {
     MypatTheme {
-        KoreanDialog(
-            onClose = {},
-            koreanData = KoreanIdiom(),
-            onStateChangeClick = {},
-            koreanDataState = "완료"
+        EnglishDialog(
         )
     }
 }

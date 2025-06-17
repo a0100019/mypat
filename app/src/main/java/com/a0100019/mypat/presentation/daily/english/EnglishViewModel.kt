@@ -111,38 +111,109 @@ class EnglishViewModel @Inject constructor(
         }
     }
 
+    fun onAlphabetDeleteClick() = intent {
+
+        val englishTextList = state.englishTextList.toMutableList()
+
+        if(englishTextList[4] != "") {
+            englishTextList[4] = ""
+            reduce {
+                state.copy(
+                    englishTextList = englishTextList
+                )
+            }
+        } else if(englishTextList[3] != "") {
+            englishTextList[3] = ""
+            reduce {
+                state.copy(
+                    englishTextList = englishTextList
+                )
+            }
+        } else if(englishTextList[2] != "") {
+            englishTextList[2] = ""
+            reduce {
+                state.copy(
+                    englishTextList = englishTextList
+                )
+            }
+        } else if(englishTextList[1] != "") {
+            englishTextList[1] = ""
+            reduce {
+                state.copy(
+                    englishTextList = englishTextList
+                )
+            }
+        } else if(englishTextList[0] != "") {
+            englishTextList[0] = ""
+            reduce {
+                state.copy(
+                    englishTextList = englishTextList
+                )
+            }
+        }
+
+    }
 
     fun onSubmitClick() = intent {
-        if(state.englishText == state.clickEnglishData!!.word) {
 
-            val newClickEnglishData = state.clickEnglishData
-            newClickEnglishData!!.state = "완료"
+        if(state.englishTextList[4] != "") {
 
-            englishDao.update(newClickEnglishData)
+            val testEnglish = state.englishTextList.joinToString()
+            val allWordsData = state.allWordsData
 
-            reduce {
-                state.copy(
-                    clickEnglishData = null,
-                    englishText = "",
-                    clickEnglishDataState = ""
-                )
+            if(testEnglish in allWordsData){
+                if (testEnglish == state.clickEnglishData!!.word) {
+
+                    val newClickEnglishData = state.clickEnglishData
+                    newClickEnglishData!!.state = "완료"
+
+                    englishDao.update(newClickEnglishData)
+
+                    reduce {
+                        state.copy(
+                            clickEnglishDataState = "완료",
+                            englishTextList = listOf("", "", "", "", ""),
+                            failEnglishList = emptyList(),
+                            failEnglishStateList = emptyList(),
+                        )
+                    }
+
+                    //보상
+                    userDao.update(
+                        id = "money",
+                        value = (state.userData.find { it.id == "money" }!!.value.toInt() + 100).toString()
+                    )
+
+                    postSideEffect(EnglishSideEffect.Toast("정답입니다 money+100"))
+
+                } else {
+
+                    val answerEnglish = state.clickEnglishData!!.word
+
+                    val failEnglishList = state.failEnglishList.toMutableList()
+                    failEnglishList.add(testEnglish)
+
+                    val failEnglishStateList = state.failEnglishStateList.toMutableList()
+                    val failEnglishState = state.englishTextList.mapIndexed { index, s ->
+                        if (s == answerEnglish[index].toString()) {
+                            '2'
+                        } else if (answerEnglish.contains(s)) {
+                            '1'
+                        } else {
+                            '0'
+                        }
+                    }.joinToString()
+                    failEnglishStateList.add(failEnglishState)
+                    postSideEffect(EnglishSideEffect.Toast("오답입니다"))
+
+                }
+
+            } else {
+                postSideEffect(EnglishSideEffect.Toast("존재하지 않는 단어입니다"))
             }
 
-            //보상
-            userDao.update(id = "money", value = (state.userData.find { it.id == "money" }!!.value.toInt() + 100).toString())
-
-            postSideEffect(EnglishSideEffect.Toast("정답입니다 money+100"))
         } else {
-            val newClickKoreanData = state.clickEnglishData
-            newClickKoreanData!!.state = "오답"
-            reduce {
-                state.copy(
-                    englishText = "",
-                    clickEnglishData = newClickKoreanData,
-                    clickEnglishDataState = "오답"
-                )
-            }
-            postSideEffect(EnglishSideEffect.Toast("오답입니다."))
+            postSideEffect(EnglishSideEffect.Toast("영어 단어를 입력하세요"))
         }
 
     }
@@ -172,7 +243,10 @@ class EnglishViewModel @Inject constructor(
         reduce {
             state.copy(
                 clickEnglishData = null,
-                clickEnglishDataState = ""
+                clickEnglishDataState = "",
+                englishTextList = listOf("", "", "", "", ""),
+                failEnglishList = emptyList(),
+                failEnglishStateList = emptyList()
             )
         }
     }
@@ -192,7 +266,6 @@ class EnglishViewModel @Inject constructor(
             state.copy(
                 clickEnglishData = stateChangeEnglishData,
                 clickEnglishDataState = stateChangeEnglishData.state,
-
                 englishDataList = updatedList
             )
         }
@@ -204,14 +277,17 @@ class EnglishViewModel @Inject constructor(
 
 @Immutable
 data class EnglishState(
+
     val userData: List<User> = emptyList(),
     val englishDataList: List<English> = emptyList(),
-
     val clickEnglishData: English? = null,
     val filter: String = "일반",
     val clickEnglishDataState: String = "",
     val englishTextList: List<String> = listOf("", "", "", "", ""),
-    val allWordsData: List<String> = emptyList()
+    val allWordsData: List<String> = emptyList(),
+    val failEnglishList: List<String> = emptyList(),
+    val failEnglishStateList: List<String> = emptyList(),
+
     )
 
 

@@ -77,7 +77,6 @@ fun KoreanReadyDialog(
                         .padding(16.dp)
                         .align(Alignment.CenterHorizontally)
                     ,
-                    color = Color.Black
                 )
 
                 Text(

@@ -1,0 +1,206 @@
+package com.a0100019.mypat.presentation.daily.english
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiom
+import com.a0100019.mypat.presentation.ui.component.CuteIconButton
+import com.a0100019.mypat.presentation.ui.theme.MypatTheme
+
+@Composable
+fun EnglishReadyDialog(
+
+    englishTextList: List<String> = listOf("", "", "", "", ""),
+    failEnglishList: List<String> = emptyList(),
+    failEnglishStateList: List<String> = emptyList(),
+
+    onClose: () -> Unit = {},
+    onAlphabetDeleteClick: () -> Unit = {},
+    onSubmitClick: () -> Unit = {},
+    onAlphabetClick: (String) -> Unit = {},
+
+    ) {
+
+    Dialog(
+        onDismissRequest = onClose
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.8f)
+                .background(Color.White, shape = RoundedCornerShape(16.dp))
+                .padding(16.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                ,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+
+                Text(
+                    text = "영어 단어",
+                    style = MaterialTheme.typography.headlineLarge,
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .align(Alignment.CenterHorizontally)
+                    ,
+                )
+
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(0.5f)
+                        .border(1.dp, Color.Gray) // 전체 Row 테두리
+                ) {
+                    repeat(5) { index ->
+                        Text(
+                            text = englishTextList[index],
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.titleLarge,
+                            modifier = Modifier
+                                .weight(1f)
+                                .border(1.dp, Color.Gray) // 각 셀마다 테두리
+                                .padding(8.dp)
+                        )
+
+                    }
+
+                }
+
+                LazyColumn(
+                    modifier = Modifier
+                        .weight(1f)
+                ) {
+                    items(failEnglishList) { word ->
+                        Text(
+                            text = word,
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp)
+                        )
+                    }
+                }
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(
+                            width = 1.dp,
+                            color = Color.Gray,
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                        .padding(8.dp)
+                ) {
+                    Spacer(modifier = Modifier.height(8.dp))  // 줄 간 간격
+
+                    val alphabetList = ('a'..'t').toList()
+                    alphabetList.chunked(10).forEach { rowList ->  // 10개씩 나눔
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            rowList.forEach { char ->
+                                Text(
+                                    text = char.toString(),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier
+                                        .clickable {
+                                            onAlphabetClick(char.toString())
+                                        }
+                                        .weight(1f)
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))  // 줄 간 간격
+                    }
+
+                    val alphabetList2 = ('u'..'z').toList()
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        Spacer(modifier = Modifier.weight(0.2f))
+                        alphabetList2.forEach { char ->
+                            Text(
+                                text = char.toString(),
+                                style = MaterialTheme.typography.titleMedium,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .clickable {
+                                        onAlphabetClick(char.toString())
+                                    }
+                                    .weight(0.1f)
+                            )
+                        }
+                        Spacer(modifier = Modifier.weight(0.2f))
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))  // 줄 간 간격
+
+                }
+
+                Spacer(modifier = Modifier.height(16.dp)) // 줄 간 간격
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    CuteIconButton(
+                        text = "제출",
+                        onClick = onSubmitClick,
+                        modifier = Modifier
+                            .fillMaxWidth(0.5f)
+                    )
+
+                    Spacer(modifier = Modifier.size(10.dp)) // 나머지 공간 확보
+
+                    CuteIconButton(
+                        text = " x ",
+                        onClick = onAlphabetDeleteClick,
+                        modifier = Modifier
+                        // weight 없이 자동으로 우측으로 감 (Spacer 덕분에)
+                    )
+                }
+
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun EnglishReadyDialogPreview() {
+    MypatTheme {
+        EnglishReadyDialog(
+
+        )
+    }
+}

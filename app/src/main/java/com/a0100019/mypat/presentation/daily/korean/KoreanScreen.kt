@@ -110,7 +110,7 @@ fun KoreanScreen(
 ) {
 
     // 다이얼로그 표시
-    if (clickKoreanData != null && clickKoreanDataState in listOf("대기", "오답")) {
+    if (clickKoreanData != null && clickKoreanDataState == "대기") {
         KoreanReadyDialog(
             koreanData = clickKoreanData,
             onClose = onCloseClick,
@@ -155,7 +155,7 @@ fun KoreanScreen(
         ) {
             itemsIndexed(koreanDataList) { index, koreanData ->
 
-                if(koreanData.state != "대기" && koreanData.state != "오답"){
+                if(koreanData.state != "대기"){
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -221,8 +221,14 @@ fun KoreanScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = koreanData.idiom,
+                                text = "문제를 풀고 보상을 받으세요",
                                 style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+
+                            Text(
+                                text = " " + koreanData.date,
+                                style = MaterialTheme.typography.titleSmall,
                                 color = MaterialTheme.colorScheme.primary
                             )
 

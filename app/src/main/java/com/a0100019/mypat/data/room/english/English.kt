@@ -10,7 +10,4 @@ data class English(
     var state: String = "미정",
     val word: String = "단어",
     val meaning: String = "뜻",
-    val example: String = "예문",
-    val exampleMeaning: String = "예문 뜻",
-    val level: String = "1"
 )
