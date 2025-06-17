@@ -2,6 +2,7 @@ package com.a0100019.mypat.presentation.daily.korean
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -86,63 +87,91 @@ fun KoreanReadyDialog(
                         .fillMaxWidth()
                     )
 
+                Spacer(modifier = Modifier.size(16.dp))
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth(0.5f)
+                        .border(1.dp, Color.Gray) // 전체 Row 테두리
                 ) {
                     Text(
-                        text = koreanCharacter1.last().toString(),
+                        text = koreanCharacter1.takeLast(1).ifEmpty { " " },
+                        textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier
                             .weight(1f)
+                            .border(1.dp, Color.Gray) // 각 셀마다 테두리
+                            .padding(8.dp)
                     )
 
                     Text(
-                        text = koreanCharacter2.last().toString(),
+                        text = koreanCharacter2.takeLast(1).ifEmpty { " " },
+                        textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier
                             .weight(1f)
+                            .border(1.dp, Color.Gray)
+                            .padding(8.dp)
                     )
 
                     Text(
-                        text = koreanCharacter3.last().toString(),
+                        text = koreanCharacter3.takeLast(1).ifEmpty { " " },
+                        textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier
                             .weight(1f)
+                            .border(1.dp, Color.Gray)
+                            .padding(8.dp)
                     )
 
                     Text(
-                        text = koreanCharacter4.last().toString(),
+                        text = koreanCharacter4.takeLast(1).ifEmpty { " " },
+                        textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier
                             .weight(1f)
+                            .border(1.dp, Color.Gray)
+                            .padding(8.dp)
                     )
-
                 }
+
+
+                Spacer(modifier = Modifier.size(16.dp))
 
                 Text(
                     text = informationText,
                     style = MaterialTheme.typography.titleSmall
                 )
 
-                val rows = koreanCharacterList.chunked(5) // 한 줄에 5개씩
+                Spacer(modifier = Modifier.height(16.dp)) // 줄 간 간격
 
-                Column {
+                val rows = koreanCharacterList.chunked(5) // 한 줄에 5개씩
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(
+                            width = 1.dp,
+                            color = Color.Gray, // 원하는 색상
+                            shape = RoundedCornerShape(8.dp) // 원하면 모서리 둥글게
+                        )
+                        .padding(8.dp) // 테두리와 내부 내용 사이 여백
+                ) {
+                    Spacer(modifier = Modifier.size(8.dp))
+
                     rows.forEach { row ->
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
                             row.forEach { word ->
-                                val lastChar = word.takeLast(1)
-                                val front = word.dropLast(2)
+                                val lastChar = word.takeLast(1).ifEmpty { " " }
+                                val front = word.dropLast(2).ifEmpty { " " }
 
                                 Column(
                                     horizontalAlignment = Alignment.CenterHorizontally,
                                     modifier = Modifier
-                                        .clickable {
-                                            onKoreanCharacterClick(word)
-                                        }
+                                        .clickable { onKoreanCharacterClick(word) }
+                                        .weight(1f)
                                 ) {
                                     Text(
                                         text = lastChar,
@@ -158,23 +187,34 @@ fun KoreanReadyDialog(
                                 }
                             }
                         }
-                        Spacer(modifier = Modifier.height(8.dp)) // 줄 간 간격
+                        Spacer(modifier = Modifier.height(8.dp))
                     }
                 }
 
-                CuteIconButton(
-                    text = "제출",
-                    onClick = onSubmitClick,
-                    modifier = Modifier
-                        .align(Alignment.End)
-//                        .padding(16.dp)
-                )
 
-                CuteIconButton(
-                    text = "x",
-                    onClick = onKoreanDeleteClick,
+                Spacer(modifier = Modifier.height(16.dp)) // 줄 간 간격
 
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    CuteIconButton(
+                        text = "제출",
+                        onClick = onSubmitClick,
+                        modifier = Modifier
+                            .fillMaxWidth(0.5f)
+                    )
+
+                    Spacer(modifier = Modifier.size(10.dp)) // 나머지 공간 확보
+
+                    CuteIconButton(
+                        text = " x ",
+                        onClick = onKoreanDeleteClick,
+                        modifier = Modifier
+                        // weight 없이 자동으로 우측으로 감 (Spacer 덕분에)
+                    )
+                }
 
             }
         }
@@ -189,6 +229,12 @@ fun KoreanReadyDialogPreview() {
             onClose = {},
             koreanData = KoreanIdiom(),
             onSubmitClick = {},
+            koreanCharacter1 = "ㄱ",
+            koreanCharacter2 = "s",
+            koreanCharacter3 = "a",
+            koreanCharacter4 = "b",
+            informationText = "aa",
+            koreanCharacterList = listOf("aa a", "aahha a", "aa a", "aa a", "aa a", "aa a", "aa a", "aa a", "aa a", "aa a", )
         )
     }
 }

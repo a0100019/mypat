@@ -1,5 +1,6 @@
 package com.a0100019.mypat.presentation.daily.english
 
+import android.app.Application
 import androidx.lifecycle.ViewModel
 import com.a0100019.mypat.data.room.english.English
 import com.a0100019.mypat.data.room.english.EnglishDao
@@ -23,7 +24,9 @@ import javax.inject.Inject
 @HiltViewModel
 class EnglishViewModel @Inject constructor(
     private val userDao: UserDao,
-    private val englishDao: EnglishDao
+    private val englishDao: EnglishDao,
+    private val application: Application // 추가됨
+
 ) : ViewModel(), ContainerHost<EnglishState, EnglishSideEffect> {
 
     override val container: Container<EnglishState, EnglishSideEffect> = container(
@@ -46,13 +49,66 @@ class EnglishViewModel @Inject constructor(
     private fun loadData() = intent {
 
         val englishDataList = englishDao.getOpenEnglishData()
+        val words = WordRepository.loadWords(application)
 
         reduce {
             state.copy(
-                englishDataList = englishDataList
+                englishDataList = englishDataList,
+                allWordsData = words
             )
         }
 
+    }
+
+    fun onEnglishClick(english: English) = intent {
+        reduce {
+            state.copy(
+                clickEnglishData = english,
+                clickEnglishDataState = english.state
+            )
+        }
+
+    }
+
+    fun onAlphabetClick(alphabet: String) = intent {
+        val englishTextList = state.englishTextList.toMutableList()
+
+        if(englishTextList[0] == "") {
+            englishTextList[0] = alphabet
+            reduce {
+                state.copy(
+                    englishTextList = englishTextList
+                )
+            }
+        } else if(englishTextList[1] == "") {
+            englishTextList[1] = alphabet
+            reduce {
+                state.copy(
+                    englishTextList = englishTextList
+                )
+            }
+        } else if(englishTextList[2] == "") {
+            englishTextList[2] = alphabet
+            reduce {
+                state.copy(
+                    englishTextList = englishTextList
+                )
+            }
+        } else if(englishTextList[3] == "") {
+            englishTextList[3] = alphabet
+            reduce {
+                state.copy(
+                    englishTextList = englishTextList
+                )
+            }
+        } else if(englishTextList[4] == "") {
+            englishTextList[4] = alphabet
+            reduce {
+                state.copy(
+                    englishTextList = englishTextList
+                )
+            }
+        }
     }
 
 
@@ -112,28 +168,11 @@ class EnglishViewModel @Inject constructor(
         }
     }
 
-    fun onEnglishClick(english: English) = intent {
-        reduce {
-            state.copy(
-                clickEnglishData = english,
-                clickEnglishDataState = english.state
-            )
-        }
-    }
-
     fun onCloseClick() = intent {
         reduce {
             state.copy(
                 clickEnglishData = null,
                 clickEnglishDataState = ""
-            )
-        }
-    }
-
-    fun onFailDialogCloseClick() = intent {
-        reduce {
-            state.copy(
-                clickEnglishDataState = "대기"
             )
         }
     }
@@ -160,17 +199,6 @@ class EnglishViewModel @Inject constructor(
 
     }
 
-
-    //아이디 입력 가능하게 하는 코드
-    @OptIn(OrbitExperimental::class)
-    fun onEnglishTextChange(englishText: String) = blockingIntent {
-        reduce {
-            state.copy(englishText = englishText)
-        }
-    }
-
-
-
 }
 
 
@@ -180,11 +208,10 @@ data class EnglishState(
     val englishDataList: List<English> = emptyList(),
 
     val clickEnglishData: English? = null,
-    val todayEnglishData: English = English(),
     val filter: String = "일반",
     val clickEnglishDataState: String = "",
-    val englishText: String = "",
-
+    val englishTextList: List<String> = listOf("", "", "", "", ""),
+    val allWordsData: List<String> = emptyList()
     )
 
 

@@ -15,6 +15,9 @@ import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 
@@ -118,7 +121,7 @@ class KoreanViewModel @Inject constructor(
 
             reduce {
                 state.copy(
-                    koreanCharacterList = koreanCharacterList,
+                    koreanCharacterList = koreanCharacterList.shuffled(),
                     informationText = "아래 카드를 눌러 사자성어를 입력해주세요"
                 )
             }
@@ -159,61 +162,72 @@ class KoreanViewModel @Inject constructor(
 
     fun onSubmitClick() = intent {
 
-        val clickKoreanData = state.clickKoreanData
+        if(
+            state.koreanCharacter1 != "" &&
+            state.koreanCharacter2 != "" &&
+            state.koreanCharacter3 != "" &&
+            state.koreanCharacter4 != ""
+        ){
+            val clickKoreanData = state.clickKoreanData
 
-        val rightCount = listOf(
-            state.koreanCharacter1 == clickKoreanData!!.korean1,
-            state.koreanCharacter2 == clickKoreanData.korean2,
-            state.koreanCharacter3 == clickKoreanData.korean3,
-            state.koreanCharacter4 == clickKoreanData.korean4
-        ).count { it }
+            val rightCount = listOf(
+                state.koreanCharacter1 == clickKoreanData!!.korean1,
+                state.koreanCharacter2 == clickKoreanData.korean2,
+                state.koreanCharacter3 == clickKoreanData.korean3,
+                state.koreanCharacter4 == clickKoreanData.korean4
+            ).count { it }
 
-        if( rightCount == 4 ) {
+            if (rightCount == 4) {
 
-            val newClickKoreanData = state.clickKoreanData
-            newClickKoreanData!!.state = "완료"
+                val newClickKoreanData = state.clickKoreanData
+                newClickKoreanData!!.state = "완료"
 
-            koreanDao.update(newClickKoreanData)
+                koreanDao.update(newClickKoreanData)
 
-            reduce {
-                state.copy(
-                    clickKoreanData = null,
-                    clickKoreanDataState = "",
-                    koreanCharacter1 = "",
-                    koreanCharacter2 = "",
-                    koreanCharacter3 = "",
-                    koreanCharacter4 = "",
-                    informationText = "아래 카드를 눌러 사자성어를 입력해주세요"
+                reduce {
+                    state.copy(
+                        clickKoreanDataState = "완료",
+                        koreanCharacter1 = "",
+                        koreanCharacter2 = "",
+                        koreanCharacter3 = "",
+                        koreanCharacter4 = "",
+                        informationText = "아래 카드를 눌러 사자성어를 입력해주세요"
+                    )
+                }
+
+                //보상
+                userDao.update(
+                    id = "money",
+                    value = (state.userData.find { it.id == "money" }!!.value.toInt() + 100).toString()
                 )
+
+                postSideEffect(KoreanSideEffect.Toast("정답입니다 money+100"))
+            } else {
+                val newClickKoreanData = state.clickKoreanData
+                newClickKoreanData!!.state = "오답"
+
+                val informationText =
+                    state.koreanCharacter1.last().toString() +
+                            state.koreanCharacter2.last() +
+                            state.koreanCharacter3.last() +
+                            state.koreanCharacter4.last() +
+                            " : 오답 (${rightCount}개 일치)"
+
+                reduce {
+                    state.copy(
+                        clickKoreanData = newClickKoreanData,
+                        clickKoreanDataState = "오답",
+                        koreanCharacter1 = "",
+                        koreanCharacter2 = "",
+                        koreanCharacter3 = "",
+                        koreanCharacter4 = "",
+                        informationText = informationText
+                    )
+                }
+                postSideEffect(KoreanSideEffect.Toast("오답입니다 (${rightCount}개 일치)"))
             }
-
-            //보상
-            userDao.update(id = "money", value = (state.userData.find { it.id == "money" }!!.value.toInt() + 100).toString())
-
-            postSideEffect(KoreanSideEffect.Toast("정답입니다 money+100"))
         } else {
-            val newClickKoreanData = state.clickKoreanData
-            newClickKoreanData!!.state = "오답"
-
-            val informationText =
-                state.koreanCharacter1.last().toString() +
-                state.koreanCharacter2.last() +
-                state.koreanCharacter3.last() +
-                state.koreanCharacter4.last() +
-                " : 오답 (${rightCount}개 일치)"
-
-            reduce {
-                state.copy(
-                    clickKoreanData = newClickKoreanData,
-                    clickKoreanDataState = "오답",
-                    koreanCharacter1 = "",
-                    koreanCharacter2 = "",
-                    koreanCharacter3 = "",
-                    koreanCharacter4 = "",
-                    informationText = informationText
-                )
-            }
-            postSideEffect(KoreanSideEffect.Toast("오답입니다 (${rightCount}개 일치)"))
+            postSideEffect(KoreanSideEffect.Toast("사자성어를 입력하세요"))
         }
 
     }
@@ -293,7 +307,6 @@ data class KoreanState(
     val koreanCharacterList: List<String> = emptyList(),
 
     val clickKoreanData: KoreanIdiom? = null,
-    val todayKoreanData: KoreanIdiom = KoreanIdiom(),
     val filter: String = "일반",
     val clickKoreanDataState: String = "",
     val koreanCharacter1: String = "",

@@ -28,8 +28,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.item.Item
@@ -85,17 +87,21 @@ fun KoreanDialog(
                     text = koreanData.korean,
                     style = MaterialTheme.typography.headlineLarge,
                     color = Color.Black,
+                    letterSpacing = 6.sp, // 글자 간격 추가
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
+
+                Spacer(modifier = Modifier.size(16.dp))
 
                 Text(
                     text = koreanData.idiom,
                     style = MaterialTheme.typography.headlineMedium,
                     color = Color.DarkGray,
+                    letterSpacing = 12.sp, // 글자 간격 추가
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 // 단어 4개
                 Row(
@@ -115,7 +121,8 @@ fun KoreanDialog(
                     text = koreanData.meaning,
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.align(Alignment.CenterHorizontally),
-                    color = Color.Black
+                    color = Color.Black,
+                    textAlign = TextAlign.Center
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -136,7 +143,7 @@ fun KoreanDialog(
                     Spacer(modifier = Modifier.weight(1f))
                     CuteIconButton(
                         onClick = onClose,
-                        text = "닫기",
+                        text = " 닫기 ",
                         modifier = Modifier
                     )
                 }

@@ -126,12 +126,11 @@ dependencies {
     implementation ("com.google.firebase:firebase-firestore-ktx")
     implementation ("com.google.firebase:firebase-storage-ktx")
 
+    //JSON → Kotlin 객체 변환 담당
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+
     //communityViewModel
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-
-
-
-
 
 
 }

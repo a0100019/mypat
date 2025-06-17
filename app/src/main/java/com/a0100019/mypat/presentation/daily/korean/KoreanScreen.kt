@@ -73,6 +73,7 @@ fun KoreanScreen(
         koreanCharacter3 = koreanState.koreanCharacter3,
         koreanCharacter4 = koreanState.koreanCharacter4,
         informationText = koreanState.informationText,
+        koreanCharacterList = koreanState.koreanCharacterList,
 
         onKoreanClick = koreanViewModel::onKoreanClick,
         onFilterClick = koreanViewModel::onFilterClick,
@@ -94,6 +95,7 @@ fun KoreanScreen(
     koreanCharacter2: String = "",
     koreanCharacter3: String = "",
     koreanCharacter4: String = "",
+    koreanCharacterList: List<String> = emptyList(),
     informationText: String = "",
 
     onKoreanClick : (KoreanIdiom) -> Unit,
@@ -117,6 +119,7 @@ fun KoreanScreen(
             koreanCharacter2 = koreanCharacter2,
             koreanCharacter3 = koreanCharacter3,
             koreanCharacter4 = koreanCharacter4,
+            koreanCharacterList = koreanCharacterList,
             informationText = informationText,
             onKoreanCharacterClick = onKoreanCharacterClick,
             onKoreanDeleteClick = onKoreanDeleteClick,
