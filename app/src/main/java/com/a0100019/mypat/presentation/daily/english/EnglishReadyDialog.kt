@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -35,7 +36,7 @@ import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 @Composable
 fun EnglishReadyDialog(
 
-    englishTextList: List<String> = listOf("", "", "", "", ""),
+    englishTextList: List<String> = listOf(" ", " ", " ", " ", " "),
     failEnglishList: List<String> = emptyList(),
     failEnglishStateList: List<String> = emptyList(),
 
@@ -72,17 +73,17 @@ fun EnglishReadyDialog(
                     ,
                 )
 
-
                 Row(
                     modifier = Modifier
                         .fillMaxWidth(0.5f)
+                        .padding(top = 12.dp)
                         .border(1.dp, Color.Gray) // 전체 Row 테두리
                 ) {
                     repeat(5) { index ->
                         Text(
-                            text = englishTextList[index],
+                            text = englishTextList[index].ifEmpty { " " },
                             textAlign = TextAlign.Center,
-                            style = MaterialTheme.typography.titleLarge,
+                            style = MaterialTheme.typography.headlineMedium,
                             modifier = Modifier
                                 .weight(1f)
                                 .border(1.dp, Color.Gray) // 각 셀마다 테두리
@@ -93,19 +94,55 @@ fun EnglishReadyDialog(
 
                 }
 
-                LazyColumn(
-                    modifier = Modifier
-                        .weight(1f)
-                ) {
-                    items(failEnglishList) { word ->
+                Spacer(modifier = Modifier.size(12.dp))
+
+                if(failEnglishList.isNotEmpty()){
+                    LazyColumn(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(bottom = 12.dp)
+                    ) {
+                        itemsIndexed(failEnglishList.reversed()) { index, word ->
+                            Row {
+                                Spacer(modifier = Modifier.size(3.dp))
+                                repeat(5) {
+                                    Text(
+                                        text = word[it].toString(),
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        modifier = Modifier
+                                            .background(
+                                                color = if (failEnglishStateList.reversed()[index][it] == '0') {
+                                                    Color.Unspecified
+                                                } else if (failEnglishStateList.reversed()[index][it] == '1') {
+                                                    Color.Yellow
+                                                } else {
+                                                    Color.Green
+                                                },
+                                                shape = RoundedCornerShape(8.dp)
+                                            )
+                                            .padding(horizontal = 8.dp, vertical = 2.dp)
+                                    )
+                                    Spacer(modifier = Modifier.size(3.dp))
+                                }
+
+                            }
+                            Spacer(modifier = Modifier.size(12.dp))
+                        }
+                    }
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .weight(1f),  // 전체 영역 차지
+                        contentAlignment = Alignment.Center
+                    ) {
                         Text(
-                            text = word,
-                            style = MaterialTheme.typography.bodyLarge,
+                            text = "영어 단어를 입력하여 정답을 추측하세요\n정답에 포함된 알파벳이면 노란색, 위치까지 일치하면 초록색으로 표시됩니다",
+                            textAlign = TextAlign.Center,
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp)
+                                .padding(16.dp) // 여백은 보기 좋게 추가
                         )
                     }
+
                 }
 
                 Column(
@@ -174,7 +211,7 @@ fun EnglishReadyDialog(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     CuteIconButton(
-                        text = "제출",
+                        text = "확인",
                         onClick = onSubmitClick,
                         modifier = Modifier
                             .fillMaxWidth(0.5f)
@@ -200,7 +237,9 @@ fun EnglishReadyDialog(
 fun EnglishReadyDialogPreview() {
     MypatTheme {
         EnglishReadyDialog(
-
+            failEnglishList = listOf(),
+            failEnglishStateList = listOf("01210", "12221"),
+            englishTextList = listOf("a", "a", "a", "", "")
         )
     }
 }

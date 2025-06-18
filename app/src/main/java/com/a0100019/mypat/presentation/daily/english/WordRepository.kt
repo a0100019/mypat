@@ -9,6 +9,6 @@ object WordRepository {
         val jsonString = context.assets.open("words/words.json")
             .bufferedReader()
             .use { it.readText() }
-        return Json.decodeFromString(jsonString)
+        return Json.decodeFromString<List<String>>(jsonString)
     }
 }

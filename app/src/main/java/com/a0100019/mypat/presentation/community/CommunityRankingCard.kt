@@ -4,9 +4,11 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -36,31 +38,35 @@ fun CommunityRankingCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-            Row {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Text(
-                    text = userData.name
+                    text = " " + userData.name,
+                    style = MaterialTheme.typography.titleMedium
                 )
 
                 Text(
-                    text = "#" + userData.tag
+                    text = " #" + userData.tag,
+                    style = MaterialTheme.typography.titleSmall
                 )
             }
 
             when(situation) {
                 "firstGame" -> Text(
-                    text = userData.firstGame + "점"
+                    text = userData.firstGame + " 점 "
                 )
                 "secondGame" -> Text(
-                    text = userData.secondGame + "s"
+                    text = userData.secondGame + " s "
                 )
                 "thirdGameEasy" -> Text(
-                    text = userData.thirdGameEasy + "개"
+                    text = userData.thirdGameEasy + " 개 "
                 )
                 "thirdGameNormal" -> Text(
-                    text = userData.thirdGameNormal + "개"
+                    text = userData.thirdGameNormal + " 개 "
                 )
                 "thirdGameHard" -> Text(
-                    text = userData.thirdGameHard + "개"
+                    text = userData.thirdGameHard + " 개 "
                 )
             }
         }

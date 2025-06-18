@@ -73,35 +73,35 @@ class EnglishViewModel @Inject constructor(
     fun onAlphabetClick(alphabet: String) = intent {
         val englishTextList = state.englishTextList.toMutableList()
 
-        if(englishTextList[0] == "") {
+        if(englishTextList[0] == " ") {
             englishTextList[0] = alphabet
             reduce {
                 state.copy(
                     englishTextList = englishTextList
                 )
             }
-        } else if(englishTextList[1] == "") {
+        } else if(englishTextList[1] == " ") {
             englishTextList[1] = alphabet
             reduce {
                 state.copy(
                     englishTextList = englishTextList
                 )
             }
-        } else if(englishTextList[2] == "") {
+        } else if(englishTextList[2] == " ") {
             englishTextList[2] = alphabet
             reduce {
                 state.copy(
                     englishTextList = englishTextList
                 )
             }
-        } else if(englishTextList[3] == "") {
+        } else if(englishTextList[3] == " ") {
             englishTextList[3] = alphabet
             reduce {
                 state.copy(
                     englishTextList = englishTextList
                 )
             }
-        } else if(englishTextList[4] == "") {
+        } else if(englishTextList[4] == " ") {
             englishTextList[4] = alphabet
             reduce {
                 state.copy(
@@ -115,36 +115,36 @@ class EnglishViewModel @Inject constructor(
 
         val englishTextList = state.englishTextList.toMutableList()
 
-        if(englishTextList[4] != "") {
-            englishTextList[4] = ""
+        if(englishTextList[4] != " ") {
+            englishTextList[4] = " "
             reduce {
                 state.copy(
                     englishTextList = englishTextList
                 )
             }
-        } else if(englishTextList[3] != "") {
-            englishTextList[3] = ""
+        } else if(englishTextList[3] != " ") {
+            englishTextList[3] = " "
             reduce {
                 state.copy(
                     englishTextList = englishTextList
                 )
             }
-        } else if(englishTextList[2] != "") {
-            englishTextList[2] = ""
+        } else if(englishTextList[2] != " ") {
+            englishTextList[2] = " "
             reduce {
                 state.copy(
                     englishTextList = englishTextList
                 )
             }
-        } else if(englishTextList[1] != "") {
-            englishTextList[1] = ""
+        } else if(englishTextList[1] != " ") {
+            englishTextList[1] = " "
             reduce {
                 state.copy(
                     englishTextList = englishTextList
                 )
             }
-        } else if(englishTextList[0] != "") {
-            englishTextList[0] = ""
+        } else if(englishTextList[0] != " ") {
+            englishTextList[0] = " "
             reduce {
                 state.copy(
                     englishTextList = englishTextList
@@ -156,12 +156,12 @@ class EnglishViewModel @Inject constructor(
 
     fun onSubmitClick() = intent {
 
-        if(state.englishTextList[4] != "") {
+        if(state.englishTextList[4] != " ") {
 
-            val testEnglish = state.englishTextList.joinToString()
+            val testEnglish = state.englishTextList.joinToString("")
             val allWordsData = state.allWordsData
 
-            if(testEnglish in allWordsData){
+            if(testEnglish in allWordsData) {
                 if (testEnglish == state.clickEnglishData!!.word) {
 
                     val newClickEnglishData = state.clickEnglishData
@@ -172,7 +172,7 @@ class EnglishViewModel @Inject constructor(
                     reduce {
                         state.copy(
                             clickEnglishDataState = "완료",
-                            englishTextList = listOf("", "", "", "", ""),
+                            englishTextList = listOf(" ", " ", " ", " ", " "),
                             failEnglishList = emptyList(),
                             failEnglishStateList = emptyList(),
                         )
@@ -202,8 +202,17 @@ class EnglishViewModel @Inject constructor(
                         } else {
                             '0'
                         }
-                    }.joinToString()
+                    }.joinToString("")
                     failEnglishStateList.add(failEnglishState)
+
+                    reduce {
+                        state.copy(
+                            failEnglishList = failEnglishList,
+                            failEnglishStateList = failEnglishStateList,
+                            englishTextList = listOf(" ", " ", " ", " ", " ")
+                        )
+                    }
+
                     postSideEffect(EnglishSideEffect.Toast("오답입니다"))
 
                 }
@@ -244,7 +253,7 @@ class EnglishViewModel @Inject constructor(
             state.copy(
                 clickEnglishData = null,
                 clickEnglishDataState = "",
-                englishTextList = listOf("", "", "", "", ""),
+                englishTextList = listOf(" ", " ", " ", " ", " "),
                 failEnglishList = emptyList(),
                 failEnglishStateList = emptyList()
             )
@@ -283,7 +292,7 @@ data class EnglishState(
     val clickEnglishData: English? = null,
     val filter: String = "일반",
     val clickEnglishDataState: String = "",
-    val englishTextList: List<String> = listOf("", "", "", "", ""),
+    val englishTextList: List<String> = listOf(" ", " ", " ", " ", " "),
     val allWordsData: List<String> = emptyList(),
     val failEnglishList: List<String> = emptyList(),
     val failEnglishStateList: List<String> = emptyList(),

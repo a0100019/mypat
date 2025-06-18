@@ -101,6 +101,25 @@ fun EnglishScreen(
 
 ) {
 
+    if(clickEnglishData != null && clickEnglishDataState == "대기") {
+        EnglishReadyDialog(
+            englishTextList = englishTextList,
+            failEnglishList = failEnglishList,
+            failEnglishStateList = failEnglishStateList,
+            onClose = onCloseClick,
+            onAlphabetClick = onAlphabetClick,
+            onSubmitClick = onSubmitClick,
+            onAlphabetDeleteClick = onAlphabetDeleteClick,
+        )
+    } else if(clickEnglishData != null && clickEnglishDataState in listOf("완료", "별")) {
+        EnglishDialog(
+            onClose = onCloseClick,
+            english = clickEnglishData,
+            onStateChangeClick = onStateChangeClick,
+            englishDataState = clickEnglishDataState
+        )
+    }
+
     Column(
         modifier = Modifier.fillMaxSize()
     ) {

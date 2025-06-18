@@ -8,11 +8,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
@@ -21,6 +24,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
@@ -30,6 +35,7 @@ import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.data.room.allUser.AllUser
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pat.Pat
+import com.a0100019.mypat.presentation.ui.component.CuteIconButton
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.image.item.WorldItemImage
 import com.a0100019.mypat.presentation.ui.image.pat.PatInformationImage
@@ -69,7 +75,7 @@ fun CommunityUserDialog(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 6.dp)
+                        .padding(bottom = 3.dp)
                     ,
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
@@ -164,9 +170,11 @@ fun CommunityUserDialog(
                     verticalArrangement = Arrangement.SpaceEvenly
                 ) {
                     Surface(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .shadow(elevation = 4.dp, shape = RoundedCornerShape(6.dp)), // 그림자 추가
                         shape = RoundedCornerShape(12.dp),
-                        tonalElevation = 2.dp,
+                        tonalElevation = 2.dp,  // 이건 Material3용 elevation
                         color = Color(0xFFF9F3EA)
                     ) {
                         Column(
@@ -230,9 +238,11 @@ fun CommunityUserDialog(
                     }
 
                     Surface(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .shadow(elevation = 4.dp, shape = RoundedCornerShape(6.dp)), // 그림자 추가
                         shape = RoundedCornerShape(12.dp),
-                        tonalElevation = 2.dp,
+                        tonalElevation = 2.dp,  // 이건 Material3용 elevation
                         color = Color(0xFFF9F3EA)
                     ) {
                         Column(
@@ -392,23 +402,53 @@ fun CommunityUserDialog(
                     }
                 }
 
-                Row {
-                    JustImage(
-                        filePath = "etc/arrow.png",
-                        modifier = Modifier
-                            .clickable {
-                                onLikeClick()
-                            }
-                    )
-                    Text(
-                        text = clickAllUserData.like
-                    )
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Bottom,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+
                     JustImage(
                         filePath = "etc/ban.png",
                         modifier = Modifier
                             .clickable {
                                 onBanClick()
                             }
+                            .size(20.dp)
+                    )
+
+//                    Row(
+//                        modifier = Modifier
+//                            .padding(8.dp)
+//                            .clip(RoundedCornerShape(12.dp))
+//                            .background(Color(0xFFF9F3EA))  // 부드러운 배경색
+//                            .clickable { onLikeClick() }
+//                            .padding(horizontal = 16.dp, vertical = 12.dp)
+//                        ,
+//                        verticalAlignment = Alignment.CenterVertically
+//                    ) {
+//                        JustImage(
+//                            filePath = "etc/arrow.png",
+//                            modifier = Modifier
+//                                .size(25.dp)
+//                        )
+//                        Spacer(modifier = Modifier.width(12.dp))  // 아이콘과 텍스트 사이 간격
+//                        Text(
+//                            text = "좋아요를 눌러주세요",
+//                            style = MaterialTheme.typography.titleMedium,
+//                            color = Color(0xFF333333)
+//                        )
+//                    }
+
+                    CuteIconButton(
+                        text = "좋아요 누르기",
+                        onClick = onLikeClick
+                    )
+
+                    CuteIconButton(
+                        text = "닫기",
+                        onClick = onClose
                     )
                 }
 

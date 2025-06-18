@@ -88,7 +88,6 @@ fun EnglishDialog(
                     text = english.meaning,
                     style = MaterialTheme.typography.headlineMedium,
                     color = Color.DarkGray,
-                    letterSpacing = 12.sp, // 글자 간격 추가
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
 
