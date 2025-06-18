@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -53,7 +54,7 @@ fun LovePatDialog(
         BoxWithConstraints(
             modifier = Modifier
                 .fillMaxWidth()
-//                .fillMaxHeight(0.6f)
+                .fillMaxHeight(0.6f)
                 .background(Color.White, shape = RoundedCornerShape(16.dp))
                 .padding(16.dp)
         ) {
@@ -71,7 +72,7 @@ fun LovePatDialog(
 
                 Box(
                     modifier = Modifier
-                        .fillMaxHeight(0.3f)
+                        .fillMaxHeight(0.5f)
                         .fillMaxWidth()
                         .background(Color.Gray, shape = RoundedCornerShape(16.dp))
                         .padding(16.dp)
@@ -94,16 +95,43 @@ fun LovePatDialog(
 
                 when(situation) {
 
-                    "lovePatSuccess" -> CuteIconButton(
-                        onClick = onLovePatNextClick,
-                        text = "한번 더",
+                    "lovePatSuccess" -> Box(
+                        contentAlignment = Alignment.Center,
                         modifier = Modifier
-                            .fillMaxWidth(0.5f)
-                    )
+                            .fillMaxSize()
+                    ){
+                        CuteIconButton(
+                            onClick = onLovePatNextClick,
+                            text = "한번 더",
+                            modifier = Modifier
+                                .fillMaxWidth(0.5f)
+                        )
+                    }
 
-                    "lovePatFail" -> CuteIconButton(
-                        onClick = onLovePatStopClick,
-                        text = "확인"
+                    "lovePatFail" -> Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .weight(1f)
+                    ){
+                        CuteIconButton(
+                            onClick = onLovePatStopClick,
+                            text = "확인",
+                            modifier = Modifier
+                                .fillMaxWidth(0.5f)
+                        )
+                    }
+
+                }
+
+                if(situation == "lovePatOnGoing"){
+
+                    Text(
+                        text = "장난감을 펫에게 흔들어주세요\n원하는 장난감을 맞추면 애정도를 계속 얻을 수 있습니다",
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .padding(10.dp)
                     )
 
                 }
@@ -111,13 +139,6 @@ fun LovePatDialog(
             }
 
             if(situation == "lovePatOnGoing"){
-
-                Text(
-                    text = "장난감을 흔들어주세요!",
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                )
 
                 DraggableItemImage(
                     itemUrl = loveItemData1.url,
@@ -173,7 +194,7 @@ fun LovePatDialogPreview() {
             onLovePatNextClick = {},
             onLovePatStopClick = {},
             loveAmount = 100,
-            situation = "lovePatSuccess"
+            situation = "lovePatOnGoing"
         )
     }
 }

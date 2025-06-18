@@ -246,7 +246,7 @@ class MainViewModel @Inject constructor(
 
             var updatedItem = targetItem.copy(x = newX, y = newY)
 
-            if (newY < 0.3f) {
+            if (newY < 0.5f) {
                 if (targetItem.date.toInt() % 2 == 0) {
                     if (newX > 0.4f) {
                         updatedItem =
@@ -282,7 +282,7 @@ class MainViewModel @Inject constructor(
         val successId = (1..3).random().toString()
 
         if(successId == itemId) {
-            postSideEffect(MainSideEffect.Toast("성공"))
+            postSideEffect(MainSideEffect.Toast("펫이 원하는 장난감입니다!"))
             reduce {
                 state.copy(
                     situation = "lovePatSuccess",
@@ -290,7 +290,7 @@ class MainViewModel @Inject constructor(
                 )
             }
         } else {
-            postSideEffect(MainSideEffect.Toast("실패"))
+            postSideEffect(MainSideEffect.Toast("펫이 원하는 장난감이 아닙니다ㅠㅠ"))
             reduce {
                 state.copy(
                     situation = "lovePatFail"
@@ -303,9 +303,9 @@ class MainViewModel @Inject constructor(
         reduce {
             state.copy(
                 situation = "lovePatOnGoing",
-                loveItemData1 = state.loveItemData1.copy(x = 0.1f, y = 0.7f, date = "0"),
-                loveItemData2 = state.loveItemData2.copy(x = 0.4f, y = 0.7f, date = "0"),
-                loveItemData3 = state.loveItemData3.copy(x = 0.7f, y = 0.7f, date = "0")
+                loveItemData1 = state.loveItemData1.copy(x = 0.1f, y = 0.8f, date = "0"),
+                loveItemData2 = state.loveItemData2.copy(x = 0.4f, y = 0.8f, date = "0"),
+                loveItemData3 = state.loveItemData3.copy(x = 0.7f, y = 0.8f, date = "0")
             )
         }
     }
@@ -321,9 +321,9 @@ class MainViewModel @Inject constructor(
             state.copy(
                 lovePatData = Pat(url = ""),
                 loveAmount = 100,
-                loveItemData1 = state.loveItemData1.copy(x = 0.1f, y = 0.7f, date = "0"),
-                loveItemData2 = state.loveItemData2.copy(x = 0.4f, y = 0.7f, date = "0"),
-                loveItemData3 = state.loveItemData3.copy(x = 0.7f, y = 0.7f, date = "0"),
+                loveItemData1 = state.loveItemData1.copy(x = 0.1f, y = 0.8f, date = "0"),
+                loveItemData2 = state.loveItemData2.copy(x = 0.4f, y = 0.8f, date = "0"),
+                loveItemData3 = state.loveItemData3.copy(x = 0.7f, y = 0.8f, date = "0"),
                 situation = ""
             )
         }
@@ -413,9 +413,9 @@ data class MainState(
     val showLetterData: Letter = Letter(),
     val situation: String = "",
     val lovePatData: Pat = Pat(url = ""),
-    val loveItemData1: Item = Item(id = 1, name = "쓰다듬기", url = "etc/hand.png", x = 0.1f, y = 0.7f, sizeFloat = 0.2f),
-    val loveItemData2: Item = Item(id = 2, name = "장난감", url = "etc/arrow.png", x = 0.4f, y = 0.7f, sizeFloat = 0.2f),
-    val loveItemData3: Item = Item(id = 3, name = "비행기", url = "etc/lock.png", x = 0.7f, y = 0.7f, sizeFloat = 0.2f),
+    val loveItemData1: Item = Item(id = 1, name = "쓰다듬기", url = "etc/hand.png", x = 0.1f, y = 0.8f, sizeFloat = 0.2f),
+    val loveItemData2: Item = Item(id = 2, name = "장난감", url = "etc/arrow.png", x = 0.4f, y = 0.8f, sizeFloat = 0.2f),
+    val loveItemData3: Item = Item(id = 3, name = "비행기", url = "etc/lock.png", x = 0.7f, y = 0.8f, sizeFloat = 0.2f),
     val loveAmount: Int = 100,
     val timer: String = "10:00"
 

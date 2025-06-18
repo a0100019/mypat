@@ -404,7 +404,7 @@ fun CommunityUserDialog(
 
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Bottom,
+                    verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
@@ -415,7 +415,7 @@ fun CommunityUserDialog(
                             .clickable {
                                 onBanClick()
                             }
-                            .size(20.dp)
+                            .size(15.dp)
                     )
 
 //                    Row(
