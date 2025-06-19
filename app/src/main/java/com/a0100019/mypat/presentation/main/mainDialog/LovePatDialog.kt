@@ -111,7 +111,7 @@ fun LovePatDialog(
                     "lovePatFail" -> Box(
                         contentAlignment = Alignment.Center,
                         modifier = Modifier
-                            .weight(1f)
+                            .fillMaxSize()
                     ){
                         CuteIconButton(
                             onClick = onLovePatStopClick,

@@ -1,32 +1,30 @@
-package com.a0100019.mypat.presentation.ui.image.pat
+package com.a0100019.mypat.presentation.ui.image.etc
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
-import com.a0100019.mypat.presentation.ui.image.etc.PatEffectImage
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
 
-
 @Composable
-fun PatImage(
-    patUrl: String,
+fun PatEffectImage(
     surfaceWidthDp: Dp,
     surfaceHeightDp: Dp,
     effect: Int = 0,
     xFloat: Float,
     yFloat: Float,
     sizeFloat: Float,
-    onClick: () -> Unit = {} // 클릭 이벤트 콜백 추가
 ) {
+
+    val imageUrl = patEffectIndexToUrl(effect)
+
     // `assets` 폴더에서 Lottie 파일 로드
     val composition by rememberLottieComposition(
-        LottieCompositionSpec.Asset(patUrl)
+        LottieCompositionSpec.Asset(imageUrl)
     )
 
     val imageSize = surfaceWidthDp * sizeFloat // 이미지 크기를 Surface 너비의 비율로 설정
@@ -41,16 +39,13 @@ fun PatImage(
                 x = (surfaceWidthDp * xFloat),
                 y = (surfaceHeightDp * yFloat)
             )
-            .clickable { onClick() } // 클릭 이벤트 처리
     )
 
-    PatEffectImage(
-        surfaceWidthDp = surfaceWidthDp,
-        surfaceHeightDp = surfaceHeightDp,
-        effect = effect,
-        xFloat = xFloat,
-        yFloat = yFloat,
-        sizeFloat = sizeFloat,
-    )
+}
 
+fun patEffectIndexToUrl(index: Int): String {
+    return when(index) {
+        1 -> "patEffect/leaf.json"
+        else -> "etc/egg.json"
+    }
 }

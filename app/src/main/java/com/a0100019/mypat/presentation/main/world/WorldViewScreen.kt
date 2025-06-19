@@ -110,6 +110,7 @@ fun WorldViewScreen(
                                         xFloat = patData.x,
                                         yFloat = patData.y,
                                         sizeFloat = patData.sizeFloat,
+                                        effect = patData.effect,
                                         onClick = { dialogPatIdChange(patData.id.toString()) }
                                     )
 

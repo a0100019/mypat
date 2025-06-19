@@ -21,6 +21,8 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
+import com.a0100019.mypat.presentation.ui.image.etc.JustImage
+import com.a0100019.mypat.presentation.ui.image.etc.patEffectIndexToUrl
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -37,7 +39,8 @@ fun DraggablePatImage(
     yFloat: Float,
     sizeFloat: Float,
     onClick: () -> Unit,
-    newFloat: (Float, Float) -> Unit
+    effect: Int = 0,
+    newFloat: (Float, Float) -> Unit,
 ) {
 
     // `assets` 폴더에서 Lottie 파일 로드
@@ -89,6 +92,11 @@ fun DraggablePatImage(
                     text = (worldIndex.toInt() + 1).toString()
                 )
             }
+            JustImage(
+                filePath = patEffectIndexToUrl(effect),
+                modifier = Modifier.fillMaxSize()
+            )
+
         }
     } else {
         // Placeholder while loading or on error

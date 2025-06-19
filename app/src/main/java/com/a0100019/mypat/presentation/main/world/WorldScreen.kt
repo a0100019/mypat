@@ -131,8 +131,6 @@ fun WorldScreen(
     onAddItemClick: (String) -> Unit,
 ) {
 
-
-
     // 다이얼로그 표시
     if (showWorldAddDialog) {
         WorldAddDialog(
@@ -150,7 +148,6 @@ fun WorldScreen(
             userDataList = userDataList
         )
     }
-
 
     if (dialogPatId != "0") {
         PatSettingDialog(
@@ -260,6 +257,7 @@ fun WorldScreen(
                                                 xFloat = patData.x,
                                                 yFloat = patData.y,
                                                 sizeFloat = patData.sizeFloat,
+                                                effect = patData.effect,
                                                 onClick = { dialogPatIdChange(patData.id.toString()) }
                                             ) { newXFloat, newYFloat ->
                                                 onPatDrag(

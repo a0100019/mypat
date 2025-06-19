@@ -304,8 +304,6 @@ class WorldViewModel @Inject constructor(
         }
     }
 
-
-
     fun onPatSizeUpClick() = intent {
         val targetPat = state.patDataList.find { it.id.toString() == state.dialogPatId }!!
         val maxSize = targetPat.minFloat * 4 // 최대 크기 계산
@@ -368,7 +366,6 @@ class WorldViewModel @Inject constructor(
         }
     }
 
-
     fun onSelectMapImageClick(mapId: String) = intent {
         val newUrl = state.allAreaDataList.find { it.id == mapId.toInt() }?.url ?: ""
 
@@ -377,6 +374,22 @@ class WorldViewModel @Inject constructor(
                 areaData = state.areaData.copy(value = newUrl) // 기존 객체를 유지하면서 value만 변경
             )
         }
+    }
+
+
+    fun patEffectChangeClick(effectIndex: Int) = intent {
+
+        val targetPat = state.patDataList.find { it.id.toString() == state.dialogPatId }!!
+
+        val updatedPat = targetPat.copy(effect = effectIndex)
+        val updatedPatDataList = state.patDataList.toMutableList().apply {
+            set(indexOf(targetPat), updatedPat)
+        }
+
+        reduce {
+            state.copy(patDataList = updatedPatDataList)
+        }
+
     }
 
 }

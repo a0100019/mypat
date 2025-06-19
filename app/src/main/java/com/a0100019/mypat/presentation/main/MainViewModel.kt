@@ -188,8 +188,6 @@ class MainViewModel @Inject constructor(
         }
     }
 
-
-
     fun onLetterCloseClick() = intent {
 
         val letterData = state.showLetterData
@@ -330,6 +328,7 @@ class MainViewModel @Inject constructor(
 
         loadData()
     }
+
 
     //하트 타이머
     private var hasFiredThisCycle = false
