@@ -18,6 +18,7 @@ import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
+import java.lang.Math.abs
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 import kotlin.math.sqrt
@@ -62,7 +63,7 @@ class FirstGameViewModel @Inject constructor(
     fun onGameStartClick(surfaceWidthDp: Dp, surfaceHeightDp:Dp) = intent {
 
         val snowballSize = surfaceWidthDp * 0.1f
-        val targetSize = surfaceWidthDp * 0.8f // 나중에 0.3으로 !!
+        val targetSize = surfaceWidthDp * 0.3f // 나중에 0.3으로 !!
         val snowballX = surfaceWidthDp * 0.5f - snowballSize/2 // 가로의 50%
         val snowballY = surfaceHeightDp * 0.8f - snowballSize/2 // 세로의 90%
         val targetX = surfaceWidthDp * 0.5f - targetSize/2
@@ -170,7 +171,6 @@ class FirstGameViewModel @Inject constructor(
                 )
             }
 
-
             delay(1500)
             //공 이동 끝
 
@@ -184,11 +184,16 @@ class FirstGameViewModel @Inject constructor(
             val mapIn = (state.snowballX > 0.dp && state.snowballX < state.surfaceWidthDp
                     && state.snowballY > 0.dp && state.snowballY < state.surfaceHeightDp)
 
-
+            //통과
             if(distance < (state.targetSize.value/2 + state.snowballSize.value/2) && mapIn && state.level < 99) {
-                reduce {
+
+                //점수
+                val addScore = (1 - (abs((state.targetX - state.snowballX)/(state.surfaceWidthDp)) +
+                        abs((state.targetY - state.snowballY)/(state.surfaceHeightDp)))) * 100
+
+                        reduce {
                     state.copy(
-                        score = state.score + 200 - distance.toInt(),
+                        score = state.score + addScore.toInt(),
                         shotPower = 0,
                         situation = "다음"
                     )

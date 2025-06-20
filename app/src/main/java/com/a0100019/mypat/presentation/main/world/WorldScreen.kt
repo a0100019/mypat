@@ -91,7 +91,8 @@ fun WorldScreen(
         onAddPatClick = worldViewModel::onAddPatClick,
         onAddItemClick = worldViewModel::onAddItemClick,
         onSelectMapImageClick = worldViewModel::onSelectMapImageClick,
-        onAddDialogChangeClick = worldViewModel::onAddDialogChangeClick
+        onAddDialogChangeClick = worldViewModel::onAddDialogChangeClick,
+        onPatEffectChangeClick = worldViewModel::onPatEffectChangeClick
     )
 
 
@@ -129,6 +130,7 @@ fun WorldScreen(
     onSelectMapImageClick: (String) -> Unit,
     onAddPatClick: (String) -> Unit,
     onAddItemClick: (String) -> Unit,
+    onPatEffectChangeClick: (Int) -> Unit = {}
 ) {
 
     // 다이얼로그 표시
@@ -145,7 +147,7 @@ fun WorldScreen(
             worldDataList = worldDataList,
             onAddItemClick = onAddItemClick,
             onAddPatClick = onAddPatClick,
-            userDataList = userDataList
+            userDataList = userDataList,
         )
     }
 
@@ -159,6 +161,7 @@ fun WorldScreen(
             onSizeUp = onPatSizeUpClick,
             onSizeDown = onPatSizeDownClick,
             patData = patDataList.find { it.id.toString() == dialogPatId }!!,
+            onPatEffectChangeClick = onPatEffectChangeClick
         )
     }
 

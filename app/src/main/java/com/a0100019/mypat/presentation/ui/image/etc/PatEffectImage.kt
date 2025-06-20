@@ -34,7 +34,7 @@ fun PatEffectImage(
         composition = composition,
         iterations = Int.MAX_VALUE,
         modifier = Modifier
-            .size(imageSize)
+            .size(  imageSize)
             .offset(
                 x = (surfaceWidthDp * xFloat),
                 y = (surfaceHeightDp * yFloat)

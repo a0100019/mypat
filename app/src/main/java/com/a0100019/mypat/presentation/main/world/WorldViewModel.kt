@@ -377,7 +377,7 @@ class WorldViewModel @Inject constructor(
     }
 
 
-    fun patEffectChangeClick(effectIndex: Int) = intent {
+    fun onPatEffectChangeClick(effectIndex: Int) = intent {
 
         val targetPat = state.patDataList.find { it.id.toString() == state.dialogPatId }!!
 

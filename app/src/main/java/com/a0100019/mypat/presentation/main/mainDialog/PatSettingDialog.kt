@@ -1,10 +1,12 @@
 package com.a0100019.mypat.presentation.main.mainDialog
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -56,18 +58,37 @@ fun PatSettingDialog(
                     style = MaterialTheme.typography.headlineMedium
                 )
 
+                Spacer(modifier = Modifier.size(16.dp))
+
                 Text("${patData.name}에 대한 크기 조정 및 삭제를 수행할 수 있습니다.\n 현재 크기 : ${patData.sizeFloat.toDouble()}")
 
-                Row{
-                    repeat(5) {
+                Spacer(modifier = Modifier.size(16.dp))
+
+                Text(
+                    text = "효과를 선택해주세요"
+                )
+
+                Row {
+                    repeat(5) { index ->
                         JustImage(
-                            filePath = patEffectIndexToUrl(it),
+                            filePath = patEffectIndexToUrl(index),
                             modifier = Modifier
                                 .size(30.dp)
-                                .clickable { onPatEffectChangeClick(it) }
+                                .then(
+                                    if (patData.effect == index)
+                                        Modifier.border(
+                                            width = 2.dp,
+                                            color = Color.DarkGray,
+                                            shape = RoundedCornerShape(4.dp)
+                                        )
+                                    else Modifier
+                                )
+                                .clickable { onPatEffectChangeClick(index) }
                         )
                     }
                 }
+
+                Spacer(modifier = Modifier.size(16.dp))
 
                 Row {
 
