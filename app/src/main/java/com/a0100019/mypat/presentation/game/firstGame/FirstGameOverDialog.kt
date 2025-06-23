@@ -1,6 +1,7 @@
 package com.a0100019.mypat.presentation.game.firstGame
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,8 +13,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -21,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
+import com.a0100019.mypat.presentation.ui.component.CuteIconButton
 import com.a0100019.mypat.presentation.ui.image.etc.LoveHorizontalLine
 import com.a0100019.mypat.presentation.ui.image.pat.DialogPatImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
@@ -49,7 +53,12 @@ fun FirstGameOverDialog(
                 .background(Color.White, shape = RoundedCornerShape(16.dp))
                 .padding(16.dp)
         ) {
-            Column(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                ,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
 
                 Box(
                     modifier = Modifier
@@ -66,33 +75,59 @@ fun FirstGameOverDialog(
                     )
                 }
 
-                Text("점수")
-                Text(text = score.toString())
-                Text("레벨")
-                Text(text = level.toString())
+                Text(
+                    text = "점수",
+                    style = MaterialTheme.typography.titleMedium
+                    )
+                Text(
+                    text = score.toString(),
+                    style = MaterialTheme.typography.displayMedium
+                )
+                Text("레벨",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Text(
+                    text = level.toString(),
+                    style = MaterialTheme.typography.headlineMedium
+                )
                 if(situation == "신기록") {
-                    Text("신기록 달성!!")
+                    Text(
+                        text = "신기록 달성!!",
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier
+                            .padding(30.dp)
+                        )
                 } else {
-                    Text(text = "최고 기록")
-                    Text(text = userData.find { it.id == "firstGame" }?.value ?: "")
+                    Text(
+                        text = "최고 기록",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Text(
+                        text = userData.find { it.id == "firstGame" }?.value ?: "",
+                        style = MaterialTheme.typography.titleLarge
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                Row {
-                    Button(
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+
+                    CuteIconButton(
+                        text = "다시 하기",
                         onClick = onClose,
                         modifier = Modifier
-                    ) {
-                        Text("다시 하기")
-                    }
-                    
-                    Button(
+                    )
+
+                    CuteIconButton(
+                        text = "나가기",
                         onClick = popBackStack,
                         modifier = Modifier
-                    ) {
-                        Text("나가기")
-                    }
+                    )
+
                 }
 
             }

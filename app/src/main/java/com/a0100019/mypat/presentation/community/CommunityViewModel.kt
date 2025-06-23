@@ -447,7 +447,7 @@ class CommunityViewModel @Inject constructor(
 }
 
                     viewModelScope.launch {
-                        postSideEffect(CommunitySideEffect.Toast("신고가 접수되었습니다."))
+                        postSideEffect(CommunitySideEffect.Toast("신고가 접수되었습니다"))
                     }
 
                 }
@@ -542,12 +542,12 @@ class CommunityViewModel @Inject constructor(
                             }
 
                         viewModelScope.launch {
-                            postSideEffect(CommunitySideEffect.Toast("좋아요를 눌렀습니다."))
+                            postSideEffect(CommunitySideEffect.Toast("좋아요를 눌렀습니다"))
                         }
                     } else {
                         // 이미 존재할 때 Toast 띄우기
                         viewModelScope.launch {
-                            postSideEffect(CommunitySideEffect.Toast("이미 좋아요를 눌렀습니다."))
+                            postSideEffect(CommunitySideEffect.Toast("이미 좋아요를 눌렀습니다"))
                         }
                     }
                 } else {
@@ -610,14 +610,14 @@ class CommunityViewModel @Inject constructor(
 
 
                     viewModelScope.launch {
-                        postSideEffect(CommunitySideEffect.Toast("좋아요를 눌렀습니다."))
+                        postSideEffect(CommunitySideEffect.Toast("좋아요를 눌렀습니다"))
                     }
                 }
             }
             .addOnFailureListener { e ->
                 Log.e("Firebase", "Error accessing community document", e)
                 viewModelScope.launch {
-                    postSideEffect(CommunitySideEffect.Toast("인터넷 오류."))
+                    postSideEffect(CommunitySideEffect.Toast("인터넷 오류"))
                 }
             }
 

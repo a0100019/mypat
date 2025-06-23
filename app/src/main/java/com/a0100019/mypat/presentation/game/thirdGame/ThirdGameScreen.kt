@@ -9,11 +9,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -31,6 +34,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
+import com.a0100019.mypat.presentation.ui.component.CuteIconButton
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -130,33 +134,44 @@ fun ThirdGameScreen(
         )
     }
 
-    Column {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+        ,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceBetween
+    ) {
 
-        Text(
-            text = String.format("%.2f", time)
-        )
-
-        Text(
-            text = when(level) {
-                1 -> "쉬움"
-                2 -> "보통"
-                else -> "어려움"
-            }
-        )
-//
-//        Button(
-//            onClick = onStartClick
-//        ) {
-//            Text("표작성")
-//        }
-
-        Button(
+        CuteIconButton(
+            text = "새로 하기",
             onClick = {
                 onStateChangeClick("newGame")
-            }
+            },
+            modifier = Modifier
+                .align(Alignment.Start)
+        )
+
+        val minutes = (time / 60).toInt()
+        val seconds = time % 60
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("새로 하기")
+            Text(
+                text = String.format("시간 : %d분 %.2f초", minutes, seconds),
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier
+            )
+
+            Text(
+                text = when (level) {
+                    1 -> "쉬움"
+                    2 -> "보통"
+                    else -> "어려움"
+                }
+            )
         }
+
 
         Column(
             modifier = Modifier
@@ -257,6 +272,27 @@ fun ThirdGameScreen(
         }
 
         Row(
+            modifier = Modifier
+                .fillMaxWidth()
+        ){
+            Button(
+                onClick = onEraserClick
+            ) {
+                Text(
+                    text = "지우개"
+                )
+            }
+
+            Button(
+                onClick = onMemoClick
+            ) {
+                Text(
+                    text = "메모"
+                )
+            }
+        }
+
+        Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center // 텍스트를 가로로 가운데 정렬
         ) {
@@ -278,21 +314,7 @@ fun ThirdGameScreen(
             }
         }
 
-        Button(
-            onClick = onEraserClick
-        ) {
-            Text(
-                text = "지우개"
-            )
-        }
-
-        Button(
-            onClick = onMemoClick
-        ) {
-            Text(
-                text = "메모"
-            )
-        }
+        Spacer(modifier = Modifier.size(50.dp))
 
 
     }

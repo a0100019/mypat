@@ -397,9 +397,9 @@ class ThirdGameViewModel @Inject constructor(
     fun onLevelClick(level: Int) = intent {
 
         when(level) {
-            1 -> makeSudoku(3)
-            2 -> makeSudoku(20)
-            3 -> makeSudoku(30)
+            1 -> makeSudoku(45)
+            2 -> makeSudoku(50)
+            3 -> makeSudoku(55)
         }
         startTimer()
         sudokuDao.update(id = "state", value = "1")

@@ -306,7 +306,7 @@ fun FirstGameScreen(
                     text = "${(shotPower.toFloat()/maxPower.toFloat()*150).toInt()}m",
                     style = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier
-                        .padding(top = 10.dp)
+                        .padding(bottom = 20.dp)
                 )
             }
         }
