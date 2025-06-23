@@ -412,6 +412,8 @@ class ThirdGameViewModel @Inject constructor(
             )
         }
 
+        saveData()
+
     }
 
 }

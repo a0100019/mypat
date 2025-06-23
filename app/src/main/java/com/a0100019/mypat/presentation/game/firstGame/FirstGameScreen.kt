@@ -7,9 +7,13 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,9 +22,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
@@ -33,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
+import com.a0100019.mypat.presentation.ui.component.CuteIconButton
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
@@ -143,18 +150,44 @@ fun FirstGameScreen(
         )
     }
 
-    Column {
-        Text("점수 : $score")
-        Text("최고 기록 : ${userData.find { it.id == "firstGame" }?.value}")
-        Text("레벨 : ${level+1} / 100")
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+        ,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(
+            text = "$score",
+            style = MaterialTheme.typography.displayMedium,
+            modifier = Modifier
+                .padding(top = 30.dp, bottom = 20.dp)
+        )
+        Box(
+            modifier = Modifier.fillMaxWidth()
+        ){
+
+            Text(
+                text = "레벨 : ${level + 1} / 100",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier
+                    .align(Alignment.Center)
+            )
+
+            Text(
+                text = "최고 기록 : ${userData.find { it.id == "firstGame" }?.value}",
+                modifier = Modifier
+                    .padding(end = 12.dp)
+                    .align(Alignment.BottomEnd)
+            )
+        }
 
         BoxWithConstraints(
             modifier = Modifier
-                .fillMaxHeight(0.7f)
+                .aspectRatio(1 / 1.25f)
                 .fillMaxWidth()
 //                .border(10.dp, Color.Black)
-                .padding(16.dp), // Optional: Set background color
-//            contentAlignment = Alignment.Center // Center content
+                .padding(16.dp)
+            ,
         ) {
 
             val density = LocalDensity.current
@@ -196,51 +229,89 @@ fun FirstGameScreen(
             }
 
             if(situation == "시작"){
-                Button(
+                CuteIconButton(
                     onClick = {
                         onGameStartClick(surfaceWidthDp, surfaceHeightDp)
-                    }
-                ) {
-                    Text("시작하기")
-                }
+                    },
+                    text = "\n게임 시작\n",
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .fillMaxWidth(0.5f)
+                )
+                Text(
+                    text = "가로 : 100m, 세로  : 125m",
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 30.dp)
+                )
+
             }
         }
 
+        Spacer(modifier = Modifier.weight(1f))
+
         when (situation) {
             "회전" -> {
-                Button(
-                    onClick = onRotateStopClick
-                ) {
-                    Text("정지")
-                }
+                CuteIconButton(
+                    onClick = onRotateStopClick,
+                    text = "\n정지\n",
+                    modifier = Modifier
+                        .fillMaxWidth(0.5f)
+                )
 
             }
             "준비" -> {
-                Column {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .padding(start = 20.dp, end = 20.dp)
+                ) {
+
                     FirstGameHorizontalLine(shotPower, maxPower)
-                    Button(
-                        onClick = onMoveClick
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier
+                            .fillMaxWidth()
                     ) {
-                        Text("슛")
+                        Text(
+                            text = "0m"
+                        )
+                        Text(
+                            text = "75m"
+                        )
+                        Text(
+                            text = "150m"
+                        )
                     }
+                    CuteIconButton(
+                        onClick = onMoveClick,
+                        text = "\n발사\n",
+                        modifier = Modifier
+                            .fillMaxWidth(0.5f)
+                    )
+
                 }
 
             }
             "다음" -> {
-                Button(
-                    onClick = onNextLevelClick
-                ) {
-                    Text("다음 레벨")
-                }
+                CuteIconButton(
+                    onClick = onNextLevelClick,
+                    text = "\n다음 레벨\n",
+                    modifier = Modifier
+                        .fillMaxWidth(0.5f)
+                )
             }
             "발사중" -> {
                 Text(
-                    text = "${shotPower.toString()}m"
+                    text = "${(shotPower.toFloat()/maxPower.toFloat()*150).toInt()}m",
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier
+                        .padding(top = 10.dp)
                 )
             }
         }
 
-
+        Spacer(modifier = Modifier.size(30.dp))
 
 
     }

@@ -176,8 +176,8 @@ class FirstGameViewModel @Inject constructor(
 
             //표적과의 거리
             val distance = sqrt(
-                (state.targetX + state.targetSize/2 - state.snowballX + state.snowballSize/2).value.pow(2) +
-                        (state.targetY + state.targetSize/2 - state.snowballY + state.snowballSize/2).value.pow(2)
+                (state.targetX + state.targetSize/2 - (state.snowballX + state.snowballSize/2)).value.pow(2) +
+                        (state.targetY + state.targetSize/2 - (state.snowballY + state.snowballSize/2)).value.pow(2)
             )
 
             //맵안에 있는지
@@ -188,10 +188,9 @@ class FirstGameViewModel @Inject constructor(
             if(distance < (state.targetSize.value/2 + state.snowballSize.value/2) && mapIn && state.level < 99) {
 
                 //점수
-                val addScore = (1 - (abs((state.targetX - state.snowballX)/(state.surfaceWidthDp)) +
-                        abs((state.targetY - state.snowballY)/(state.surfaceHeightDp)))) * 100
+                val addScore = (1 - (distance / (state.targetSize.value/2 + state.snowballSize.value/2))) * 100
 
-                        reduce {
+                reduce {
                     state.copy(
                         score = state.score + addScore.toInt(),
                         shotPower = 0,
@@ -207,7 +206,7 @@ class FirstGameViewModel @Inject constructor(
 
                 if(state.userData.find { it.id == "firstGame" }!!.value.toDouble() < state.score){
 
-                    userDao.update(id = "secondGame", value = state.score.toString(), value2 = state.level.toString())
+                    userDao.update(id = "firstGame", value = state.score.toString(), value2 = state.level.toString())
 
                     reduce {
                         state.copy(
