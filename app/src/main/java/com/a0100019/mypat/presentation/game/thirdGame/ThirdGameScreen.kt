@@ -137,6 +137,7 @@ fun ThirdGameScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .padding(5.dp)
         ,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
@@ -158,7 +159,7 @@ fun ThirdGameScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = String.format("시간 : %d분 %.2f초", minutes, seconds),
+                text = String.format("%d분 %.2f초", minutes, seconds),
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier
             )
@@ -274,22 +275,23 @@ fun ThirdGameScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+            ,
+            horizontalArrangement = Arrangement.SpaceAround
         ){
-            Button(
-                onClick = onEraserClick
-            ) {
-                Text(
-                    text = "지우개"
-                )
-            }
+            CuteIconButton(
+                text = "칸 지우기",
+                onClick = onEraserClick,
+                modifier = Modifier
+                    .fillMaxWidth(0.4f)
+            )
 
-            Button(
-                onClick = onMemoClick
-            ) {
-                Text(
-                    text = "메모"
-                )
-            }
+            CuteIconButton(
+                text = if(memoMode) "메모 모드 on" else "메모 모드 off",
+                onClick = onMemoClick,
+                modifier = Modifier
+                    .fillMaxWidth(0.66f)
+            )
+
         }
 
         Row(

@@ -166,25 +166,6 @@ class ThirdGameViewModel @Inject constructor(
         return board
     }
 
-    fun onEraserClick() = intent {
-        if(state.clickedPuzzle != "99") {
-            val row = state.clickedPuzzle[0].digitToInt()
-            val col = state.clickedPuzzle[1].digitToInt()
-
-            val newSudoku = state.sudokuBoard.map { it.toMutableList() }.toMutableList()
-            newSudoku[row][col] = "0"
-
-            reduce {
-                state.copy(
-                    sudokuBoard = newSudoku
-                )
-            }
-        }
-
-        saveData()
-
-    }
-
     fun onMemoClick() = intent {
 
         reduce {
@@ -192,6 +173,26 @@ class ThirdGameViewModel @Inject constructor(
                 memoMode = !state.memoMode
             )
         }
+    }
+
+    fun onEraserClick() = intent {
+
+        val row = state.clickedPuzzle[0].digitToInt()
+        val col = state.clickedPuzzle[1].digitToInt()
+
+        val newSudoku = state.sudokuBoard.map { it.toMutableList() }.toMutableList()
+        newSudoku[row][col] = "0"
+
+        val newMemoSudoku = state.sudokuMemoBoard.map { it.toMutableList() }.toMutableList()
+        newMemoSudoku[row][col] = ""
+
+        reduce {
+            state.copy(
+                sudokuBoard = newSudoku,
+                sudokuMemoBoard = newMemoSudoku
+            )
+        }
+
     }
 
     fun onMemoNumberClick(number: Int) = intent {
@@ -231,12 +232,25 @@ class ThirdGameViewModel @Inject constructor(
             val col = state.clickedPuzzle[1].digitToInt()
 
             val newSudoku = state.sudokuBoard.map { it.toMutableList() }.toMutableList()
-            newSudoku[row][col] = number.toString()
 
-            reduce {
-                state.copy(
-                    sudokuBoard = newSudoku
-                )
+            if(state.sudokuBoard[row][col] == number.toString()) {
+                newSudoku[row][col] = "0"
+
+                reduce {
+                    state.copy(
+                        sudokuBoard = newSudoku
+                    )
+                }
+
+            } else {
+                newSudoku[row][col] = number.toString()
+
+                reduce {
+                    state.copy(
+                        sudokuBoard = newSudoku
+                    )
+                }
+
             }
 
             if (newSudoku.all { row -> row.all { it != "0" } }) {
@@ -276,7 +290,6 @@ class ThirdGameViewModel @Inject constructor(
                         2 -> userDao.update(id = "thirdGame", value2 = (current.value2.toInt() + 1).toString())
                         3 -> userDao.update(id = "thirdGame", value3 = (current.value3.toInt() + 1).toString())
                     }
-
 
                     reduce {
                         state.copy(
@@ -397,9 +410,9 @@ class ThirdGameViewModel @Inject constructor(
     fun onLevelClick(level: Int) = intent {
 
         when(level) {
-            1 -> makeSudoku(45)
-            2 -> makeSudoku(50)
-            3 -> makeSudoku(55)
+            1 -> makeSudoku(30)
+            2 -> makeSudoku(40)
+            3 -> makeSudoku(50)
         }
         startTimer()
         sudokuDao.update(id = "state", value = "1")
