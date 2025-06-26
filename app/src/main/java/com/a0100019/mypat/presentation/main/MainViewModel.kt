@@ -36,10 +36,14 @@ import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.Calendar
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 
@@ -133,6 +137,33 @@ class MainViewModel @Inject constructor(
                     }
                 }
 
+                ////지난 시간만큼 love
+                val storedTime = userDataList.find { it.id == "auth" }!!.value3.toLong()
+
+                val now = System.currentTimeMillis()
+                val timeGap = now - storedTime
+                val loveCount = (timeGap / (10 * 60 * 1000)).toInt()  // 10분 단위 몇 번 지났는지
+                val patLoveList = worldDataList.filter { it.type == "pat" && it.situation != "love" }
+
+                // 선택 가능한 최대 개수만큼 랜덤으로 고름
+                val selectedList = patLoveList.shuffled().take(loveCount)
+
+                // Room 업데이트 (각각 개별적으로)
+                selectedList.forEach { pat ->
+                    worldDao.updateSituationById(pat.id, "love")
+                }
+
+                // 상태 업데이트는 딱 한 번만
+                val updatedWorldList = worldDataList.map { item ->
+                    if (selectedList.any { it.id == item.id }) {
+                        item.copy(situation = "love")
+                    } else item
+                }
+                reduce { state.copy(worldDataList = updatedWorldList) }
+
+                val timestamp = System.currentTimeMillis() + 1
+                userDao.update(id = "auth", value3 = timestamp.toString())
+
                 // UI 상태 업데이트 (Main Dispatcher에서 실행)
                 withContext(Dispatchers.Main) {
                     reduce {
@@ -143,7 +174,6 @@ class MainViewModel @Inject constructor(
                             itemDataList = allItemDataList,
                             allAreaDataList = allMapDataList,
                             patFlowWorldDataList = patFlowWorldDataList,
-                            worldDataList = worldDataList,
                             userDataList = userDataList,
                         )
                     }
@@ -280,7 +310,7 @@ class MainViewModel @Inject constructor(
         val successId = (1..3).random().toString()
 
         if(successId == itemId) {
-            postSideEffect(MainSideEffect.Toast("펫이 원하는 장난감입니다!"))
+            //펫이 원하는 장난감
             reduce {
                 state.copy(
                     situation = "lovePatSuccess",
@@ -288,7 +318,6 @@ class MainViewModel @Inject constructor(
                 )
             }
         } else {
-            postSideEffect(MainSideEffect.Toast("펫이 원하는 장난감이 아닙니다ㅠㅠ"))
             reduce {
                 state.copy(
                     situation = "lovePatFail"
@@ -368,7 +397,6 @@ class MainViewModel @Inject constructor(
                     hasFiredThisCycle = false // 새 주기 시작
                 }
 
-
                 delay(1000L)
             }
         }
@@ -380,17 +408,23 @@ class MainViewModel @Inject constructor(
             val patList = state.worldDataList.filter { it.type == "pat" && it.situation != "love" }
             if (patList.isNotEmpty()) {
                 val targetPat = patList.random()
+
+                // Room 업데이트
+                worldDao.updateSituationById(targetPat.id, "love")
+
+                // 상태 업데이트
                 val updatedList = state.worldDataList.map {
                     if (it.id == targetPat.id) it.copy(situation = "love") else it
                 }
                 reduce { state.copy(worldDataList = updatedList) }
-                postSideEffect(MainSideEffect.Toast("애정 타이머"))
-            } else {
-                postSideEffect(MainSideEffect.Toast("애정 타이머 실패"))
+
             }
+
+            val timestamp = System.currentTimeMillis() + 1
+            userDao.update(id = "auth", value3 = timestamp.toString())
+
         }
     }
-
 
 
 }

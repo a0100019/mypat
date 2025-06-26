@@ -140,6 +140,7 @@ fun WorldViewScreen(
 
                                 if(worldData.situation == "love"){
                                     JustImage(
+                                        repetition = true,
                                         filePath = "etc/loveBubble.json",
                                         modifier = Modifier
                                             .size(50.dp)

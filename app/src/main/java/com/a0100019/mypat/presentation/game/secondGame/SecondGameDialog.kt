@@ -73,7 +73,6 @@ fun SecondGameDialog(
                     Text(text = userData.find { it.id == "secondGame" }?.value ?: "")
                 }
 
-
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Row {

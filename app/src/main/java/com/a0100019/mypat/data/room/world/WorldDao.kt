@@ -26,6 +26,9 @@ interface WorldDao {
     @Update
     suspend fun update(item: World)
 
+    @Query("UPDATE world_table SET situation = :newSituation WHERE id = :id")
+    suspend fun updateSituationById(id: Int, newSituation: String)
+
     @Query("DELETE FROM world_table WHERE id != 1")
     suspend fun deleteAllExceptIdOne()
 

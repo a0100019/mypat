@@ -98,7 +98,7 @@ fun LovePatDialog(
                     "lovePatSuccess" -> Box(
                         contentAlignment = Alignment.Center,
                         modifier = Modifier
-                            .fillMaxSize()
+                            .weight(1f)
                     ){
                         CuteIconButton(
                             onClick = onLovePatNextClick,
@@ -111,7 +111,7 @@ fun LovePatDialog(
                     "lovePatFail" -> Box(
                         contentAlignment = Alignment.Center,
                         modifier = Modifier
-                            .fillMaxSize()
+                            .weight(1f)
                     ){
                         CuteIconButton(
                             onClick = onLovePatStopClick,
@@ -126,7 +126,12 @@ fun LovePatDialog(
                 if(situation == "lovePatOnGoing"){
 
                     Text(
-                        text = "장난감을 펫에게 흔들어주세요\n원하는 장난감을 맞추면 애정도를 계속 얻을 수 있습니다",
+                        text = when(situation) {
+                            "lovePatOnGoing" -> "장난감을 펫에게 흔들어주세요\n원하는 장난감을 맞추면 애정도를 계속 얻을 수 있습니다"
+                            "lovePatSuccess" -> "펫이 원하는 장난감입니다!"
+                            else -> "펫이 원하는 장난감이 아닙니다.."
+                        }
+                        ,
                         style = MaterialTheme.typography.bodyMedium,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
@@ -135,6 +140,22 @@ fun LovePatDialog(
                     )
 
                 }
+
+                if(situation == "lovePatFail"){
+
+                    Text(
+                        text = "애정도 +${loveAmount}"
+                        ,
+                        style = MaterialTheme.typography.headlineMedium,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .padding(10.dp)
+                    )
+
+                }
+
+
 
             }
 

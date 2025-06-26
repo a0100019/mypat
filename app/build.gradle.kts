@@ -107,7 +107,7 @@ dependencies {
     // Coroutine (필수는 아니지만 권장)
     implementation(libs.kotlinx.coroutines.android)
 
-    implementation(libs.lottie.compose)
+    implementation("com.airbnb.android:lottie-compose:6.4.0")
 
     //workManager
     implementation(libs.androidx.work.runtime.ktx)

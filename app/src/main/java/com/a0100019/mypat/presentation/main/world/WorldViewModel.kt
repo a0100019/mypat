@@ -333,7 +333,6 @@ class WorldViewModel @Inject constructor(
             state.copy(itemDataList = updatedItemDataList)
         }
 
-
     }
 
     fun onPatSizeDownClick() =  intent {
@@ -375,7 +374,6 @@ class WorldViewModel @Inject constructor(
             )
         }
     }
-
 
     fun onPatEffectChangeClick(effectIndex: Int) = intent {
 
