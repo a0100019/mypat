@@ -93,68 +93,80 @@ fun LovePatDialog(
 
                 }
 
-                when(situation) {
-
-                    "lovePatSuccess" -> Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .weight(1f)
-                    ){
-                        CuteIconButton(
-                            onClick = onLovePatNextClick,
-                            text = "한번 더",
-                            modifier = Modifier
-                                .fillMaxWidth(0.5f)
-                        )
-                    }
-
-                    "lovePatFail" -> Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .weight(1f)
-                    ){
-                        CuteIconButton(
-                            onClick = onLovePatStopClick,
-                            text = "확인",
-                            modifier = Modifier
-                                .fillMaxWidth(0.5f)
-                        )
-                    }
-
-                }
-
                 if(situation == "lovePatOnGoing"){
-
                     Text(
-                        text = when(situation) {
-                            "lovePatOnGoing" -> "장난감을 펫에게 흔들어주세요\n원하는 장난감을 맞추면 애정도를 계속 얻을 수 있습니다"
-                            "lovePatSuccess" -> "펫이 원하는 장난감입니다!"
-                            else -> "펫이 원하는 장난감이 아닙니다.."
-                        }
-                        ,
+                        text = "장난감을 펫에게 흔들어주세요\n원하는 장난감을 맞추면 애정도를 계속 얻을 수 있습니다",
                         style = MaterialTheme.typography.bodyMedium,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
                             .align(Alignment.CenterHorizontally)
                             .padding(10.dp)
                     )
-
                 }
 
-                if(situation == "lovePatFail"){
 
-                    Text(
-                        text = "애정도 +${loveAmount}"
-                        ,
-                        style = MaterialTheme.typography.headlineMedium,
-                        textAlign = TextAlign.Center,
+                when(situation) {
+
+                    "lovePatSuccess" -> Box(
+                        contentAlignment = Alignment.Center,
                         modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                            .padding(10.dp)
-                    )
+                            .fillMaxSize()
+                    ) {
+                        Text(
+                            text = "펫이 원하는 장난감입니다!"
+                            ,
+                            style = MaterialTheme.typography.bodyMedium,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .align(Alignment.TopCenter)
+                                .padding(10.dp)
+                        )
+
+                        CuteIconButton(
+                            onClick = onLovePatNextClick,
+                            text = "한번 더",
+                            modifier = Modifier
+                                .fillMaxWidth(0.5f)
+                                .align(Alignment.Center) // ⭐ 중앙 정렬
+                        )
+                    }
+
+
+                    "lovePatFail" -> Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .fillMaxSize()
+                    ){
+                        Text(
+                            text = "펫이 원하는 장난감이 아닙니다.."
+                            ,
+                            style = MaterialTheme.typography.bodyMedium,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .align(Alignment.TopCenter)
+                                .padding(10.dp)
+                        )
+
+                        CuteIconButton(
+                            onClick = onLovePatStopClick,
+                            text = "확인",
+                            modifier = Modifier
+                                .fillMaxWidth(0.5f)
+                                .align(Alignment.Center) // ⭐ 중앙 정렬
+                        )
+
+                        Text(
+                            text = "애정도 +${loveAmount}"
+                            ,
+                            style = MaterialTheme.typography.headlineMedium,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .padding(10.dp)
+                        )
+                    }
 
                 }
-
 
 
             }
@@ -215,7 +227,7 @@ fun LovePatDialogPreview() {
             onLovePatNextClick = {},
             onLovePatStopClick = {},
             loveAmount = 100,
-            situation = "lovePatOnGoing"
+            situation = "lovePatSuccess"
         )
     }
 }

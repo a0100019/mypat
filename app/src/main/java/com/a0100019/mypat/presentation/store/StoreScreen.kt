@@ -1,15 +1,44 @@
 package com.a0100019.mypat.presentation.store
 
 import android.widget.Toast
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.data.room.area.Area
 import com.a0100019.mypat.data.room.item.Item
@@ -20,6 +49,7 @@ import com.a0100019.mypat.presentation.index.IndexAreaDialog
 import com.a0100019.mypat.presentation.index.IndexPatDialog
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
 import com.a0100019.mypat.presentation.ui.component.CuteIconButton
+import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -212,24 +242,239 @@ fun StoreScreen(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+        ,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Row {
-            Text("money : ${userData.find { it.id == "money" }?.value}")
-            Text("cash : ${userData.find {it.id == "money"}?.value2}")
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp)
+            ,
+            horizontalArrangement = Arrangement.SpaceAround
+        ) {
+            Text(
+                text = "money : ${userData.find { it.id == "money" }?.value}",
+                style = MaterialTheme.typography.titleMedium
+            )
+            Text(
+                text = "cash : ${userData.find {it.id == "money"}?.value2}",
+                style = MaterialTheme.typography.titleMedium
+            )
         }
-        LazyColumn {
-            item {
-                CuteIconButton(
-                    onClick = { onSimpleDialog("펫을 뽑으시겠습니까?") },
-                    text = "펫 뽑기 100원"
+
+
+        //버튼 기본 설정
+        val interactionSource = remember { MutableInteractionSource() }
+        val isPressed by interactionSource.collectIsPressedAsState()
+        val scale by animateFloatAsState(
+            targetValue = if (isPressed) 0.95f else 1f,
+            label = "scale"
+        )
+
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            color = MaterialTheme.colorScheme.background,
+            border = BorderStroke(3.dp, MaterialTheme.colorScheme.onPrimaryContainer),
+            shadowElevation = 6.dp,
+            modifier = Modifier
+                .graphicsLayer {
+                    scaleX = scale
+                    scaleY = scale
+                }
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = rememberRipple(bounded = true, color = Color.White),
+                    onClick = { }
                 )
+        ) {
+            Column(
+                modifier = Modifier.padding(8.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                //내용
+            }
+
+        }
+
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+            ,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            item {
+                Surface(
+                    shape = RoundedCornerShape(16.dp),
+                    color = MaterialTheme.colorScheme.background,
+                    border = BorderStroke(3.dp, MaterialTheme.colorScheme.onPrimaryContainer),
+                    shadowElevation = 6.dp,
+                    modifier = Modifier
+                        .graphicsLayer {
+                            scaleX = scale
+                            scaleY = scale
+                        }
+                        .clickable(
+                            interactionSource = interactionSource,
+                            indication = rememberRipple(bounded = true, color = Color.White),
+                            onClick = { onSimpleDialog("펫을 뽑으시겠습니까?") }
+                        )
+                        .padding(start = 12.dp, end = 12.dp, top = 6.dp, bottom = 6.dp)
+                ) {
+                    Box {
+
+                        Row(
+                            modifier = Modifier
+                                .align(Alignment.CenterStart)
+                        ) {
+                            Spacer(modifier = Modifier.size(10.dp))
+                            JustImage(
+                                filePath = "pat/cat.json",
+                                modifier = Modifier
+                                    .size(50.dp)
+                                    .rotate(10f)
+                            )
+                        }
+
+                        Row(
+                            modifier = Modifier
+                                .align(Alignment.CenterEnd)
+                        ) {
+                            JustImage(
+                                filePath = "pat/cat.json",
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .rotate(-10f)
+                                    .align(Alignment.Bottom)
+                            )
+                            JustImage(
+                                filePath = "pat/cat.json",
+                                modifier = Modifier
+                                    .size(30.dp)
+                                    .rotate(10f)
+                                    .align(Alignment.Top)
+                            )
+                            Spacer(modifier = Modifier.size(width = 10.dp, height = 50.dp))
+                        }
+
+                        Column(
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .fillMaxWidth(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "펫 뽑기",
+                                style = MaterialTheme.typography.headlineMedium,
+                                modifier = Modifier
+                                    .padding(bottom = 10.dp)
+                                ,
+                            )
+                            Text(
+                                text = "랜덤으로 하나의 펫을 획득할 수 있습니다",
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier
+                                    .padding(bottom = 10.dp)
+                                ,
+                            )
+                            Text(
+                                text = "100 money",
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier,
+                            )
+                        }
+                    }
+
+                }
             }
             item {
-                CuteIconButton(
-                    onClick = { onSimpleDialog("아이템을 뽑으시겠습니까?")},
-                    text = "아이템 뽑기"
-                )
+                Surface(
+                    shape = RoundedCornerShape(16.dp),
+                    color = MaterialTheme.colorScheme.background,
+                    border = BorderStroke(3.dp, MaterialTheme.colorScheme.onPrimaryContainer),
+                    shadowElevation = 6.dp,
+                    modifier = Modifier
+                        .graphicsLayer {
+                            scaleX = scale
+                            scaleY = scale
+                        }
+                        .clickable(
+                            interactionSource = interactionSource,
+                            indication = rememberRipple(bounded = true, color = Color.White),
+                            onClick = { onSimpleDialog("아이템을 뽑으시겠습니까?") }
+                        )
+                        .padding(start = 12.dp, end = 12.dp, top = 6.dp, bottom = 6.dp)
+                ) {
+                    Box {
+
+                        Row(
+                            modifier = Modifier
+                                .align(Alignment.CenterStart)
+                        ) {
+                            Spacer(modifier = Modifier.size(10.dp))
+                            JustImage(
+                                filePath = "pat/cat.json",
+                                modifier = Modifier
+                                    .size(50.dp)
+                                    .rotate(10f)
+                            )
+                        }
+
+                        Row(
+                            modifier = Modifier
+                                .align(Alignment.CenterEnd)
+                        ) {
+                            JustImage(
+                                filePath = "pat/cat.json",
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .rotate(-10f)
+                                    .align(Alignment.Bottom)
+                            )
+                            JustImage(
+                                filePath = "pat/cat.json",
+                                modifier = Modifier
+                                    .size(30.dp)
+                                    .rotate(10f)
+                                    .align(Alignment.Top)
+                            )
+                            Spacer(modifier = Modifier.size(width = 10.dp, height = 50.dp))
+                        }
+
+                        Column(
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .fillMaxWidth(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "아이템 뽑기",
+                                style = MaterialTheme.typography.headlineMedium,
+                                modifier = Modifier
+                                    .padding(bottom = 10.dp)
+                                ,
+                            )
+                            Text(
+                                text = "5개의 아이템 중 하나를 선택할 수 있습니다",
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier
+                                    .padding(bottom = 10.dp)
+                                ,
+                            )
+                            Text(
+                                text = "100 cash",
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier,
+                            )
+                        }
+                    }
+
+                }
             }
             item {
                 CuteIconButton(
