@@ -248,6 +248,13 @@ fun StoreScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
+        Text(
+            text = "상점",
+            style = MaterialTheme.typography.displaySmall,
+            modifier = Modifier
+                .padding(top = 10.dp)
+        )
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -265,41 +272,6 @@ fun StoreScreen(
             )
         }
 
-
-        //버튼 기본 설정
-        val interactionSource = remember { MutableInteractionSource() }
-        val isPressed by interactionSource.collectIsPressedAsState()
-        val scale by animateFloatAsState(
-            targetValue = if (isPressed) 0.95f else 1f,
-            label = "scale"
-        )
-
-        Surface(
-            shape = RoundedCornerShape(16.dp),
-            color = MaterialTheme.colorScheme.background,
-            border = BorderStroke(3.dp, MaterialTheme.colorScheme.onPrimaryContainer),
-            shadowElevation = 6.dp,
-            modifier = Modifier
-                .graphicsLayer {
-                    scaleX = scale
-                    scaleY = scale
-                }
-                .clickable(
-                    interactionSource = interactionSource,
-                    indication = rememberRipple(bounded = true, color = Color.White),
-                    onClick = { }
-                )
-        ) {
-            Column(
-                modifier = Modifier.padding(8.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                //내용
-            }
-
-        }
-
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -307,6 +279,14 @@ fun StoreScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             item {
+                //버튼 기본 설정
+                val interactionSource = remember { MutableInteractionSource() }
+                val isPressed by interactionSource.collectIsPressedAsState()
+                val scale by animateFloatAsState(
+                    targetValue = if (isPressed) 0.95f else 1f,
+                    label = "scale"
+                )
+
                 Surface(
                     shape = RoundedCornerShape(16.dp),
                     color = MaterialTheme.colorScheme.background,
@@ -391,7 +371,16 @@ fun StoreScreen(
 
                 }
             }
+
             item {
+                //버튼 기본 설정
+                val interactionSource = remember { MutableInteractionSource() }
+                val isPressed by interactionSource.collectIsPressedAsState()
+                val scale by animateFloatAsState(
+                    targetValue = if (isPressed) 0.95f else 1f,
+                    label = "scale"
+                )
+
                 Surface(
                     shape = RoundedCornerShape(16.dp),
                     color = MaterialTheme.colorScheme.background,
@@ -467,6 +456,13 @@ fun StoreScreen(
                                 ,
                             )
                             Text(
+                                text = "(낮은 확률로 맵이 등장합니다)",
+                                style = MaterialTheme.typography.titleSmall,
+                                modifier = Modifier
+                                    .padding(bottom = 10.dp)
+                                ,
+                            )
+                            Text(
                                 text = "100 cash",
                                 style = MaterialTheme.typography.titleMedium,
                                 modifier = Modifier,
@@ -476,30 +472,399 @@ fun StoreScreen(
 
                 }
             }
+
             item {
-                CuteIconButton(
-                    onClick = { onSimpleDialog("펫 공간을 늘리겠습니까?") },
-                    text = "펫 공간 늘리기 10cash"
+                //버튼 기본 설정
+                val interactionSource = remember { MutableInteractionSource() }
+                val isPressed by interactionSource.collectIsPressedAsState()
+                val scale by animateFloatAsState(
+                    targetValue = if (isPressed) 0.95f else 1f,
+                    label = "scale"
                 )
+
+                Surface(
+                    shape = RoundedCornerShape(16.dp),
+                    color = MaterialTheme.colorScheme.background,
+                    border = BorderStroke(3.dp, MaterialTheme.colorScheme.onPrimaryContainer),
+                    shadowElevation = 6.dp,
+                    modifier = Modifier
+                        .graphicsLayer {
+                            scaleX = scale
+                            scaleY = scale
+                        }
+                        .clickable(
+                            interactionSource = interactionSource,
+                            indication = rememberRipple(bounded = true, color = Color.White),
+                            onClick = { onSimpleDialog("펫 공간을 늘리겠습니까?") }
+                        )
+                        .padding(start = 12.dp, end = 12.dp, top = 6.dp, bottom = 6.dp)
+                ) {
+                    Box {
+
+                        Row(
+                            modifier = Modifier
+                                .align(Alignment.CenterStart)
+                        ) {
+                            Spacer(modifier = Modifier.size(10.dp))
+                            JustImage(
+                                filePath = "pat/cat.json",
+                                modifier = Modifier
+                                    .size(50.dp)
+                                    .rotate(10f)
+                            )
+                        }
+
+                        Row(
+                            modifier = Modifier
+                                .align(Alignment.CenterEnd)
+                        ) {
+                            JustImage(
+                                filePath = "pat/cat.json",
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .rotate(-10f)
+                                    .align(Alignment.Bottom)
+                            )
+                            JustImage(
+                                filePath = "pat/cat.json",
+                                modifier = Modifier
+                                    .size(30.dp)
+                                    .rotate(10f)
+                                    .align(Alignment.Top)
+                            )
+                            Spacer(modifier = Modifier.size(width = 10.dp, height = 50.dp))
+                        }
+
+                        Column(
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .fillMaxWidth(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "펫 공간 늘리기",
+                                style = MaterialTheme.typography.headlineMedium,
+                                modifier = Modifier
+                                    .padding(bottom = 10.dp)
+                                ,
+                            )
+                            Text(
+                                text = "마을의 펫 공간이 한 칸 늘어납니다",
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier
+                                    .padding(bottom = 10.dp)
+                                ,
+                            )
+                            Text(
+                                text = "(현재 ${userData.find{it.id == "pat"}?.value2}칸, 최대 ${userData.find{it.id == "pat"}?.value}칸)",
+                                style = MaterialTheme.typography.titleSmall,
+                                modifier = Modifier
+                                    .padding(bottom = 10.dp)
+                                ,
+                            )
+                            Text(
+                                text = "100 money",
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier,
+                            )
+                        }
+                    }
+
+                }
             }
+
             item {
-                CuteIconButton(
-                    onClick = { onSimpleDialog("아이템 공간을 늘리겠습니까?") },
-                    text = "아이템 공간 늘리기"
+                //버튼 기본 설정
+                val interactionSource = remember { MutableInteractionSource() }
+                val isPressed by interactionSource.collectIsPressedAsState()
+                val scale by animateFloatAsState(
+                    targetValue = if (isPressed) 0.95f else 1f,
+                    label = "scale"
                 )
+
+                Surface(
+                    shape = RoundedCornerShape(16.dp),
+                    color = MaterialTheme.colorScheme.background,
+                    border = BorderStroke(3.dp, MaterialTheme.colorScheme.onPrimaryContainer),
+                    shadowElevation = 6.dp,
+                    modifier = Modifier
+                        .graphicsLayer {
+                            scaleX = scale
+                            scaleY = scale
+                        }
+                        .clickable(
+                            interactionSource = interactionSource,
+                            indication = rememberRipple(bounded = true, color = Color.White),
+                            onClick = { onSimpleDialog("아이템 공간을 늘리겠습니까?") }
+                        )
+                        .padding(start = 12.dp, end = 12.dp, top = 6.dp, bottom = 6.dp)
+                ) {
+                    Box {
+
+                        Row(
+                            modifier = Modifier
+                                .align(Alignment.CenterStart)
+                        ) {
+                            Spacer(modifier = Modifier.size(10.dp))
+                            JustImage(
+                                filePath = "pat/cat.json",
+                                modifier = Modifier
+                                    .size(50.dp)
+                                    .rotate(10f)
+                            )
+                        }
+
+                        Row(
+                            modifier = Modifier
+                                .align(Alignment.CenterEnd)
+                        ) {
+                            JustImage(
+                                filePath = "pat/cat.json",
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .rotate(-10f)
+                                    .align(Alignment.Bottom)
+                            )
+                            JustImage(
+                                filePath = "pat/cat.json",
+                                modifier = Modifier
+                                    .size(30.dp)
+                                    .rotate(10f)
+                                    .align(Alignment.Top)
+                            )
+                            Spacer(modifier = Modifier.size(width = 10.dp, height = 50.dp))
+                        }
+
+                        Column(
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .fillMaxWidth(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "아이템 공간 늘리기",
+                                style = MaterialTheme.typography.headlineMedium,
+                                modifier = Modifier
+                                    .padding(bottom = 10.dp)
+                                ,
+                            )
+                            Text(
+                                text = "마을의 아이템 공간이 한 칸 늘어납니다",
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier
+                                    .padding(bottom = 10.dp)
+                                ,
+                            )
+                            Text(
+                                text = "(현재 ${userData.find{it.id == "item"}?.value2}칸, 최대 ${userData.find{it.id == "item"}?.value}칸)",
+                                style = MaterialTheme.typography.titleSmall,
+                                modifier = Modifier
+                                    .padding(bottom = 10.dp)
+                                ,
+                            )
+                            Text(
+                                text = "10 cash",
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier,
+                            )
+                        }
+                    }
+
+                }
             }
+
             item {
-                CuteIconButton(
-                    onClick = {changeShowDialog("name")},
-                    text = "닉네임 변경"
+                //버튼 기본 설정
+                val interactionSource = remember { MutableInteractionSource() }
+                val isPressed by interactionSource.collectIsPressedAsState()
+                val scale by animateFloatAsState(
+                    targetValue = if (isPressed) 0.95f else 1f,
+                    label = "scale"
                 )
+
+                Surface(
+                    shape = RoundedCornerShape(16.dp),
+                    color = MaterialTheme.colorScheme.background,
+                    border = BorderStroke(3.dp, MaterialTheme.colorScheme.onPrimaryContainer),
+                    shadowElevation = 6.dp,
+                    modifier = Modifier
+                        .graphicsLayer {
+                            scaleX = scale
+                            scaleY = scale
+                        }
+                        .clickable(
+                            interactionSource = interactionSource,
+                            indication = rememberRipple(bounded = true, color = Color.White),
+                            onClick = { onSimpleDialog("name") }
+                        )
+                        .padding(start = 12.dp, end = 12.dp, top = 6.dp, bottom = 6.dp)
+                ) {
+                    Box {
+
+                        Row(
+                            modifier = Modifier
+                                .align(Alignment.CenterStart)
+                        ) {
+                            Spacer(modifier = Modifier.size(10.dp))
+                            JustImage(
+                                filePath = "pat/cat.json",
+                                modifier = Modifier
+                                    .size(50.dp)
+                                    .rotate(10f)
+                            )
+                        }
+
+                        Row(
+                            modifier = Modifier
+                                .align(Alignment.CenterEnd)
+                        ) {
+                            JustImage(
+                                filePath = "pat/cat.json",
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .rotate(-10f)
+                                    .align(Alignment.Bottom)
+                            )
+                            JustImage(
+                                filePath = "pat/cat.json",
+                                modifier = Modifier
+                                    .size(30.dp)
+                                    .rotate(10f)
+                                    .align(Alignment.Top)
+                            )
+                            Spacer(modifier = Modifier.size(width = 10.dp, height = 50.dp))
+                        }
+
+                        Column(
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .fillMaxWidth(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "닉네임 변경",
+                                style = MaterialTheme.typography.headlineMedium,
+                                modifier = Modifier
+                                    .padding(bottom = 10.dp)
+                                ,
+                            )
+                            Text(
+                                text = "닉네임을 변경할 수 있습니다",
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier
+                                    .padding(bottom = 10.dp)
+                                ,
+                            )
+                            Text(
+                                text = "(현재 닉네임 : ${userData.find{it.id == "name"}?.value})",
+                                style = MaterialTheme.typography.titleSmall,
+                                modifier = Modifier
+                                    .padding(bottom = 10.dp)
+                                ,
+                            )
+                            Text(
+                                text = "10 cash",
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier,
+                            )
+                        }
+                    }
+
+                }
             }
+
             item {
-                CuteIconButton(
-                    onClick = {onSimpleDialog("화폐를 변경하겠습니까?")},
-                    text = "화폐 변경 1d -> 100s"
+                //버튼 기본 설정
+                val interactionSource = remember { MutableInteractionSource() }
+                val isPressed by interactionSource.collectIsPressedAsState()
+                val scale by animateFloatAsState(
+                    targetValue = if (isPressed) 0.95f else 1f,
+                    label = "scale"
                 )
+
+                Surface(
+                    shape = RoundedCornerShape(16.dp),
+                    color = MaterialTheme.colorScheme.background,
+                    border = BorderStroke(3.dp, MaterialTheme.colorScheme.onPrimaryContainer),
+                    shadowElevation = 6.dp,
+                    modifier = Modifier
+                        .graphicsLayer {
+                            scaleX = scale
+                            scaleY = scale
+                        }
+                        .clickable(
+                            interactionSource = interactionSource,
+                            indication = rememberRipple(bounded = true, color = Color.White),
+                            onClick = { onSimpleDialog("화폐를 변경하겠습니까?") }
+                        )
+                        .padding(start = 12.dp, end = 12.dp, top = 6.dp, bottom = 6.dp)
+                ) {
+                    Box {
+
+                        Row(
+                            modifier = Modifier
+                                .align(Alignment.CenterStart)
+                        ) {
+                            Spacer(modifier = Modifier.size(10.dp))
+                            JustImage(
+                                filePath = "pat/cat.json",
+                                modifier = Modifier
+                                    .size(50.dp)
+                                    .rotate(10f)
+                            )
+                        }
+
+                        Row(
+                            modifier = Modifier
+                                .align(Alignment.CenterEnd)
+                        ) {
+                            JustImage(
+                                filePath = "pat/cat.json",
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .rotate(-10f)
+                                    .align(Alignment.Bottom)
+                            )
+                            JustImage(
+                                filePath = "pat/cat.json",
+                                modifier = Modifier
+                                    .size(30.dp)
+                                    .rotate(10f)
+                                    .align(Alignment.Top)
+                            )
+                            Spacer(modifier = Modifier.size(width = 10.dp, height = 50.dp))
+                        }
+
+                        Column(
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .fillMaxWidth(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "화폐 변경",
+                                style = MaterialTheme.typography.headlineMedium,
+                                modifier = Modifier
+                                    .padding(bottom = 10.dp)
+                                ,
+                            )
+                            Text(
+                                text = "화폐 변경 1d -> 100s",
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier
+                                    .padding(bottom = 10.dp)
+                                ,
+                            )
+                        }
+                    }
+
+                }
             }
+
         }
 
     }

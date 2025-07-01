@@ -296,7 +296,6 @@ fun MainScreen(
                             .fillMaxWidth(0.7f)
                             .padding(bottom = 10.dp),
                         onClick = onDailyNavigateClick,
-                        showBadge = true
                     )
                 }
 
