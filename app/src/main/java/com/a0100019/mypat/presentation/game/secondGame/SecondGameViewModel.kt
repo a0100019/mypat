@@ -52,40 +52,126 @@ class SecondGameViewModel @Inject constructor(
         reduce {
             state.copy(
                 userData = userDataList,
-                patData = patData
+                patData = patData,
+                mapList = listOf(
+                    "1300003030030300303000032", "2030200000331330000020302", "2000203330031300303020002", "2300000030333320003013000",
+                    "2020202020201020202020202", "0202020202021202020202020", "2313203030030300000032323", "2303003000031300003003032",
+                    "0323030003203023000303130", "0330230000000030000310030"
+                ).shuffled(),
+                time = 0.00,
+                plusTime = 0.00,
+                round = 0,
+                plusLove = 0,
+                gameState = "시작"
+
             )
         }
     }
 
     fun onGameStartClick() = intent {
+
         startTimer()
-        val goalList: List<Int> = (1..5).shuffled().take(5)
-        val randomNumbers = (0 until 25).shuffled().take(5)
-        val targetList = state.targetList.toMutableStateList()
-        repeat(5) {
-            targetList[randomNumbers[it]] = it+1
-        }
 
         reduce {
             state.copy(
-                goalList = goalList,
-                targetList = targetList,
                 gameState = "진행"
             )
         }
+
     }
 
     fun onGameReStartClick() = intent {
+        loadData()
+    }
+
+    fun onMoveClick(direction: String) = intent {
+        var nowMapList = state.mapList[state.round]
+
+        //현재 나의 위치
+        val index = nowMapList.indexOf('1')
+
+        if(direction == "left") {
+
+            if(index%5 != 0) {
+                if(nowMapList[index-1] == '3') {
+                    reduce {
+                        state.copy(
+                            plusTime = state.plusTime + 1
+                        )
+                    }
+                }
+                nowMapList = nowMapList.substring(0, index-1) + "10" + nowMapList.substring(index+1)
+            }
+
+        } else if(direction == "right") {
+
+            if(index%5 != 4) {
+                if(nowMapList[index+1] == '3') {
+                    reduce {
+                        state.copy(
+                            plusTime = state.plusTime + 1
+                        )
+                    }
+                }
+                nowMapList = nowMapList.substring(0, index) + "01" + nowMapList.substring(index+2)
+            }
+        } else if(direction == "up") {
+
+            if(index/5 != 0) {
+                if(nowMapList[index-5] == '3') {
+                    reduce {
+                        state.copy(
+                            plusTime = state.plusTime + 1
+                        )
+                    }
+                }
+                nowMapList.replace('1', '0')
+                nowMapList = nowMapList.substring(0, index-5) + "1" + nowMapList.substring(index-4)
+            }
+
+        } else if(direction == "down") {
+
+            if(index/5 != 4) {
+                if(nowMapList[index+5] == '3') {
+                    reduce {
+                        state.copy(
+                            plusTime = state.plusTime + 1
+                        )
+                    }
+                }
+                nowMapList.replace('1', '0')
+                nowMapList = nowMapList.substring(0, index+5) + "1" + nowMapList.substring(index+6)
+            }
+
+        }
+
         reduce {
             state.copy(
-                gameState = "시작",
-                time = 0.00,
-                targetList = List(25) {0},
-                goalList = List(5) {0},
-                level = 1,
-                plusLove = 0
+                //현재라운드 스트링을 업데이트
             )
         }
+
+        //모든 목표를 다 먹었을 때 다음 라운드로 가는 코드
+        if ('2' !in nowMapList) {
+            nextRound()
+        }
+
+    }
+
+    private fun nextRound() = intent {
+
+        val oldRound = state.round
+
+        if(oldRound != 9) {
+
+            reduce {
+                state.copy(
+                    round = oldRound + 1,
+                )
+            }
+
+        }
+
     }
 
     private fun stopTimer() {
@@ -94,9 +180,9 @@ class SecondGameViewModel @Inject constructor(
     }
 
     fun onNextLevelClick() = intent {
-        if(state.level != 5){
+        if(state.round != 5){
             if (state.goalList[0] == 0) {
-                val newLevel = state.level + 1
+                val newLevel = state.round + 1
 
                 val baseSet = (1..5).shuffled() // 한 번만 섞은 세트 생성
                 val newGoalList: List<Int> = List(newLevel) { baseSet } // baseSet을 newLevel번 반복
@@ -112,7 +198,7 @@ class SecondGameViewModel @Inject constructor(
                     state.copy(
                         goalList = newGoalList,
                         targetList = targetList,
-                        level = newLevel
+                        round = newLevel
                     )
                 }
             }
@@ -122,7 +208,7 @@ class SecondGameViewModel @Inject constructor(
                 state.copy(
                     goalList = targetList,
                     targetList = targetList,
-                    level = 6,
+                    round = 6,
                     gameState = "마지막"
                 )
             }
@@ -209,12 +295,12 @@ data class SecondGameState(
     val patData: Pat = Pat(url = ""),
 
     val time : Double = 0.00,
-    val level : Int = 1,
+    val plusTime : Double = 0.00,
+    val round : Int = 0,
     val gameState : String = "시작",
     val plusLove : Int = 0,
 
-    val goalList : List<Int> = List(5) {0},
-    val targetList : List<Int> = List(25) {0}
+    val mapList : List<String> = List(25) {""}
 
 )
 

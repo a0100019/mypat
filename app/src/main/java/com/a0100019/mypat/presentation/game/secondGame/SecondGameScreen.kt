@@ -53,7 +53,7 @@ fun SecondGameScreen(
         goalList = secondGameState.goalList,
         patData = secondGameState.patData,
         userData = secondGameState.userData,
-        level = secondGameState.level,
+        level = secondGameState.round,
         plusLove = secondGameState.plusLove,
         onItemSelected = secondGameViewModel::onItemSelected,
         onGameStartClick = secondGameViewModel::onGameStartClick,
