@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
-import com.a0100019.mypat.presentation.ui.component.CuteIconButton
+import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.LoveHorizontalLine
 import com.a0100019.mypat.presentation.ui.image.pat.DialogPatImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
@@ -116,13 +115,13 @@ fun FirstGameOverDialog(
                         .fillMaxWidth()
                 ) {
 
-                    CuteIconButton(
+                    MainButton(
                         text = "다시 하기",
                         onClick = onClose,
                         modifier = Modifier
                     )
 
-                    CuteIconButton(
+                    MainButton(
                         text = "나가기",
                         onClick = popBackStack,
                         modifier = Modifier

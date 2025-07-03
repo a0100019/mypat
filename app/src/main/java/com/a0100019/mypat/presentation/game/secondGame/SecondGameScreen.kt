@@ -3,16 +3,18 @@ package com.a0100019.mypat.presentation.game.secondGame
 import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,8 +24,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
+import com.a0100019.mypat.presentation.ui.component.MainButton
+import com.a0100019.mypat.presentation.ui.component.XmlButton
 import com.a0100019.mypat.presentation.ui.image.pat.DialogPatImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
@@ -49,22 +54,19 @@ fun SecondGameScreen(
     SecondGameScreen(
         time = secondGameState.time,
         gameState = secondGameState.gameState,
-        targetList = secondGameState.targetList,
-        goalList = secondGameState.goalList,
         patData = secondGameState.patData,
         userData = secondGameState.userData,
-        level = secondGameState.round,
         plusLove = secondGameState.plusLove,
-        onItemSelected = secondGameViewModel::onItemSelected,
         onGameStartClick = secondGameViewModel::onGameStartClick,
-        onNextLevelClick = secondGameViewModel::onNextLevelClick,
-        onFinishClick = secondGameViewModel::onFinishClick,
         onGameReStartClick = secondGameViewModel::onGameReStartClick,
         popBackStack = popBackStack,
+        round = secondGameState.round,
+        plusTime = secondGameState.plusTime,
+        mapList = secondGameState.mapList,
+        onMoveClick = secondGameViewModel::onMoveClick,
+        onFastMoveClick = secondGameViewModel::onFastMoveClick
     )
 }
-
-
 
 @SuppressLint("DefaultLocale")
 @Composable
@@ -72,19 +74,18 @@ fun SecondGameScreen(
     time : Double,
     gameState : String,
     patData : Pat,
-    level : Int,
     plusLove : Int,
+    plusTime : Double = 0.0,
+    round : Int = 1,
 
     userData : List<User>,
-    targetList : List<Int>,
-    goalList : List<Int>,
+    mapList : List<String> = emptyList(),
 
-    onItemSelected : (Int) -> Unit,
     onGameStartClick : () -> Unit,
-    onNextLevelClick : () -> Unit,
-    onFinishClick : () -> Unit,
     onGameReStartClick: () -> Unit,
     popBackStack: () -> Unit,
+    onMoveClick: (String) -> Unit = {},
+    onFastMoveClick: (String) -> Unit = {}
 
 ) {
 
@@ -94,7 +95,7 @@ fun SecondGameScreen(
             userData = userData,
             patData = patData,
             situation = gameState,
-            time = time,
+            time = time+plusTime,
             popBackStack = popBackStack,
             plusLove = plusLove
         )
@@ -102,64 +103,38 @@ fun SecondGameScreen(
 
     Column(
         modifier = Modifier.fillMaxSize()
+        ,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Text(String.format("%.2f", time))
-        Text(level.toString())
-        Row {
-            Box(
-                modifier = Modifier
-                    .size(80.dp)
-                    .aspectRatio(1f) // 정사각형 유지
-                    .padding(4.dp)
-                    .background(
-                        when (goalList[0]) {
-                            1 -> Color.Red
-                            2 -> Color.Magenta
-                            3 -> Color.Green
-                            4 -> Color.Blue
-                            5 -> Color.Cyan
-                            6 -> Color.DarkGray
-                            else -> Color.LightGray
-                        },
-                        shape = RoundedCornerShape(8.dp)
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                if (goalList[0] == 6) {
-                    DialogPatImage(patData.url)
-                }
-            }
+        Text(
+            text = String.format("%.3f", time) + "초",
+            style = MaterialTheme.typography.displayMedium,
+            modifier = Modifier
+                .padding(top = 32.dp, bottom = 8.dp)
+            )
+        Text(
+            text = "+ " + String.format("%.0f", plusTime) + "초",
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier
+                .padding(bottom = 16.dp)
+        )
 
-            Box(
-                modifier = Modifier
-                    .size(60.dp)
-                    .aspectRatio(1f) // 정사각형 유지
-                    .padding(4.dp)
-                    .background(
-                        when (goalList[1]) {
-                            1 -> Color.Red
-                            2 -> Color.Magenta
-                            3 -> Color.Green
-                            4 -> Color.Blue
-                            5 -> Color.Cyan
-                            6 -> Color.DarkGray
-                            else -> Color.LightGray
-                        },
-                        shape = RoundedCornerShape(8.dp)
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                if (goalList[0] == 6) {
-                    DialogPatImage(patData.url)
-                }
-            }
-        }
+        Text(
+            text = "${(round + 1)} / 10",
+            style = MaterialTheme.typography.titleMedium
+        )
 
-        Column {
-            targetList.chunked(5).forEachIndexed { rowIndex, rowItems -> // 행 인덱스
+        Column(
+            modifier = Modifier
+                .weight(1f)
+            ,
+            verticalArrangement = Arrangement.Center
+        ) {
+            mapList[round].chunked(5).forEachIndexed { rowIndex, rowItems -> // 행 인덱스
                 Row {
                     rowItems.forEachIndexed { columnIndex, item -> // 열 인덱스
+
                         val actualIndex = rowIndex * 5 + columnIndex // 실제 인덱스 계산
 
                         Box(
@@ -169,21 +144,15 @@ fun SecondGameScreen(
                                 .padding(4.dp)
                                 .background(
                                     when (item) {
-                                        1 -> Color.Red
-                                        2 -> Color.Magenta
-                                        3 -> Color.Green
-                                        4 -> Color.Blue
-                                        5 -> Color.Cyan
-                                        6 -> Color.DarkGray
-                                        else -> Color.LightGray
+                                        '0' -> Color.LightGray
+                                        '1' -> Color.Gray
+                                        '2' -> Color.Green
+                                        else -> Color.Red
                                     }, shape = RoundedCornerShape(8.dp)
-                                )
-                                .clickable {
-                                    onItemSelected(actualIndex) // 클릭 시 인덱스 전달
-                                },
+                                ),
                             contentAlignment = Alignment.Center
                         ) {
-                            if(goalList[0] == 6) {
+                            if(item == '1') {
                                 DialogPatImage(patData.url)
                             }
                         }
@@ -194,26 +163,77 @@ fun SecondGameScreen(
 
         when (gameState) {
             "시작" -> {
-                Button(
-                    onClick = onGameStartClick
-                ) {
-                    Text("start")
-                }
+                MainButton(
+                    onClick = onGameStartClick,
+                    text = "\n게임 시작\n",
+                    modifier = Modifier
+                        .fillMaxWidth(0.5f)
+                        .padding(bottom = 32.dp)
+                )
             }
-            "진행" -> {
-                Button(
-                    onClick = onNextLevelClick
+            else ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 32.dp)
+                    ,
+                    horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    Text("next level")
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        XmlButton(
+                            iconResId = R.drawable.arrow,
+                            onClick = { onMoveClick("up") }
+                        )
+                        Row {
+                            XmlButton(
+                                iconResId = R.drawable.arrow,
+                                rotationDegree = 270f,
+                                onClick = { onMoveClick("left") }
+                            )
+                            Spacer(modifier = Modifier.size(50.dp))
+                            XmlButton(
+                                iconResId = R.drawable.arrow,
+                                rotationDegree = 90f,
+                                onClick = { onMoveClick("right") }
+                            )
+                        }
+                        XmlButton(
+                            iconResId = R.drawable.arrow,
+                            rotationDegree = 180f,
+                            onClick = { onMoveClick("down") }
+                        )
+                    }
+
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        XmlButton(
+                            iconResId = R.drawable.double_arrow,
+                            rotationDegree = 270f,
+                            onClick = { onFastMoveClick("up") }
+                        )
+                        Row {
+                            XmlButton(
+                                iconResId = R.drawable.double_arrow,
+                                rotationDegree = 180f,
+                                onClick = { onFastMoveClick("left") }
+                            )
+                            Spacer(modifier = Modifier.size(50.dp))
+                            XmlButton(
+                                iconResId = R.drawable.double_arrow,
+                                onClick = { onFastMoveClick("right") }
+                            )
+                        }
+                        XmlButton(
+                            iconResId = R.drawable.double_arrow,
+                            rotationDegree = 90f,
+                            onClick = { onFastMoveClick("down") }
+                        )
+                    }
                 }
-            }
-            "마지막" -> {
-                Button(
-                    onClick = onFinishClick
-                ) {
-                    Text("종료")
-                }
-            }
+
         }
 
     }
@@ -225,19 +245,15 @@ fun SecondGameScreenPreview() {
     MypatTheme {
         SecondGameScreen(
             time = 10.4,
-            goalList = listOf(1, 2),
-            targetList = listOf(1, 2, 3, 4, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-            onItemSelected = {},
             onGameStartClick = {},
             gameState = "진행",
-            onNextLevelClick = {},
             patData = Pat(url = ""),
-            onFinishClick = {},
             onGameReStartClick = {},
             userData = listOf(),
-            level = 1,
+            round = 0,
             popBackStack = {},
-            plusLove = 100
+            plusLove = 100,
+            mapList = listOf("1300003030030300303000032")
         )
     }
 }

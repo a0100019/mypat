@@ -36,7 +36,7 @@ import com.a0100019.mypat.presentation.setting.LetterViewDialog
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import com.a0100019.mypat.presentation.main.world.WorldViewScreen
-import com.a0100019.mypat.presentation.ui.component.CuteIconButton
+import com.a0100019.mypat.presentation.ui.component.MainButton
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import org.orbitmvi.orbit.compose.collectAsState
@@ -203,7 +203,7 @@ fun MainScreen(
                         .padding(10.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    CuteIconButton(
+                    MainButton(
                         text = "내 정보",
                         iconResId = R.drawable.information,
                         onClick = onInformationNavigateClick,
@@ -211,7 +211,7 @@ fun MainScreen(
                     val users by userFlowDataList.collectAsState(initial = emptyList())
                     Text("money : ${users.find { it.id == "money" }?.value} | cash : ${users.find { it.id == "money" }?.value2}")
 
-                    CuteIconButton(
+                    MainButton(
                         onClick = onSettingNavigateClick,
                         text = "설정"
                     )
@@ -254,11 +254,11 @@ fun MainScreen(
                         )
                     }
                     Spacer(modifier = Modifier.weight(1f))
-                    CuteIconButton(
+                    MainButton(
                         text = "커뮤니티",
                         onClick = onCommunityNavigateClick
                     )
-                    CuteIconButton(
+                    MainButton(
                         text = "꾸미기 모드",
                         onClick = onWorldNavigateClick
                     )
@@ -290,7 +290,7 @@ fun MainScreen(
                         .fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    CuteIconButton(
+                    MainButton(
                         text = "일일 루틴",
                         modifier = Modifier
                             .fillMaxWidth(0.7f)
@@ -311,7 +311,7 @@ fun MainScreen(
                         modifier = Modifier
                             .weight(0.4f)
                     ){
-                        CuteIconButton(
+                        MainButton(
                             text = "상점",
                             modifier = Modifier
                                 .fillMaxWidth(0.6f),
@@ -326,7 +326,7 @@ fun MainScreen(
                         modifier = Modifier
                             .weight(0.4f)
                     ){
-                        CuteIconButton(
+                        MainButton(
                             text = "도감",
                             modifier = Modifier
                                 .fillMaxWidth(0.6f),

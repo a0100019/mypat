@@ -2,7 +2,6 @@ package com.a0100019.mypat.presentation.daily.english
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,15 +22,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.english.English
-import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiom
-import com.a0100019.mypat.presentation.ui.component.CuteIconButton
+import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
 @Composable
@@ -104,7 +101,7 @@ fun EnglishDialog(
 
                 Row {
                     Spacer(modifier = Modifier.weight(1f))
-                    CuteIconButton(
+                    MainButton(
                         onClick = onClose,
                         text = " 닫기 ",
                         modifier = Modifier

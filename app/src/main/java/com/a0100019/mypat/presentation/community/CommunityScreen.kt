@@ -36,7 +36,7 @@ import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
-import com.a0100019.mypat.presentation.ui.component.CuteIconButton
+import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
@@ -244,7 +244,7 @@ fun CommunityScreen(
                         itemDataList = itemDataList
                     )
                 }
-                CuteIconButton(
+                MainButton(
                     onClick = onPageUpClick,
                     text = " 다음 ",
                     modifier = Modifier
@@ -346,7 +346,7 @@ fun CommunityScreen(
 
                     Spacer(modifier = Modifier.width(8.dp))
 
-                    CuteIconButton(
+                    MainButton(
                         onClick = onChatSubmitClick,
                         text = "전송"
                     )
@@ -377,19 +377,19 @@ fun CommunityScreen(
                 modifier = Modifier
                     .fillMaxWidth(0.5f)  // 전체 너비 사용
             ) {
-                CuteIconButton(
+                MainButton(
                     onClick = { onSituationChange("thirdGameEasy") },
                     text = "쉬움",
                     modifier = Modifier.weight(1f)
                 )
 
-                CuteIconButton(
+                MainButton(
                     onClick = { onSituationChange("thirdGameNormal") },
                     text = "보통",
                     modifier = Modifier.weight(1f)
                 )
 
-                CuteIconButton(
+                MainButton(
                     onClick = { onSituationChange("thirdGameHard") },
                     text = "어려움",
                     modifier = Modifier.weight(1f)
@@ -403,7 +403,7 @@ fun CommunityScreen(
                 modifier = Modifier
                     .weight(1f)
             ){
-                CuteIconButton(
+                MainButton(
                     onClick = {
                         onSituationChange("world")
                     },
@@ -417,7 +417,7 @@ fun CommunityScreen(
                 modifier = Modifier
                     .weight(1f)
             ) {
-                CuteIconButton(
+                MainButton(
                     onClick = {
                         onSituationChange("firstGame")
                     },
@@ -431,7 +431,7 @@ fun CommunityScreen(
                 modifier = Modifier
                     .weight(1f)
             ){
-                CuteIconButton(
+                MainButton(
                     onClick = {
                         onSituationChange("secondGame")
                     },
@@ -445,7 +445,7 @@ fun CommunityScreen(
                 modifier = Modifier
                     .weight(1f)
             ){
-                CuteIconButton(
+                MainButton(
                     onClick = {
                         onSituationChange("thirdGameEasy")
                     },
@@ -459,7 +459,7 @@ fun CommunityScreen(
                 modifier = Modifier
                     .weight(1f)
             ) {
-                CuteIconButton(
+                MainButton(
                     onClick = {
                         onSituationChange("chat")
                     },

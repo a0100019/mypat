@@ -2,9 +2,7 @@ package com.a0100019.mypat.presentation.daily.english
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -26,17 +24,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.english.English
-import com.a0100019.mypat.presentation.daily.korean.KoreanSideEffect
-import com.a0100019.mypat.presentation.daily.korean.KoreanState
-import com.a0100019.mypat.presentation.loading.LoadingViewModel
-import com.a0100019.mypat.presentation.ui.component.CuteIconButton
+import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.component.SparkleText
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
@@ -236,7 +229,7 @@ fun EnglishScreen(
 
         Row {
             Spacer(modifier = Modifier.weight(1f))
-            CuteIconButton(
+            MainButton(
                 onClick = onFilterClick,
                 text = " 필터 ",
                 imageSize = 20.dp,

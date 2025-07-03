@@ -39,7 +39,7 @@ import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.image.pat.DraggablePatImage
 import com.a0100019.mypat.presentation.main.mainDialog.PatSettingDialog
 import com.a0100019.mypat.presentation.main.mainDialog.WorldAddDialog
-import com.a0100019.mypat.presentation.ui.component.CuteIconButton
+import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -311,7 +311,7 @@ fun WorldScreen(
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
-                CuteIconButton(
+                MainButton(
                     modifier = Modifier
                         .fillMaxWidth(0.7f)
                         .padding(bottom = 10.dp),
@@ -332,7 +332,7 @@ fun WorldScreen(
                     modifier = Modifier
                         .weight(0.4f)
                 ) {
-                    CuteIconButton(
+                    MainButton(
                         modifier = Modifier
                             .fillMaxWidth(0.6f),
                         onClick = onMainNavigateClick,
@@ -346,7 +346,7 @@ fun WorldScreen(
                     modifier = Modifier
                         .weight(0.4f)
                 ) {
-                    CuteIconButton(
+                    MainButton(
                         modifier = Modifier
                             .fillMaxWidth(0.6f),
                         onClick = onWorldSelectClick,

@@ -30,7 +30,7 @@ import com.a0100019.mypat.data.room.area.Area
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.world.World
-import com.a0100019.mypat.presentation.ui.component.CuteIconButton
+import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.AddDialogMapImage
 import com.a0100019.mypat.presentation.ui.image.item.AddDialogItemImage
 import com.a0100019.mypat.presentation.ui.image.pat.AddDialogPatImage
@@ -208,14 +208,14 @@ fun WorldAddDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
-                    CuteIconButton(
+                    MainButton(
                         text = " 다음 ",
                         onClick = onAddDialogChangeClick,
                         modifier = Modifier
                             .padding(16.dp)
                     )
 
-                    CuteIconButton(
+                    MainButton(
                         text = " 확인 ",
                         onClick = onClose,
                         modifier = Modifier

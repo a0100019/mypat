@@ -2,7 +2,6 @@ package com.a0100019.mypat.presentation.game.secondGame
 
 import android.annotation.SuppressLint
 import android.os.SystemClock
-import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.a0100019.mypat.data.room.pat.Pat
@@ -74,7 +73,7 @@ class SecondGameViewModel @Inject constructor(
 
         reduce {
             state.copy(
-                gameState = "진행"
+                gameState = "진행",
             )
         }
 
@@ -84,7 +83,7 @@ class SecondGameViewModel @Inject constructor(
         loadData()
     }
 
-    fun onMoveClick(direction: String) = intent {
+    fun onMoveClick(direction: String, repeatCount: Int = 0, moveCount: Int = 0) = intent {
         var nowMapList = state.mapList[state.round]
 
         //현재 나의 위치
@@ -96,7 +95,7 @@ class SecondGameViewModel @Inject constructor(
                 if(nowMapList[index-1] == '3') {
                     reduce {
                         state.copy(
-                            plusTime = state.plusTime + 1
+                            plusTime = state.plusTime + 5
                         )
                     }
                 }
@@ -109,7 +108,7 @@ class SecondGameViewModel @Inject constructor(
                 if(nowMapList[index+1] == '3') {
                     reduce {
                         state.copy(
-                            plusTime = state.plusTime + 1
+                            plusTime = state.plusTime + 5
                         )
                     }
                 }
@@ -121,11 +120,11 @@ class SecondGameViewModel @Inject constructor(
                 if(nowMapList[index-5] == '3') {
                     reduce {
                         state.copy(
-                            plusTime = state.plusTime + 1
+                            plusTime = state.plusTime + 5
                         )
                     }
                 }
-                nowMapList.replace('1', '0')
+                nowMapList = nowMapList.replace('1', '0')
                 nowMapList = nowMapList.substring(0, index-5) + "1" + nowMapList.substring(index-4)
             }
 
@@ -135,29 +134,79 @@ class SecondGameViewModel @Inject constructor(
                 if(nowMapList[index+5] == '3') {
                     reduce {
                         state.copy(
-                            plusTime = state.plusTime + 1
+                            plusTime = state.plusTime + 5
                         )
                     }
                 }
-                nowMapList.replace('1', '0')
+                nowMapList = nowMapList.replace('1', '0')
                 nowMapList = nowMapList.substring(0, index+5) + "1" + nowMapList.substring(index+6)
             }
 
         }
 
+        val updateMapList = state.mapList.toMutableList().apply {
+            this[state.round] = nowMapList
+        }
+
         reduce {
             state.copy(
-                //현재라운드 스트링을 업데이트
+                mapList = updateMapList
             )
         }
 
-        //모든 목표를 다 먹었을 때 다음 라운드로 가는 코드
-        if ('2' !in nowMapList) {
-            nextRound()
+        if(repeatCount == moveCount) {
+            //모든 목표를 다 먹었을 때 다음 라운드로 가는 코드
+            if ('2' !in nowMapList) {
+                nextRound()
+            }
         }
 
     }
 
+    fun onFastMoveClick(direction: String) = intent {
+
+        val oldMapList = state.mapList[state.round]
+
+        //현재 나의 위치
+        val index = oldMapList.indexOf('1')
+
+        if(direction == "left") {
+
+            val moveCount = index%5
+
+            repeat(moveCount) {
+                onMoveClick("left", it+1, moveCount)
+            }
+
+        } else if(direction == "right") {
+
+            val moveCount = 4 - index%5
+
+            repeat(moveCount) {
+                onMoveClick("right", it+1, moveCount)
+            }
+
+        } else if(direction == "up") {
+
+            val moveCount = index/5
+
+            repeat(moveCount) {
+                onMoveClick("up", it+1, moveCount)
+            }
+
+        } else if(direction == "down") {
+
+            val moveCount = 4 - index/5
+
+            repeat(moveCount) {
+                onMoveClick("down", it+1, moveCount)
+            }
+
+        }
+
+    }
+
+    @SuppressLint("DefaultLocale")
     private fun nextRound() = intent {
 
         val oldRound = state.round
@@ -170,54 +219,7 @@ class SecondGameViewModel @Inject constructor(
                 )
             }
 
-        }
-
-    }
-
-    private fun stopTimer() {
-        //타이머 종료
-        timerJob?.cancel()
-    }
-
-    fun onNextLevelClick() = intent {
-        if(state.round != 5){
-            if (state.goalList[0] == 0) {
-                val newLevel = state.round + 1
-
-                val baseSet = (1..5).shuffled() // 한 번만 섞은 세트 생성
-                val newGoalList: List<Int> = List(newLevel) { baseSet } // baseSet을 newLevel번 반복
-                    .flatten() // 중첩 리스트를 평탄화
-
-                val randomNumbers = (0 until 25).shuffled().take(5 * newLevel)
-                val targetList = state.targetList.toMutableStateList()
-                repeat(5 * newLevel) { it ->
-                    targetList[randomNumbers[it]] = it % 5 + 1
-                }
-
-                reduce {
-                    state.copy(
-                        goalList = newGoalList,
-                        targetList = targetList,
-                        round = newLevel
-                    )
-                }
-            }
         } else {
-            val targetList = List(25) {6}
-            reduce {
-                state.copy(
-                    goalList = targetList,
-                    targetList = targetList,
-                    round = 6,
-                    gameState = "마지막"
-                )
-            }
-        }
-    }
-
-    @SuppressLint("DefaultLocale")
-    fun onFinishClick() = intent {
-        if (state.goalList[0] == 0) {
 
             stopTimer()
 
@@ -232,12 +234,12 @@ class SecondGameViewModel @Inject constructor(
             patDao.update(updatePatData)
 
             var gameState = "성공"
-            val time = state.time
+            val time = state.time + state.plusTime
             val oldTime = state.userData.find {it.id == "secondGame"}?.value?.toDouble()
 
             if(time < oldTime!!) {
                 gameState = "신기록"
-                userDao.update(id = "secondGame", value = String.format("%.2f", time), value3 = state.patData.id.toString())
+                userDao.update(id = "secondGame", value = String.format("%.3f", time), value3 = state.patData.id.toString())
             }
 
             reduce {
@@ -246,30 +248,15 @@ class SecondGameViewModel @Inject constructor(
                     plusLove = plusLove
                 )
             }
+
         }
+
     }
 
-    fun onItemSelected(item : Int) = intent {
-        if (state.targetList[item] == state.goalList.getOrNull(0)) {
-            val newTargetList = state.targetList.mapIndexed { index, value ->
-                if (index == item) 0 else value // 선택된 위치만 변경
-            }
-
-            val newGoalList = state.goalList.drop(1).toMutableList()
-            newGoalList.add(0)
-
-            reduce {
-                state.copy(
-                    targetList = newTargetList,
-                    goalList = newGoalList
-                )
-            }
-        } else {
-            //다른거 클릭했을때
-        }
+    private fun stopTimer() {
+        //타이머 종료
+        timerJob?.cancel()
     }
-
-
 
     // 타이머 시작
     private var timerJob: Job? = null

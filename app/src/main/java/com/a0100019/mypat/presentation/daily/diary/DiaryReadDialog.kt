@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,7 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.data.room.diary.Diary
-import com.a0100019.mypat.presentation.ui.component.CuteIconButton
+import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import java.time.LocalDate
@@ -107,14 +106,14 @@ fun DiaryReadDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
-                    CuteIconButton(
+                    MainButton(
                         text = " 수정 ",
                         onClick = onDiaryChangeClick,
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier
                             .padding(end = 6.dp)
                     )
-                    CuteIconButton(
+                    MainButton(
                         text = " 닫기 ",
                         onClick = onClose,
                         style = MaterialTheme.typography.titleLarge,

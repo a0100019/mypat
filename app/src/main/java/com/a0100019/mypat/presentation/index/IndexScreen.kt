@@ -28,7 +28,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.area.Area
 import com.a0100019.mypat.data.room.pat.Pat
-import com.a0100019.mypat.presentation.ui.component.CuteIconButton
+import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.image.item.ItemImage
 import com.a0100019.mypat.presentation.ui.image.pat.DialogPatImage
@@ -366,7 +366,7 @@ fun IndexScreen(
                     modifier = Modifier
                         .weight(1f)
                 ){
-                    CuteIconButton(
+                    MainButton(
                         onClick = { onTypeChangeClick("pat") },
                         text = "펫",
                         modifier = Modifier
@@ -378,7 +378,7 @@ fun IndexScreen(
                     modifier = Modifier
                         .weight(1f)
                 ) {
-                    CuteIconButton(
+                    MainButton(
                         onClick = { onTypeChangeClick("item") },
                         text = "아이템",
                         modifier = Modifier
@@ -390,7 +390,7 @@ fun IndexScreen(
                     modifier = Modifier
                         .weight(1f)
                 ) {
-                    CuteIconButton(
+                    MainButton(
                         onClick = { onTypeChangeClick("area") },
                         text = "맵",
                         modifier = Modifier

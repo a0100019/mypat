@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,7 +33,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
-import com.a0100019.mypat.presentation.ui.component.CuteIconButton
+import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -143,7 +142,7 @@ fun ThirdGameScreen(
         verticalArrangement = Arrangement.SpaceBetween
     ) {
 
-        CuteIconButton(
+        MainButton(
             text = "새로 하기",
             onClick = {
                 onStateChangeClick("newGame")
@@ -278,14 +277,14 @@ fun ThirdGameScreen(
             ,
             horizontalArrangement = Arrangement.SpaceAround
         ){
-            CuteIconButton(
+            MainButton(
                 text = "칸 지우기",
                 onClick = onEraserClick,
                 modifier = Modifier
                     .fillMaxWidth(0.4f)
             )
 
-            CuteIconButton(
+            MainButton(
                 text = if(memoMode) "메모 모드 on" else "메모 모드 off",
                 onClick = onMemoClick,
                 modifier = Modifier
