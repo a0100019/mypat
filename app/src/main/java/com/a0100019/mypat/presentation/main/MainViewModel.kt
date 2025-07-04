@@ -5,12 +5,17 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.yml.charts.common.extensions.isNotNull
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.item.ItemDao
 import com.a0100019.mypat.data.room.letter.Letter
 import com.a0100019.mypat.data.room.letter.LetterDao
 import com.a0100019.mypat.data.room.area.Area
 import com.a0100019.mypat.data.room.area.AreaDao
+import com.a0100019.mypat.data.room.diary.Diary
+import com.a0100019.mypat.data.room.diary.DiaryDao
+import com.a0100019.mypat.data.room.english.EnglishDao
+import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiomDao
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.pat.PatDao
 import com.a0100019.mypat.data.room.user.User
@@ -54,7 +59,7 @@ class MainViewModel @Inject constructor(
     private val patDao: PatDao,
     private val itemDao: ItemDao,
     private val letterDao: LetterDao,
-    private val areaDao: AreaDao
+    private val areaDao: AreaDao,
 
 ) : ViewModel(), ContainerHost<MainState, MainSideEffect> {
 
@@ -74,6 +79,8 @@ class MainViewModel @Inject constructor(
         loadData()
         startTenMinuteCountdown()
     }
+
+
 
     fun loadData() = intent {
         // 병렬로 실행할 작업들을 viewModelScope.launch로 묶음

@@ -2,6 +2,11 @@ package com.a0100019.mypat.presentation.main.management
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
+import co.yml.charts.common.extensions.isNotNull
+import com.a0100019.mypat.data.room.diary.Diary
+import com.a0100019.mypat.data.room.diary.DiaryDao
+import com.a0100019.mypat.data.room.english.EnglishDao
+import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiomDao
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.walk.Walk
@@ -25,6 +30,9 @@ import javax.inject.Inject
 class ManagementViewModel @Inject constructor(
     private val userDao: UserDao,
     private val walkDao: WalkDao,
+    private val koreanIdiomDao: KoreanIdiomDao,
+    private val englishDao: EnglishDao,
+    private val diaryDao: DiaryDao,
     private val stepCounterManager: StepCounterManager,
     @ApplicationContext private val context: Context
 
@@ -43,11 +51,40 @@ class ManagementViewModel @Inject constructor(
 
     // 뷰 모델 초기화 시 모든 user 데이터를 로드
     init {
-        loadData()
+        walkUpdate()
+        todayAttendance()
+    }
+
+    private fun todayAttendance() = intent {
+
+        val lastData = diaryDao.getLatestDiary()
+        val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+
+        if(lastData.date != currentDate){
+
+            val closeKoreanIdiomData = koreanIdiomDao.getCloseKoreanIdiom()
+            if (closeKoreanIdiomData.isNotNull()) {
+                closeKoreanIdiomData!!.date = currentDate
+                closeKoreanIdiomData.state = "대기"
+                koreanIdiomDao.update(closeKoreanIdiomData)
+            }
+
+            val closeEnglishData = englishDao.getCloseEnglish()
+            if (closeEnglishData.isNotNull()) {
+                closeEnglishData!!.date = currentDate
+                closeEnglishData.state = "대기"
+                englishDao.update(closeEnglishData)
+            }
+
+            diaryDao.insert(Diary(date = currentDate))
+
+            //일일 알림 다이얼로그 띄우기
+        }
+
     }
 
     //room에서 데이터 가져옴
-    private fun loadData() = intent {
+    private fun walkUpdate() = intent {
         val currentStepCount = stepCounterManager.getStepCount()
 
         val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
@@ -56,50 +93,31 @@ class ManagementViewModel @Inject constructor(
 
         val lastData = walkDao.getLatestWalkData()
 
+        //오늘 첫 로그인, 자동 업데이트 안된 것?
         if(lastData.date != currentDate) {
 
-            if (lastData.date == yesterday) {
+            val today = LocalDate.now()  // 오늘 날짜
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+            val lastDate =
+                LocalDate.parse(lastData.date, formatter)  // lastData.date를 LocalDate로 변환
+            val daysDifference = ChronoUnit.DAYS.between(lastDate, today) + 1
 
-                val count = if (lastData.steps < currentStepCount) {
-                    currentStepCount - lastData.steps
-                } else {
-                    currentStepCount
-                }
-
-                userDao.update(id = "date", value = currentDate) // ✅ DAO는 suspend 함수이므로 안전
-                walkDao.updateCountByDate(date = lastData.date, newCount = lastData.count + count)
-                walkDao.insert(Walk(date = currentDate, count = 0, steps = currentStepCount))
-
+            val count = if (lastData.steps < currentStepCount) {
+                currentStepCount - lastData.steps
             } else {
-
-                //며칠 차이가 날 때
-                val today = LocalDate.now()  // 오늘 날짜
-                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                val lastDate =
-                    LocalDate.parse(lastData.date, formatter)  // lastData.date를 LocalDate로 변환
-                val daysDifference = ChronoUnit.DAYS.between(lastDate, today)
-
-                val count = if (lastData.steps < currentStepCount) {
-                    currentStepCount - lastData.steps
-                } else {
-                    currentStepCount
-                }
-
-                userDao.update(id = "date", value = currentDate) // ✅ DAO는 suspend 함수이므로 안전
-                if (daysDifference.toInt() != 0) {
-                    walkDao.updateCountByDate(
-                        date = lastData.date,
-                        newCount = lastData.count + count / daysDifference.toInt()
-                    )
-                } else {
-                    walkDao.updateCountByDate(
-                        date = lastData.date,
-                        newCount = lastData.count + count
-                    )
-                }
-                walkDao.insert(Walk(date = currentDate, count = 0, steps = currentStepCount))
-
+                currentStepCount
             }
+
+            userDao.update(id = "date", value = currentDate) // ✅ DAO는 suspend 함수이므로 안전
+
+            walkDao.updateCountByDate(
+                date = lastData.date,
+                newCount = lastData.count + (count / daysDifference.toInt())
+            )
+
+            walkDao.insert(Walk(date = currentDate, count = count / daysDifference.toInt(), steps = currentStepCount))
+
+
         }
 
     }

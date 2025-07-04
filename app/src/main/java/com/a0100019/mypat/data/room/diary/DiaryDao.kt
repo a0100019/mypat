@@ -29,6 +29,9 @@ interface DiaryDao {
     @Query("SELECT * FROM diary_table ORDER BY id DESC")
     suspend fun getAllDiaryData(): List<Diary>
 
+    @Query("SELECT * FROM diary_table ORDER BY id DESC LIMIT 1")
+    suspend fun getLatestDiary(): Diary
+
     //초기에 데이터 한번에 넣기 위한 코드
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(diaries: List<Diary>)

@@ -108,7 +108,6 @@ class InsertUserWorker @AssistedInject constructor(
                     }
                 }
 
-
                 Result.success() // ✅ 성공 시 반환
             } catch (e: Exception) {
                 Result.retry() // ✅ 실패 시 재시도

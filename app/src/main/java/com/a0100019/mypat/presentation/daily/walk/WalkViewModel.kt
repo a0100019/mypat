@@ -48,9 +48,6 @@ class WalkViewModel @Inject constructor(
 
     private val _todayWalk = MutableStateFlow(0)
 
-
-
-
 //걸음수 멈추기 추가
 
     init {

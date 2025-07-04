@@ -52,7 +52,6 @@ interface UserDao {
         """)
     fun getAllUserDataFlow(): Flow<List<User>>
 
-
     //초기에 데이터 한번에 넣기 위한 코드
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(users: List<User>)
