@@ -43,6 +43,7 @@ fun WalkLineChart(
 
     val xAxisData = AxisData.Builder()
         .axisStepSize(50.dp)
+        .labelAndAxisLinePadding(20.dp)
         .backgroundColor(Color.Transparent)
         .steps(pointsData.size - 1)
         .labelData { i ->
@@ -66,6 +67,7 @@ fun WalkLineChart(
 
     val yAxisData = AxisData.Builder()
         .steps(steps)
+        .labelAndAxisLinePadding(15.dp)
         .backgroundColor(Color.Transparent)
         .labelAndAxisLinePadding(20.dp)
         .labelData { i ->

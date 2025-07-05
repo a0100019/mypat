@@ -126,7 +126,6 @@ fun KoreanReadyDialog(
                     )
                 }
 
-
                 Spacer(modifier = Modifier.size(16.dp))
 
                 Text(
@@ -191,7 +190,7 @@ fun KoreanReadyDialog(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     MainButton(
-                        text = "제출",
+                        text = "확인",
                         onClick = onSubmitClick,
                         modifier = Modifier
                             .fillMaxWidth(0.5f)

@@ -37,6 +37,14 @@ interface UserDao {
     @Query("SELECT value FROM user_table WHERE id = :id")
     suspend fun getValueById(id: String): String
 
+    //접속일 추가
+    @Query("""
+    UPDATE user_table
+    SET value2 = CAST(CAST(value2 AS INTEGER) + 1 AS TEXT)
+    WHERE id = :id
+""")
+    suspend fun incrementTotalAttendance(id: String = "date")
+
     @Query("""
         SELECT *
         FROM user_table

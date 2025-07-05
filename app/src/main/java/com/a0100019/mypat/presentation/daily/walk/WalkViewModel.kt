@@ -1,6 +1,7 @@
 package com.a0100019.mypat.presentation.daily.walk
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.a0100019.mypat.data.room.user.User
@@ -47,20 +48,41 @@ class WalkViewModel @Inject constructor(
     )
 
     private val _todayWalk = MutableStateFlow(0)
-
-//걸음수 멈추기 추가
+    private var hasLoadedInitialData = false  // ✅ 한 번만 loadData 호출을 위한 플래그
 
     init {
-        observeStepCount()
         stepCounterManager.startListening()
-        loadData()
+        observeStepCount()
+        // ❌ loadData()는 여기서 호출하지 않음
+    }
+
+    private fun observeStepCount() {
+        viewModelScope.launch {
+            stepCounterManager.stepCount.collectLatest { steps ->
+                _todayWalk.value = steps
+
+                if (!hasLoadedInitialData && steps > 0) {
+                    hasLoadedInitialData = true
+                    loadData()
+                    return@collectLatest // ❗ 여기서 바로 reduce하지 않음
+                }
+
+                // 처음 호출된 직후는 skip하고, 두 번째부터 실행되게끔 처리
+                if (hasLoadedInitialData) {
+                    intent {
+                        reduce {
+                            state.copy(todayWalk = steps - state.firstData.steps + state.firstData.count)
+                        }
+                    }
+                }
+
+            }
+        }
     }
 
     private fun loadData() = intent {
-
         val userDataList = userDao.getAllUserData()
         val walkDataList = walkDao.getAllWalkData()
-        val totalWalkCount = walkDataList.sumOf { it.count }
         val maxWalkCount = walkDataList.maxOfOrNull { it.count } ?: 0
         val goalCount = walkDataList.count { it.count >= 10000 }
         val todayDropWalkDataList = walkDataList.drop(1) // 최신 데이터 제외
@@ -85,7 +107,7 @@ class WalkViewModel @Inject constructor(
 
         val firstData = walkDao.getLatestWalkData()
         val currentStepCount = stepCounterManager.getStepCount()
-        val count = if (firstData.steps < currentStepCount) {
+        val count = if (firstData.steps <= currentStepCount) {
             currentStepCount - firstData.steps
         } else {
             currentStepCount
@@ -93,33 +115,21 @@ class WalkViewModel @Inject constructor(
 
         walkDao.updateCountByDate(date = firstData.date, newCount = firstData.count + count)
         walkDao.updateStepsByDate(date = firstData.date, newSteps = currentStepCount)
+        Log.d("steps", currentStepCount.toString())
 
         reduce {
             state.copy(
                 userDataList = userDataList,
                 walkDataList = todayDropWalkDataList,
                 walkWeeksDataList = recentWalkData,
-                totalWalkCount = totalWalkCount,
                 maxWalkCount = maxWalkCount,
                 goalCount = goalCount,
-                firstData = firstData
+                firstData = firstData,
+                todayWalk = firstData.count + count
 
             )
         }
 
-    }
-
-
-    private fun observeStepCount() {
-        viewModelScope.launch {
-            stepCounterManager.stepCount.collectLatest { steps ->
-                _todayWalk.value = steps // ✅ 올바르게 값 업데이트
-
-                intent {
-                    reduce { state.copy(todayWalk = steps - state.firstData.steps + state.firstData.count) } // ✅ _todayWalk -> steps 값 사용
-                }
-            }
-        }
     }
 
     fun changeChartMode(mode: String) = intent {
@@ -195,9 +205,7 @@ class WalkViewModel @Inject constructor(
 
     }
 
-
 }
-
 
 @Immutable
 data class WalkState(

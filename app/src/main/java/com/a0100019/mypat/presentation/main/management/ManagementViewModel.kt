@@ -2,6 +2,7 @@ package com.a0100019.mypat.presentation.main.management
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import co.yml.charts.common.extensions.isNotNull
 import com.a0100019.mypat.data.room.diary.Diary
 import com.a0100019.mypat.data.room.diary.DiaryDao
@@ -15,6 +16,8 @@ import com.a0100019.mypat.presentation.daily.walk.StepCounterManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.simple.intent
@@ -49,10 +52,23 @@ class ManagementViewModel @Inject constructor(
         }
     )
 
-    // 뷰 모델 초기화 시 모든 user 데이터를 로드
+    private var hasWalkUpdated = false  // ✅ 한 번만 walkUpdate() 실행하도록 제어
+
     init {
-        walkUpdate()
+        stepCounterManager.startListening()
+        observeStepAndUpdate()
         todayAttendance()
+    }
+
+    private fun observeStepAndUpdate() {
+        viewModelScope.launch {
+            stepCounterManager.stepCount.collectLatest { steps ->
+                if (!hasWalkUpdated && steps > 0) {
+                    hasWalkUpdated = true
+                    walkUpdate(steps)
+                }
+            }
+        }
     }
 
     private fun todayAttendance() = intent {
@@ -84,13 +100,9 @@ class ManagementViewModel @Inject constructor(
     }
 
     //room에서 데이터 가져옴
-    private fun walkUpdate() = intent {
-        val currentStepCount = stepCounterManager.getStepCount()
+    private fun walkUpdate(currentStepCount: Int) = intent {
 
         val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-        val yesterday =
-            LocalDate.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-
         val lastData = walkDao.getLatestWalkData()
 
         //오늘 첫 로그인, 자동 업데이트 안된 것?
@@ -102,13 +114,14 @@ class ManagementViewModel @Inject constructor(
                 LocalDate.parse(lastData.date, formatter)  // lastData.date를 LocalDate로 변환
             val daysDifference = ChronoUnit.DAYS.between(lastDate, today) + 1
 
-            val count = if (lastData.steps < currentStepCount) {
+            val count = if (lastData.steps <= currentStepCount) {
                 currentStepCount - lastData.steps
             } else {
                 currentStepCount
             }
 
             userDao.update(id = "date", value = currentDate) // ✅ DAO는 suspend 함수이므로 안전
+            userDao.incrementTotalAttendance()
 
             walkDao.updateCountByDate(
                 date = lastData.date,
@@ -116,7 +129,6 @@ class ManagementViewModel @Inject constructor(
             )
 
             walkDao.insert(Walk(date = currentDate, count = count / daysDifference.toInt(), steps = currentStepCount))
-
 
         }
 

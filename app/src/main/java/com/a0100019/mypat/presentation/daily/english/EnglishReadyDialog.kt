@@ -154,7 +154,7 @@ fun EnglishReadyDialog(
                 ) {
                     Spacer(modifier = Modifier.height(8.dp))  // 줄 간 간격
 
-                    val alphabetList = ('a'..'t').toList()
+                    val alphabetList = listOf('q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p')
                     alphabetList.chunked(10).forEach { rowList ->  // 10개씩 나눔
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -176,13 +176,35 @@ fun EnglishReadyDialog(
                         Spacer(modifier = Modifier.height(8.dp))  // 줄 간 간격
                     }
 
-                    val alphabetList2 = ('u'..'z').toList()
+                    val alphabetList2 = listOf('a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l')
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        Spacer(modifier = Modifier.weight(0.1f))
+                        alphabetList2.forEach { char ->
+                            Text(
+                                text = char.toString(),
+                                style = MaterialTheme.typography.titleMedium,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .clickable {
+                                        onAlphabetClick(char.toString())
+                                    }
+                                    .weight(0.1f)
+                            )
+                        }
+                        Spacer(modifier = Modifier.weight(0.1f))
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))  // 줄 간 간격
+
+                    val alphabetList3 = listOf('z', 'x', 'c', 'v', 'b', 'n', 'm')
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
                         Spacer(modifier = Modifier.weight(0.2f))
-                        alphabetList2.forEach { char ->
+                        alphabetList3.forEach { char ->
                             Text(
                                 text = char.toString(),
                                 style = MaterialTheme.typography.titleMedium,
@@ -196,6 +218,7 @@ fun EnglishReadyDialog(
                         }
                         Spacer(modifier = Modifier.weight(0.2f))
                     }
+
                     Spacer(modifier = Modifier.height(8.dp))  // 줄 간 간격
 
                 }

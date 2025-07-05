@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,6 +17,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,6 +32,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -34,6 +41,8 @@ import com.a0100019.mypat.data.room.walk.Walk
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
+import java.time.LocalDate
+import java.time.YearMonth
 
 @Composable
 fun WalkScreen(
@@ -96,9 +105,23 @@ fun WalkScreen(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = "오늘의 걸음 수", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(text = "$todayWalk 걸음", fontSize = 32.sp, fontWeight = FontWeight.Bold)
+                if(todayWalk != 0){
+                    Text(
+                        text = "충전된 걸음 수",
+                        style = MaterialTheme.typography.headlineMedium
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = todayWalk.toString(),
+                        style = MaterialTheme.typography.displaySmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                } else {
+                    Text(
+                        text = "로딩중...",
+                        style = MaterialTheme.typography.headlineMedium
+                    )
+                }
 
             }
         }
@@ -138,35 +161,71 @@ fun WalkScreen(
 
 
         Column(
-            modifier = Modifier.weight(0.1f)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .background(MaterialTheme.colorScheme.surfaceVariant, shape = MaterialTheme.shapes.medium)
+                .padding(16.dp)
         ) {
-            Row(
+            Text(
+                text = "📊 걸음 수 통계",
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
-                    .padding(bottom = 16.dp)
+                    .padding(bottom = 12.dp)
+                    .align(Alignment.CenterHorizontally)
+                ,
+            )
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(bottom = 12.dp)
             ) {
+                Icon(Icons.Default.Favorite, contentDescription = "총 걸음", tint = Color.Red)
+                Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "총 걸음 수 : $totalWalkCount",
+                    text = "총 걸음 수: ",
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Medium
+                )
+                Text(
+                    text = "$totalWalkCount",
                     style = MaterialTheme.typography.bodyLarge
                 )
-                Spacer(modifier = Modifier.width(32.dp))
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                Icon(Icons.Default.ThumbUp, contentDescription = "최고 기록", tint = Color(0xFFFFC107))
+                Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "최고 기록 : $maxWalkCount",
-                    style = MaterialTheme.typography.bodyLarge
+                    text = "최고 기록: ",
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Medium
+                )
+                Text(
+                    text = "$maxWalkCount"
                 )
             }
-            Row {
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Default.Check, contentDescription = "만보 달성", tint = Color(0xFF4CAF50))
+                Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "만보 달성 횟수 : $goalCount",
-                    style = MaterialTheme.typography.bodyLarge
+                    text = "만보 달성 횟수: ",
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Medium
                 )
-                Spacer(modifier = Modifier.width(32.dp))
+                Text(text = "$goalCount")
+
+                Spacer(modifier = Modifier.weight(1f))
+
                 Text(
-                    text = "일일 만보 : ",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Text(
-                    text = if(todayWalk > 10000) "오늘도 고생하셨어요!" else if(todayWalk > 5000) "조금만 더 힘내세요!" else "오늘도 힘내봅시다!",
-                    style = MaterialTheme.typography.bodyLarge
+                    text = when {
+                        todayWalk > 10000 -> "🎉일일 만보 달성!!🎉"
+                        todayWalk > 5000 -> "💪조금만 더 힘내세요!!💪"
+                        else -> "🔥오늘도 힘내봅시다!!🔥"
+                    },
+                    style = MaterialTheme.typography.bodyLarge,
                 )
             }
         }
@@ -207,7 +266,10 @@ fun WalkScreen(
                         }
                         .padding(4.dp) // 내부 여백
                         .shadow(4.dp, RoundedCornerShape(8.dp)) // 그림자 효과
-                        .background( if(mode=="일")Color(0xFFFFEB3B) else Color(0xFFE0F7FA), RoundedCornerShape(8.dp)) // 배경색 + 둥근 모서리
+                        .background(
+                            if (mode == "일") Color(0xFFFFEB3B) else Color(0xFFE0F7FA),
+                            RoundedCornerShape(8.dp)
+                        ) // 배경색 + 둥근 모서리
                         .padding(horizontal = 12.dp), // 텍스트 주변 padding
                     color = Color.Black, // 텍스트 색상
                 )
@@ -223,7 +285,10 @@ fun WalkScreen(
                         }
                         .padding(4.dp) // 내부 여백
                         .shadow(4.dp, RoundedCornerShape(8.dp)) // 그림자 효과
-                        .background( if(mode=="주")Color(0xFFFFEB3B) else Color(0xFFE0F7FA), RoundedCornerShape(8.dp)) // 배경색 + 둥근 모서리
+                        .background(
+                            if (mode == "주") Color(0xFFFFEB3B) else Color(0xFFE0F7FA),
+                            RoundedCornerShape(8.dp)
+                        ) // 배경색 + 둥근 모서리
                         .padding(horizontal = 12.dp), // 텍스트 주변 padding
                     color = Color.Black, // 텍스트 색상
                 )
@@ -248,16 +313,65 @@ fun WalkScreen(
                 )
 
             }
-            WalkLineChart(
-                walkDataList = walkDataList,
-                todayWalk = todayWalk,
-                mode = mode
+            CalendarView(
+                year = 1,
+                month = 1,
+                onDayClick = {}
             )
+//            WalkLineChart(
+//                walkDataList = walkDataList,
+//                todayWalk = todayWalk,
+//                mode = mode
+//            )
         }
 
     }
 
 }
+
+@Composable
+fun CalendarView(
+    year: Int,
+    month: Int,
+    onDayClick: (LocalDate) -> Unit
+) {
+    val firstDayOfMonth = LocalDate.of(year, month, 1)
+    val daysInMonth = YearMonth.of(year, month).lengthOfMonth()
+    val startDayOfWeek = firstDayOfMonth.dayOfWeek.value % 7 // Sunday=0
+
+    val dates = mutableListOf<LocalDate?>()
+    repeat(startDayOfWeek) { dates.add(null) }
+    repeat(daysInMonth) { dates.add(firstDayOfMonth.plusDays(it.toLong())) }
+
+    Column {
+        // 요일 헤더
+        Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+            listOf("일", "월", "화", "수", "목", "금", "토").forEach {
+                Text(it, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
+            }
+        }
+
+        // 날짜
+        dates.chunked(7).forEach { week ->
+            Row(modifier = Modifier.fillMaxWidth()) {
+                week.forEach { date ->
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .aspectRatio(1f)
+                            .clickable(enabled = date != null) {
+                                date?.let { onDayClick(it) }
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(text = date?.dayOfMonth?.toString() ?: "")
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 @Preview(showBackground = true)
 @Composable
