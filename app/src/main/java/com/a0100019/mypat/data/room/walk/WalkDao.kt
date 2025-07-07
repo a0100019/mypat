@@ -27,20 +27,14 @@ interface WalkDao {
     @Update
     suspend fun update(walk: Walk)
 
-    @Query("UPDATE walk_table SET count = :newCount WHERE date = :date")
-    suspend fun updateCountByDate(date: String, newCount: Int)
-
-    @Query("UPDATE walk_table SET steps = :newSteps WHERE date = :date")
-    suspend fun updateStepsByDate(date: String, newSteps: Int)
-
     @Query("SELECT * FROM walk_table ORDER BY id DESC")
     suspend fun getAllWalkData(): List<Walk>
 
+    @Query("SELECT * FROM walk_table ORDER BY id ASC LIMIT 1")
+    suspend fun getFirstWalkData(): Walk
+
     @Query("SELECT * FROM walk_table ORDER BY id DESC LIMIT 1")
     suspend fun getLatestWalkData(): Walk
-
-    @Query("SELECT * FROM walk_table ORDER BY id DESC LIMIT 1 OFFSET 1")
-    suspend fun getSecondLatestWalkData(): Walk
 
     //초기에 데이터 한번에 넣기 위한 코드
     @Insert(onConflict = OnConflictStrategy.REPLACE)

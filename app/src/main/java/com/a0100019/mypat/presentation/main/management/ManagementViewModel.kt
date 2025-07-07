@@ -52,23 +52,8 @@ class ManagementViewModel @Inject constructor(
         }
     )
 
-    private var hasWalkUpdated = false  // ✅ 한 번만 walkUpdate() 실행하도록 제어
-
     init {
-        stepCounterManager.startListening()
-        observeStepAndUpdate()
         todayAttendance()
-    }
-
-    private fun observeStepAndUpdate() {
-        viewModelScope.launch {
-            stepCounterManager.stepCount.collectLatest { steps ->
-                if (!hasWalkUpdated && steps > 0) {
-                    hasWalkUpdated = true
-                    walkUpdate(steps)
-                }
-            }
-        }
     }
 
     private fun todayAttendance() = intent {
@@ -99,41 +84,6 @@ class ManagementViewModel @Inject constructor(
 
     }
 
-    //room에서 데이터 가져옴
-    private fun walkUpdate(currentStepCount: Int) = intent {
-
-        val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-        val lastData = walkDao.getLatestWalkData()
-
-        //오늘 첫 로그인, 자동 업데이트 안된 것?
-        if(lastData.date != currentDate) {
-
-            val today = LocalDate.now()  // 오늘 날짜
-            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-            val lastDate =
-                LocalDate.parse(lastData.date, formatter)  // lastData.date를 LocalDate로 변환
-            val daysDifference = ChronoUnit.DAYS.between(lastDate, today) + 1
-
-            val count = if (lastData.steps <= currentStepCount) {
-                currentStepCount - lastData.steps
-            } else {
-                currentStepCount
-            }
-
-            userDao.update(id = "date", value = currentDate) // ✅ DAO는 suspend 함수이므로 안전
-            userDao.incrementTotalAttendance()
-
-            walkDao.updateCountByDate(
-                date = lastData.date,
-                newCount = lastData.count + (count / daysDifference.toInt())
-            )
-
-            walkDao.insert(Walk(date = currentDate, count = count / daysDifference.toInt(), steps = currentStepCount))
-
-        }
-
-    }
-
 }
 
 @Immutable
@@ -142,7 +92,6 @@ data class ManagementState(
     val password:String = "",
     val userData: List<User> = emptyList()
 )
-
 
 //상태와 관련없는 것
 sealed interface ManagementSideEffect{

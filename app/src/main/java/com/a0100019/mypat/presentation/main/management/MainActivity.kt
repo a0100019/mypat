@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.a0100019.mypat.domain.worker.scheduleDailyInsertUserWorker
 import com.a0100019.mypat.presentation.daily.walk.RequestPermissionScreen
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -18,8 +17,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // 매일 특정 시간에 userDao.insert() 실행
-        scheduleDailyInsertUserWorker(this)
+//        // 매일 특정 시간에 userDao.insert() 실행
+//        scheduleDailyInsertUserWorker(this)
 
         setContent {
             MypatTheme {

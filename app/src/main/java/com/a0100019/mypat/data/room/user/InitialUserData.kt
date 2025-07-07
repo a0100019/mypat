@@ -15,6 +15,7 @@ fun getUserInitialData(): List<User> {
         User(id = "secondGame", value = "1000"), //
         User(id = "thirdGame"), //1은 쉬움, 2는 보통, 3은 어려움 개수
         User(id = "community"), // 좋아요, 경고, 벤
+        User(id = "walk",) // 저장된 걸음 수, 시스템 걸음 수, 총 걸음 수
 
         // 더 많은 데이터를 여기에 추가...
     )

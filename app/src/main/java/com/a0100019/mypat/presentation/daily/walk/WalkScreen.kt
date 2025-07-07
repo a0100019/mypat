@@ -35,7 +35,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.data.room.walk.Walk
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
@@ -67,8 +66,8 @@ fun WalkScreen(
         todayWalk = walkState.todayWalk,
         mode = walkState.chartMode,
         totalWalkCount = walkState.totalWalkCount,
-        maxWalkCount = walkState.maxWalkCount,
-        goalCount = walkState.goalCount,
+        maxWalkCount = walkState.totalWalkCount,
+        goalCount = walkState.totalSuccessCount,
 
         changeChartMode = walkViewModel::changeChartMode,
     )
