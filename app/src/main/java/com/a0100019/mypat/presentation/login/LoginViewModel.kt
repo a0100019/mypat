@@ -216,7 +216,7 @@ class LoginViewModel @Inject constructor(
                                 val walkMap = dailyDoc.get("walk") as? Map<*, *> ?: emptyMap<String, Any>()
                                 val walkCount = (walkMap["count"] as? Number)?.toInt()
                                 val walkSteps = (walkMap["steps"] as? Number)?.toInt()
-                                walkDao.insert(Walk(id = dailyDoc.id.toInt(), date = date.toString(), count = walkCount!!, steps = walkSteps!!))
+                                walkDao.insert(Walk(id = dailyDoc.id.toInt(), date = date.toString()))
 
                             }
 

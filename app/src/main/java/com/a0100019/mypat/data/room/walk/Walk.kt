@@ -7,4 +7,5 @@ import androidx.room.PrimaryKey
 data class Walk(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val date: String,
+    var success: String = "0"
 )

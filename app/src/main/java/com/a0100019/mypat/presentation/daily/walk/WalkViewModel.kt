@@ -21,7 +21,9 @@ import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
 import java.time.LocalDate
+import java.time.YearMonth
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 
@@ -84,9 +86,8 @@ class WalkViewModel @Inject constructor(
         val walkDataList = walkDao.getAllWalkData()
         val walkUserData = userDataList.find { it.id == "walk" }
         val totalWalkCount = walkUserData!!.value3
-        val goalCount = walkDataList.count()
+        val goalCount = walkDataList.count{it.success == "1"}
 
-        val firstData = walkDao.getFirstWalkData()
         val currentStepCount = stepCounterManager.getStepCount()
         val count = if (walkUserData.value2.toInt() <= currentStepCount) {
             currentStepCount - walkUserData.value2.toInt()
@@ -103,7 +104,31 @@ class WalkViewModel @Inject constructor(
         Log.d("steps", currentStepCount.toString())
 
         val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-        if(walkDataList)
+        val walkState = when(walkDataList.find { it.date == currentDate }!!.success) {
+            "0" -> "대기"
+            else -> "완료"
+        }
+
+        //최대 연속 수
+        var maxStreak = 0
+        var currentStreak = 0
+        for (walk in walkDataList) {
+            if (walk.success == "1") {
+                currentStreak++
+                if (currentStreak > maxStreak) {
+                    maxStreak = currentStreak
+                }
+            } else {
+                currentStreak = 0
+            }
+        }
+
+        val firstDate = userDataList.find { it.id == "date" }!!.value3
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val inputDate = LocalDate.parse(firstDate, formatter)
+        val today = LocalDate.now()
+        val daysDiff = ChronoUnit.DAYS.between(inputDate, today) + 1
+        val successRatio = goalCount*100 / daysDiff
 
         reduce {
             state.copy(
@@ -111,9 +136,12 @@ class WalkViewModel @Inject constructor(
                 walkDataList = walkDataList,
                 totalWalkCount = totalWalkCount,
                 totalSuccessCount = goalCount,
-                firstData = firstData,
-                todayWalk = walkUserData.value.toInt() + count
-
+                todayWalk = walkUserData.value.toInt() + count,
+                today = currentDate,
+                calendarMonth = currentDate.substring(0, 7),
+                walkState = walkState,
+                maxContinuous = maxStreak,
+                successRate = successRatio.toInt()
             )
         }
 
@@ -136,13 +164,42 @@ class WalkViewModel @Inject constructor(
 
             val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
 
-            walkDao.insert(Walk(date = currentDate))
+            walkDao.updateSuccessByDate(date = currentDate, success = "1")
 
             postSideEffect(WalkSideEffect.Toast("미션 완료 money+100"))
 
             loadData()
         } else {
             postSideEffect(WalkSideEffect.Toast("걸음 수가 부족합니다"))
+        }
+
+    }
+
+    fun onCalendarMonthChangeClick(direction: String) = intent {
+
+        val oldMonth = state.calendarMonth // 예: "2025-04"
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM")
+        val yearMonth = YearMonth.parse(oldMonth, formatter)
+
+        val newYearMonth = when (direction) {
+            "left" -> yearMonth.minusMonths(1)
+            "right" -> yearMonth.plusMonths(1)
+            else -> yearMonth
+        }
+
+        val newMonth = newYearMonth.format(formatter)
+        if(direction == "today"){
+            reduce {
+                state.copy(
+                    calendarMonth = state.today.substring(0, 7)
+                )
+            }
+        } else {
+            reduce {
+                state.copy(
+                    calendarMonth = newMonth
+                )
+            }
         }
 
     }
@@ -229,9 +286,12 @@ data class WalkState(
     val todayWalk: Int = 0, // ✅ 걸음 수 저장 (초기값 0)
     val totalWalkCount: String = "0",
     val totalSuccessCount: Int = 0,
-    val firstData: Walk = Walk(date = ""),
-    val walkState: String = "",
-    val today:
+    val maxContinuous: Int = 1,
+    val successRate: Int = 0,
+    val walkState: String = "미완료", //미완료, 대기, 완료
+    val today: String = "2025-07-05",
+    val calendarMonth: String = "2025-07",
+    val sensor: Boolean = false
 
     )
 

@@ -365,10 +365,7 @@ class SettingViewModel @Inject constructor(
                     "english" to englishDataList.find { it.id == id}!!.state,
                     "koreanIdiom" to koreanIdiomDataList.find { it.id == id}!!.state
                 ),
-                "walk" to mapOf(
-                    "count" to walkDataList.find { it.id == id}!!.count,
-                    "steps" to walkDataList.find { it.id == id}!!.steps,
-                )
+                "walk" to walkDataList.find {it.id == id}!!.success
             )
             batch.set(docRef, data)
         }
