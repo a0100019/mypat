@@ -31,9 +31,7 @@ import javax.inject.Inject
 class WalkViewModel @Inject constructor(
     private val userDao: UserDao,
     private val walkDao: WalkDao,
-    private val application: Application,
     private val stepCounterManager: StepCounterManager
-
 ) : ViewModel(), ContainerHost<WalkState, WalkSideEffect> {
 
     override val container: Container<WalkState, WalkSideEffect> = container(
@@ -41,6 +39,7 @@ class WalkViewModel @Inject constructor(
         buildSettings = {
             this.exceptionHandler = CoroutineExceptionHandler { _, throwable ->
                 intent {
+                    Log.e("WalkViewModel", "Coroutine exception: ${throwable.message}")
                     postSideEffect(WalkSideEffect.Toast(message = throwable.message.orEmpty()))
                 }
             }
@@ -48,47 +47,67 @@ class WalkViewModel @Inject constructor(
     )
 
     private val _todayWalk = MutableStateFlow(0)
-    private var hasLoadedInitialData = false  // ✅ 한 번만 loadData 호출을 위한 플래그
+    private var hasLoadedInitialData = false
 
     init {
+        Log.d("WalkViewModel", "init - stepCounterManager startListening 호출")
         stepCounterManager.startListening()
         observeStepCount()
-        // ❌ loadData()는 여기서 호출하지 않음
+    }
+
+    private fun sensorCheck() = intent {
+        val sensor = userDao.getValue2ById("etc")
+        Log.d("WalkViewModel", "sensorCheck 호출, etc 값: $sensor")
+
+        if(sensor == "1") {
+            Log.d("WalkViewModel", "센서 활성 상태, stepCounterManager startListening, observeStepCount 호출")
+            stepCounterManager.startListening()
+            observeStepCount()
+        } else {
+            Log.d("WalkViewModel", "센서 비활성 상태, loadData 호출")
+            loadData()
+        }
     }
 
     private fun observeStepCount() {
         viewModelScope.launch {
             stepCounterManager.stepCount.collectLatest { steps ->
+                Log.d("WalkViewModel", "stepCount Flow에서 받은 값: $steps")
                 _todayWalk.value = steps
 
                 if (!hasLoadedInitialData && steps > 0) {
+                    Log.d("WalkViewModel", "초기 데이터 로드 조건 만족, loadData 호출")
                     hasLoadedInitialData = true
                     loadData()
-                    return@collectLatest // ❗ 여기서 바로 reduce하지 않음
+                    return@collectLatest
                 }
 
-                // 처음 호출된 직후는 skip하고, 두 번째부터 실행되게끔 처리
                 if (hasLoadedInitialData) {
                     intent {
                         val walkData = state.userDataList.find { it.id == "walk" }
+                        Log.d("WalkViewModel", "걸음 수 갱신, 기존값: ${walkData?.value}, 기준값: ${walkData?.value2}, 현재 steps: $steps")
                         reduce {
                             state.copy(todayWalk = steps - walkData!!.value2.toInt() + walkData.value.toInt())
                         }
                     }
                 }
-
             }
         }
     }
 
     private fun loadData() = intent {
+        Log.d("WalkViewModel", "loadData 호출")
         val userDataList = userDao.getAllUserData()
         val walkDataList = walkDao.getAllWalkData()
         val walkUserData = userDataList.find { it.id == "walk" }
+        Log.d("WalkViewModel", "loadData - walkUserData: $walkUserData")
+
         val totalWalkCount = walkUserData!!.value3
         val goalCount = walkDataList.count{it.success == "1"}
 
         val currentStepCount = stepCounterManager.getStepCount()
+        Log.d("WalkViewModel", "loadData - 현재 stepCounterManager 걸음 수: $currentStepCount")
+
         val count = if (walkUserData.value2.toInt() <= currentStepCount) {
             currentStepCount - walkUserData.value2.toInt()
         } else {
@@ -101,34 +120,34 @@ class WalkViewModel @Inject constructor(
             value2 = currentStepCount.toString(),
             value3 = (walkUserData.value3.toInt() + count).toString()
         )
-        Log.d("steps", currentStepCount.toString())
+        Log.d("WalkViewModel", "loadData - userDao update 완료, count: $count")
 
         val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-        val walkState = when(walkDataList.find { it.date == currentDate }!!.success) {
+        val walkState = when(walkDataList.find { it.date == currentDate }?.success) {
             "0" -> "대기"
             else -> "완료"
         }
+        Log.d("WalkViewModel", "현재 날짜: $currentDate, walkState: $walkState")
 
-        //최대 연속 수
         var maxStreak = 0
         var currentStreak = 0
         for (walk in walkDataList) {
             if (walk.success == "1") {
                 currentStreak++
-                if (currentStreak > maxStreak) {
-                    maxStreak = currentStreak
-                }
+                if (currentStreak > maxStreak) maxStreak = currentStreak
             } else {
                 currentStreak = 0
             }
         }
+        Log.d("WalkViewModel", "최대 연속 성공 횟수: $maxStreak")
 
         val firstDate = userDataList.find { it.id == "date" }!!.value3
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val inputDate = LocalDate.parse(firstDate, formatter)
         val today = LocalDate.now()
         val daysDiff = ChronoUnit.DAYS.between(inputDate, today) + 1
-        val successRatio = goalCount*100 / daysDiff
+        val successRatio = goalCount * 100 / daysDiff
+        Log.d("WalkViewModel", "성공률 계산 - 목표 성공 횟수: $goalCount, 총 일수: $daysDiff, 성공률: $successRatio")
 
         reduce {
             state.copy(
@@ -144,7 +163,6 @@ class WalkViewModel @Inject constructor(
                 successRate = successRatio.toInt()
             )
         }
-
     }
 
     fun onTodayWalkSubmitClick() = intent {

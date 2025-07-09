@@ -37,6 +37,9 @@ interface UserDao {
     @Query("SELECT value FROM user_table WHERE id = :id")
     suspend fun getValueById(id: String): String
 
+    @Query("SELECT value2 FROM user_table WHERE id = :id")
+    suspend fun getValue2ById(id: String): String
+
     //접속일 추가
     @Query("""
     UPDATE user_table

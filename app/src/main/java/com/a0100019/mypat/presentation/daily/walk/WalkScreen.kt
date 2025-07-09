@@ -69,13 +69,17 @@ fun WalkScreen(
 
 ) {
 
-    val walkState : WalkState = walkViewModel.collectAsState().value
+    val walkState: WalkState = walkViewModel.collectAsState().value
 
     val context = LocalContext.current
 
     walkViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
-            is WalkSideEffect.Toast -> Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
+            is WalkSideEffect.Toast -> Toast.makeText(
+                context,
+                sideEffect.message,
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
@@ -94,7 +98,8 @@ fun WalkScreen(
         sensor =  walkState.sensor,
 
         onTodayWalkSubmitClick = walkViewModel::onTodayWalkSubmitClick,
-        onCalendarMonthChangeClick = walkViewModel::onCalendarMonthChangeClick
+        onCalendarMonthChangeClick = walkViewModel::onCalendarMonthChangeClick,
+//        onSensorChangeClick = walkViewModel::onSensorChangeClick
     )
 }
 
@@ -115,7 +120,8 @@ fun WalkScreen(
     sensor: Boolean = false,
 
     onCalendarMonthChangeClick: (String)-> Unit = {},
-    onTodayWalkSubmitClick: ()-> Unit = {}
+    onTodayWalkSubmitClick: ()-> Unit = {},
+    onSensorChangeClick: () -> Unit = {},
 
 ) {
 
@@ -127,20 +133,19 @@ fun WalkScreen(
         Row(
             modifier = Modifier
                 .padding(6.dp)
-                .fillMaxWidth()
-            ,
+                .fillMaxWidth(),
             horizontalArrangement = Arrangement.End
         ) {
-            if(sensor){
+            if (sensor) {
                 Text(
                     text = "측정 일시정지 ->"
                 )
                 Image(
-                    painter = painterResource(id = R.drawable.check),
+                    painter = painterResource(id = R.drawable.cancel),
                     contentDescription = "별 아이콘",
                     modifier = Modifier
                         .clickable {
-
+                            onSensorChangeClick()
                         }
                 )
             } else {
@@ -148,11 +153,11 @@ fun WalkScreen(
                     text = "걸음 수 측정이 정지되었습니다. 시작하려면 버튼을 눌러주세요 ->"
                 )
                 Image(
-                    painter = painterResource(id = R.drawable.cancel),
+                    painter = painterResource(id = R.drawable.check),
                     contentDescription = "별 아이콘",
                     modifier = Modifier
                         .clickable {
-
+                            onSensorChangeClick()
                         }
                 )
             }
@@ -165,7 +170,7 @@ fun WalkScreen(
                 .weight(0.3f)
                 .fillMaxWidth()
         ) {
-            
+
             StepProgressCircle(
                 steps = todayWalk,
                 modifier = Modifier
@@ -175,7 +180,7 @@ fun WalkScreen(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                if(todayWalk != 0){
+                if (todayWalk != 0) {
                     Text(
                         text = "충전된 걸음 수",
                         style = MaterialTheme.typography.headlineMedium

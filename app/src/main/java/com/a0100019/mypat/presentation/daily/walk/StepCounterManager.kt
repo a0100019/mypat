@@ -18,8 +18,6 @@ class StepCounterManager @Inject constructor(@ApplicationContext private val con
     private val _stepCount = MutableStateFlow(0)
     val stepCount: StateFlow<Int> = _stepCount
 
-    private val sharedPreferences = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
-
     fun startListening() {
         stepSensor?.let {
             sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_UI)

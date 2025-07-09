@@ -1,5 +1,8 @@
 package com.a0100019.mypat.presentation.daily
 
+import android.os.Build
+import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
@@ -8,6 +11,7 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -23,30 +27,51 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.a0100019.mypat.presentation.daily.walk.RequestPermissionScreen
+import com.a0100019.mypat.presentation.daily.walk.WalkSideEffect
+import com.a0100019.mypat.presentation.daily.walk.WalkState
 import com.a0100019.mypat.presentation.loading.LoadingViewModel
+import com.a0100019.mypat.presentation.setting.SettingSideEffect
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
+import org.orbitmvi.orbit.compose.collectAsState
+import org.orbitmvi.orbit.compose.collectSideEffect
 
+@RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun DailyScreen(
-    viewModel: LoadingViewModel = hiltViewModel(),
+    dailyViewModel: DailyViewModel = hiltViewModel(),
     onWalkNavigateClick: () -> Unit,
     onDiaryNavigateClick: () -> Unit,
     onEnglishNavigateClick: () -> Unit,
     onKoreanNavigateClick: () -> Unit,
 ) {
 
+    val dailyState : DailyState = dailyViewModel.collectAsState().value
+
+    val context = LocalContext.current
+
+    dailyViewModel.collectSideEffect { sideEffect ->
+        when (sideEffect) {
+            is DailySideEffect.Toast -> {
+                Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
+            }
+            DailySideEffect.NavigateToWalkScreen -> onWalkNavigateClick()
+        }
+    }
+
     DailyScreen(
-        onWalkNavigateClick = onWalkNavigateClick,
+        onWalkNavigateClick = { dailyViewModel.walkPermissionCheck(context) },
         onDiaryNavigateClick = onDiaryNavigateClick,
         onEnglishNavigateClick = onEnglishNavigateClick,
         onKoreanNavigateClick = onKoreanNavigateClick,
-        value = ""
+        situation = dailyState.situation
     )
-    
+
 }
 
 
@@ -57,9 +82,19 @@ fun DailyScreen(
     onDiaryNavigateClick: () -> Unit,
     onEnglishNavigateClick: () -> Unit,
     onKoreanNavigateClick: () -> Unit,
-    value : String
+    situation: String = "",
 ) {
-    Surface {
+
+    if(situation == "walkPermissionRequest") {
+        RequestPermissionScreen()
+    } else if(situation == "walkPermissionSetting") {
+
+    }
+
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
         Column (
             horizontalAlignment = Alignment.CenterHorizontally
         ){
@@ -341,7 +376,7 @@ fun DailyScreen(
                             .clickable(
                                 interactionSource = interactionSource,
                                 indication = rememberRipple(bounded = true, color = Color.White),
-                                onClick = {  }
+                                onClick = { }
                             )
                             .padding(start = 12.dp, end = 12.dp, top = 6.dp, bottom = 6.dp)
                     ) {
@@ -390,7 +425,6 @@ fun DailyScreenPreview() {
             onDiaryNavigateClick = {  },
             onEnglishNavigateClick = {  },
             onKoreanNavigateClick = {  },
-            value = ""
         )
     }
 }
