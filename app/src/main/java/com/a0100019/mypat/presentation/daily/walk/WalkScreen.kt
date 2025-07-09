@@ -106,7 +106,7 @@ fun WalkScreen(
 
     todayWalk: Int = 1000,
     totalWalkCount: String = "0",
-    walkState: String = "",
+    walkState: String = "대기",
     totalSuccessCount: Int = 0,
     today: String = "2025-07-08",
     calendarMonth: String = "2025-07",
@@ -123,44 +123,49 @@ fun WalkScreen(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
+        Row(
+            modifier = Modifier
+                .padding(6.dp)
+                .fillMaxWidth()
+            ,
+            horizontalArrangement = Arrangement.End
+        ) {
+            if(sensor){
+                Text(
+                    text = "측정 일시정지 ->"
+                )
+                Image(
+                    painter = painterResource(id = R.drawable.check),
+                    contentDescription = "별 아이콘",
+                    modifier = Modifier
+                        .clickable {
+
+                        }
+                )
+            } else {
+                Text(
+                    text = "걸음 수 측정이 정지되었습니다. 시작하려면 버튼을 눌러주세요 ->"
+                )
+                Image(
+                    painter = painterResource(id = R.drawable.cancel),
+                    contentDescription = "별 아이콘",
+                    modifier = Modifier
+                        .clickable {
+
+                        }
+                )
+            }
+
+        }
+
         Box(
             contentAlignment = Alignment.Center, // ✅ 내부 내용물 중앙 정렬
             modifier = Modifier
                 .weight(0.3f)
                 .fillMaxWidth()
         ) {
-            Row(
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(6.dp)
-            ) {
-                if(sensor){
-                    Text(
-                        text = "측정 정지 ->"
-                    )
-                    Image(
-                        painter = painterResource(id = R.drawable.check),
-                        contentDescription = "별 아이콘",
-                        modifier = Modifier
-                            .clickable {
-
-                            }
-                    )
-                } else {
-                    Text(
-                        text = "걸음 수 측정이 정지되었습니다. 시작하려면 버튼을 눌러주세요 ->"
-                    )
-                    Image(
-                        painter = painterResource(id = R.drawable.cancel),
-                        contentDescription = "별 아이콘",
-                        modifier = Modifier
-                            .clickable {
-
-                            }
-                    )
-                }
-
-            }
+            
             StepProgressCircle(
                 steps = todayWalk,
                 modifier = Modifier
@@ -191,23 +196,54 @@ fun WalkScreen(
             }
         }
 
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .background(
-                    MaterialTheme.colorScheme.surfaceVariant,
-                    shape = MaterialTheme.shapes.medium
+        when (walkState) {
+            "미완료" -> {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .background(
+                            MaterialTheme.colorScheme.surfaceVariant,
+                            shape = MaterialTheme.shapes.medium
+                        )
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        text = "10000보를 모아 일일 미션을 완료하세요!",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+            "완료" -> {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .background(
+                            MaterialTheme.colorScheme.surfaceVariant,
+                            shape = MaterialTheme.shapes.medium
+                        )
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        text = "오늘도 수고하셨어요!",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+            "대기" -> {
+                ShinyMissionCard(
+                    onClick = onTodayWalkSubmitClick
                 )
-                .padding(16.dp)
-        ) {
-            Text(
-                text = "10000보를 모아 일일 미션을 완료하세요!",
-                style = MaterialTheme.typography.bodyLarge
-            )
+            }
         }
 
-        ShinyMissionCard()
 
         Column(
             modifier = Modifier
@@ -311,7 +347,7 @@ fun WalkScreen(
                         }
                 )
                 Text(
-                    text = "오늘로",
+                    text = "오늘로 이동",
                     modifier = Modifier
                         .clickable(
                             indication = null, // ← ripple 효과 제거
@@ -354,7 +390,9 @@ fun WalkScreen(
 }
 
 @Composable
-fun ShinyMissionCard() {
+fun ShinyMissionCard(
+    onClick: () -> Unit = {}
+) {
     // 애니메이션을 위한 각도
     val infiniteTransition = rememberInfiniteTransition()
     val angle by infiniteTransition.animateFloat(
@@ -365,11 +403,17 @@ fun ShinyMissionCard() {
         ), label = ""
     )
 
-    // 무지개색 그라디언트 (회전 애니메이션용)
     val shimmerBrush = Brush.linearGradient(
-        colors = listOf(Color.Yellow, Color.White, Color.Cyan),
+        colors = listOf(
+            Color(0xFFFFF176), // Pastel Yellow
+            Color(0xFFFFF8E1), // Very light pastel (like pastel white)
+            Color(0xFFB2EBF2)  // Pastel Cyan
+        ),
         start = Offset.Zero,
-        end = Offset(x = cos(Math.toRadians(angle.toDouble())).toFloat() * 300f, y = sin(Math.toRadians(angle.toDouble())).toFloat() * 300f)
+        end = Offset(
+            x = cos(Math.toRadians(angle.toDouble())).toFloat() * 300f,
+            y = sin(Math.toRadians(angle.toDouble())).toFloat() * 300f
+        )
     )
 
     Column(
@@ -380,11 +424,18 @@ fun ShinyMissionCard() {
             .shadow(8.dp, shape = MaterialTheme.shapes.medium) // 그림자
             .background(shimmerBrush, shape = MaterialTheme.shapes.medium) // 반짝이는 배경
             .padding(16.dp)
+            .clickable {
+                onClick()
+            }
     ) {
         Text(
-            text = "10000보를 모아 일일 미션을 완료하세요!",
+            text = "클릭하여 오늘의 미션을 완료하세요!",
             style = MaterialTheme.typography.bodyLarge,
-            color = Color.Black
+            color = Color.Black,
+            modifier = Modifier
+                .fillMaxWidth()
+            ,
+            textAlign = TextAlign.Center
         )
     }
 }
@@ -417,7 +468,9 @@ fun CalendarView(
     val totalCells = ((dates.size + 6) / 7) * 7
     repeat(totalCells - dates.size) { dates.add(null) }
 
-    Column {
+    Column(
+        modifier = Modifier
+    ) {
         // 요일 헤더
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -445,7 +498,14 @@ fun CalendarView(
 
         // 날짜 셀
         dates.chunked(7).forEach { week ->
-            Row(modifier = Modifier.fillMaxWidth()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                ,
+                verticalAlignment = Alignment.CenterVertically
+
+            ) {
                 week.forEachIndexed { index, date ->
                     val isWalked = date != null && date in walkedDates
                     val isToday = date != null && date == todayDate
@@ -459,7 +519,7 @@ fun CalendarView(
                     Box(
                         modifier = Modifier
                             .weight(1f)
-                            .aspectRatio(1.2f)
+//                            .aspectRatio(1.2f)
                             .padding(2.dp)
                             .background(
                                 if (isWalked) Color(0xFFB2DFDB) else Color.Transparent
