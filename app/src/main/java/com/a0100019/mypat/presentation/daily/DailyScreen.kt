@@ -1,5 +1,6 @@
 package com.a0100019.mypat.presentation.daily
 
+import android.content.Context
 import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -33,10 +34,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.presentation.daily.walk.RequestPermissionScreen
-import com.a0100019.mypat.presentation.daily.walk.WalkSideEffect
-import com.a0100019.mypat.presentation.daily.walk.WalkState
-import com.a0100019.mypat.presentation.loading.LoadingViewModel
-import com.a0100019.mypat.presentation.setting.SettingSideEffect
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -69,12 +66,13 @@ fun DailyScreen(
         onDiaryNavigateClick = onDiaryNavigateClick,
         onEnglishNavigateClick = onEnglishNavigateClick,
         onKoreanNavigateClick = onKoreanNavigateClick,
-        situation = dailyState.situation
+        onCloseClick = dailyViewModel::onCloseClick,
+        onDialogPermissionCheckClick = dailyViewModel::onDialogPermissionCheckClick,
+
+        situation = dailyState.situation,
     )
 
 }
-
-
 
 @Composable
 fun DailyScreen(
@@ -82,13 +80,19 @@ fun DailyScreen(
     onDiaryNavigateClick: () -> Unit,
     onEnglishNavigateClick: () -> Unit,
     onKoreanNavigateClick: () -> Unit,
-    situation: String = "",
+    onCloseClick: () -> Unit = {},
+    onDialogPermissionCheckClick: (Context) -> Unit = {},
+    situation: String,
 ) {
 
     if(situation == "walkPermissionRequest") {
         RequestPermissionScreen()
-    } else if(situation == "walkPermissionSetting") {
-
+    } else if (situation in listOf("walkPermissionSetting", "walkPermissionSettingNo")) {
+        WalkPermissionDialog(
+            situation = situation,
+            onCloseClick = onCloseClick,
+            onCheckClick = onDialogPermissionCheckClick
+        )
     }
 
     Surface(
@@ -354,54 +358,54 @@ fun DailyScreen(
                     }
                 }
 
-                item {
-                    //버튼 기본 설정
-                    val interactionSource = remember { MutableInteractionSource() }
-                    val isPressed by interactionSource.collectIsPressedAsState()
-                    val scale by animateFloatAsState(
-                        targetValue = if (isPressed) 0.95f else 1f,
-                        label = "scale"
-                    )
-
-                    Surface(
-                        shape = RoundedCornerShape(16.dp),
-                        color = MaterialTheme.colorScheme.background,
-                        border = BorderStroke(3.dp, MaterialTheme.colorScheme.onPrimaryContainer),
-                        shadowElevation = 6.dp,
-                        modifier = Modifier
-                            .graphicsLayer {
-                                scaleX = scale
-                                scaleY = scale
-                            }
-                            .clickable(
-                                interactionSource = interactionSource,
-                                indication = rememberRipple(bounded = true, color = Color.White),
-                                onClick = { }
-                            )
-                            .padding(start = 12.dp, end = 12.dp, top = 6.dp, bottom = 6.dp)
-                    ) {
-                        Box {
-
-                            Column(
-                                modifier = Modifier
-                                    .padding(8.dp)
-                                    .fillMaxWidth(),
-                                verticalArrangement = Arrangement.Center,
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Text(
-                                    text = "준비중...",
-                                    style = MaterialTheme.typography.headlineMedium,
-                                    modifier = Modifier
-                                        .padding(top = 20.dp, bottom = 20.dp)
-                                    ,
-                                )
-
-                            }
-                        }
-
-                    }
-                }
+//                item {
+//                    //버튼 기본 설정
+//                    val interactionSource = remember { MutableInteractionSource() }
+//                    val isPressed by interactionSource.collectIsPressedAsState()
+//                    val scale by animateFloatAsState(
+//                        targetValue = if (isPressed) 0.95f else 1f,
+//                        label = "scale"
+//                    )
+//
+//                    Surface(
+//                        shape = RoundedCornerShape(16.dp),
+//                        color = MaterialTheme.colorScheme.background,
+//                        border = BorderStroke(3.dp, MaterialTheme.colorScheme.onPrimaryContainer),
+//                        shadowElevation = 6.dp,
+//                        modifier = Modifier
+//                            .graphicsLayer {
+//                                scaleX = scale
+//                                scaleY = scale
+//                            }
+//                            .clickable(
+//                                interactionSource = interactionSource,
+//                                indication = rememberRipple(bounded = true, color = Color.White),
+//                                onClick = { }
+//                            )
+//                            .padding(start = 12.dp, end = 12.dp, top = 6.dp, bottom = 6.dp)
+//                    ) {
+//                        Box {
+//
+//                            Column(
+//                                modifier = Modifier
+//                                    .padding(8.dp)
+//                                    .fillMaxWidth(),
+//                                verticalArrangement = Arrangement.Center,
+//                                horizontalAlignment = Alignment.CenterHorizontally
+//                            ) {
+//                                Text(
+//                                    text = "준비중...",
+//                                    style = MaterialTheme.typography.headlineMedium,
+//                                    modifier = Modifier
+//                                        .padding(top = 20.dp, bottom = 20.dp)
+//                                    ,
+//                                )
+//
+//                            }
+//                        }
+//
+//                    }
+//                }
 
             }
 
@@ -425,6 +429,7 @@ fun DailyScreenPreview() {
             onDiaryNavigateClick = {  },
             onEnglishNavigateClick = {  },
             onKoreanNavigateClick = {  },
+            situation = ""
         )
     }
 }

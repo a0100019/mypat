@@ -126,6 +126,7 @@ fun SettingScreen(
     clickLetterData: Letter,
     letterImages: List<String>,
 
+
     onTermsClick: () -> Unit,
     onSignOutClick: () -> Unit,
     onClose: () -> Unit,

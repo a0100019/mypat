@@ -27,7 +27,6 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background // ← 여기 설정한 색으로 전체 배경
                 ) {
                     MainNavHost()
-                    RequestPermissionScreen()
                 }
             }
         }

@@ -55,18 +55,9 @@ class WalkViewModel @Inject constructor(
         observeStepCount()
     }
 
-    private fun sensorCheck() = intent {
-        val sensor = userDao.getValue2ById("etc")
-        Log.d("WalkViewModel", "sensorCheck 호출, etc 값: $sensor")
-
-        if(sensor == "1") {
-            Log.d("WalkViewModel", "센서 활성 상태, stepCounterManager startListening, observeStepCount 호출")
-            stepCounterManager.startListening()
-            observeStepCount()
-        } else {
-            Log.d("WalkViewModel", "센서 비활성 상태, loadData 호출")
-            loadData()
-        }
+    override fun onCleared() {
+        super.onCleared()
+        stepCounterManager.stopListening() // ✅ 뷰모델 종료 시 호출됨
     }
 
     private fun observeStepCount() {

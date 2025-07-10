@@ -15,7 +15,6 @@ import androidx.core.content.ContextCompat
 @Composable
 fun RequestPermissionScreen() {
     val context = LocalContext.current
-    val activity = context as Activity
 
     val permissionLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->

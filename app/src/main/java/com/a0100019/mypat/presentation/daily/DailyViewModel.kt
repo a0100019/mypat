@@ -92,13 +92,45 @@ class DailyViewModel @Inject constructor(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
+    fun onDialogPermissionCheckClick(context: Context) = intent {
+
+        val hasPermission = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACTIVITY_RECOGNITION
+        ) == PackageManager.PERMISSION_GRANTED
+
+        if (hasPermission) {
+            // 권한 있을 때 처리
+            postSideEffect(DailySideEffect.NavigateToWalkScreen)
+            reduce {
+                state.copy(
+                    situation = ""
+                )
+            }
+        } else {
+            reduce {
+                state.copy(
+                    situation = "walkPermissionSettingNo"
+                )
+            }
+        }
+
+    }
+
+    fun onCloseClick() = intent {
+        reduce {
+            state.copy(
+                situation = ""
+            )
+        }
+    }
+
 
 }
 
 @Immutable
 data class DailyState(
-    val id:String = "",
-    val password:String = "",
     val userData: List<User> = emptyList(),
     val situation: String = ""
 )

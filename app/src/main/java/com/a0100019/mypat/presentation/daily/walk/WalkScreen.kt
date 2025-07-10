@@ -113,7 +113,7 @@ fun WalkScreen(
     totalWalkCount: String = "0",
     walkState: String = "대기",
     totalSuccessCount: Int = 0,
-    today: String = "2025-07-08",
+    today: String = "2025-07-15",
     calendarMonth: String = "2025-07",
     successRate: Int = 0,
     maxContinuous: Int = 0,
@@ -129,40 +129,6 @@ fun WalkScreen(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-        Row(
-            modifier = Modifier
-                .padding(6.dp)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.End
-        ) {
-            if (sensor) {
-                Text(
-                    text = "측정 일시정지 ->"
-                )
-                Image(
-                    painter = painterResource(id = R.drawable.cancel),
-                    contentDescription = "별 아이콘",
-                    modifier = Modifier
-                        .clickable {
-                            onSensorChangeClick()
-                        }
-                )
-            } else {
-                Text(
-                    text = "걸음 수 측정이 정지되었습니다. 시작하려면 버튼을 눌러주세요 ->"
-                )
-                Image(
-                    painter = painterResource(id = R.drawable.check),
-                    contentDescription = "별 아이콘",
-                    modifier = Modifier
-                        .clickable {
-                            onSensorChangeClick()
-                        }
-                )
-            }
-
-        }
 
         Box(
             contentAlignment = Alignment.Center, // ✅ 내부 내용물 중앙 정렬
@@ -526,18 +492,24 @@ fun CalendarView(
                             .weight(1f)
 //                            .aspectRatio(1.2f)
                             .padding(2.dp)
-                            .background(
-                                if (isWalked) Color(0xFFB2DFDB) else Color.Transparent
-                            )
                         ,
                         contentAlignment = Alignment.Center
                     ) {
+
                         // 동그란 배경 레이어
                         if (isToday) {
                             Box(
                                 modifier = Modifier
                                     .size(32.dp)
                                     .background(Color(0xFFE1BEE7), shape = CircleShape) // 연보라 배경
+                            )
+                        }
+
+                        if (isWalked) {
+                            Box(
+                                modifier = Modifier
+                                    .size(26.dp)
+                                    .background(Color(0xFFB2EBF2), shape = CircleShape) // 연보라 배경
                             )
                         }
 
@@ -551,7 +523,6 @@ fun CalendarView(
             }
         }
 
-
     }
 }
 
@@ -560,7 +531,7 @@ fun CalendarView(
 fun WalkScreenPreview() {
     MypatTheme {
         WalkScreen(
-            walkDataList = listOf(Walk(date = "2025-07-08", success = "1"), Walk(date = "2025-07-12", success = "1"))
+            walkDataList = listOf(Walk(date = "2025-07-15", success = "1"), Walk(date = "2025-07-08", success = "1"), Walk(date = "2025-07-12", success = "1"))
         )
     }
 }
