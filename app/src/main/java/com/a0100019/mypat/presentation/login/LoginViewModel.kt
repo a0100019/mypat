@@ -341,7 +341,7 @@ class LoginViewModel @Inject constructor(
                                 if (letterData is Map<*, *>) {
                                     val date = letterData["date"] as? String ?: continue
                                     val title = letterData["title"] as? String ?: continue
-                                    val image = letterData["image"] as? String ?: continue
+                                    val message = letterData["message"] as? String ?: continue
                                     val link = letterData["link"] as? String ?: continue
                                     val reward = letterData["reward"] as? String ?: continue
                                     val amount = letterData["amount"] as? String ?: continue
@@ -352,7 +352,7 @@ class LoginViewModel @Inject constructor(
                                             id = letterId.toInt(),
                                             date = date,
                                             title = title,
-                                            image = image,
+                                            message = message,
                                             link = link,
                                             reward = reward,
                                             amount = amount,

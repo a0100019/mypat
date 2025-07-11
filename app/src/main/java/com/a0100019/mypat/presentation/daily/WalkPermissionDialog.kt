@@ -21,9 +21,12 @@ import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import android.provider.Settings
 import android.net.Uri
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 
 @Composable
 fun WalkPermissionDialog(
@@ -49,12 +52,33 @@ fun WalkPermissionDialog(
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-
                 Text(
-                    text = "권한 허용"
+                    text = "권한 요청",
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(bottom = 12.dp)
                 )
 
-                Button(onClick = {
+                Text(
+                    text = "하루마을 앱은 걸음 수를 측정하여 목표를 달성하고 보상을 받을 수 있는 기능을 제공합니다.\n" +
+                            "정확한 걸음 수 측정을 위해 활동 인식 권한이 필요합니다.",
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .padding(bottom = 12.dp)
+                )
+
+                Text(
+                    text = "1. 권한 선택\n2. 신체 활동 선택\n3. 허용 선택",
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .padding(bottom = 12.dp)
+                )
+
+                Button(
+                    modifier = Modifier
+                        .padding(bottom = 12.dp)
+                    ,
+                    onClick = {
                     val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
                         data = Uri.parse("package:${context.packageName}")
                     }
@@ -69,14 +93,19 @@ fun WalkPermissionDialog(
                     )
                 }
 
-                Row {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                    ,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
                     MainButton(
-                        text = "취소",
+                        text = " 취소 ",
                         onClick = onCloseClick
                     )
 
                     MainButton(
-                        text = "확인",
+                        text = " 확인 ",
                         onClick = { onCheckClick(context) }
                     )
                 }

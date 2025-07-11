@@ -132,19 +132,19 @@ class SettingViewModel @Inject constructor(
         }
     }
 
-    fun onTermsClick() = intent {
-        try {
-            val uri = FirebaseStorage.getInstance()
-                .reference.child("sample.png")
-                .downloadUrl.await()
-
-            reduce {
-                state.copy(imageUrl = uri.toString())
-            }
-        } catch (e: Exception) {
-            // 실패 처리 가능
-        }
-    }
+//    fun onTermsClick() = intent {
+//        try {
+//            val uri = FirebaseStorage.getInstance()
+//                .reference.child("sample.png")
+//                .downloadUrl.await()
+//
+//            reduce {
+//                state.copy(imageUrl = uri.toString())
+//            }
+//        } catch (e: Exception) {
+//            // 실패 처리 가능
+//        }
+//    }
 
     fun onSituationChange(situation: String) = intent {
         reduce {
@@ -322,7 +322,7 @@ class SettingViewModel @Inject constructor(
             val letterMap = mapOf(
                 "date" to letterData.date,
                 "title" to letterData.title,
-                "image" to letterData.image,
+                "message" to letterData.message,
                 "link" to letterData.link,
                 "reward" to letterData.reward,
                 "amount" to letterData.amount,
@@ -613,29 +613,29 @@ class SettingViewModel @Inject constructor(
     fun clickLetterDataChange(letterId: Int) = intent {
         if(letterId != 0) {
 
-            val clickLetterData = state.letterDataList.find { it.id == letterId }!!
-            val letterImages = clickLetterData.image.split("@")
-            val imageUrls = mutableListOf<String>()
-
-            try {
-                letterImages.forEach { imageName ->
-                    val uri = FirebaseStorage.getInstance()
-                        .reference.child(imageName)
-                        .downloadUrl.await()
-                    imageUrls.add(uri.toString())
-                }
-
-                reduce {
-                    state.copy(
-                        letterImages = imageUrls,
-                        clickLetterData = clickLetterData
-                        )
-                }
-
-            } catch (e: Exception) {
-                // 실패 처리
-                Log.e("ImageLoad", "이미지 URL 로딩 실패", e)
-            }
+//            val clickLetterData = state.letterDataList.find { it.id == letterId }!!
+//            val letterImages = clickLetterData.image.split("@")
+//            val imageUrls = mutableListOf<String>()
+//
+//            try {
+//                letterImages.forEach { imageName ->
+//                    val uri = FirebaseStorage.getInstance()
+//                        .reference.child(imageName)
+//                        .downloadUrl.await()
+//                    imageUrls.add(uri.toString())
+//                }
+//
+//                reduce {
+//                    state.copy(
+//                        letterImages = imageUrls,
+//                        clickLetterData = clickLetterData
+//                        )
+//                }
+//
+//            } catch (e: Exception) {
+//                // 실패 처리
+//                Log.e("ImageLoad", "이미지 URL 로딩 실패", e)
+//            }
 
         } else {
 
@@ -655,37 +655,38 @@ class SettingViewModel @Inject constructor(
     }
 
     fun onLetterCloseClick() = intent {
+        clickLetterDataChange(0)
+        loadData()
+    }
+
+    fun onLetterConfirmClick() = intent {
 
         val letterData = state.clickLetterData
+
         if(letterData.state == "open"){
+            if (letterData.reward == "money") {
+                userDao.update(
+                    id = "money",
+                    value = (state.userDataList.find { it.id == "money" }!!.value.toInt() + letterData.amount.toInt()).toString()
+                )
+            } else {
+                userDao.update(
+                    id = "cash",
+                    value2 = (state.userDataList.find { it.id == "cash" }!!.value2.toInt() + letterData.amount.toInt()).toString()
+                )
+            }
+            postSideEffect(SettingSideEffect.Toast("보상 획득 : ${letterData.reward} +${letterData.amount}"))
+
             letterData.state = "read"
             letterDao.update(letterData)
-        }
-        clickLetterDataChange(0)
-        loadData()
-
-    }
-
-    //편지 보상받기
-    fun onLetterGetClick() = intent {
-
-        val letterData = state.clickLetterData
-
-        if(letterData.reward == "money") {
-            userDao.update(id = "money", value = (state.userDataList.find { it.id == "money" }!!.value.toInt() + letterData.amount.toInt()).toString())
+            clickLetterDataChange(0)
+            loadData()
         } else {
-            userDao.update(id = "money", value2 = (state.userDataList.find { it.id == "money" }!!.value2.toInt() + letterData.amount.toInt()).toString())
+            clickLetterDataChange(0)
+            loadData()
         }
-        postSideEffect(SettingSideEffect.Toast("보상 획득 : ${letterData.reward} +${letterData.amount}"))
-
-        letterData.state = "get"
-        letterDao.update(letterData)
-
-        clickLetterDataChange(0)
-        loadData()
 
     }
-
 
     //입력 가능하게 하는 코드
     @OptIn(OrbitExperimental::class)

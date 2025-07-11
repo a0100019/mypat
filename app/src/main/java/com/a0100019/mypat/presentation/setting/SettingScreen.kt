@@ -96,10 +96,8 @@ fun SettingScreen(
         editText = settingState.editText,
         clickLetterData = settingState.clickLetterData,
         letterDataList = settingState.letterDataList,
-        letterImages = settingState.letterImages,
 
         onClose = settingViewModel::onCloseClick,
-        onTermsClick = settingViewModel::onTermsClick,
         onSignOutClick = settingViewModel::dataSave,
         onSituationChange = settingViewModel::onSituationChange,
         onAccountDeleteClick = settingViewModel::onAccountDeleteClick,
@@ -107,16 +105,15 @@ fun SettingScreen(
         onCouponConfirmClick = settingViewModel::onCouponConfirmClick,
         onSettingTalkConfirmClick = settingViewModel::onSettingTalkConfirmClick,
         clickLetterDataChange = settingViewModel::clickLetterDataChange,
-        onLetterGetClick = settingViewModel::onLetterGetClick,
+        onLetterConfirmClick = settingViewModel::onLetterConfirmClick,
         onLetterLinkClick = settingViewModel::onLetterLinkClick,
         onLetterCloseClick = settingViewModel::onLetterCloseClick
-
     )
 }
 
-
 @Composable
 fun SettingScreen(
+
     userData: List<User>,
     googleLoginState: Boolean,
     settingSituation: String,
@@ -124,10 +121,7 @@ fun SettingScreen(
     editText: String,
     letterDataList: List<Letter>,
     clickLetterData: Letter,
-    letterImages: List<String>,
 
-
-    onTermsClick: () -> Unit,
     onSignOutClick: () -> Unit,
     onClose: () -> Unit,
     onSituationChange: (String) -> Unit,
@@ -138,8 +132,8 @@ fun SettingScreen(
     onSettingTalkConfirmClick: () -> Unit,
     clickLetterDataChange: (Int) -> Unit,
     onLetterLinkClick: () -> Unit,
-    onLetterGetClick: () -> Unit,
-    onLetterCloseClick: () -> Unit,
+    onLetterConfirmClick: () -> Unit = {},
+    onLetterCloseClick: () -> Unit = {}
 
 ) {
 
@@ -177,9 +171,8 @@ fun SettingScreen(
         LetterViewDialog(
             onClose = onLetterCloseClick,
             clickLetterData = clickLetterData,
-            letterImages = letterImages,
             onLetterLinkClick = onLetterLinkClick,
-            onLetterGetClick = onLetterGetClick
+            onLetterConfirmClick = onLetterConfirmClick
         )
     }
 
@@ -211,7 +204,6 @@ fun SettingScreen(
             SettingButton(
                 text = "이용 약관",
                 onClick = {
-                    onTermsClick()
                     onSituationChange("terms")
                 }
             )
@@ -289,13 +281,11 @@ fun SettingScreenPreview() {
         SettingScreen(
             onClose = {},
             userData = emptyList(),
-            onTermsClick = {},
             onSignOutClick = {},
             googleLoginState = false,
             onGoogleLoginClick = {},
             settingSituation = "",
             onSituationChange = {},
-            imageUrl = "",
             onAccountDeleteClick = {},
             onEditTextChange = {},
             editText = "",
@@ -304,10 +294,11 @@ fun SettingScreenPreview() {
             clickLetterData = Letter(),
             clickLetterDataChange = {},
             letterDataList = emptyList(),
-            letterImages = emptyList(),
             onLetterLinkClick = {},
-            onLetterGetClick = {},
-            onLetterCloseClick = {}
+            onLetterCloseClick = {},
+            onLetterConfirmClick = {},
+            imageUrl = ""
+
 
         )
     }

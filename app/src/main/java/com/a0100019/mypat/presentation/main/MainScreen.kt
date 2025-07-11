@@ -167,9 +167,8 @@ fun MainScreen(
         "letter" -> LetterViewDialog(
             onClose = onLetterCloseClick,
             onLetterLinkClick = onLetterLinkClick,
-            onLetterGetClick = onLetterGetClick,
+            onLetterConfirmClick = onLetterGetClick,
             clickLetterData = showLetterData,
-            letterImages = letterImages
         )
     }
 

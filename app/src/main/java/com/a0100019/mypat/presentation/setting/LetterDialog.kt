@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -59,33 +60,45 @@ fun LetterDialog(
                 ) {
                     items(letterDataList) { letter ->
                         when(letter.state) {
-                            "open" -> Text(
-                                text = letter.title,
+                            "open" -> Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clickable { onLetterClick(letter.id) }
                                     .padding(12.dp),
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = Color.DarkGray
-                            )
-                            "read" -> Text(
-                                text = letter.title,
+                            ) {
+                                Text(
+                                    text = letter.title,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = Color.Black,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Spacer(modifier = Modifier.weight(1f))
+                                Text(
+                                    text = letter.date,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = Color.Black,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                            "read" -> Row (
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clickable { onLetterClick(letter.id) }
                                     .padding(12.dp),
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = Color.DarkGray
-                            )
-                            "get" -> Text(
-                                text = letter.title,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable { onLetterClick(letter.id) }
-                                    .padding(12.dp),
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = Color.DarkGray
-                            )
+                            ){
+                                Text(
+                                    text = letter.title,
+                                    modifier = Modifier,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = Color.Gray
+                                )
+                                Spacer(modifier = Modifier.weight(1f))
+                                Text(
+                                    text = letter.date,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = Color.Gray,
+                                )
+                            }
                         }
                     }
                 }
@@ -103,7 +116,6 @@ fun LetterDialog(
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
 fun LetterDialogPreview() {
@@ -111,15 +123,10 @@ fun LetterDialogPreview() {
         LetterDialog(
             onClose = {},
             onLetterClick = {},
-
-
-
-
-
-            letterDataList = listOf(Letter(state = "waiting", title = "첫 편지", image = "sample.png@sample2.png", link = "naver.com", reward = "cash", amount = "100" ),
-                Letter(state = "open", title = "2 편지", image = "sample.png@sample2.png", link = "naver.com", reward = "cash", amount = "100" ),
-                Letter(state = "lead", title = "3 편지", image = "sample.png@sample2.png", link = "naver.com", reward = "cash", amount = "100" ),
-                Letter(state = "get", title = "4 편지", image = "sample.png@sample2.png", link = "naver.com", reward = "cash", amount = "100" ),
+            letterDataList = listOf(Letter(state = "waiting", title = "첫 편지", message = "안녕하세요 저는 이유빈입니다.\n안녕하세요 저는 이유빈입니다.\n안녕하세요 저는 이유빈입니다.\n", link = "naver.com", reward = "cash", amount = "100" ),
+                Letter(state = "open", date = "2025-07-10", title = "2 편지", message = "안녕하세요 저는 이유빈입니다.안녕하세요 저는 이유빈입니다.안녕하세요 저는 이유빈입니다.", link = "naver.com", reward = "cash", amount = "100" ),
+                Letter(state = "read", date = "2025-07-11", title = "3 편지", message = "안녕하세요 저는 이유빈입니다.\n안녕하세요 저는 이유빈입니다.\n안녕하세요 저는 이유빈입니다.\n", link = "naver.com", reward = "cash", amount = "100" ),
+                Letter(state = "read", date = "2025-07-12", title = "4 편지", message = "안녕하세요 저는 이유빈입니다.\n안녕하세요 저는 이유빈입니다.\n안녕하세요 저는 이유빈입니다.\n", link = "naver.com", reward = "cash", amount = "100" ),
             )
         )
     }

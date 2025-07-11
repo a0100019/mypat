@@ -48,6 +48,8 @@ fun TermsDialog(
 
                 Text("이용 약관")
 
+                //약관 이미지 추가
+
                 Button(
                     onClick = onClose,
                     modifier = Modifier
@@ -57,18 +59,18 @@ fun TermsDialog(
                     Text("Close")
                 }
 
-                Image(
-                    painter = rememberAsyncImagePainter(imageUrl),
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxSize().aspectRatio(0.5f), // 이거 중요!
-                    contentScale = ContentScale.Fit // 또는 ContentScale.Crop, 원하는대로 조절
-                )
-                Image(
-                    painter = rememberAsyncImagePainter(imageUrl),
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxSize().aspectRatio(0.5f), // 이거 중요!
-                    contentScale = ContentScale.Fit // 또는 ContentScale.Crop, 원하는대로 조절
-                )
+//                Image(
+//                    painter = rememberAsyncImagePainter(imageUrl),
+//                    contentDescription = null,
+//                    modifier = Modifier.fillMaxSize().aspectRatio(0.5f), // 이거 중요!
+//                    contentScale = ContentScale.Fit // 또는 ContentScale.Crop, 원하는대로 조절
+//                )
+//                Image(
+//                    painter = rememberAsyncImagePainter(imageUrl),
+//                    contentDescription = null,
+//                    modifier = Modifier.fillMaxSize().aspectRatio(0.5f), // 이거 중요!
+//                    contentScale = ContentScale.Fit // 또는 ContentScale.Crop, 원하는대로 조절
+//                )
 
             }
         }

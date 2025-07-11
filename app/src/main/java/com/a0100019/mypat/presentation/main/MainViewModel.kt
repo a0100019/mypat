@@ -119,30 +119,30 @@ class MainViewModel @Inject constructor(
                         daysBetween in 0..7
                     }
                 }
-                if(showLetterData != null){
-                    val letterImages = showLetterData.image.split("@")
-                    val imageUrls = mutableListOf<String>()
-
-                    try {
-                        letterImages.forEach { imageName ->
-                            val uri = FirebaseStorage.getInstance()
-                                .reference.child(imageName)
-                                .downloadUrl.await()
-                            imageUrls.add(uri.toString())
-                        }
-
-                        reduce {
-                            state.copy(
-                                letterImages = imageUrls,
-                                showLetterData = showLetterData
-                            )
-                        }
-
-                    } catch (e: Exception) {
-                        // 실패 처리
-                        Log.e("ImageLoad", "이미지 URL 로딩 실패", e)
-                    }
-                }
+//                if(showLetterData != null){
+//                    val letterImages = showLetterData.image.split("@")
+//                    val imageUrls = mutableListOf<String>()
+//
+//                    try {
+//                        letterImages.forEach { imageName ->
+//                            val uri = FirebaseStorage.getInstance()
+//                                .reference.child(imageName)
+//                                .downloadUrl.await()
+//                            imageUrls.add(uri.toString())
+//                        }
+//
+//                        reduce {
+//                            state.copy(
+//                                letterImages = imageUrls,
+//                                showLetterData = showLetterData
+//                            )
+//                        }
+//
+//                    } catch (e: Exception) {
+//                        // 실패 처리
+//                        Log.e("ImageLoad", "이미지 URL 로딩 실패", e)
+//                    }
+//                }
 
                 ////지난 시간만큼 love
                 val storedTime = userDataList.find { it.id == "auth" }!!.value3.toLong()

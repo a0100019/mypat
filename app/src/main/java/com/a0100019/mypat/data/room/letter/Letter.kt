@@ -11,7 +11,7 @@ data class Letter(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val date: String = "0",
     val title: String = "0",
-    val image: String = "0",
+    val message: String = "0",
     val link: String = "0",
     val reward: String = "0",
     val amount: String = "0",
