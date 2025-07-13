@@ -111,7 +111,7 @@ fun WalkScreen(
 
     todayWalk: Int = 1000,
     totalWalkCount: String = "0",
-    walkState: String = "대기",
+    walkState: String = "완료",
     totalSuccessCount: Int = 0,
     today: String = "2025-07-15",
     calendarMonth: String = "2025-07",
@@ -167,8 +167,27 @@ fun WalkScreen(
             }
         }
 
-        when (walkState) {
-            "미완료" -> {
+        if(walkState == "완료") {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .background(
+                        MaterialTheme.colorScheme.surfaceVariant,
+                        shape = MaterialTheme.shapes.medium
+                    )
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = "오늘도 수고하셨어요!",
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+            }
+        } else {
+            if (todayWalk <= 10000) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -187,33 +206,13 @@ fun WalkScreen(
                         textAlign = TextAlign.Center
                     )
                 }
-            }
-            "완료" -> {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                        .background(
-                            MaterialTheme.colorScheme.surfaceVariant,
-                            shape = MaterialTheme.shapes.medium
-                        )
-                        .padding(16.dp)
-                ) {
-                    Text(
-                        text = "오늘도 수고하셨어요!",
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        textAlign = TextAlign.Center
-                    )
-                }
-            }
-            "대기" -> {
+            } else {
                 ShinyMissionCard(
                     onClick = onTodayWalkSubmitClick
                 )
             }
         }
+
 
 
         Column(
@@ -365,7 +364,7 @@ fun ShinyMissionCard(
     onClick: () -> Unit = {}
 ) {
     // 애니메이션을 위한 각도
-    val infiniteTransition = rememberInfiniteTransition()
+    val infiniteTransition = rememberInfiniteTransition(label = "")
     val angle by infiniteTransition.animateFloat(
         initialValue = 0f,
         targetValue = 360f,

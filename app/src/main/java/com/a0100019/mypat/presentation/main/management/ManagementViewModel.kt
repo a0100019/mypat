@@ -57,31 +57,42 @@ class ManagementViewModel @Inject constructor(
     }
 
     private fun todayAttendance() = intent {
-
-        val lastData = diaryDao.getLatestDiary()
+        val lastData = userDao.getValueById("date")
         val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
 
-        if(lastData.date != currentDate){
+        if (lastData != currentDate) {
+
+            userDao.update(id = "date", value = currentDate)
 
             val closeKoreanIdiomData = koreanIdiomDao.getCloseKoreanIdiom()
-            if (closeKoreanIdiomData.isNotNull()) {
-                closeKoreanIdiomData!!.date = currentDate
+            if (closeKoreanIdiomData != null) {
+                closeKoreanIdiomData.date = currentDate
                 closeKoreanIdiomData.state = "대기"
                 koreanIdiomDao.update(closeKoreanIdiomData)
             }
 
             val closeEnglishData = englishDao.getCloseEnglish()
-            if (closeEnglishData.isNotNull()) {
-                closeEnglishData!!.date = currentDate
+            if (closeEnglishData != null) {
+                closeEnglishData.date = currentDate
                 closeEnglishData.state = "대기"
                 englishDao.update(closeEnglishData)
             }
 
             diaryDao.insert(Diary(date = currentDate))
 
-            //일일 알림 다이얼로그 띄우기
-        }
+            // ✅ Walk 자동 채우기 부분
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+            val latestWalkDate = LocalDate.parse(walkDao.getLatestWalkData().date, formatter)
+            val today = LocalDate.now()
 
+            var dateToInsert = latestWalkDate.plusDays(1)
+            while (!dateToInsert.isAfter(today)) {
+                walkDao.insert(Walk(date = dateToInsert.format(formatter)))
+                dateToInsert = dateToInsert.plusDays(1)
+            }
+
+            // TODO: 일일 알림 다이얼로그 띄우기
+        }
     }
 
 }
