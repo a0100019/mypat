@@ -91,7 +91,6 @@ fun MainButton(
             )
         }
 
-
         if (showBadge) {
             Box(
                 modifier = Modifier
@@ -104,7 +103,6 @@ fun MainButton(
     }
 
 }
-
 
 @SuppressLint("SuspiciousIndentation")
 @Preview(showBackground = true)

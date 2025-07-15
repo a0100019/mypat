@@ -100,17 +100,6 @@ fun DraggablePatImage(
             if(worldIndex != ""){
                 Text(
                     text = (worldIndex.toInt() + 1).toString(),
-                    modifier = Modifier
-                        .border(
-                            width = 1.dp,
-                            color = Color(0xFFB0DFF0), // 테두리도 파스텔 톤
-                            shape = RoundedCornerShape(4.dp)
-                        )
-                        .background(
-                            color = Color(0xFFE0F7FF), // 💡 파스텔 블루
-                            shape = RoundedCornerShape(4.dp)
-                        )
-                        .padding(horizontal = 2.dp)
                 )
 
             }

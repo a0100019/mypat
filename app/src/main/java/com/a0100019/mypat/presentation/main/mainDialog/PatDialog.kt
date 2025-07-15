@@ -47,33 +47,46 @@ fun PatDialog(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
-                .shadow(12.dp, RoundedCornerShape(20.dp))
-                .background(Color(0xFFFDF7FF), shape = RoundedCornerShape(20.dp)) // 부드러운 배경
+                .shadow(12.dp, RoundedCornerShape(24.dp))
+                .border(
+                    width = 2.dp,
+                    color = MaterialTheme.colorScheme.outline, // 테두리
+                    shape = RoundedCornerShape(24.dp)
+                )
+                .background(
+                    color = MaterialTheme.colorScheme.background, // 배경색
+                    shape = RoundedCornerShape(24.dp)
+                )
                 .padding(24.dp)
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                // 이름
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
+                // 🐾 이름
                 Text(
                     text = patData.name,
                     style = MaterialTheme.typography.headlineMedium,
-                    color = Color(0xFF4A148C),
+                    color = MaterialTheme.colorScheme.onPrimaryContainer, // 텍스트 강조 색
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
-                // 🐾 펫 박스 + 애정도
+                // 🐶 펫 박스
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(180.dp)
-                        .background(Color(0xFFE1BEE7), shape = RoundedCornerShape(16.dp))
-                        .border(2.dp, Color(0xFFBA68C8), shape = RoundedCornerShape(16.dp))
+                        .background(
+                            color = Color(0xFFFFF9C4),
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                        .border(
+                            width = 2.dp,
+                            color = MaterialTheme.colorScheme.primaryContainer, // 테두리
+                            shape = RoundedCornerShape(16.dp)
+                        )
                         .padding(16.dp)
                 ) {
                     DialogPatImage(patData.url)
 
-                    // 애정도 라인
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth()
@@ -86,43 +99,48 @@ fun PatDialog(
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             text = "${patFlowData?.love?.div(100) ?: 0}",
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         patFlowData?.love?.let { LoveHorizontalLine(it) }
                     }
-
                 }
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-                // 🎮 미니게임 섹션
+                // 🎮 미니게임 타이틀
                 Text(
                     text = "미니 게임",
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                    color = Color(0xFF6A1B9A),
+                    color = MaterialTheme.colorScheme.onPrimaryContainer, // 강조 색
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
 
                 MainButton(
                     text = "총 게임",
                     onClick = onFirstGameNavigateClick,
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 6.dp)
                 )
                 MainButton(
                     text = "피하기 게임",
                     onClick = onSecondGameNavigateClick,
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 6.dp)
                 )
                 MainButton(
                     text = "맞추기 게임",
                     onClick = onThirdGameNavigateClick,
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 6.dp)
                 )
 
-                // 닫기 버튼
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(16.dp))
+
                 Row(modifier = Modifier.fillMaxWidth()) {
                     Spacer(modifier = Modifier.weight(1f))
                     MainButton(
@@ -136,9 +154,7 @@ fun PatDialog(
             }
         }
     }
-
 }
-
 
 @Preview(showBackground = true)
 @Composable
