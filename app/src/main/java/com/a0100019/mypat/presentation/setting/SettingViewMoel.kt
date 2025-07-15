@@ -613,36 +613,20 @@ class SettingViewModel @Inject constructor(
     fun clickLetterDataChange(letterId: Int) = intent {
         if(letterId != 0) {
 
-//            val clickLetterData = state.letterDataList.find { it.id == letterId }!!
-//            val letterImages = clickLetterData.image.split("@")
-//            val imageUrls = mutableListOf<String>()
-//
-//            try {
-//                letterImages.forEach { imageName ->
-//                    val uri = FirebaseStorage.getInstance()
-//                        .reference.child(imageName)
-//                        .downloadUrl.await()
-//                    imageUrls.add(uri.toString())
-//                }
-//
-//                reduce {
-//                    state.copy(
-//                        letterImages = imageUrls,
-//                        clickLetterData = clickLetterData
-//                        )
-//                }
-//
-//            } catch (e: Exception) {
-//                // 실패 처리
-//                Log.e("ImageLoad", "이미지 URL 로딩 실패", e)
-//            }
+            val clickLetterData = state.letterDataList.find { it.id == letterId }!!
+
+
+            reduce {
+                state.copy(
+                    clickLetterData = clickLetterData
+                    )
+            }
 
         } else {
 
             reduce {
                 state.copy(
                     clickLetterData = Letter(),
-                    letterImages = emptyList()
                 )
             }
         }
@@ -671,8 +655,8 @@ class SettingViewModel @Inject constructor(
                 )
             } else {
                 userDao.update(
-                    id = "cash",
-                    value2 = (state.userDataList.find { it.id == "cash" }!!.value2.toInt() + letterData.amount.toInt()).toString()
+                    id = "money",
+                    value2 = (state.userDataList.find { it.id == "money" }!!.value2.toInt() + letterData.amount.toInt()).toString()
                 )
             }
             postSideEffect(SettingSideEffect.Toast("보상 획득 : ${letterData.reward} +${letterData.amount}"))
@@ -716,7 +700,6 @@ data class SettingState(
     val editText: String = "",
     val clickLetterData: Letter = Letter(),
     val letterDataList: List<Letter> = emptyList(),
-    val letterImages: List<String> = emptyList(),
     val sudokuDataList: List<Sudoku> = emptyList(),
     val areaDataList: List<Area> = emptyList()
     )

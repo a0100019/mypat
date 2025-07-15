@@ -88,8 +88,7 @@ fun MainScreen(
         onThirdGameNavigateClick = onThirdGameNavigateClick,
         onWorldNavigateClick = onWorldNavigateClick,
 
-        onLetterGetClick = mainViewModel::onLetterGetClick,
-        onLetterCloseClick = mainViewModel::onLetterCloseClick,
+        onLetterReadClick = mainViewModel::onLetterReadClick,
         onLetterLinkClick = mainViewModel::onLetterLinkClick,
         dialogPatIdChange = mainViewModel::dialogPatIdChange,
         onSituationChange = mainViewModel::onSituationChange,
@@ -108,7 +107,6 @@ fun MainScreen(
         userDataList = mainState.userDataList,
         showLetterData = mainState.showLetterData,
         situation = mainState.situation,
-        letterImages = mainState.letterImages,
         lovePatData = mainState.lovePatData,
         loveItemData1 = mainState.loveItemData1,
         loveItemData2 = mainState.loveItemData2,
@@ -134,8 +132,7 @@ fun MainScreen(
     onThirdGameNavigateClick: () -> Unit,
 
     dialogPatIdChange: (String) -> Unit,
-    onLetterGetClick: () -> Unit,
-    onLetterCloseClick: () -> Unit,
+    onLetterReadClick: () -> Unit = {},
     onLetterLinkClick: () -> Unit,
     onSituationChange: (String) -> Unit,
     onLovePatChange: (Int) -> Unit,
@@ -153,7 +150,6 @@ fun MainScreen(
     userDataList: List<User>,
     showLetterData: Letter,
     situation: String,
-    letterImages: List<String>,
     lovePatData: Pat,
     loveItemData1: Item,
     loveItemData2: Item,
@@ -165,10 +161,11 @@ fun MainScreen(
 
     when(situation) {
         "letter" -> LetterViewDialog(
-            onClose = onLetterCloseClick,
+            onClose = {},
             onLetterLinkClick = onLetterLinkClick,
-            onLetterConfirmClick = onLetterGetClick,
+            onLetterConfirmClick = onLetterReadClick,
             clickLetterData = showLetterData,
+            closeVisible = false
         )
     }
 
@@ -210,24 +207,28 @@ fun MainScreen(
                     val users by userFlowDataList.collectAsState(initial = emptyList())
                     Text("money : ${users.find { it.id == "money" }?.value} | cash : ${users.find { it.id == "money" }?.value2}")
 
-                    MainButton(
-                        onClick = onSettingNavigateClick,
-                        text = "설정"
-                    )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        MainButton(
+                            onClick = onSettingNavigateClick,
+                            text = "설정"
+                        )
+                        //편지 이미지
+                        if(showLetterData.id != 0){
+                            JustImage(
+                                filePath = "etc/letter.json",
+                                modifier = Modifier
+                                    .size(50.dp)
+                                    .clickable {
+                                        onSituationChange("letter")
+                                    }
+                            )
+                        }
+                    }
 
                 }
 
-                //편지 이미지
-                if(showLetterData.id != 0){
-                    JustImage(
-                        filePath = "etc/letter.json",
-                        modifier = Modifier
-                            .size(100.dp)
-                            .clickable {
-                                onSituationChange("letter")
-                            }
-                    )
-                }
             }
 
             Column(
@@ -367,12 +368,9 @@ fun MainScreenPreview() {
             worldDataList = emptyList(),
             userDataList = emptyList(),
             onSituationChange = {},
-            onLetterGetClick = {},
             onLetterLinkClick = {},
-            onLetterCloseClick = {},
             situation = "",
-            showLetterData = Letter(),
-            letterImages = emptyList(),
+            showLetterData = Letter(id = 1),
             onLovePatChange = {},
             lovePatData = Pat(url = "pat/cat.json"),
             onLoveItemDrag = { id, newX, newY -> },

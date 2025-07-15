@@ -80,8 +80,6 @@ class MainViewModel @Inject constructor(
         startTenMinuteCountdown()
     }
 
-
-
     fun loadData() = intent {
         // 병렬로 실행할 작업들을 viewModelScope.launch로 묶음
         viewModelScope.launch(Dispatchers.IO) {
@@ -111,38 +109,24 @@ class MainViewModel @Inject constructor(
                 //한달 이내 편지 찾기
                 val allLetterData = letterDao.getAllLetterData()
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                val todayDate = LocalDate.parse(userDataList.find { it.id == "date" }!!.value, formatter)
+                val todayDate = LocalDate.now()
                 val showLetterData = allLetterData.firstOrNull {
                     it.state == "open" && run {
                         val itemDate = LocalDate.parse(it.date, formatter)
                         val daysBetween = ChronoUnit.DAYS.between(itemDate, todayDate)
-                        daysBetween in 0..7
+                        daysBetween in 0..30
                     }
                 }
-//                if(showLetterData != null){
-//                    val letterImages = showLetterData.image.split("@")
-//                    val imageUrls = mutableListOf<String>()
-//
-//                    try {
-//                        letterImages.forEach { imageName ->
-//                            val uri = FirebaseStorage.getInstance()
-//                                .reference.child(imageName)
-//                                .downloadUrl.await()
-//                            imageUrls.add(uri.toString())
-//                        }
-//
-//                        reduce {
-//                            state.copy(
-//                                letterImages = imageUrls,
-//                                showLetterData = showLetterData
-//                            )
-//                        }
-//
-//                    } catch (e: Exception) {
-//                        // 실패 처리
-//                        Log.e("ImageLoad", "이미지 URL 로딩 실패", e)
-//                    }
-//                }
+
+                if(showLetterData != null){
+
+                    reduce {
+                        state.copy(
+                            showLetterData = showLetterData
+                        )
+                    }
+
+                }
 
                 ////지난 시간만큼 love
                 val storedTime = userDataList.find { it.id == "auth" }!!.value3.toLong()
@@ -225,28 +209,13 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun onLetterCloseClick() = intent {
-
-        val letterData = state.showLetterData
-        letterData.state = "read"
-        letterDao.update(letterData)
-        reduce {
-            state.copy(
-                showLetterData = Letter()
-            )
-        }
-        onSituationChange("")
-        loadData()
-
-    }
-
     fun onLetterLinkClick() = intent {
         val url = state.showLetterData.link
         postSideEffect(MainSideEffect.OpenUrl(url))
     }
 
     //편지 보상받기
-    fun onLetterGetClick() = intent {
+    fun onLetterReadClick() = intent {
 
         val letterData = state.showLetterData
 
@@ -257,7 +226,7 @@ class MainViewModel @Inject constructor(
         }
         postSideEffect(MainSideEffect.Toast("보상 획득 : ${letterData.reward} +${letterData.amount}"))
 
-        letterData.state = "get"
+        letterData.state = "read"
         letterDao.update(letterData)
 
         reduce {
@@ -365,7 +334,6 @@ class MainViewModel @Inject constructor(
         loadData()
     }
 
-
     //하트 타이머
     private var hasFiredThisCycle = false
     private var timerJob: Job? = null
@@ -432,7 +400,6 @@ class MainViewModel @Inject constructor(
 
         }
     }
-
 
 }
 

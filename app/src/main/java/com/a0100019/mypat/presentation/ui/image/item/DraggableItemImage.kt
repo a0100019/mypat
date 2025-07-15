@@ -75,6 +75,8 @@ fun DraggableItemImage(
                         )
                     }
                 }
+            ,
+            contentAlignment = Alignment.Center
         ){
             LottieAnimation(
                 composition = composition,
@@ -120,7 +122,8 @@ fun DraggableItemImage(
                                 with(LocalDensity) { (yOffset).toPx() / surfaceHeightDp.toPx() }
                             )
                         }
-                    }
+                    },
+                contentAlignment = Alignment.Center
             ) {
                 Image(
                     bitmap = bitmap!!.asImageBitmap(),

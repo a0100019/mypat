@@ -1,5 +1,6 @@
 package com.a0100019.mypat.presentation.daily.diary
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,6 +33,12 @@ import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.*
 import androidx.compose.ui.text.input.ImeAction
 
@@ -43,12 +50,39 @@ fun DiaryWriteScreen(
     val diaryState: DiaryState = diaryViewModel.collectAsState().value
     val context = LocalContext.current
 
-    DisposableEffect(Unit) {
-        onDispose {
-            diaryViewModel.loadData()
-        }
+    // 뒤로가기 다이얼로그 상태
+    var showExitDialog by remember { mutableStateOf(false) }
+
+    // ✅ 다이얼로그 뜰 때는 뒤로가기 비활성화
+    BackHandler(enabled = !showExitDialog) {
+        showExitDialog = true
     }
 
+    // ✅ 다이얼로그 UI
+    if (showExitDialog) {
+        AlertDialog(
+            onDismissRequest = { showExitDialog = false },
+            title = { Text("작성 중인 일기가 있어요") },
+            text = { Text("정말 나가시겠습니까?\n작성한 내용은 저장되지 않습니다.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    showExitDialog = false  // 그냥 닫기
+                }) {
+                    Text("아니오")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showExitDialog = false
+                    popBackStack()  // 🔥 뒤로 나가기
+                }) {
+                    Text("네")
+                }
+            }
+        )
+    }
+
+    // 아래는 실제 일기 UI
     DiaryWriteScreen(
         writeDiaryData = diaryState.writeDiaryData,
         writePossible = diaryState.writePossible,
@@ -61,6 +95,7 @@ fun DiaryWriteScreen(
         onDialogStateChange = diaryViewModel::onDialogStateChange
     )
 }
+
 
 @Composable
 fun DiaryWriteScreen(
