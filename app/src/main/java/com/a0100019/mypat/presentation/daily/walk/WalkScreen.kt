@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Favorite
@@ -173,8 +174,13 @@ fun WalkScreen(
                     .fillMaxWidth()
                     .padding(16.dp)
                     .background(
-                        MaterialTheme.colorScheme.surfaceVariant,
-                        shape = MaterialTheme.shapes.medium
+                        MaterialTheme.colorScheme.scrim,
+                        shape = RoundedCornerShape(16.dp)
+                    )
+                    .border(
+                        width = 2.dp,
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        shape = RoundedCornerShape(16.dp)
                     )
                     .padding(16.dp)
             ) {
@@ -193,8 +199,13 @@ fun WalkScreen(
                         .fillMaxWidth()
                         .padding(16.dp)
                         .background(
-                            MaterialTheme.colorScheme.surfaceVariant,
-                            shape = MaterialTheme.shapes.medium
+                            MaterialTheme.colorScheme.scrim,
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                        .border(
+                            width = 2.dp,
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            shape = RoundedCornerShape(16.dp)
                         )
                         .padding(16.dp)
                 ) {
@@ -220,8 +231,13 @@ fun WalkScreen(
                 .fillMaxWidth()
                 .padding(16.dp)
                 .background(
-                    MaterialTheme.colorScheme.surfaceVariant,
-                    shape = MaterialTheme.shapes.medium
+                    MaterialTheme.colorScheme.scrim,
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .border(
+                    width = 2.dp,
+                    color = MaterialTheme.colorScheme.primaryContainer,
+                    shape = RoundedCornerShape(16.dp)
                 )
                 .padding(16.dp)
         ) {

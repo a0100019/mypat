@@ -4,6 +4,8 @@ package com.a0100019.mypat.presentation.main
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,6 +15,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,7 +24,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -204,8 +211,53 @@ fun MainScreen(
                         iconResId = R.drawable.information,
                         onClick = onInformationNavigateClick,
                     )
+
                     val users by userFlowDataList.collectAsState(initial = emptyList())
-                    Text("money : ${users.find { it.id == "money" }?.value} | cash : ${users.find { it.id == "money" }?.value2}")
+                    Row(
+                        modifier = Modifier
+                            .shadow(elevation = 4.dp, shape = RoundedCornerShape(16.dp)) // 💥 그림자 추가
+                            .background(
+                                color = MaterialTheme.colorScheme.scrim,
+                                shape = RoundedCornerShape(16.dp)
+                            ) // ✨ 배경 추가
+                            .border(
+                                width = 2.dp,
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                            .padding(horizontal = 20.dp, vertical = 12.dp)
+                        ,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+
+                        Text(
+                            text = "💰",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Text(
+                            text = users.find { it.id == "money" }?.value ?: "0",
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+
+                        Spacer(modifier = Modifier.size(12.dp))
+
+                        Text(
+                            text = "💸",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                        Text(
+                            text = users.find { it.id == "money" }?.value2 ?: "0",
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+
+                    }
 
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally

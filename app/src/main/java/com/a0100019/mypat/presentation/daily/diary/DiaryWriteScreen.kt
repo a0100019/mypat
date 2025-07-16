@@ -187,6 +187,10 @@ fun DiaryWriteScreen(
             }
         }
 
+        Text(
+            text = "오늘에 대해 "
+        )
+
 
     }
 }

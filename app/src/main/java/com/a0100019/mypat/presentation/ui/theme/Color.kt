@@ -32,7 +32,7 @@ val onSurfaceVariantLight = Color(0xFF4B4739)
 
 val outlineLight = Color(0xFF7C7767)
 val outlineVariantLight = Color(0xFFCDC6B4)
-val scrimLight = Color(0xFF000000)
+val scrimLight = Color(0xFFFFF9C4)
 
 val inverseSurfaceLight = Color(0xFF333027)
 val inverseOnSurfaceLight = Color(0xFFF7F0E2)

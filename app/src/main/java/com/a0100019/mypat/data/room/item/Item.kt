@@ -8,7 +8,6 @@ data class Item(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     var date: String = "0",
     val name: String = "",
-    val memo: String = "",
     val url: String,
     var x: Float = 0.5f,
     var y: Float = 0.5f,

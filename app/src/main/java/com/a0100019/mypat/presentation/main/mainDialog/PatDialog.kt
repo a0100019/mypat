@@ -75,7 +75,7 @@ fun PatDialog(
                         .fillMaxWidth()
                         .height(180.dp)
                         .background(
-                            color = Color(0xFFFFF9C4),
+                            MaterialTheme.colorScheme.scrim,
                             shape = RoundedCornerShape(16.dp)
                         )
                         .border(

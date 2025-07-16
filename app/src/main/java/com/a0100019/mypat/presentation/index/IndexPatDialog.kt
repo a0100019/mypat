@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -78,7 +79,7 @@ fun IndexPatDialog(
                         .fillMaxWidth()
                         .height(180.dp)
                         .background(
-                            color = Color(0xFFFFF9C4), // 연팔 색
+                            color = if(open) { MaterialTheme.colorScheme.scrim } else { Color.LightGray },
                             shape = RoundedCornerShape(16.dp)
                         )
                         .border(
@@ -107,6 +108,15 @@ fun IndexPatDialog(
                                 LoveHorizontalLine(patData.love)
                             }
                         }
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(
+                                    Color.LightGray.copy(alpha = 0.5f),
+                                    shape = RoundedCornerShape(16.dp)
+                                ) // 반투명 배경
+                        )
                     }
                 }
 

@@ -2,6 +2,7 @@ package com.a0100019.mypat.presentation.daily.english
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -9,8 +10,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -134,16 +138,22 @@ fun EnglishScreen(
         ) {
             itemsIndexed(englishDataList) { index, englishData ->
 
-                if(englishData.state != "대기"){
+                if (englishData.state != "대기") {
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                            .border(
+                                width = 2.dp,
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                            .shadow(8.dp, RoundedCornerShape(16.dp)),
                         shape = RoundedCornerShape(16.dp),
                         elevation = CardDefaults.elevatedCardElevation(6.dp),
                         onClick = { onEnglishClick(englishData) },
                         colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant
+                            containerColor = MaterialTheme.colorScheme.scrim
                         )
                     ) {
                         Row(
@@ -152,21 +162,25 @@ fun EnglishScreen(
                                 .padding(16.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-
+                            // 영어 단어
                             Text(
                                 text = englishData.word,
                                 style = MaterialTheme.typography.titleMedium,
                                 color = MaterialTheme.colorScheme.primary
                             )
-                            Spacer(modifier = Modifier.size(10.dp))
+
+                            Spacer(modifier = Modifier.width(10.dp))
+
+                            // 뜻
                             Text(
                                 text = englishData.meaning,
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
 
-                            Spacer(modifier = Modifier.weight(1f)) // 텍스트와 이미지 사이 공간 확보
+                            Spacer(modifier = Modifier.weight(1f))
 
+                            // 상태 아이콘
                             val iconRes = if (englishData.state == "완료") {
                                 R.drawable.star_gray
                             } else {
@@ -179,50 +193,60 @@ fun EnglishScreen(
                                 modifier = Modifier.size(20.dp)
                             )
                         }
-
                     }
                 } else {
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                            .border(
+                                width = 2.dp,
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                            .shadow(8.dp, RoundedCornerShape(16.dp)),
                         shape = RoundedCornerShape(16.dp),
                         elevation = CardDefaults.elevatedCardElevation(6.dp),
                         onClick = { onEnglishClick(englishData) },
                         colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant
+                            containerColor = MaterialTheme.colorScheme.scrim
                         )
                     ) {
-                        Row (
+                        Row(
                             modifier = Modifier
-                                .fillMaxSize()
-                                .padding(16.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                                .fillMaxWidth()
+                                .padding(20.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
+                            Column(
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text(
+                                    text = "문제를 풀고 보상을 받으세요!",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
 
-                            Text(
-                                text = "문제를 풀고 보상을 받으세요",
-                                style = MaterialTheme.typography.titleMedium,
-                                color = MaterialTheme.colorScheme.primary
-                            )
+                                Spacer(modifier = Modifier.height(6.dp))
 
-                            Text(
-                                text = " " + englishData.date,
-                                style = MaterialTheme.typography.titleSmall,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-
-                            Spacer(modifier = Modifier.weight(1f)) // 텍스트와 이미지 사이 공간 확보
+                                Text(
+                                    text = "📅 ${englishData.date}",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
 
                             SparkleText(
-                                text = "new!!",
-                                fontSize = 20
+                                text = "✨NEW✨",
+                                fontSize = 20,
+                                modifier = Modifier.padding(start = 12.dp)
                             )
-
                         }
                     }
-
                 }
+
+
 
             }
         }

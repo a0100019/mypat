@@ -2,6 +2,8 @@ package com.a0100019.mypat.presentation.information
 
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -138,7 +140,7 @@ fun InformationScreen(
                     .padding(start = 6.dp, end = 6.dp),
                 shape = RoundedCornerShape(16.dp),
                 color = Color(0xFFFFF8E7),
-                border = BorderStroke(2.dp, Color(0xFF5A3A22)),
+                border = BorderStroke(2.dp, MaterialTheme.colorScheme.primaryContainer),
                 shadowElevation = 8.dp,
             ) {
                 Box(modifier = Modifier.fillMaxSize()) {
@@ -184,10 +186,17 @@ fun InformationScreen(
                 verticalArrangement = Arrangement.SpaceEvenly
             ) {
                 Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(
+                            width = 2.dp,
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                    ,
+                    shape = RoundedCornerShape(16.dp),
                     tonalElevation = 2.dp,
-                    color = Color(0xFFF9F3EA)
+                    color = MaterialTheme.colorScheme.scrim
                 ) {
                     Column(
                         modifier = Modifier
@@ -250,10 +259,17 @@ fun InformationScreen(
                 }
 
                 Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(
+                            width = 2.dp,
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                    ,
+                    shape = RoundedCornerShape(16.dp),
                     tonalElevation = 2.dp,
-                    color = Color(0xFFF9F3EA)
+                    color = MaterialTheme.colorScheme.scrim
                 ) {
                     Column(
                         modifier = Modifier

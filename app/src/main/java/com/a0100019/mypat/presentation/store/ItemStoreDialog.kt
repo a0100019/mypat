@@ -27,7 +27,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
-import com.a0100019.mypat.presentation.ui.image.item.ItemImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
 

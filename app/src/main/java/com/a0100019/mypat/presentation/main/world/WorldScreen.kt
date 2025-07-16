@@ -205,8 +205,8 @@ fun WorldScreen(
                 horizontalArrangement = Arrangement.End
             ) {
                 Text(
-                    text = "Pat ${userDataList.find { it.id == "pat" }?.value3} / ${userDataList.find { it.id == "pat" }?.value2}   " +
-                            "Item ${userDataList.find { it.id == "item" }?.value3} / ${userDataList.find { it.id == "item" }?.value2}",
+                    text = "펫 ${userDataList.find { it.id == "pat" }?.value3} / ${userDataList.find { it.id == "pat" }?.value2}   " +
+                            "아이템 ${userDataList.find { it.id == "item" }?.value3} / ${userDataList.find { it.id == "item" }?.value2}",
                     style = MaterialTheme.typography.bodyMedium
                 )
             }

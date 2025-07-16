@@ -23,7 +23,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -36,7 +38,6 @@ import com.a0100019.mypat.data.room.area.Area
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
-import com.a0100019.mypat.presentation.ui.image.item.ItemImage
 import com.a0100019.mypat.presentation.ui.image.pat.DialogPatImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
@@ -102,16 +103,16 @@ fun IndexScreen(
     } else if(dialogItemIndex != -1 && typeChange == "item") {
         IndexItemDialog(
             onClose = onCloseDialog,
-//            open =
+            open = allItemDataList.getOrNull(dialogItemIndex)!!.date != "0",
             itemData = allItemDataList.getOrNull(dialogItemIndex)!!
         )
     } else if(dialogAreaIndex != -1 && typeChange == "area") {
         IndexAreaDialog(
             onClose = onCloseDialog,
+            open = allAreaDataList.getOrNull(dialogAreaIndex)!!.date != "0",
             areaData = allAreaDataList.getOrNull(dialogAreaIndex)!!
         )
     }
-
 
     // Fullscreen container
     Column(
@@ -220,7 +221,11 @@ fun IndexScreen(
                                             .weight(1f)
                                             .fillMaxWidth()
                                             .background(
-                                                color = if(allPatDataList[index].date != "0") { Color(0xFFFFF9C4) } else {Color.LightGray},
+                                                color = if (allPatDataList[index].date != "0") {
+                                                    MaterialTheme.colorScheme.scrim
+                                                } else {
+                                                    Color.LightGray
+                                                },
                                                 shape = RoundedCornerShape(16.dp)
                                             )
                                             .border(
@@ -232,6 +237,16 @@ fun IndexScreen(
                                         contentAlignment = Alignment.Center
                                     ) {
                                         DialogPatImage(allPatDataList[index].url)
+                                        if(allPatDataList[index].date == "0") {
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxSize()
+                                                    .background(
+                                                        Color.LightGray.copy(alpha = 0.5f),
+                                                        shape = RoundedCornerShape(16.dp)
+                                                    ) // 반투명 배경
+                                            )
+                                        }
                                     }
 
                                     // 📝 이름
@@ -275,55 +290,94 @@ fun IndexScreen(
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(3.dp)
-                                .aspectRatio(0.7f), // 카드 비율 설정
-                            elevation = CardDefaults.cardElevation(4.dp),
-                            onClick = { onCardClick(index)}
+                                .padding(6.dp)
+                                .border(
+                                    width = 2.dp,
+                                    color = MaterialTheme.colorScheme.outlineVariant,
+                                    shape = RoundedCornerShape(16.dp)
+                                )
+                                .aspectRatio(0.7f),
+                            shape = RoundedCornerShape(16.dp),
+                            elevation = CardDefaults.cardElevation(6.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                            ),
+                            onClick = { onCardClick(index) }
                         ) {
-
-                            Box{
-                                if(allItemDataList[index].date == "0") {
-                                    JustImage(
-                                        filePath = "etc/lock.png",
-                                        modifier = Modifier
-                                            .size(30.dp) // 부모의 20% 크기
-                                            .aspectRatio(1f)
-                                            .padding(5.dp)
-                                    )
-                                }
+                            Box(modifier = Modifier.fillMaxSize()) {
 
                                 Column(
                                     modifier = Modifier
                                         .fillMaxSize()
-                                        .padding(8.dp), // 카드 안쪽 여백
-                                    verticalArrangement = Arrangement.SpaceBetween, // 이미지와 텍스트를 상하로 배치
-                                    horizontalAlignment = Alignment.CenterHorizontally // 가로 중앙 정렬
+                                        .padding(12.dp),
+                                    verticalArrangement = Arrangement.SpaceBetween,
+                                    horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
-                                    // 이미지
+                                    // 이미지 박스
                                     Box(
                                         modifier = Modifier
-                                            .weight(1f) // 이미지가 최대한 공간을 차지하도록
-                                            .fillMaxWidth(),
+                                            .weight(1f)
+                                            .fillMaxWidth()
+                                            .background(
+                                                color = if (allItemDataList[index].date != "0") {
+                                                    MaterialTheme.colorScheme.scrim
+                                                } else {
+                                                    Color.LightGray
+                                                },
+                                                shape = RoundedCornerShape(16.dp)
+                                            )
+                                            .border(
+                                                width = 2.dp,
+                                                color = MaterialTheme.colorScheme.primaryContainer,
+                                                shape = RoundedCornerShape(16.dp)
+                                            )
+                                            .padding(6.dp)
+                                            ,
                                         contentAlignment = Alignment.Center
                                     ) {
-                                        ItemImage(allItemDataList[index].url)
+                                        JustImage(
+                                            filePath = allItemDataList[index].url,
+                                            contentScale = ContentScale.Fit
+                                        )
+                                        if(allItemDataList[index].date == "0") {
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxSize()
+                                                    .background(
+                                                        Color.LightGray.copy(alpha = 0.5f),
+                                                        shape = RoundedCornerShape(16.dp)
+                                                    ) // 반투명 배경
+                                            )
+                                        }
                                     }
 
-                                    // 텍스트
+                                    // 아이템 이름 텍스트
                                     Text(
                                         text = allItemDataList[index].name,
                                         modifier = Modifier
-                                            .padding(top = 8.dp) // 이미지와의 간격 설정
+                                            .padding(top = 10.dp)
                                             .fillMaxWidth(),
-                                        textAlign = TextAlign.Center, // 텍스트 중앙 정렬
-                                        style = MaterialTheme.typography.bodySmall // 텍스트 스타일 적용
+                                        textAlign = TextAlign.Center,
+                                        style = MaterialTheme.typography.bodyMedium.copy(
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
                                     )
                                 }
 
+                                // 🔒 잠금 아이콘
+                                if (allItemDataList[index].date == "0") {
+                                    JustImage(
+                                        filePath = "etc/lock.png",
+                                        modifier = Modifier
+                                            .size(35.dp)
+                                            .align(Alignment.TopStart)
+                                            .padding(8.dp)
+                                    )
+                                }
                             }
-
                         }
                     }
+
                 }
             }
             else -> {
@@ -337,55 +391,93 @@ fun IndexScreen(
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(3.dp)
-                                .aspectRatio(0.7f), // 카드 비율 설정
-                            elevation = CardDefaults.cardElevation(4.dp),
-                            onClick = { onCardClick(index)}
+                                .padding(6.dp)
+                                .border(
+                                    width = 2.dp,
+                                    color = MaterialTheme.colorScheme.outlineVariant,
+                                    shape = RoundedCornerShape(16.dp)
+                                )
+                                .aspectRatio(0.8f),
+                            shape = RoundedCornerShape(16.dp),
+                            elevation = CardDefaults.cardElevation(6.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                            ),
+                            onClick = { onCardClick(index) }
                         ) {
-
-                            Box {
-                                if(allAreaDataList[index].date == "0") {
-                                    JustImage(
-                                        filePath = "etc/lock.png",
-                                        modifier = Modifier
-                                            .size(30.dp) // 부모의 20% 크기
-                                            .aspectRatio(1f)
-                                            .padding(5.dp)
-                                    )
-                                }
+                            Box(modifier = Modifier.fillMaxSize()) {
 
                                 Column(
                                     modifier = Modifier
                                         .fillMaxSize()
-                                        .padding(8.dp), // 카드 안쪽 여백
-                                    verticalArrangement = Arrangement.SpaceBetween, // 이미지와 텍스트를 상하로 배치
-                                    horizontalAlignment = Alignment.CenterHorizontally // 가로 중앙 정렬
+                                        .padding(12.dp),
+                                    verticalArrangement = Arrangement.SpaceBetween,
+                                    horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
-                                    // 이미지
+                                    // 이미지 박스
                                     Box(
                                         modifier = Modifier
-                                            .weight(1f) // 이미지가 최대한 공간을 차지하도록
-                                            .fillMaxWidth(),
+                                            .fillMaxWidth()
+                                            .background(
+                                                color = if (allAreaDataList[index].date != "0") {
+                                                    MaterialTheme.colorScheme.scrim
+                                                } else {
+                                                    Color.LightGray
+                                                },
+                                                shape = RoundedCornerShape(16.dp)
+                                            )
+                                            .border(
+                                                width = 2.dp,
+                                                color = MaterialTheme.colorScheme.primaryContainer,
+                                                shape = RoundedCornerShape(16.dp)
+                                            ),
                                         contentAlignment = Alignment.Center
                                     ) {
-                                        ItemImage(allAreaDataList[index].url)
+                                        JustImage(
+                                            filePath = allAreaDataList[index].url,
+                                            modifier = Modifier
+                                                .clip(RoundedCornerShape(16.dp)) // 곡률 적용
+                                            )
+                                        if(allAreaDataList[index].date == "0") {
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .aspectRatio(1f)
+                                                    .background(
+                                                        Color.LightGray.copy(alpha = 0.8f),
+                                                        shape = RoundedCornerShape(16.dp)
+                                                    ) // 반투명 배경
+                                            )
+                                        }
                                     }
 
                                     // 텍스트
                                     Text(
                                         text = allAreaDataList[index].name,
                                         modifier = Modifier
-                                            .padding(top = 8.dp) // 이미지와의 간격 설정
+                                            .padding(top = 10.dp)
                                             .fillMaxWidth(),
-                                        textAlign = TextAlign.Center, // 텍스트 중앙 정렬
-                                        style = MaterialTheme.typography.bodySmall // 텍스트 스타일 적용
+                                        textAlign = TextAlign.Center,
+                                        style = MaterialTheme.typography.bodyMedium.copy(
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
                                     )
                                 }
 
+                                // 🔒 잠금 아이콘
+                                if (allAreaDataList[index].date == "0") {
+                                    JustImage(
+                                        filePath = "etc/lock.png",
+                                        modifier = Modifier
+                                            .size(35.dp)
+                                            .align(Alignment.TopStart)
+                                            .padding(8.dp)
+                                    )
+                                }
                             }
-
                         }
                     }
+
                 }
             }
         }
@@ -424,9 +516,9 @@ fun IndexScreenPreview() {
         IndexScreen(
             allPatDataList = listOf(Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json")),
             allItemDataList = listOf(Item(url = "item/table.png")),
-            allAreaDataList = listOf(Area(url = "area/forest.png")),
+            allAreaDataList = listOf(Area(url = "area/forest.jpg")),
             onTypeChangeClick = {},
-            typeChange = "pat",
+            typeChange = "map",
             dialogPatIndex = -1,
             onCloseDialog = {},
             onCardClick = {},

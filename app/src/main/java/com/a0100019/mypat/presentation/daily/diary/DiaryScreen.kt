@@ -2,6 +2,7 @@ package com.a0100019.mypat.presentation.daily.diary
 
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -24,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
@@ -194,16 +196,25 @@ fun DiaryScreen(
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                            .border(
+                                width = 2.dp,
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                            .shadow(8.dp, RoundedCornerShape(16.dp)),
                         shape = RoundedCornerShape(16.dp),
                         elevation = CardDefaults.elevatedCardElevation(6.dp),
                         onClick = { onDiaryClick(diaryData) },
                         colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant
+                            containerColor = MaterialTheme.colorScheme.scrim
                         )
                     ) {
                         Row(
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(6.dp)
+                            ,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
 
@@ -233,7 +244,8 @@ fun DiaryScreen(
 
                                 Text(
                                     text = "눌러서 일기를 작성해주세요",
-                                    style = MaterialTheme.typography.bodyMedium,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier
                                         .padding(top = 6.dp)
                                     )
@@ -242,7 +254,7 @@ fun DiaryScreen(
                             Spacer(modifier = Modifier.weight(1f))
 
                             SparkleText(
-                                text = "new!!",
+                                text = "✨new✨",
                                 fontSize = 20,
                                 modifier = Modifier
                                     .padding(end = 32.dp)
@@ -254,17 +266,24 @@ fun DiaryScreen(
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                            .border(
+                                width = 2.dp,
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                            .shadow(8.dp, RoundedCornerShape(16.dp)),
                         shape = RoundedCornerShape(16.dp),
                         elevation = CardDefaults.elevatedCardElevation(6.dp),
                         onClick = { onDiaryClick(diaryData) },
                         colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant
+                            containerColor = MaterialTheme.colorScheme.scrim
                         )
                     ) {
                         Column(
                             modifier = Modifier
                                 .fillMaxSize()
+                                .padding(6.dp)
                             ,
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
@@ -299,12 +318,14 @@ fun DiaryScreen(
                             }
                             Text(
                                 text = diaryData.contents,
-                                style = MaterialTheme.typography.bodyMedium,
+                                style = MaterialTheme.typography.titleSmall,
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier
+                                    .padding(6.dp)
+                                    .fillMaxWidth()
+                                        ,
                                 maxLines = 3,
                                 overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier
-                                    .padding(start = 6.dp, end = 6.dp)
-                                    .fillMaxWidth()
                             )
 
                         }
