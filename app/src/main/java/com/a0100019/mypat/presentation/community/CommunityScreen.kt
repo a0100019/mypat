@@ -108,7 +108,7 @@ fun CommunityScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CommunityScreen(
-    situation : String = "chat",
+    situation : String = "world",
     patDataList: List<Pat> = emptyList(),
     itemDataList: List<Item> = emptyList(),
     page: Int = 0,
@@ -265,7 +265,7 @@ fun CommunityScreen(
                             shape = RoundedCornerShape(16.dp)
                         )
                         .background(
-                            color = MaterialTheme.colorScheme.background,
+                            color = MaterialTheme.colorScheme.onSecondary,
                             shape = RoundedCornerShape(16.dp)
                         )
                 ) {
@@ -287,7 +287,10 @@ fun CommunityScreen(
                             val bubbleBorderColor = if (isMine) MaterialTheme.colorScheme.primaryContainer else Color(0xFF4A90E2)
 
                             Row(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 6.dp)
+                                ,
                                 horizontalArrangement = alignment
                             ) {
                                 Column(

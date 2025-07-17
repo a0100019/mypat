@@ -2,7 +2,7 @@ package com.a0100019.mypat.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val primaryLight = Color(0xFF6D5E0F)
+val primaryLight = Color(0xFF6D5E0F) // 글자색
 val onPrimaryLight = Color(0xFFFFFFFF)
 val primaryContainerLight = Color(0xFFF8E287)
 val onPrimaryContainerLight = Color(0xFF534600)
@@ -12,15 +12,15 @@ val onSecondaryLight = Color(0xFFFFFFFF)
 val secondaryContainerLight = Color(0xFFEEE2BC)
 val onSecondaryContainerLight = Color(0xFF4E472A)
 
-val tertiaryLight = Color(0xFF43664E)
-val onTertiaryLight = Color(0xFFFFFFFF)
-val tertiaryContainerLight = Color(0xFFC5ECCE)
-val onTertiaryContainerLight = Color(0xFF2C4E38)
+val tertiaryLight = Color(0xFFFFCDD2)
+val onTertiaryLight = Color(0xFFFFB3B3)
+val tertiaryContainerLight = Color(0xFFDCEDC8)
+val onTertiaryContainerLight = Color(0xFFC6E5B3)
 
-val errorLight = Color(0xFFBA1A1A)
-val onErrorLight = Color(0xFFFFFFFF)
-val errorContainerLight = Color(0xFFFFDAD6)
-val onErrorContainerLight = Color(0xFF93000A)
+val errorLight = Color(0xFFD1C4E9)
+val onErrorLight = Color(0xFFE0BBE4)
+val errorContainerLight = Color(0xFFB3E5FC)
+val onErrorContainerLight = Color(0xFFB3D1FF)
 
 val backgroundLight = Color(0xFFFFF9EE)
 val onBackgroundLight = Color(0xFF1E1B13)

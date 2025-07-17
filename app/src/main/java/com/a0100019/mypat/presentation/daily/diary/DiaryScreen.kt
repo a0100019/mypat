@@ -254,7 +254,7 @@ fun DiaryScreen(
                             Spacer(modifier = Modifier.weight(1f))
 
                             SparkleText(
-                                text = "✨new✨",
+                                text = "new!!",
                                 fontSize = 20,
                                 modifier = Modifier
                                     .padding(end = 32.dp)

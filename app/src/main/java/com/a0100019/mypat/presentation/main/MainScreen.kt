@@ -215,7 +215,7 @@ fun MainScreen(
                     val users by userFlowDataList.collectAsState(initial = emptyList())
                     Row(
                         modifier = Modifier
-                            .shadow(elevation = 4.dp, shape = RoundedCornerShape(16.dp)) // 💥 그림자 추가
+//                            .shadow(elevation = 4.dp, shape = RoundedCornerShape(16.dp)) // 💥 그림자 추가
                             .background(
                                 color = MaterialTheme.colorScheme.scrim,
                                 shape = RoundedCornerShape(16.dp)

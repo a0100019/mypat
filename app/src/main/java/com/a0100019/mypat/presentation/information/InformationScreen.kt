@@ -141,7 +141,6 @@ fun InformationScreen(
                 shape = RoundedCornerShape(16.dp),
                 color = Color(0xFFFFF8E7),
                 border = BorderStroke(2.dp, MaterialTheme.colorScheme.primaryContainer),
-                shadowElevation = 8.dp,
             ) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     JustImage(

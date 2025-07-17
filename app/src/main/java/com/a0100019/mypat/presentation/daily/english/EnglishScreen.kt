@@ -238,7 +238,7 @@ fun EnglishScreen(
                             }
 
                             SparkleText(
-                                text = "✨NEW✨",
+                                text = "NEW!!",
                                 fontSize = 20,
                                 modifier = Modifier.padding(start = 12.dp)
                             )

@@ -117,7 +117,7 @@ fun CommunityUserDialog(
                     shape = RoundedCornerShape(16.dp),
                     color = Color(0xFFFFF8E7),
                     border = BorderStroke(2.dp, MaterialTheme.colorScheme.primaryContainer),
-                    shadowElevation = 8.dp,
+//                    shadowElevation = 8.dp,
                 ) {
 
                     JustImage(

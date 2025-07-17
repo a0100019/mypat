@@ -10,6 +10,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,11 +42,11 @@ fun SparkleText(
 
     Text(
         text = text,
-        color = Color(0xFF5E60CE), // 부드러운 보라색
+        color = MaterialTheme.colorScheme.onErrorContainer,
         fontWeight = FontWeight.SemiBold,
         modifier = modifier
             .alpha(alpha)
-            .background(Color(0xFFE0E7FF), shape = RoundedCornerShape(8.dp)) // 파스텔 블루 배경
+            .background(MaterialTheme.colorScheme.errorContainer, shape = RoundedCornerShape(8.dp)) // 파스텔 블루 배경
             .padding(horizontal = 10.dp, vertical = 4.dp)
                 ,
         fontSize = fontSize.sp

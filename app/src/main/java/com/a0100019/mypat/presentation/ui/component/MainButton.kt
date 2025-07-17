@@ -57,9 +57,9 @@ fun MainButton(
 
     Surface(
         shape = RoundedCornerShape(16.dp),
-        color = MaterialTheme.colorScheme.background,
-        border = BorderStroke(3.dp, MaterialTheme.colorScheme.onPrimaryContainer),
-        shadowElevation = 6.dp,
+        color = MaterialTheme.colorScheme.scrim,
+        border = BorderStroke(2.dp, MaterialTheme.colorScheme.primaryContainer),
+//        shadowElevation = 6.dp,
         modifier = modifier // ← 여기로 옮김
             .graphicsLayer {
                 scaleX = scale
@@ -87,7 +87,7 @@ fun MainButton(
             Text(
                 text = text,
                 style = style,
-                color = Color(0xFF5A3A22),
+                color = MaterialTheme.colorScheme.primary,
             )
         }
 

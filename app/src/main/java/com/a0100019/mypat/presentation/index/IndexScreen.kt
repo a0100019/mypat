@@ -194,14 +194,14 @@ fun IndexScreen(
                                 .padding(6.dp)
                                 .border(
                                     width = 2.dp,
-                                    color = MaterialTheme.colorScheme.outlineVariant,
+                                    color = MaterialTheme.colorScheme.primaryContainer,
                                     shape = RoundedCornerShape(16.dp)
                                 )
                                 .aspectRatio(0.7f),
                             shape = RoundedCornerShape(16.dp),
-                            elevation = CardDefaults.cardElevation(6.dp),
+//                            elevation = CardDefaults.cardElevation(6.dp),
                             colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                                containerColor = MaterialTheme.colorScheme.scrim
                             ),
                             onClick = { onCardClick(index) }
                         ) {
@@ -222,7 +222,7 @@ fun IndexScreen(
                                             .fillMaxWidth()
                                             .background(
                                                 color = if (allPatDataList[index].date != "0") {
-                                                    MaterialTheme.colorScheme.scrim
+                                                    MaterialTheme.colorScheme.tertiaryContainer
                                                 } else {
                                                     Color.LightGray
                                                 },
@@ -230,7 +230,7 @@ fun IndexScreen(
                                             )
                                             .border(
                                                 width = 2.dp,
-                                                color = MaterialTheme.colorScheme.primaryContainer,
+                                                color = MaterialTheme.colorScheme.onTertiaryContainer,
                                                 shape = RoundedCornerShape(16.dp)
                                             )
                                         ,
@@ -293,14 +293,13 @@ fun IndexScreen(
                                 .padding(6.dp)
                                 .border(
                                     width = 2.dp,
-                                    color = MaterialTheme.colorScheme.outlineVariant,
+                                    color = MaterialTheme.colorScheme.primaryContainer,
                                     shape = RoundedCornerShape(16.dp)
                                 )
                                 .aspectRatio(0.7f),
                             shape = RoundedCornerShape(16.dp),
-                            elevation = CardDefaults.cardElevation(6.dp),
                             colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                                containerColor = MaterialTheme.colorScheme.scrim
                             ),
                             onClick = { onCardClick(index) }
                         ) {
@@ -320,7 +319,7 @@ fun IndexScreen(
                                             .fillMaxWidth()
                                             .background(
                                                 color = if (allItemDataList[index].date != "0") {
-                                                    MaterialTheme.colorScheme.scrim
+                                                    MaterialTheme.colorScheme.tertiaryContainer
                                                 } else {
                                                     Color.LightGray
                                                 },
@@ -328,7 +327,7 @@ fun IndexScreen(
                                             )
                                             .border(
                                                 width = 2.dp,
-                                                color = MaterialTheme.colorScheme.primaryContainer,
+                                                color = MaterialTheme.colorScheme.onTertiaryContainer,
                                                 shape = RoundedCornerShape(16.dp)
                                             )
                                             .padding(6.dp)
@@ -394,14 +393,13 @@ fun IndexScreen(
                                 .padding(6.dp)
                                 .border(
                                     width = 2.dp,
-                                    color = MaterialTheme.colorScheme.outlineVariant,
+                                    color = MaterialTheme.colorScheme.primaryContainer,
                                     shape = RoundedCornerShape(16.dp)
                                 )
                                 .aspectRatio(0.8f),
                             shape = RoundedCornerShape(16.dp),
-                            elevation = CardDefaults.cardElevation(6.dp),
                             colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                                containerColor = MaterialTheme.colorScheme.scrim
                             ),
                             onClick = { onCardClick(index) }
                         ) {
@@ -420,7 +418,7 @@ fun IndexScreen(
                                             .fillMaxWidth()
                                             .background(
                                                 color = if (allAreaDataList[index].date != "0") {
-                                                    MaterialTheme.colorScheme.scrim
+                                                    MaterialTheme.colorScheme.tertiaryContainer
                                                 } else {
                                                     Color.LightGray
                                                 },
@@ -428,7 +426,7 @@ fun IndexScreen(
                                             )
                                             .border(
                                                 width = 2.dp,
-                                                color = MaterialTheme.colorScheme.primaryContainer,
+                                                color = MaterialTheme.colorScheme.onTertiaryContainer,
                                                 shape = RoundedCornerShape(16.dp)
                                             ),
                                         contentAlignment = Alignment.Center
@@ -518,7 +516,7 @@ fun IndexScreenPreview() {
             allItemDataList = listOf(Item(url = "item/table.png")),
             allAreaDataList = listOf(Area(url = "area/forest.jpg")),
             onTypeChangeClick = {},
-            typeChange = "map",
+            typeChange = "pat",
             dialogPatIndex = -1,
             onCloseDialog = {},
             onCardClick = {},
