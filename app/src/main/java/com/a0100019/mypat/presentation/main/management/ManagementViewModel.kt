@@ -65,7 +65,7 @@ class ManagementViewModel @Inject constructor(
             val userData = userDao.getAllUserData()
 
             userDao.update(id = "date", value = currentDate)
-            userDao.update(id = "date", value2 = { userData.find { it.id == "date" }!!.value2.toInt() + 1 }.toString())
+            userDao.update(id = "date", value2 = ( userData.find { it.id == "date" }!!.value2.toInt() + 1 ).toString())
 
             val closeKoreanIdiomData = koreanIdiomDao.getCloseKoreanIdiom()
             if (closeKoreanIdiomData != null) {

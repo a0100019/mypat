@@ -68,8 +68,8 @@ class CommunityViewModel @Inject constructor(
         val userDataList = userDao.getAllUserData()
         val patDataList = patDao.getAllPatData()
         val itemDataList = itemDao.getAllItemData()
-        val allUserDataList = allUserDao.getAllUserData()
-        val allUserRankDataList = allUserDao.getAllUserData()
+        val allUserDataList = allUserDao.getAllUserDataNoBan()
+        val allUserRankDataList = allUserDao.getAllUserDataNoBan()
         val allAreaCount = areaDao.getAllAreaData().size.toString()
 
         val page = userDataList.find { it.id == "etc" }!!.value.toInt()
@@ -329,11 +329,11 @@ class CommunityViewModel @Inject constructor(
     @OptIn(OrbitExperimental::class)
     fun onChatTextChange(chatText: String) = blockingIntent {
 
-        if (chatText.length <= 50) {
+//        if (chatText.length <= 50) {
             reduce {
                 state.copy(newChat = chatText)
             }
-        }
+//        }
     }
 
     fun onBanClick(chatIndex: Int) = intent {
@@ -418,7 +418,6 @@ class CommunityViewModel @Inject constructor(
                                         }
                                 }
 
-
                                 // 2. ban 컬렉션에 추가
                                 val banDataToSend = mapOf(
                                     System.currentTimeMillis().toString() to mapOf(
@@ -438,7 +437,6 @@ class CommunityViewModel @Inject constructor(
                                     .addOnFailureListener { e ->
                                         Log.e("BanSubmit", "벤 전송 실패: ${e.message}")
                                     }
-
 
                             }
                             .addOnFailureListener { e ->

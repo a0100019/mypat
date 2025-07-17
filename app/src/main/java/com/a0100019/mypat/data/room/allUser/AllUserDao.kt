@@ -6,7 +6,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.a0100019.mypat.data.room.pat.Pat
 
 @Dao
 interface AllUserDao {
@@ -21,7 +20,7 @@ interface AllUserDao {
     suspend fun deleteAllUsers()
 
     @Query("SELECT * FROM allUser_table WHERE ban = '0' ORDER BY lastLogIn DESC")
-    suspend fun getAllUserData(): List<AllUser>
+    suspend fun getAllUserDataNoBan(): List<AllUser>
 
     @Query("UPDATE allUser_table SET `like` = :newLike WHERE tag = :tag")
     suspend fun updateLikeByTag(tag: String, newLike: String)

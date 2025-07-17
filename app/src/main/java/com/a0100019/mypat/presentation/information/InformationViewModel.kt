@@ -73,7 +73,7 @@ class InformationViewModel @Inject constructor(
         val allAreaDataList = areaDao.getAllAreaData()
         val allPatDataList = patDao.getAllPatData()
         val allItemDataList = itemDao.getAllItemData()
-        val allUserDataList = allUserDao.getAllUserData()
+        val allUserDataList = allUserDao.getAllUserDataNoBan()
 
         if(allUserDataList.size > 5) {
 

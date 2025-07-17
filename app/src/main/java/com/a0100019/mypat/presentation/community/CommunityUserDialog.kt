@@ -2,6 +2,7 @@ package com.a0100019.mypat.presentation.community
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -58,7 +59,16 @@ fun CommunityUserDialog(
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight(0.9f)
-                .background(Color.White, shape = RoundedCornerShape(16.dp))
+                .shadow(12.dp, RoundedCornerShape(24.dp))
+                .border(
+                    width = 2.dp,
+                    color = MaterialTheme.colorScheme.outline,
+                    shape = RoundedCornerShape(24.dp)
+                )
+                .background(
+                    color = MaterialTheme.colorScheme.background,
+                    shape = RoundedCornerShape(24.dp)
+                )
                 .padding(16.dp)
         ) {
             Column(
@@ -106,7 +116,7 @@ fun CommunityUserDialog(
                         .padding(start = 6.dp, end = 6.dp),
                     shape = RoundedCornerShape(16.dp),
                     color = Color(0xFFFFF8E7),
-                    border = BorderStroke(2.dp, Color(0xFF5A3A22)),
+                    border = BorderStroke(2.dp, MaterialTheme.colorScheme.primaryContainer),
                     shadowElevation = 8.dp,
                 ) {
 
@@ -169,10 +179,15 @@ fun CommunityUserDialog(
                     Surface(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .shadow(elevation = 4.dp, shape = RoundedCornerShape(6.dp)), // 그림자 추가
-                        shape = RoundedCornerShape(12.dp),
-                        tonalElevation = 2.dp,  // 이건 Material3용 elevation
-                        color = Color(0xFFF9F3EA)
+                            .border(
+                                width = 2.dp,
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                        ,
+                        shape = RoundedCornerShape(16.dp),
+                        tonalElevation = 2.dp,
+                        color = MaterialTheme.colorScheme.scrim
                     ) {
                         Column(
                             modifier = Modifier
@@ -237,10 +252,15 @@ fun CommunityUserDialog(
                     Surface(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .shadow(elevation = 4.dp, shape = RoundedCornerShape(6.dp)), // 그림자 추가
-                        shape = RoundedCornerShape(12.dp),
-                        tonalElevation = 2.dp,  // 이건 Material3용 elevation
-                        color = Color(0xFFF9F3EA)
+                            .border(
+                                width = 2.dp,
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                        ,
+                        shape = RoundedCornerShape(16.dp),
+                        tonalElevation = 2.dp,
+                        color = MaterialTheme.colorScheme.scrim
                     ) {
                         Column(
                             modifier = Modifier
