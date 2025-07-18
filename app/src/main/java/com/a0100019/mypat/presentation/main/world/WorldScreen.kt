@@ -217,8 +217,8 @@ fun WorldScreen(
                     .aspectRatio(1 / 1.25f)
                     .padding(start = 10.dp, end = 10.dp),
                 shape = RoundedCornerShape(16.dp),
-                color = Color(0xFFFFF8E7),
-                border = BorderStroke(3.dp, Color(0xFF5A3A22)),
+                color = MaterialTheme.colorScheme.scrim,
+                border = BorderStroke(2.dp, MaterialTheme.colorScheme.primaryContainer),
                 shadowElevation = 6.dp,
             ) {
 

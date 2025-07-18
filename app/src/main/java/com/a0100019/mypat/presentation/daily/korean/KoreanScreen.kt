@@ -1,8 +1,12 @@
 package com.a0100019.mypat.presentation.daily.korean
 
 import android.widget.Toast
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,15 +20,19 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -147,20 +155,34 @@ fun KoreanScreen(
         ) {
             itemsIndexed(koreanDataList) { index, koreanData ->
 
+                val interactionSource = remember { MutableInteractionSource() }
+                val isPressed by interactionSource.collectIsPressedAsState()
+                val scale by animateFloatAsState(
+                    targetValue = if (isPressed) 0.95f else 1f,
+                    label = "scale"
+                )
+
                 if(koreanData.state != "대기"){
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .graphicsLayer {
+                                scaleX = scale
+                                scaleY = scale
+                            }
+                            .clickable(
+                                interactionSource = interactionSource,
+                                indication = rememberRipple(bounded = true, color = Color.White),
+                                onClick = { onKoreanClick(koreanData) }
+                            )
                             .padding(horizontal = 16.dp, vertical = 8.dp)
                             .border(
                                 width = 2.dp,
                                 color = MaterialTheme.colorScheme.primaryContainer,
                                 shape = RoundedCornerShape(16.dp)
                             )
-                            .shadow(8.dp, RoundedCornerShape(16.dp)), // 더 부드럽고 깊은 그림자
+                                ,
                         shape = RoundedCornerShape(16.dp),
-                        elevation = CardDefaults.elevatedCardElevation(6.dp),
-                        onClick = { onKoreanClick(koreanData) },
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.scrim
                         )
@@ -204,16 +226,23 @@ fun KoreanScreen(
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .graphicsLayer {
+                                scaleX = scale
+                                scaleY = scale
+                            }
+                            .clickable(
+                                interactionSource = interactionSource,
+                                indication = rememberRipple(bounded = true, color = Color.White),
+                                onClick = { onKoreanClick(koreanData) }
+                            )
                             .padding(horizontal = 16.dp, vertical = 8.dp)
                             .border(
                                 width = 2.dp,
                                 color = MaterialTheme.colorScheme.primaryContainer,
                                 shape = RoundedCornerShape(16.dp)
                             )
-                            .shadow(8.dp, RoundedCornerShape(16.dp)), // 더 부드럽고 깊은 그림자
+                            ,
                         shape = RoundedCornerShape(16.dp),
-                        elevation = CardDefaults.elevatedCardElevation(6.dp),
-                        onClick = { onKoreanClick(koreanData) },
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.scrim // 더 강조된 배경색
                         )
@@ -271,7 +300,6 @@ fun KoreanScreen(
 
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable

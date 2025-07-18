@@ -36,7 +36,7 @@ interface EnglishDao {
     @Query("SELECT * FROM english_table WHERE state != '미정' ORDER BY id DESC")
     suspend fun getOpenEnglishData(): List<English>
 
-    @Query("SELECT * FROM english_table WHERE state = '미정' ORDER BY id DESC LIMIT 1")
+    @Query("SELECT * FROM english_table WHERE state = '미정' ORDER BY id LIMIT 1")
     suspend fun getCloseEnglish(): English?
 
     @Query("SELECT * FROM english_table WHERE state = '별' ORDER BY id DESC")

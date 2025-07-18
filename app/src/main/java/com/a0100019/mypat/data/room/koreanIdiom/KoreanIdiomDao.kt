@@ -36,7 +36,7 @@ interface KoreanIdiomDao {
     @Query("SELECT * FROM koreanIdiom_table WHERE state != '미정' ORDER BY id DESC")
     suspend fun getOpenKoreanIdiomData(): List<KoreanIdiom>
 
-    @Query("SELECT * FROM koreanIdiom_table WHERE state = '미정' ORDER BY id DESC LIMIT 1")
+    @Query("SELECT * FROM koreanIdiom_table WHERE state = '미정' ORDER BY id LIMIT 1")
     suspend fun getCloseKoreanIdiom(): KoreanIdiom?
 
     @Query("SELECT * FROM koreanIdiom_table WHERE state = '별' ORDER BY id DESC")

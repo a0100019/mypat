@@ -1,8 +1,12 @@
 package com.a0100019.mypat.presentation.index
 
 import android.widget.Toast
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,16 +19,20 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -188,6 +196,13 @@ fun IndexScreen(
                         .weight(1f)
                 ) {
                     items(allPatDataList.size) { index ->
+                        val interactionSource = remember { MutableInteractionSource() }
+                        val isPressed by interactionSource.collectIsPressedAsState()
+                        val scale by animateFloatAsState(
+                            targetValue = if (isPressed) 0.95f else 1f,
+                            label = "scale"
+                        )
+
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -197,13 +212,22 @@ fun IndexScreen(
                                     color = MaterialTheme.colorScheme.primaryContainer,
                                     shape = RoundedCornerShape(16.dp)
                                 )
-                                .aspectRatio(0.7f),
+                                .aspectRatio(0.7f)
+                                .graphicsLayer {
+                                    scaleX = scale
+                                    scaleY = scale
+                                }
+                                .clickable(
+                                    interactionSource = interactionSource,
+                                    indication = rememberRipple(bounded = true, color = Color.White),
+                                    onClick = { onCardClick(index) }
+                                )
+                            ,
                             shape = RoundedCornerShape(16.dp),
 //                            elevation = CardDefaults.cardElevation(6.dp),
                             colors = CardDefaults.cardColors(
                                 containerColor = MaterialTheme.colorScheme.scrim
                             ),
-                            onClick = { onCardClick(index) }
                         ) {
                             Box(modifier = Modifier.fillMaxSize()) {
 
@@ -287,6 +311,13 @@ fun IndexScreen(
                         .weight(1f)
                 ) {
                     items(allItemDataList.size) { index ->
+                        val interactionSource = remember { MutableInteractionSource() }
+                        val isPressed by interactionSource.collectIsPressedAsState()
+                        val scale by animateFloatAsState(
+                            targetValue = if (isPressed) 0.95f else 1f,
+                            label = "scale"
+                        )
+
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -296,12 +327,21 @@ fun IndexScreen(
                                     color = MaterialTheme.colorScheme.primaryContainer,
                                     shape = RoundedCornerShape(16.dp)
                                 )
-                                .aspectRatio(0.7f),
+                                .aspectRatio(0.7f)
+                                .graphicsLayer {
+                                    scaleX = scale
+                                    scaleY = scale
+                                }
+                                .clickable(
+                                    interactionSource = interactionSource,
+                                    indication = rememberRipple(bounded = true, color = Color.White),
+                                    onClick = { onCardClick(index) }
+                                )
+                            ,
                             shape = RoundedCornerShape(16.dp),
                             colors = CardDefaults.cardColors(
                                 containerColor = MaterialTheme.colorScheme.scrim
                             ),
-                            onClick = { onCardClick(index) }
                         ) {
                             Box(modifier = Modifier.fillMaxSize()) {
 
@@ -387,6 +427,13 @@ fun IndexScreen(
                         .weight(1f)
                 ) {
                     items(allAreaDataList.size) { index ->
+                        val interactionSource = remember { MutableInteractionSource() }
+                        val isPressed by interactionSource.collectIsPressedAsState()
+                        val scale by animateFloatAsState(
+                            targetValue = if (isPressed) 0.95f else 1f,
+                            label = "scale"
+                        )
+
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -396,12 +443,21 @@ fun IndexScreen(
                                     color = MaterialTheme.colorScheme.primaryContainer,
                                     shape = RoundedCornerShape(16.dp)
                                 )
-                                .aspectRatio(0.8f),
+                                .aspectRatio(0.8f)
+                                .graphicsLayer {
+                                    scaleX = scale
+                                    scaleY = scale
+                                }
+                                .clickable(
+                                    interactionSource = interactionSource,
+                                    indication = rememberRipple(bounded = true, color = Color.White),
+                                    onClick = { onCardClick(index) }
+                                )
+                            ,
                             shape = RoundedCornerShape(16.dp),
                             colors = CardDefaults.cardColors(
                                 containerColor = MaterialTheme.colorScheme.scrim
                             ),
-                            onClick = { onCardClick(index) }
                         ) {
                             Box(modifier = Modifier.fillMaxSize()) {
 

@@ -281,9 +281,8 @@ fun StoreScreen(
 
                 Surface(
                     shape = RoundedCornerShape(16.dp),
-                    color = MaterialTheme.colorScheme.background,
-                    border = BorderStroke(3.dp, MaterialTheme.colorScheme.onPrimaryContainer),
-                    shadowElevation = 6.dp,
+                    color = MaterialTheme.colorScheme.scrim,
+                    border = BorderStroke(3.dp, MaterialTheme.colorScheme.primaryContainer),
                     modifier = Modifier
                         .graphicsLayer {
                             scaleX = scale
@@ -375,9 +374,8 @@ fun StoreScreen(
 
                 Surface(
                     shape = RoundedCornerShape(16.dp),
-                    color = MaterialTheme.colorScheme.background,
-                    border = BorderStroke(3.dp, MaterialTheme.colorScheme.onPrimaryContainer),
-                    shadowElevation = 6.dp,
+                    color = MaterialTheme.colorScheme.scrim,
+                    border = BorderStroke(3.dp, MaterialTheme.colorScheme.primaryContainer),
                     modifier = Modifier
                         .graphicsLayer {
                             scaleX = scale
@@ -441,7 +439,7 @@ fun StoreScreen(
                                 ,
                             )
                             Text(
-                                text = "5개의 아이템 중 하나를 선택할 수 있습니다",
+                                text = "랜덤한 5개의 아이템 중 하나를 선택할 수 있습니다",
                                 style = MaterialTheme.typography.titleMedium,
                                 modifier = Modifier
                                     .padding(bottom = 10.dp)
@@ -476,9 +474,8 @@ fun StoreScreen(
 
                 Surface(
                     shape = RoundedCornerShape(16.dp),
-                    color = MaterialTheme.colorScheme.background,
-                    border = BorderStroke(3.dp, MaterialTheme.colorScheme.onPrimaryContainer),
-                    shadowElevation = 6.dp,
+                    color = MaterialTheme.colorScheme.scrim,
+                    border = BorderStroke(3.dp, MaterialTheme.colorScheme.primaryContainer),
                     modifier = Modifier
                         .graphicsLayer {
                             scaleX = scale
@@ -493,39 +490,39 @@ fun StoreScreen(
                 ) {
                     Box {
 
-                        Row(
-                            modifier = Modifier
-                                .align(Alignment.CenterStart)
-                        ) {
-                            Spacer(modifier = Modifier.size(10.dp))
-                            JustImage(
-                                filePath = "pat/cat.json",
-                                modifier = Modifier
-                                    .size(50.dp)
-                                    .rotate(10f)
-                            )
-                        }
-
-                        Row(
-                            modifier = Modifier
-                                .align(Alignment.CenterEnd)
-                        ) {
-                            JustImage(
-                                filePath = "pat/cat.json",
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .rotate(-10f)
-                                    .align(Alignment.Bottom)
-                            )
-                            JustImage(
-                                filePath = "pat/cat.json",
-                                modifier = Modifier
-                                    .size(30.dp)
-                                    .rotate(10f)
-                                    .align(Alignment.Top)
-                            )
-                            Spacer(modifier = Modifier.size(width = 10.dp, height = 50.dp))
-                        }
+//                        Row(
+//                            modifier = Modifier
+//                                .align(Alignment.CenterStart)
+//                        ) {
+//                            Spacer(modifier = Modifier.size(10.dp))
+//                            JustImage(
+//                                filePath = "pat/cat.json",
+//                                modifier = Modifier
+//                                    .size(50.dp)
+//                                    .rotate(10f)
+//                            )
+//                        }
+//
+//                        Row(
+//                            modifier = Modifier
+//                                .align(Alignment.CenterEnd)
+//                        ) {
+//                            JustImage(
+//                                filePath = "pat/cat.json",
+//                                modifier = Modifier
+//                                    .size(40.dp)
+//                                    .rotate(-10f)
+//                                    .align(Alignment.Bottom)
+//                            )
+//                            JustImage(
+//                                filePath = "pat/cat.json",
+//                                modifier = Modifier
+//                                    .size(30.dp)
+//                                    .rotate(10f)
+//                                    .align(Alignment.Top)
+//                            )
+//                            Spacer(modifier = Modifier.size(width = 10.dp, height = 50.dp))
+//                        }
 
                         Column(
                             modifier = Modifier
@@ -577,9 +574,8 @@ fun StoreScreen(
 
                 Surface(
                     shape = RoundedCornerShape(16.dp),
-                    color = MaterialTheme.colorScheme.background,
-                    border = BorderStroke(3.dp, MaterialTheme.colorScheme.onPrimaryContainer),
-                    shadowElevation = 6.dp,
+                    color = MaterialTheme.colorScheme.scrim,
+                    border = BorderStroke(3.dp, MaterialTheme.colorScheme.primaryContainer),
                     modifier = Modifier
                         .graphicsLayer {
                             scaleX = scale
@@ -594,39 +590,39 @@ fun StoreScreen(
                 ) {
                     Box {
 
-                        Row(
-                            modifier = Modifier
-                                .align(Alignment.CenterStart)
-                        ) {
-                            Spacer(modifier = Modifier.size(10.dp))
-                            JustImage(
-                                filePath = "pat/cat.json",
-                                modifier = Modifier
-                                    .size(50.dp)
-                                    .rotate(10f)
-                            )
-                        }
-
-                        Row(
-                            modifier = Modifier
-                                .align(Alignment.CenterEnd)
-                        ) {
-                            JustImage(
-                                filePath = "pat/cat.json",
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .rotate(-10f)
-                                    .align(Alignment.Bottom)
-                            )
-                            JustImage(
-                                filePath = "pat/cat.json",
-                                modifier = Modifier
-                                    .size(30.dp)
-                                    .rotate(10f)
-                                    .align(Alignment.Top)
-                            )
-                            Spacer(modifier = Modifier.size(width = 10.dp, height = 50.dp))
-                        }
+//                        Row(
+//                            modifier = Modifier
+//                                .align(Alignment.CenterStart)
+//                        ) {
+//                            Spacer(modifier = Modifier.size(10.dp))
+//                            JustImage(
+//                                filePath = "pat/cat.json",
+//                                modifier = Modifier
+//                                    .size(50.dp)
+//                                    .rotate(10f)
+//                            )
+//                        }
+//
+//                        Row(
+//                            modifier = Modifier
+//                                .align(Alignment.CenterEnd)
+//                        ) {
+//                            JustImage(
+//                                filePath = "pat/cat.json",
+//                                modifier = Modifier
+//                                    .size(40.dp)
+//                                    .rotate(-10f)
+//                                    .align(Alignment.Bottom)
+//                            )
+//                            JustImage(
+//                                filePath = "pat/cat.json",
+//                                modifier = Modifier
+//                                    .size(30.dp)
+//                                    .rotate(10f)
+//                                    .align(Alignment.Top)
+//                            )
+//                            Spacer(modifier = Modifier.size(width = 10.dp, height = 50.dp))
+//                        }
 
                         Column(
                             modifier = Modifier
@@ -678,9 +674,8 @@ fun StoreScreen(
 
                 Surface(
                     shape = RoundedCornerShape(16.dp),
-                    color = MaterialTheme.colorScheme.background,
-                    border = BorderStroke(3.dp, MaterialTheme.colorScheme.onPrimaryContainer),
-                    shadowElevation = 6.dp,
+                    color = MaterialTheme.colorScheme.scrim,
+                    border = BorderStroke(3.dp, MaterialTheme.colorScheme.primaryContainer),
                     modifier = Modifier
                         .graphicsLayer {
                             scaleX = scale
@@ -695,39 +690,39 @@ fun StoreScreen(
                 ) {
                     Box {
 
-                        Row(
-                            modifier = Modifier
-                                .align(Alignment.CenterStart)
-                        ) {
-                            Spacer(modifier = Modifier.size(10.dp))
-                            JustImage(
-                                filePath = "pat/cat.json",
-                                modifier = Modifier
-                                    .size(50.dp)
-                                    .rotate(10f)
-                            )
-                        }
-
-                        Row(
-                            modifier = Modifier
-                                .align(Alignment.CenterEnd)
-                        ) {
-                            JustImage(
-                                filePath = "pat/cat.json",
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .rotate(-10f)
-                                    .align(Alignment.Bottom)
-                            )
-                            JustImage(
-                                filePath = "pat/cat.json",
-                                modifier = Modifier
-                                    .size(30.dp)
-                                    .rotate(10f)
-                                    .align(Alignment.Top)
-                            )
-                            Spacer(modifier = Modifier.size(width = 10.dp, height = 50.dp))
-                        }
+//                        Row(
+//                            modifier = Modifier
+//                                .align(Alignment.CenterStart)
+//                        ) {
+//                            Spacer(modifier = Modifier.size(10.dp))
+//                            JustImage(
+//                                filePath = "pat/cat.json",
+//                                modifier = Modifier
+//                                    .size(50.dp)
+//                                    .rotate(10f)
+//                            )
+//                        }
+//
+//                        Row(
+//                            modifier = Modifier
+//                                .align(Alignment.CenterEnd)
+//                        ) {
+//                            JustImage(
+//                                filePath = "pat/cat.json",
+//                                modifier = Modifier
+//                                    .size(40.dp)
+//                                    .rotate(-10f)
+//                                    .align(Alignment.Bottom)
+//                            )
+//                            JustImage(
+//                                filePath = "pat/cat.json",
+//                                modifier = Modifier
+//                                    .size(30.dp)
+//                                    .rotate(10f)
+//                                    .align(Alignment.Top)
+//                            )
+//                            Spacer(modifier = Modifier.size(width = 10.dp, height = 50.dp))
+//                        }
 
                         Column(
                             modifier = Modifier
@@ -744,15 +739,8 @@ fun StoreScreen(
                                 ,
                             )
                             Text(
-                                text = "닉네임을 변경할 수 있습니다",
+                                text = "현재 닉네임 : ${userData.find{it.id == "name"}?.value}",
                                 style = MaterialTheme.typography.titleMedium,
-                                modifier = Modifier
-                                    .padding(bottom = 10.dp)
-                                ,
-                            )
-                            Text(
-                                text = "(현재 닉네임 : ${userData.find{it.id == "name"}?.value})",
-                                style = MaterialTheme.typography.titleSmall,
                                 modifier = Modifier
                                     .padding(bottom = 10.dp)
                                 ,
@@ -779,9 +767,8 @@ fun StoreScreen(
 
                 Surface(
                     shape = RoundedCornerShape(16.dp),
-                    color = MaterialTheme.colorScheme.background,
-                    border = BorderStroke(3.dp, MaterialTheme.colorScheme.onPrimaryContainer),
-                    shadowElevation = 6.dp,
+                    color = MaterialTheme.colorScheme.scrim,
+                    border = BorderStroke(3.dp, MaterialTheme.colorScheme.primaryContainer),
                     modifier = Modifier
                         .graphicsLayer {
                             scaleX = scale
@@ -796,39 +783,39 @@ fun StoreScreen(
                 ) {
                     Box {
 
-                        Row(
-                            modifier = Modifier
-                                .align(Alignment.CenterStart)
-                        ) {
-                            Spacer(modifier = Modifier.size(10.dp))
-                            JustImage(
-                                filePath = "pat/cat.json",
-                                modifier = Modifier
-                                    .size(50.dp)
-                                    .rotate(10f)
-                            )
-                        }
-
-                        Row(
-                            modifier = Modifier
-                                .align(Alignment.CenterEnd)
-                        ) {
-                            JustImage(
-                                filePath = "pat/cat.json",
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .rotate(-10f)
-                                    .align(Alignment.Bottom)
-                            )
-                            JustImage(
-                                filePath = "pat/cat.json",
-                                modifier = Modifier
-                                    .size(30.dp)
-                                    .rotate(10f)
-                                    .align(Alignment.Top)
-                            )
-                            Spacer(modifier = Modifier.size(width = 10.dp, height = 50.dp))
-                        }
+//                        Row(
+//                            modifier = Modifier
+//                                .align(Alignment.CenterStart)
+//                        ) {
+//                            Spacer(modifier = Modifier.size(10.dp))
+//                            JustImage(
+//                                filePath = "pat/cat.json",
+//                                modifier = Modifier
+//                                    .size(50.dp)
+//                                    .rotate(10f)
+//                            )
+//                        }
+//
+//                        Row(
+//                            modifier = Modifier
+//                                .align(Alignment.CenterEnd)
+//                        ) {
+//                            JustImage(
+//                                filePath = "pat/cat.json",
+//                                modifier = Modifier
+//                                    .size(40.dp)
+//                                    .rotate(-10f)
+//                                    .align(Alignment.Bottom)
+//                            )
+//                            JustImage(
+//                                filePath = "pat/cat.json",
+//                                modifier = Modifier
+//                                    .size(30.dp)
+//                                    .rotate(10f)
+//                                    .align(Alignment.Top)
+//                            )
+//                            Spacer(modifier = Modifier.size(width = 10.dp, height = 50.dp))
+//                        }
 
                         Column(
                             modifier = Modifier
@@ -845,7 +832,7 @@ fun StoreScreen(
                                 ,
                             )
                             Text(
-                                text = "화폐 변경 1d -> 100s",
+                                text = "햇살 1개 -> 달빛 100개",
                                 style = MaterialTheme.typography.titleMedium,
                                 modifier = Modifier
                                     .padding(bottom = 10.dp)

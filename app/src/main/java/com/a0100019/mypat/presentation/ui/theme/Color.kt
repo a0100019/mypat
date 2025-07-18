@@ -22,8 +22,8 @@ val onErrorLight = Color(0xFFE0BBE4)
 val errorContainerLight = Color(0xFFB3E5FC)
 val onErrorContainerLight = Color(0xFFB3D1FF)
 
-val backgroundLight = Color(0xFFFFF9EE)
-val onBackgroundLight = Color(0xFF1E1B13)
+val backgroundLight = Color(0xFFFFF9EE) // 배경 기본 색
+val onBackgroundLight = Color(0xFF6D5E0F) // text 기본 색
 val surfaceLight = Color(0xFFFFF9EE)
 val onSurfaceLight = Color(0xFF1E1B13)
 

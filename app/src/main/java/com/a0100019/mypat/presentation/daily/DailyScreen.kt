@@ -6,18 +6,21 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -129,9 +132,8 @@ fun DailyScreen(
 
                     Surface(
                         shape = RoundedCornerShape(16.dp),
-                        color = MaterialTheme.colorScheme.background,
-                        border = BorderStroke(3.dp, MaterialTheme.colorScheme.onPrimaryContainer),
-                        shadowElevation = 6.dp,
+                        color = MaterialTheme.colorScheme.scrim,
+                        border = BorderStroke(3.dp, MaterialTheme.colorScheme.primaryContainer),
                         modifier = Modifier
                             .graphicsLayer {
                                 scaleX = scale
@@ -189,9 +191,8 @@ fun DailyScreen(
 
                     Surface(
                         shape = RoundedCornerShape(16.dp),
-                        color = MaterialTheme.colorScheme.background,
-                        border = BorderStroke(3.dp, MaterialTheme.colorScheme.onPrimaryContainer),
-                        shadowElevation = 6.dp,
+                        color = MaterialTheme.colorScheme.scrim,
+                        border = BorderStroke(3.dp, MaterialTheme.colorScheme.primaryContainer),
                         modifier = Modifier
                             .graphicsLayer {
                                 scaleX = scale
@@ -249,9 +250,8 @@ fun DailyScreen(
 
                     Surface(
                         shape = RoundedCornerShape(16.dp),
-                        color = MaterialTheme.colorScheme.background,
-                        border = BorderStroke(3.dp, MaterialTheme.colorScheme.onPrimaryContainer),
-                        shadowElevation = 6.dp,
+                        color = MaterialTheme.colorScheme.scrim,
+                        border = BorderStroke(3.dp, MaterialTheme.colorScheme.primaryContainer),
                         modifier = Modifier
                             .graphicsLayer {
                                 scaleX = scale
@@ -309,9 +309,8 @@ fun DailyScreen(
 
                     Surface(
                         shape = RoundedCornerShape(16.dp),
-                        color = MaterialTheme.colorScheme.background,
-                        border = BorderStroke(3.dp, MaterialTheme.colorScheme.onPrimaryContainer),
-                        shadowElevation = 6.dp,
+                        color = MaterialTheme.colorScheme.scrim,
+                        border = BorderStroke(3.dp, MaterialTheme.colorScheme.primaryContainer),
                         modifier = Modifier
                             .graphicsLayer {
                                 scaleX = scale
@@ -369,9 +368,8 @@ fun DailyScreen(
 
                     Surface(
                         shape = RoundedCornerShape(16.dp),
-                        color = MaterialTheme.colorScheme.background,
-                        border = BorderStroke(3.dp, MaterialTheme.colorScheme.onPrimaryContainer),
-                        shadowElevation = 6.dp,
+                        color = MaterialTheme.colorScheme.scrim,
+                        border = BorderStroke(3.dp, MaterialTheme.colorScheme.primaryContainer),
                         modifier = Modifier
                             .graphicsLayer {
                                 scaleX = scale
@@ -380,7 +378,7 @@ fun DailyScreen(
                             .clickable(
                                 interactionSource = interactionSource,
                                 indication = rememberRipple(bounded = true, color = Color.White),
-                                onClick = { }
+                                onClick = {  }
                             )
                             .padding(start = 12.dp, end = 12.dp, top = 6.dp, bottom = 6.dp)
                     ) {

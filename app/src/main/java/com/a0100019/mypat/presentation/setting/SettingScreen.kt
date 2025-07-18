@@ -29,6 +29,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.ui.graphics.Color
 import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.letter.Letter
+import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
@@ -179,100 +180,87 @@ fun SettingScreen(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(vertical = 16.dp),
+            .padding(vertical = 16.dp, horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         if (!googleLoginState) {
             item {
-                SettingButton(
+                MainButton(
                     text = "구글 로그인 하기",
-                    onClick = onGoogleLoginClick
+                    onClick = onGoogleLoginClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
                 )
             }
         }
 
         item {
-            SettingButton(
+            MainButton(
                 text = "편지 모음",
                 onClick = {
                     onSituationChange("letter")
-                }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
             )
         }
 
         item {
-            SettingButton(
+            MainButton(
                 text = "이용 약관",
                 onClick = {
                     onSituationChange("terms")
-                }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
             )
         }
 
         item {
-            SettingButton(
+            MainButton(
                 text = "계정 삭제",
                 onClick = {
                     onSituationChange("accountDelete")
-                }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
             )
         }
 
         item {
-            SettingButton(
+            MainButton(
                 text = "버그 신고",
                 onClick = {
                     onSituationChange("settingTalk")
-                }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
             )
         }
 
         item {
-            SettingButton(
+            MainButton(
                 text = "쿠폰 코드",
                 onClick = {
                     onSituationChange("coupon")
-                }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
             )
         }
 
         if (googleLoginState) {
             item {
-                SettingButton(
+                MainButton(
                     text = "로그아웃",
-                    onClick = onSignOutClick
+                    onClick = onSignOutClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
                 )
             }
         }
     }
 }
-
-@Composable
-fun SettingButton(
-    text: String,
-    onClick: () -> Unit
-) {
-    Button(
-        onClick = onClick,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        shape = RoundedCornerShape(8.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0xFFF0F0F0),
-            contentColor = Color.Black
-        )
-    ) {
-        Text(
-            text = text,
-            fontSize = 18.sp,
-            modifier = Modifier
-                .padding(vertical = 12.dp)
-        )
-    }
-}
-
-
 
 @Preview(showBackground = true)
 @Composable

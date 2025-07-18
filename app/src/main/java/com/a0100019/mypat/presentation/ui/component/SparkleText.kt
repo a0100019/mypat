@@ -42,11 +42,11 @@ fun SparkleText(
 
     Text(
         text = text,
-        color = MaterialTheme.colorScheme.onErrorContainer,
+        color = Color(0xFF5E60CE),
         fontWeight = FontWeight.SemiBold,
         modifier = modifier
             .alpha(alpha)
-            .background(MaterialTheme.colorScheme.errorContainer, shape = RoundedCornerShape(8.dp)) // 파스텔 블루 배경
+            .background(Color(0xFFE0E7FF), shape = RoundedCornerShape(8.dp)) // 파스텔 블루 배경
             .padding(horizontal = 10.dp, vertical = 4.dp)
                 ,
         fontSize = fontSize.sp
