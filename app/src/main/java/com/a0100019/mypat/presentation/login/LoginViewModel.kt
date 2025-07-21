@@ -23,7 +23,9 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.simple.intent
@@ -85,24 +87,6 @@ class LoginViewModel @Inject constructor(
 
     }
 
-    fun dialogChangeClick(string: String) = intent {
-        reduce {
-            state.copy(
-                dialogState = string
-            )
-        }
-    }
-
-    fun onGuestLoginClick() = intent {
-        userDao.update(id = "auth", value = "guest")
-        postSideEffect(LoginSideEffect.NavigateToMainScreen)
-        reduce {
-            state.copy(
-                dialogState = ""
-            )
-        }
-    }
-
     fun onGoogleLoginClick(idToken: String) = intent {
         Log.e("login", "idToken = $idToken")
 
@@ -111,6 +95,8 @@ class LoginViewModel @Inject constructor(
         reduce { state.copy(isLoggingIn = true) }
 
         try {
+
+            //auth에 계정 생성
             val credential = GoogleAuthProvider.getCredential(idToken, null)
             val authResult = FirebaseAuth.getInstance().signInWithCredential(credential).await()
             val user = authResult.user
@@ -120,12 +106,30 @@ class LoginViewModel @Inject constructor(
 
             user?.let {
                 if (isNewUser) {
+
                     // 🔹 신규 사용자일 때만 실행되는 코드
-                    userDao.update(id = "auth", value = user.uid)
+
+                    val db = FirebaseFirestore.getInstance()
+
+                    val lastKey: Int = withContext(Dispatchers.IO) {
+                        val documentSnapshot = db.collection("tag")
+                            .document("tag")
+                            .get()
+                            .await()
+
+                        val dataMap = documentSnapshot.data ?: emptyMap()
+
+                        dataMap.keys.maxOfOrNull { it.toInt() }!!
+                    }
+
+                    userDao.update(id = "auth", value = user.uid, value2 = "${lastKey+1}")
+                    userDao.update(id = "date", )
+
                     Log.e("login", "신규 사용자입니다")
                     postSideEffect(LoginSideEffect.Toast("처음 오신 것을 환영합니다!"))
 
                 } else {
+
                     // 🔹 기존 사용자일 경우 처리
                     Log.e("login", "기존 사용자입니다")
 
@@ -388,20 +392,13 @@ class LoginViewModel @Inject constructor(
         postSideEffect(LoginSideEffect.NavigateToMainScreen)
     }
 
-
-
 }
-
-
 
 
 @Immutable
 data class LoginState(
-    val id:String = "",
-    val password:String = "",
     val userData: List<User> = emptyList(),
     val isLoggingIn:Boolean = false,
-    val dialogState: String = "",
     val loginState: String = ""
 )
 

@@ -29,6 +29,9 @@ interface DiaryDao {
     @Query("SELECT * FROM diary_table ORDER BY id DESC")
     suspend fun getAllDiaryData(): List<Diary>
 
+    @Query("SELECT * FROM diary_table ORDER BY id DESC")
+    fun getAllFlowDiaryData(): Flow<List<Diary>>
+
     @Query("SELECT * FROM diary_table ORDER BY id DESC LIMIT 1")
     suspend fun getLatestDiary(): Diary
 
