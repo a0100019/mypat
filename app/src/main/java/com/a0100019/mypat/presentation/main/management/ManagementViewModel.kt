@@ -83,7 +83,7 @@ class ManagementViewModel @Inject constructor(
 
             diaryDao.insert(Diary(date = currentDate))
 
-            // ✅ Walk 자동 채우기 부분
+            // ✅ Walk 자동 채우기 부분, 빈 날짜 없도록
             val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
             val latestWalkDate = LocalDate.parse(walkDao.getLatestWalkData().date, formatter)
             val today = LocalDate.now()

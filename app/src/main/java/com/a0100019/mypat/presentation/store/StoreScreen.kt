@@ -684,7 +684,7 @@ fun StoreScreen(
                         .clickable(
                             interactionSource = interactionSource,
                             indication = rememberRipple(bounded = true, color = Color.White),
-                            onClick = { onSimpleDialog("name") }
+                            onClick = { changeShowDialog("name") }
                         )
                         .padding(start = 12.dp, end = 12.dp, top = 6.dp, bottom = 6.dp)
                 ) {

@@ -23,18 +23,10 @@ import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
 import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.letter.Letter
 import com.a0100019.mypat.presentation.ui.component.MainButton
@@ -63,43 +55,9 @@ fun SettingScreen(
         }
     }
 
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-        try {
-            val account = task.getResult(ApiException::class.java)
-            val idToken = account.idToken
-            if (idToken != null) {
-                settingViewModel.onGoogleLoginClick(idToken)
-            } else {
-                Log.e("login", "로그인 스크린 로그인 성공")
-//                LoginSideEffect.Toast(postLoginSideEffect.Toast("구글 로그인 실패: 토큰 없음"))
-            }
-        } catch (e: Exception) {
-            Log.e("login", "로그인 스크린 로그인 실패: ${e.localizedMessage}", e)
-//            loginViewModel.postSideEffect(LoginSideEffect.Toast("구글 로그인 실패"))
-        }
-    }
-
     SettingScreen(
-        onGoogleLoginClick = {
-            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(context.getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build()
-
-            val googleSignInClient = GoogleSignIn.getClient(context, gso)
-            launcher.launch(googleSignInClient.signInIntent)
-
-            // 🔥 자동 로그인 방지: 이전 계정 로그아웃, 로그아웃 시 아이디 선택창 뜸
-            googleSignInClient.signOut().addOnCompleteListener {
-                launcher.launch(googleSignInClient.signInIntent)
-            }
-        },
 
         userData = settingState.userDataList,
-        googleLoginState = settingState.googleLoginState,
         settingSituation = settingState.settingSituation,
         imageUrl = settingState.imageUrl,
         editText = settingState.editText,
@@ -124,7 +82,6 @@ fun SettingScreen(
 fun SettingScreen(
 
     userData: List<User>,
-    googleLoginState: Boolean,
     settingSituation: String,
     imageUrl: String,
     editText: String,
@@ -134,7 +91,6 @@ fun SettingScreen(
     onSignOutClick: () -> Unit,
     onClose: () -> Unit,
     onSituationChange: (String) -> Unit,
-    onGoogleLoginClick: () -> Unit,
     onAccountDeleteClick: () -> Unit,
     onEditTextChange: (String) -> Unit,
     onCouponConfirmClick: () -> Unit,
@@ -266,11 +222,17 @@ fun SettingScreen(
                 textAlign = TextAlign.Center,
                 modifier = Modifier.align(Alignment.Center)
             )
+        item {
+            MainButton(
+                text = "로그아웃",
+                onClick = onSignOutClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
         }
-
     }
-
 }
+    }
 
 @Preview(showBackground = true)
 @Composable
@@ -280,8 +242,6 @@ fun SettingScreenPreview() {
             onClose = {},
             userData = emptyList(),
             onSignOutClick = {},
-            googleLoginState = false,
-            onGoogleLoginClick = {},
             settingSituation = "",
             onSituationChange = {},
             onAccountDeleteClick = {},

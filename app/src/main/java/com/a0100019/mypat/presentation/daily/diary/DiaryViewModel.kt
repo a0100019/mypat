@@ -40,37 +40,30 @@ class DiaryViewModel @Inject constructor(
         }
     )
 
-    // 뷰 모델 초기화 시 모든 user 데이터를 로드
     init {
         loadData()
     }
 
-    //room에서 데이터 가져옴
     fun loadData() = intent {
-// 병렬로 실행할 작업들을 viewModelScope.launch로 묶음
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
+        // 1. suspend로 바로 가져오는 유저 정보
+        val userDataList = userDao.getAllUserData()
 
-                val userDataList = userDao.getAllUserData()
-                val diaryDataList = diaryDao.getAllDiaryData()
-
-                // UI 상태 업데이트 (Main Dispatcher에서 실행)
-                withContext(Dispatchers.Main) {
-                    reduce {
-                        state.copy(
-                            userDataList = userDataList,
-                            diaryDataList = diaryDataList,
-                            diaryFilterDataList = diaryDataList,
-                            dialogState = "",
-                            clickDiaryData = null
-                        )
-                    }
+        // 2. Flow인 일기 데이터는 collect로 가져와야 실시간 반영됨
+        viewModelScope.launch {
+            diaryDao.getAllFlowDiaryData().collect { diaryList ->
+                reduce {
+                    state.copy(
+                        userDataList = userDataList,
+                        diaryDataList = diaryList,
+                        diaryFilterDataList = diaryList,
+                        dialogState = "",
+                        clickDiaryData = null
+                    )
                 }
-            } catch (e: Exception) {
-                postSideEffect(DiarySideEffect.Toast("데이터 로드 에러"))
             }
         }
     }
+
 
     fun onDiaryClick(diaryData : Diary) = intent {
 

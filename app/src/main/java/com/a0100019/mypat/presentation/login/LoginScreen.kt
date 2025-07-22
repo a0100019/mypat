@@ -98,11 +98,8 @@ fun LoginScreen(
 
 
     LoginScreen(
-        dialogState = loginState.dialogState,
         loginState = loginState.loginState,
 
-        guestLoginClick = loginViewModel::onGuestLoginClick,
-        dialogChangeClick = loginViewModel::dialogChangeClick,
         onNavigateToMainScreen = loginViewModel::onNavigateToMainScreen,
 
         googleLoginClick = {
@@ -124,24 +121,11 @@ fun LoginScreen(
 
 @Composable
 fun LoginScreen(
-    guestLoginClick: () -> Unit,
     googleLoginClick: () -> Unit,
-    dialogChangeClick: (String) -> Unit,
     onNavigateToMainScreen: () -> Unit,
 
-    dialogState: String,
     loginState: String,
 ) {
-
-    when (dialogState) {
-        "guest" -> SimpleAlertDialog(
-            onConfirm = guestLoginClick,
-            onDismiss = {
-                dialogChangeClick("")
-            },
-            text = "게스트로 로그인하시겠습니까?"
-        )
-    }
 
     Box {
 
@@ -159,27 +143,6 @@ fun LoginScreen(
                 verticalArrangement = Arrangement.Bottom,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
-//                Text(
-//                    text = "로그인",
-//                    fontSize = 24.sp,
-//                    fontWeight = FontWeight.Bold,
-//                    modifier = Modifier.padding(bottom = 32.dp)
-//                )
-
-                // ✅ 게스트 로그인 버튼
-                Button(
-                    onClick = {
-                        dialogChangeClick("guest")
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(48.dp)
-                ) {
-                    Text("게스트 로그인")
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
 
                 // ✅ 구글 로그인 버튼
                 Button(
@@ -206,7 +169,11 @@ fun LoginScreen(
                     }
                 }
 
-                Spacer(modifier = Modifier.size(10.dp))
+                Spacer(modifier = Modifier.size(20.dp))
+
+                Text(
+                    text = "하루마을에 오신 것을 환영합니다!",
+                )
 
             }
 
@@ -230,17 +197,13 @@ fun LoginScreen(
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
     MypatTheme {
         LoginScreen(
             googleLoginClick = {},
-            guestLoginClick = {},
-            dialogChangeClick = {},
             onNavigateToMainScreen = {},
-            dialogState = "",
             loginState = "unLogin"
         )
     }

@@ -23,13 +23,17 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 
@@ -85,24 +89,6 @@ class LoginViewModel @Inject constructor(
 
     }
 
-    fun dialogChangeClick(string: String) = intent {
-        reduce {
-            state.copy(
-                dialogState = string
-            )
-        }
-    }
-
-    fun onGuestLoginClick() = intent {
-        userDao.update(id = "auth", value = "guest")
-        postSideEffect(LoginSideEffect.NavigateToMainScreen)
-        reduce {
-            state.copy(
-                dialogState = ""
-            )
-        }
-    }
-
     fun onGoogleLoginClick(idToken: String) = intent {
         Log.e("login", "idToken = $idToken")
 
@@ -111,6 +97,8 @@ class LoginViewModel @Inject constructor(
         reduce { state.copy(isLoggingIn = true) }
 
         try {
+
+            //auth에 계정 생성
             val credential = GoogleAuthProvider.getCredential(idToken, null)
             val authResult = FirebaseAuth.getInstance().signInWithCredential(credential).await()
             val user = authResult.user
@@ -120,12 +108,32 @@ class LoginViewModel @Inject constructor(
 
             user?.let {
                 if (isNewUser) {
+
                     // 🔹 신규 사용자일 때만 실행되는 코드
-                    userDao.update(id = "auth", value = user.uid)
+
+                    val db = FirebaseFirestore.getInstance()
+
+                    val lastKey: Int = withContext(Dispatchers.IO) {
+                        val documentSnapshot = db.collection("tag")
+                            .document("tag")
+                            .get()
+                            .await()
+
+                        val dataMap = documentSnapshot.data ?: emptyMap()
+
+                        dataMap.keys.maxOfOrNull { it.toInt() }!!
+                    }
+
+                    userDao.update(id = "auth", value = user.uid, value2 = "${lastKey+1}")
+
+                    val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+                    userDao.update(id = "date", value3 = currentDate)
+
                     Log.e("login", "신규 사용자입니다")
                     postSideEffect(LoginSideEffect.Toast("처음 오신 것을 환영합니다!"))
 
                 } else {
+
                     // 🔹 기존 사용자일 경우 처리
                     Log.e("login", "기존 사용자입니다")
 
@@ -145,9 +153,11 @@ class LoginViewModel @Inject constructor(
                             val warning = communityMap["warning"]
                             userDao.update(id = "community", value = like, value2 = warning, value3 = ban)
 
-                            val firstDate = userDoc.getString("firstDate")
-                            val totalDate = userDoc.getString("totalDate")
-                            userDao.update(id = "date", value2 = totalDate, value3 = firstDate)
+                            val dateMap = userDoc.get("date") as Map<String, String>
+                            val firstDate = dateMap["firstDate"]
+                            val totalDate = dateMap["totalDate"]
+                            val lastDate = dateMap["lastDate"]
+                            userDao.update(id = "date", value = lastDate, value2 = totalDate, value3 = firstDate)
 
                             val gameMap = userDoc.get("game") as Map<String, String>
                             val firstGame = gameMap["firstGame"]
@@ -164,8 +174,13 @@ class LoginViewModel @Inject constructor(
                             val useItem = itemMap["useItem"]
                             userDao.update(id = "item", value2 = openItemSpace, value3 = useItem)
 
-                            val map = userDoc.getString("area")
-                            worldDao.insert(World(id = 1, value = map.toString(), type = "area"))
+                            val patMap = userDoc.get("pat") as Map<String, String>
+                            val openPatSpace = patMap["openPatSpace"]
+                            val usePat = patMap["usePat"]
+                            userDao.update(id = "pat", value2 = openPatSpace, value3 = usePat)
+
+                            val area = userDoc.getString("area")
+                            worldDao.insert(World(id = 1, value = area.toString(), type = "area"))
 
                             val name = userDoc.getString("name")
                             userDao.update(id = "name", value = name)
@@ -173,10 +188,10 @@ class LoginViewModel @Inject constructor(
                             val tag = userDoc.getString("tag")
                             userDao.update(id = "auth", value = it.uid, value2 = tag, value3 = lastLogIn)
 
-                            val patMap = userDoc.get("pat") as Map<String, String>
-                            val openPatSpace = patMap["openPatSpace"]
-                            val usePat = patMap["usePat"]
-                            userDao.update(id = "pat", value2 = openPatSpace, value3 = usePat)
+                            val walkMap = userDoc.get("walk") as Map<String, String>
+                            val saveWalk = walkMap["saveWalk"]
+                            val totalWalk = walkMap["totalWalk"]
+                            userDao.update(id = "walk", value = saveWalk, value3 = totalWalk)
 
                             val worldMap = userDoc.get("world") as Map<String, Map<String, String>>
                             for ((index, innerMap) in worldMap) {
@@ -213,10 +228,8 @@ class LoginViewModel @Inject constructor(
                                 englishDao.updateDateAndState(id = dailyDoc.id.toInt(), date = date.toString(), state = englishState.toString())
                                 koreanIdiomDao.updateDateAndState(id = dailyDoc.id.toInt(), date = date.toString(), state = koreanIdiomState.toString())
 
-                                val walkMap = dailyDoc.get("walk") as? Map<*, *> ?: emptyMap<String, Any>()
-                                val walkCount = (walkMap["count"] as? Number)?.toInt()
-                                val walkSteps = (walkMap["steps"] as? Number)?.toInt()
-                                walkDao.insert(Walk(id = dailyDoc.id.toInt(), date = date.toString()))
+                                val walk = dailyDoc.getString("walk")
+                                walkDao.insert(Walk(id = dailyDoc.id.toInt(), date = date.toString(), success = walk.toString()))
 
                             }
 
@@ -248,7 +261,6 @@ class LoginViewModel @Inject constructor(
                                 }
                             }
 
-                            // 'items' 문서 안의 Map 필드들을 가져오기
                             val areasSnapshot = db
                                 .collection("users")
                                 .document(it.uid)
@@ -283,7 +295,7 @@ class LoginViewModel @Inject constructor(
                             for ((patId, patData) in patsMap) {
                                 if (patData is Map<*, *>) {
                                     val date = patData["date"] as? String ?: continue
-                                    val love = (patData["love"] as? String)?.toIntOrNull() ?: continue
+                                    val love = patData["love"] as? String ?: continue
                                     val size = (patData["size"] as? String)?.toFloatOrNull() ?: continue
                                     val x = (patData["x"] as? String)?.toFloatOrNull() ?: continue
                                     val y = (patData["y"] as? String)?.toFloatOrNull() ?: continue
@@ -292,7 +304,7 @@ class LoginViewModel @Inject constructor(
                                     patDao.updatePatData(
                                         id = patId.toIntOrNull() ?: continue,
                                         date = date,
-                                        love = love,
+                                        love = love.toInt(),
                                         x = x,
                                         y = y,
                                         size = size,
@@ -388,20 +400,13 @@ class LoginViewModel @Inject constructor(
         postSideEffect(LoginSideEffect.NavigateToMainScreen)
     }
 
-
-
 }
-
-
 
 
 @Immutable
 data class LoginState(
-    val id:String = "",
-    val password:String = "",
     val userData: List<User> = emptyList(),
     val isLoggingIn:Boolean = false,
-    val dialogState: String = "",
     val loginState: String = ""
 )
 
