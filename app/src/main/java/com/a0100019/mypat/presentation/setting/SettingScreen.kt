@@ -23,10 +23,18 @@ import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Divider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.letter.Letter
 import com.a0100019.mypat.presentation.ui.component.MainButton
@@ -102,29 +110,33 @@ fun SettingScreen(
 
 ) {
 
-    when(settingSituation) {
+    when (settingSituation) {
         "terms" -> TermsDialog(
             onClose = onClose,
             imageUrl = imageUrl
         )
+
         "accountDelete" -> AccountDeleteDialog(
             onClose = onClose,
             onAccountDeleteTextChange = onEditTextChange,
             accountDeleteString = editText,
             onConfirmClick = onAccountDeleteClick
         )
+
         "coupon" -> CouponDialog(
             onClose = onClose,
             onCouponTextChange = onEditTextChange,
             couponText = editText,
             onConfirmClick = onCouponConfirmClick
         )
+
         "settingTalk" -> SettingTalkDialog(
             onClose = onClose,
             onSettingTalkTextChange = onEditTextChange,
             settingTalkText = editText,
             onConfirmClick = onSettingTalkConfirmClick
         )
+
         "letter" -> LetterDialog(
             onClose = onClose,
             onLetterClick = clickLetterDataChange,
@@ -132,7 +144,7 @@ fun SettingScreen(
         )
     }
 
-    if(clickLetterData.id != 0) {
+    if (clickLetterData.id != 0) {
         LetterViewDialog(
             onClose = onLetterCloseClick,
             clickLetterData = clickLetterData,
@@ -148,30 +160,14 @@ fun SettingScreen(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
+        Spacer(modifier = Modifier.height(12.dp))
+
         // 상단 제목
         Text(
             text = "설정",
             style = MaterialTheme.typography.headlineMedium,
         )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // 계정 관련
-        if (!googleLoginState) {
-            MainButton(
-                text = "구글 로그인 하기",
-                onClick = onGoogleLoginClick,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-
-        if (googleLoginState) {
-            MainButton(
-                text = "로그아웃",
-                onClick = onSignOutClick,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
 
         Spacer(modifier = Modifier.height(12.dp))
         Divider()
@@ -213,6 +209,13 @@ fun SettingScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
+        MainButton(
+            text = "로그아웃",
+            onClick = onSignOutClick,
+            modifier = Modifier
+                .fillMaxWidth()
+        )
+
         Box(
             modifier = Modifier
                 .weight(1f)
@@ -222,17 +225,9 @@ fun SettingScreen(
                 textAlign = TextAlign.Center,
                 modifier = Modifier.align(Alignment.Center)
             )
-        item {
-            MainButton(
-                text = "로그아웃",
-                onClick = onSignOutClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-            )
         }
     }
 }
-    }
 
 @Preview(showBackground = true)
 @Composable

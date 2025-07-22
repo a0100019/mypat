@@ -220,16 +220,21 @@ class SettingViewModel @Inject constructor(
                 "useItem" to userDataList.find { it.id == "item"}!!.value3
             ),
 
-            "area" to worldDataList.find { it.id == 1}!!.value,
-            "name" to userDataList.find { it.id == "name"}!!.value,
-            "lastLogIn" to userDataList.find { it.id == "auth"}!!.value3,
-            "tag" to userDataList.find { it.id == "auth"}!!.value2,
-
             "pat" to mapOf(
                 "openPat" to patDataList.count { it.date != "0"}.toString(),
                 "openPatSpace" to userDataList.find { it.id == "pat"}!!.value2,
                 "usePat" to userDataList.find { it.id == "pat"}!!.value3
             ),
+
+            "area" to worldDataList.find { it.id == 1}!!.value,
+            "name" to userDataList.find { it.id == "name"}!!.value,
+            "lastLogIn" to userDataList.find { it.id == "auth"}!!.value3,
+            "tag" to userDataList.find { it.id == "auth"}!!.value2,
+
+            "walk" to mapOf(
+                "saveWalk" to userDataList.find { it.id == "walk"}!!.value,
+                "totalWalk" to userDataList.find { it.id == "walk"}!!.value3,
+            )
 
         )
 
@@ -379,7 +384,7 @@ class SettingViewModel @Inject constructor(
 
         Log.d("Firestore", "batch.commit() 직전")
 
-// 전체 커밋 실행
+        // 전체 커밋 실행
         batch.commit()
             .addOnSuccessListener {
                 onSignOutClick()

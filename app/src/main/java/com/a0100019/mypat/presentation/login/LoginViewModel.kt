@@ -18,9 +18,11 @@ import com.a0100019.mypat.data.room.walk.Walk
 import com.a0100019.mypat.data.room.walk.WalkDao
 import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.data.room.world.WorldDao
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.firestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -110,9 +112,9 @@ class LoginViewModel @Inject constructor(
                 if (isNewUser) {
 
                     // 🔹 신규 사용자일 때만 실행되는 코드
-
                     val db = FirebaseFirestore.getInstance()
 
+                    //tag 설정
                     val lastKey: Int = withContext(Dispatchers.IO) {
                         val documentSnapshot = db.collection("tag")
                             .document("tag")
@@ -123,8 +125,35 @@ class LoginViewModel @Inject constructor(
 
                         dataMap.keys.maxOfOrNull { it.toInt() }!!
                     }
-
                     userDao.update(id = "auth", value = user.uid, value2 = "${lastKey+1}")
+
+                    val firestore = Firebase.firestore
+                    val tagDocRef = firestore.collection("tag").document("tag")
+                    tagDocRef.get().addOnSuccessListener { document ->
+                        if (document != null && document.exists()) {
+                            val data = document.data.orEmpty()
+
+                            // 키가 숫자인 필드들 중 가장 큰 숫자 찾기
+                            val maxKey = data.keys.mapNotNull { it.toIntOrNull() }.maxOrNull() ?: -1
+                            val nextKey = (maxKey + 1).toString()
+
+                            // 새로운 필드 추가
+                            val newField = mapOf(nextKey to "hello")
+
+                            // 문서 업데이트
+                            tagDocRef.update(newField)
+                                .addOnSuccessListener {
+                                    Log.d("Firestore", "Field 추가 성공: $nextKey -> hello")
+                                }
+                                .addOnFailureListener { e ->
+                                    Log.e("Firestore", "Field 추가 실패", e)
+                                }
+                        } else {
+                            Log.e("Firestore", "문서가 존재하지 않음")
+                        }
+                    }.addOnFailureListener { e ->
+                        Log.e("Firestore", "문서 읽기 실패", e)
+                    }
 
                     val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
                     userDao.update(id = "date", value3 = currentDate)
@@ -181,7 +210,6 @@ class LoginViewModel @Inject constructor(
 
                             val area = userDoc.getString("area")
                             worldDao.insert(World(id = 1, value = area.toString(), type = "area"))
-
                             val name = userDoc.getString("name")
                             userDao.update(id = "name", value = name)
                             val lastLogIn = userDoc.getString("lastLogIn")
