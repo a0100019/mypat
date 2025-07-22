@@ -23,10 +23,18 @@ import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Divider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.letter.Letter
 import com.a0100019.mypat.presentation.ui.component.MainButton
@@ -177,89 +185,91 @@ fun SettingScreen(
         )
     }
 
-    LazyColumn(
+    Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(vertical = 16.dp, horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // 상단 제목
+        Text(
+            text = "설정",
+            style = MaterialTheme.typography.headlineMedium,
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // 계정 관련
         if (!googleLoginState) {
-            item {
-                MainButton(
-                    text = "구글 로그인 하기",
-                    onClick = onGoogleLoginClick,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
-            }
-        }
-
-        item {
             MainButton(
-                text = "편지 모음",
-                onClick = {
-                    onSituationChange("letter")
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-            )
-        }
-
-        item {
-            MainButton(
-                text = "이용 약관",
-                onClick = {
-                    onSituationChange("terms")
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-            )
-        }
-
-        item {
-            MainButton(
-                text = "계정 삭제",
-                onClick = {
-                    onSituationChange("accountDelete")
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-            )
-        }
-
-        item {
-            MainButton(
-                text = "버그 신고",
-                onClick = {
-                    onSituationChange("settingTalk")
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-            )
-        }
-
-        item {
-            MainButton(
-                text = "쿠폰 코드",
-                onClick = {
-                    onSituationChange("coupon")
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
+                text = "구글 로그인 하기",
+                onClick = onGoogleLoginClick,
+                modifier = Modifier.fillMaxWidth()
             )
         }
 
         if (googleLoginState) {
-            item {
-                MainButton(
-                    text = "로그아웃",
-                    onClick = onSignOutClick,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
-            }
+            MainButton(
+                text = "로그아웃",
+                onClick = onSignOutClick,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
+
+        Spacer(modifier = Modifier.height(12.dp))
+        Divider()
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // 기능 관련
+        MainButton(
+            text = "편지 모음",
+            onClick = { onSituationChange("letter") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        MainButton(
+            text = "쿠폰 코드",
+            onClick = { onSituationChange("coupon") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        MainButton(
+            text = "버그 신고",
+            onClick = { onSituationChange("settingTalk") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+        Divider()
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // 기타 정보
+        MainButton(
+            text = "이용 약관",
+            onClick = { onSituationChange("terms") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        MainButton(
+            text = "계정 삭제",
+            onClick = { onSituationChange("accountDelete") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Box(
+            modifier = Modifier
+                .weight(1f)
+        ) {
+            Text(
+                text = "하루마을을 이용해주셔서 감사합니다\nㅡ제작자ㅡ",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
+
     }
+
 }
 
 @Preview(showBackground = true)

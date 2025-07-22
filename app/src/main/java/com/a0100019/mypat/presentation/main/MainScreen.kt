@@ -206,6 +206,7 @@ fun MainScreen(
                         .padding(10.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
+
                     MainButton(
                         text = "내 정보",
                         iconResId = R.drawable.information,
@@ -239,8 +240,6 @@ fun MainScreen(
                         Text(
                             text = users.find { it.id == "money" }?.value ?: "0",
                             style = MaterialTheme.typography.bodyLarge,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
                         )
 
                         Spacer(modifier = Modifier.size(12.dp))
@@ -253,8 +252,6 @@ fun MainScreen(
                         Text(
                             text = users.find { it.id == "money" }?.value2 ?: "0",
                             style = MaterialTheme.typography.bodyLarge,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
                         )
 
                     }
