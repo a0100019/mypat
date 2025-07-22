@@ -20,6 +20,7 @@ import com.a0100019.mypat.data.room.letter.Letter
 import com.a0100019.mypat.data.room.letter.LetterDao
 import com.a0100019.mypat.data.room.letter.getLetterInitialData
 import com.a0100019.mypat.data.room.area.AreaDao
+import com.a0100019.mypat.data.room.area.getAreaInitialData
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.pat.PatDao
 import com.a0100019.mypat.data.room.pat.getPatInitialData
@@ -37,11 +38,9 @@ import com.a0100019.mypat.data.room.world.WorldDao
 import com.a0100019.mypat.data.room.world.getWorldInitialData
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.firestore
-import com.google.firebase.storage.FirebaseStorage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
@@ -92,7 +91,6 @@ class SettingViewModel @Inject constructor(
     //room에서 데이터 가져옴
     private fun loadData() = intent {
         val userDataList = userDao.getAllUserData()
-        val googleLoginState = FirebaseAuth.getInstance().currentUser != null
         val itemDataList = itemDao.getAllItemData()
         val patDataList = patDao.getAllPatData()
         val worldDataList = worldDao.getAllWorldData()
@@ -107,7 +105,6 @@ class SettingViewModel @Inject constructor(
         reduce {
             state.copy(
                 userDataList = userDataList,
-                googleLoginState = googleLoginState,
                 itemDataList = itemDataList,
                 patDataList = patDataList,
                 worldDataList = worldDataList,
@@ -195,12 +192,20 @@ class SettingViewModel @Inject constructor(
 
         val userData = mapOf(
             "cash" to userDataList.find { it.id == "money"}!!.value2,
+            "money" to userDataList.find { it.id == "money"}!!.value,
+
             "community" to mapOf(
                 "ban" to userDataList.find { it.id == "community"}!!.value3,
                 "like" to userDataList.find { it.id == "community"}!!.value,
                 "warning" to userDataList.find {it.id == "community"}!!.value2
             ),
-            "firstDate" to userDataList.find { it.id == "date"}!!.value3,
+
+            "date" to mapOf(
+                "firstDate" to userDataList.find { it.id == "date"}!!.value,
+                "totalDate" to userDataList.find { it.id == "date"}!!.value2,
+                "lastDate" to userDataList.find { it.id == "date"}!!.value3
+            ),
+
             "game" to mapOf(
                 "firstGame" to userDataList.find { it.id == "firstGame"}!!.value,
                 "secondGame" to userDataList.find { it.id == "secondGame"}!!.value,
@@ -208,22 +213,24 @@ class SettingViewModel @Inject constructor(
                 "thirdGameNormal" to userDataList.find { it.id == "thirdGame"}!!.value2,
                 "thirdGameHard" to userDataList.find { it.id == "thirdGame"}!!.value3,
                 ),
+
             "item" to mapOf(
                 "openItem" to itemDataList.count { it.date != "0"}.toString(),
                 "openItemSpace" to userDataList.find { it.id == "item"}!!.value2,
                 "useItem" to userDataList.find { it.id == "item"}!!.value3
             ),
-            "lastLogIn" to userDataList.find { it.id == "auth"}!!.value3,
+
             "area" to worldDataList.find { it.id == 1}!!.value,
-            "money" to userDataList.find { it.id == "money"}!!.value,
             "name" to userDataList.find { it.id == "name"}!!.value,
+            "lastLogIn" to userDataList.find { it.id == "auth"}!!.value3,
+            "tag" to userDataList.find { it.id == "auth"}!!.value2,
+
             "pat" to mapOf(
                 "openPat" to patDataList.count { it.date != "0"}.toString(),
                 "openPatSpace" to userDataList.find { it.id == "pat"}!!.value2,
                 "usePat" to userDataList.find { it.id == "pat"}!!.value3
             ),
-            "tag" to userDataList.find { it.id == "auth"}!!.value2,
-            "totalDate" to userDataList.find { it.id == "date"}!!.value2,
+
         )
 
         //월드 데이터
@@ -298,7 +305,7 @@ class SettingViewModel @Inject constructor(
             }
         batch.set(itemCollectionRef.document("items"), combinedItemData)
 
-        val mapCollectionRef = db.collection("users")
+        val areaCollectionRef = db.collection("users")
             .document(userId)
             .collection("dataCollection")
 
@@ -311,7 +318,7 @@ class SettingViewModel @Inject constructor(
                 )
                 combinedMapData[areaData.id.toString()] = areaMap
             }
-        batch.set(mapCollectionRef.document("areas"), combinedMapData)
+        batch.set(areaCollectionRef.document("areas"), combinedMapData)
 
         val letterCollectionRef = db.collection("users")
         .document(userId)
@@ -370,8 +377,6 @@ class SettingViewModel @Inject constructor(
             batch.set(docRef, data)
         }
 
-
-
         Log.d("Firestore", "batch.commit() 직전")
 
 // 전체 커밋 실행
@@ -385,41 +390,6 @@ class SettingViewModel @Inject constructor(
 
         } catch (e: Exception) {
             Log.e("Firestore", "예외 발생", e)
-        }
-    }
-
-    fun onGoogleLoginClick(idToken: String) = intent {
-        Log.e("login", "idToken = $idToken") // 🔍 여기 추가
-
-        if (state.isLoggingIn) return@intent // 이미 로그인 중이면 리턴
-
-        reduce { state.copy(isLoggingIn = true) }
-
-        try {
-            val credential = GoogleAuthProvider.getCredential(idToken, null)
-            val authResult = FirebaseAuth.getInstance().signInWithCredential(credential).await()
-            val user = authResult.user
-
-            Log.e("login", "user = $user")
-
-            user?.let {
-                Log.e("login", "뷰모델 로그인 성공")
-                userDao.update(id = "auth", value = it.uid)
-
-                reduce {
-                    state.copy(
-                        googleLoginState = true
-                    )
-                }
-
-                postSideEffect(SettingSideEffect.Toast("로그인 성공"))
-            }
-        } catch (e: Exception) {
-            Log.e("login", "뷰모델 로그인 실패", e)
-            postSideEffect(SettingSideEffect.Toast("로그인 실패: ${e.localizedMessage}"))
-        } finally {
-            reduce { state.copy(isLoggingIn = false) }
-            loadData()
         }
     }
 
@@ -528,8 +498,12 @@ class SettingViewModel @Inject constructor(
         val initialWorldData = getWorldInitialData()
         worldDao.insertAll(initialWorldData)
 
-    }
+        areaDao.deleteAllAreas()
+        areaDao.resetAreaPrimaryKey()
+        val initialAreaData = getAreaInitialData()
+        areaDao.insertAll(initialAreaData)
 
+    }
 
     fun onCouponConfirmClick() = intent {
         val db = Firebase.firestore
@@ -687,7 +661,6 @@ class SettingViewModel @Inject constructor(
 data class SettingState(
     val userDataList: List<User> = emptyList(),
     val isLoggingIn:Boolean = false,
-    val googleLoginState: Boolean = false,
     val patDataList: List<Pat> = emptyList(),
     val itemDataList: List<Item> = emptyList(),
     val worldDataList: List<World> = emptyList(),

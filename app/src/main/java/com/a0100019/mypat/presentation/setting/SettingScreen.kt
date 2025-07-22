@@ -55,43 +55,9 @@ fun SettingScreen(
         }
     }
 
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-        try {
-            val account = task.getResult(ApiException::class.java)
-            val idToken = account.idToken
-            if (idToken != null) {
-                settingViewModel.onGoogleLoginClick(idToken)
-            } else {
-                Log.e("login", "로그인 스크린 로그인 성공")
-//                LoginSideEffect.Toast(postLoginSideEffect.Toast("구글 로그인 실패: 토큰 없음"))
-            }
-        } catch (e: Exception) {
-            Log.e("login", "로그인 스크린 로그인 실패: ${e.localizedMessage}", e)
-//            loginViewModel.postSideEffect(LoginSideEffect.Toast("구글 로그인 실패"))
-        }
-    }
-
     SettingScreen(
-        onGoogleLoginClick = {
-            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(context.getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build()
-
-            val googleSignInClient = GoogleSignIn.getClient(context, gso)
-            launcher.launch(googleSignInClient.signInIntent)
-
-            // 🔥 자동 로그인 방지: 이전 계정 로그아웃, 로그아웃 시 아이디 선택창 뜸
-            googleSignInClient.signOut().addOnCompleteListener {
-                launcher.launch(googleSignInClient.signInIntent)
-            }
-        },
 
         userData = settingState.userDataList,
-        googleLoginState = settingState.googleLoginState,
         settingSituation = settingState.settingSituation,
         imageUrl = settingState.imageUrl,
         editText = settingState.editText,
@@ -116,7 +82,6 @@ fun SettingScreen(
 fun SettingScreen(
 
     userData: List<User>,
-    googleLoginState: Boolean,
     settingSituation: String,
     imageUrl: String,
     editText: String,
@@ -126,7 +91,6 @@ fun SettingScreen(
     onSignOutClick: () -> Unit,
     onClose: () -> Unit,
     onSituationChange: (String) -> Unit,
-    onGoogleLoginClick: () -> Unit,
     onAccountDeleteClick: () -> Unit,
     onEditTextChange: (String) -> Unit,
     onCouponConfirmClick: () -> Unit,
@@ -183,16 +147,6 @@ fun SettingScreen(
             .padding(vertical = 16.dp, horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        if (!googleLoginState) {
-            item {
-                MainButton(
-                    text = "구글 로그인 하기",
-                    onClick = onGoogleLoginClick,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
-            }
-        }
 
         item {
             MainButton(
@@ -249,16 +203,15 @@ fun SettingScreen(
             )
         }
 
-        if (googleLoginState) {
-            item {
-                MainButton(
-                    text = "로그아웃",
-                    onClick = onSignOutClick,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
-            }
+        item {
+            MainButton(
+                text = "로그아웃",
+                onClick = onSignOutClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
         }
+
     }
 }
 
@@ -270,8 +223,6 @@ fun SettingScreenPreview() {
             onClose = {},
             userData = emptyList(),
             onSignOutClick = {},
-            googleLoginState = false,
-            onGoogleLoginClick = {},
             settingSituation = "",
             onSituationChange = {},
             onAccountDeleteClick = {},
