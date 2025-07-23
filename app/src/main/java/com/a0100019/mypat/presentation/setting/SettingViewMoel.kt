@@ -38,6 +38,7 @@ import com.a0100019.mypat.data.room.world.WorldDao
 import com.a0100019.mypat.data.room.world.getWorldInitialData
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.firestore
@@ -515,44 +516,52 @@ class SettingViewModel @Inject constructor(
         val couponText = state.editText // 사용자가 입력한 쿠폰 코드
         val userId = state.userDataList.find { it.id == "auth" }!!.value
 
-        db.collection("code").document("coupon")
+        db.collection("users").document(userId).collection("code").document("coupon")
             .get()
-            .addOnSuccessListener { document ->
-                if (document != null && document.contains(couponText)) {
-                    val couponData = document.get(couponText) as? Map<*, *>
-                    val reward = couponData?.get("reward") as? String
-                    val type = couponData?.get("type") as? String
-                    val amount = couponData?.get("amount") as? String
-
-                    Log.d("Coupon", "내용: $reward, 금액: $amount")
-                    // 여기에 UI 상태 업데이트 또는 처리 코드 작성
-
-                    db.collection("users").document(userId).collection("code").document("coupon")
+            .addOnSuccessListener { couponDocument ->
+                if (couponDocument != null && couponDocument.contains(couponText)) {
+                    // 이미 사용한 쿠폰
+                    viewModelScope.launch {
+                        postSideEffect(SettingSideEffect.Toast("이미 사용한 쿠폰 번호입니다."))
+                    }
+                } else {
+                    // 아직 사용하지 않은 쿠폰이므로, 유효한 쿠폰인지 확인
+                    db.collection("code").document("coupon")
                         .get()
-                        .addOnSuccessListener { couponDocument ->
-                                if (couponDocument != null && couponDocument.contains(couponText)) {
-                                    viewModelScope.launch {
-                                        postSideEffect(SettingSideEffect.Toast("이미 사용한 쿠폰 번호입니다."))
-                                    }
-                                } else {
+                        .addOnSuccessListener { document ->
+                            if (document != null && document.contains(couponText)) {
+                                val couponData = document.get(couponText) as? Map<*, *>
+                                val reward = couponData?.get("reward") as? String
+                                val type = couponData?.get("type") as? String
+                                val amount = couponData?.get("amount") as? String
 
-                                    val newCouponMap = mapOf(
-                                        couponText to mapOf(
-                                            "reward" to reward,
-                                            "type" to type,
-                                            "amount" to amount
-                                        )
+                                Log.d("Coupon", "내용: $reward, 금액: $amount")
+
+                                val newCouponMap = mapOf(
+                                    couponText to mapOf(
+                                        "reward" to reward,
+                                        "type" to type,
+                                        "amount" to amount
                                     )
+                                )
+
+                                if(type == "all"){
 
                                     db.collection("users").document(userId)
                                         .collection("code").document("coupon")
-                                        .set(newCouponMap, SetOptions.merge()) // 기존 필드 보존하면서 병합 저장
+                                        .set(newCouponMap, SetOptions.merge())
                                         .addOnSuccessListener {
                                             viewModelScope.launch {
-                                                if(reward == "money") {
-                                                    userDao.update(id = "money", value = (state.userDataList.find { it.id == "money" }!!.value.toInt() + amount!!.toInt()).toString())
+                                                if (reward == "money") {
+                                                    userDao.update(
+                                                        id = "money",
+                                                        value = (state.userDataList.find { it.id == "money" }!!.value.toInt() + amount!!.toInt()).toString()
+                                                    )
                                                 } else {
-                                                    userDao.update(id = "money", value2 = (state.userDataList.find { it.id == "money" }!!.value2.toInt() + amount!!.toInt()).toString())
+                                                    userDao.update(
+                                                        id = "money",
+                                                        value2 = (state.userDataList.find { it.id == "money" }!!.value2.toInt() + amount!!.toInt()).toString()
+                                                    )
                                                 }
                                                 postSideEffect(SettingSideEffect.Toast("쿠폰 사용 : $reward +$amount"))
                                                 onCloseClick()
@@ -562,18 +571,67 @@ class SettingViewModel @Inject constructor(
                                         .addOnFailureListener { e ->
                                             Log.e("Coupon", "쿠폰 저장 실패", e)
                                         }
-                                }
-                        }
 
-                } else {
-                    viewModelScope.launch {
-                        postSideEffect(SettingSideEffect.Toast("존재하지 않는 쿠폰 번호입니다."))
-                    }
+                                } else if(type == "one"){
+
+                                    db.collection("users").document(userId)
+                                        .collection("code").document("coupon")
+                                        .set(newCouponMap, SetOptions.merge())
+                                        .addOnSuccessListener {
+                                            // 필드 삭제 먼저 수행
+                                            val deleteMap = mapOf<String, Any>(
+                                                couponText to FieldValue.delete()
+                                            )
+
+                                            db.collection("code").document("coupon")
+                                                .update(deleteMap)
+                                                .addOnSuccessListener {
+                                                    Log.d("Coupon", "기존 필드 $couponText 삭제 성공")
+                                                }
+                                                .addOnFailureListener { e ->
+                                                    Log.e("Coupon", "기존 필드 $couponText 삭제 실패", e)
+                                                }
+
+                                            viewModelScope.launch {
+                                                if (reward == "money") {
+                                                    userDao.update(
+                                                        id = "money",
+                                                        value = (state.userDataList.find { it.id == "money" }!!.value.toInt() + amount!!.toInt()).toString()
+                                                    )
+                                                } else {
+                                                    userDao.update(
+                                                        id = "money",
+                                                        value2 = (state.userDataList.find { it.id == "money" }!!.value2.toInt() + amount!!.toInt()).toString()
+                                                    )
+                                                }
+                                                postSideEffect(SettingSideEffect.Toast("쿠폰 사용 : $reward +$amount"))
+                                                onCloseClick()
+                                                loadData()
+                                            }
+                                        }
+                                        .addOnFailureListener { e ->
+                                            Log.e("Coupon", "쿠폰 저장 실패", e)
+                                        }
+
+
+                                }
+
+                            } else {
+                                // 존재하지 않는 쿠폰
+                                viewModelScope.launch {
+                                    postSideEffect(SettingSideEffect.Toast("존재하지 않는 쿠폰 번호입니다."))
+                                }
+                            }
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e("Coupon", "쿠폰 조회 실패", e)
+                        }
                 }
             }
             .addOnFailureListener { e ->
-                Log.e("Coupon", "쿠폰 조회 실패", e)
+                Log.e("Coupon", "사용자 쿠폰 조회 실패", e)
             }
+
 
     }
 

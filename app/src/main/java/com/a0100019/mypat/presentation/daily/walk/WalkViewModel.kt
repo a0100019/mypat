@@ -70,6 +70,12 @@ class WalkViewModel @Inject constructor(
                     Log.d("WalkViewModel", "초기 데이터 로드 조건 만족, loadData 호출")
                     hasLoadedInitialData = true
                     loadData()
+
+                    val systemWalk = userDao.getValue2ById(id = "walk")
+                    if(systemWalk == "0" ) {
+                        userDao.update(id = "walk", value2 = steps.toString())
+                    }
+
                     return@collectLatest
                 }
 
@@ -120,20 +126,30 @@ class WalkViewModel @Inject constructor(
         }
         Log.d("WalkViewModel", "현재 날짜: $currentDate, walkState: $walkState")
 
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val successDates = walkDataList
+            .filter { it.success == "1" }
+            .mapNotNull { runCatching { LocalDate.parse(it.date, formatter) }.getOrNull() }
+            .sorted()
         var maxStreak = 0
         var currentStreak = 0
-        for (walk in walkDataList) {
-            if (walk.success == "1") {
+        var previousDate: LocalDate? = null
+        for (date in successDates) {
+            if (previousDate == null) {
+                currentStreak = 1
+            } else if (previousDate.plusDays(1) == date) {
                 currentStreak++
-                if (currentStreak > maxStreak) maxStreak = currentStreak
             } else {
-                currentStreak = 0
+                currentStreak = 1
             }
+            if (currentStreak > maxStreak) {
+                maxStreak = currentStreak
+            }
+            previousDate = date
         }
         Log.d("WalkViewModel", "최대 연속 성공 횟수: $maxStreak")
 
         val firstDate = userDataList.find { it.id == "date" }!!.value3
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val inputDate = LocalDate.parse(firstDate, formatter)
         val today = LocalDate.now()
         val daysDiff = ChronoUnit.DAYS.between(inputDate, today) + 1

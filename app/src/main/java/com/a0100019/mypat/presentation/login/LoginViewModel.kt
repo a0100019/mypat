@@ -138,7 +138,7 @@ class LoginViewModel @Inject constructor(
                             val nextKey = (maxKey + 1).toString()
 
                             // 새로운 필드 추가
-                            val newField = mapOf(nextKey to "hello")
+                            val newField = mapOf(nextKey to user.uid)
 
                             // 문서 업데이트
                             tagDocRef.update(newField)
@@ -157,6 +157,8 @@ class LoginViewModel @Inject constructor(
 
                     val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
                     userDao.update(id = "date", value3 = currentDate)
+
+                    userDao.update(id = "walk", value = "10000")
 
                     Log.e("login", "신규 사용자입니다")
                     postSideEffect(LoginSideEffect.Toast("처음 오신 것을 환영합니다!"))

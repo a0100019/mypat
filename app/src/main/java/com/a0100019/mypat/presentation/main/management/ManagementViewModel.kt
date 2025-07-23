@@ -83,16 +83,17 @@ class ManagementViewModel @Inject constructor(
 
             diaryDao.insert(Diary(date = currentDate))
 
-            // ✅ Walk 자동 채우기 부분, 빈 날짜 없도록
-            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-            val latestWalkDate = LocalDate.parse(walkDao.getLatestWalkData().date, formatter)
-            val today = LocalDate.now()
-
-            var dateToInsert = latestWalkDate.plusDays(1)
-            while (!dateToInsert.isAfter(today)) {
-                walkDao.insert(Walk(date = dateToInsert.format(formatter)))
-                dateToInsert = dateToInsert.plusDays(1)
-            }
+            walkDao.insert(Walk(date = currentDate))
+//            // ✅ Walk 자동 채우기 부분, 빈 날짜 없도록
+//            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+//            val latestWalkDate = LocalDate.parse(walkDao.getLatestWalkData().date, formatter)
+//            val today = LocalDate.now()
+//
+//            var dateToInsert = latestWalkDate.plusDays(1)
+//            while (!dateToInsert.isAfter(today)) {
+//                walkDao.insert(Walk(date = dateToInsert.format(formatter)))
+//                dateToInsert = dateToInsert.plusDays(1)
+//            }
 
             // TODO: 일일 알림 다이얼로그 띄우기
         }
