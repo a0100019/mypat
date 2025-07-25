@@ -200,9 +200,15 @@ class FirstGameViewModel @Inject constructor(
 
             } else {
 
+                //애정도, cash 추가
                 val updatePatData = state.patData
                 updatePatData.love = state.patData.love + state.score
                 patDao.update(updatePatData)
+
+                userDao.update(
+                    id = "cash",
+                    value = (state.userData.find { it.id == "cash" }!!.value.toInt() + state.score).toString()
+                )
 
                 if(state.userData.find { it.id == "firstGame" }!!.value.toDouble() < state.score){
 

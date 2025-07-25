@@ -232,6 +232,8 @@ class SettingViewModel @Inject constructor(
             "lastLogIn" to userDataList.find { it.id == "auth"}!!.value3,
             "tag" to userDataList.find { it.id == "auth"}!!.value2,
 
+            "online" to "0",
+
             "walk" to mapOf(
                 "saveWalk" to userDataList.find { it.id == "walk"}!!.value,
                 "totalWalk" to userDataList.find { it.id == "walk"}!!.value3,

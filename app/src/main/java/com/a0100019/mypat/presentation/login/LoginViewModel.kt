@@ -22,6 +22,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.firestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -158,7 +159,16 @@ class LoginViewModel @Inject constructor(
                     val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
                     userDao.update(id = "date", value3 = currentDate)
 
-                    userDao.update(id = "walk", value = "10000")
+                    userDao.update(id = "walk", value2 = "-1")
+
+                    val userRef = db.collection("users").document(it.uid)
+                    userRef.set(mapOf("online" to "1"), SetOptions.merge())
+                        .addOnSuccessListener {
+                            Log.d("login", "online 필드가 1로 설정됨 (set + merge)")
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e("login", "online 필드 설정 실패", e)
+                        }
 
                     Log.e("login", "신규 사용자입니다")
                     postSideEffect(LoginSideEffect.Toast("처음 오신 것을 환영합니다!"))
@@ -173,6 +183,30 @@ class LoginViewModel @Inject constructor(
                     try {
                         val userDoc = db.collection("users").document(it.uid).get().await()
                         if (userDoc.exists()) {
+
+                            // 🔹 online 필드 확인
+                            val online = userDoc.getString("online")
+                            if (online == "1") {
+                                if(state.dialog != "check"){
+                                    Log.w("login", "이미 로그인 중인 사용자입니다")
+                                    reduce {
+                                        state.copy(
+                                            dialog = "loginWarning"
+                                        )
+                                    }
+                                    return@intent // 또는 return (코루틴/함수 구조에 따라)
+                                }
+                            } else {
+                                // 🔹 online 필드가 0이면 1로 업데이트
+                                db.collection("users").document(it.uid)
+                                    .update("online", "1")
+                                    .addOnSuccessListener {
+                                        Log.d("login", "online 필드가 1로 업데이트됨")
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Log.e("login", "online 필드 업데이트 실패", e)
+                                    }
+                            }
 
                             val money = userDoc.getString("money")
                             val cash = userDoc.getString("cash")
@@ -425,9 +459,16 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-
     fun onNavigateToMainScreen() = intent {
         postSideEffect(LoginSideEffect.NavigateToMainScreen)
+    }
+
+    fun dialogChange(string: String) = intent {
+        reduce {
+            state.copy(
+                dialog = string
+            )
+        }
     }
 
 }
@@ -437,7 +478,8 @@ class LoginViewModel @Inject constructor(
 data class LoginState(
     val userData: List<User> = emptyList(),
     val isLoggingIn:Boolean = false,
-    val loginState: String = ""
+    val loginState: String = "",
+    val dialog: String = ""
 )
 
 

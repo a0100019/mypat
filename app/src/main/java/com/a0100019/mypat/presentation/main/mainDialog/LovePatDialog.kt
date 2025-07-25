@@ -92,6 +92,8 @@ fun LovePatDialog(
 
                 }
 
+                돈이랑 애정도 얼마인비 보이게하기
+
                 if(situation == "lovePatOnGoing"){
                     Text(
                         text = "장난감을 펫에게 흔들어주세요\n원하는 장난감을 맞추면 애정도를 계속 얻을 수 있습니다",

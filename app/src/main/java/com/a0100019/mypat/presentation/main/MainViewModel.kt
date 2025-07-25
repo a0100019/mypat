@@ -290,7 +290,8 @@ class MainViewModel @Inject constructor(
             reduce {
                 state.copy(
                     situation = "lovePatSuccess",
-                    loveAmount = state.loveAmount + 10
+                    loveAmount = state.loveAmount*2,
+                    cashAmount = state.cashAmount*2
                 )
             }
         } else {
@@ -323,7 +324,8 @@ class MainViewModel @Inject constructor(
         reduce {
             state.copy(
                 lovePatData = Pat(url = ""),
-                loveAmount = 100,
+                loveAmount = 1000,
+                cashAmount = 100,
                 loveItemData1 = state.loveItemData1.copy(x = 0.1f, y = 0.8f, date = "0"),
                 loveItemData2 = state.loveItemData2.copy(x = 0.4f, y = 0.8f, date = "0"),
                 loveItemData3 = state.loveItemData3.copy(x = 0.7f, y = 0.8f, date = "0"),
@@ -423,7 +425,8 @@ data class MainState(
     val loveItemData1: Item = Item(id = 1, name = "쓰다듬기", url = "etc/hand.png", x = 0.1f, y = 0.8f, sizeFloat = 0.2f),
     val loveItemData2: Item = Item(id = 2, name = "장난감", url = "etc/arrow.png", x = 0.4f, y = 0.8f, sizeFloat = 0.2f),
     val loveItemData3: Item = Item(id = 3, name = "비행기", url = "etc/lock.png", x = 0.7f, y = 0.8f, sizeFloat = 0.2f),
-    val loveAmount: Int = 100,
+    val loveAmount: Int = 1000,
+    val cashAmount: Int = 100,
     val timer: String = "10:00"
 
     )

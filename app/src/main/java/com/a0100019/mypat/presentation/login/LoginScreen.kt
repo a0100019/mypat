@@ -99,8 +99,10 @@ fun LoginScreen(
 
     LoginScreen(
         loginState = loginState.loginState,
+        dialog = loginState.dialog,
 
         onNavigateToMainScreen = loginViewModel::onNavigateToMainScreen,
+        dialogChange = loginViewModel::dialogChange,
 
         googleLoginClick = {
             val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -123,9 +125,18 @@ fun LoginScreen(
 fun LoginScreen(
     googleLoginClick: () -> Unit,
     onNavigateToMainScreen: () -> Unit,
+    dialogChange: (String) -> Unit = {},
 
     loginState: String,
+    dialog: String = ""
 ) {
+
+    if(dialog == "loginWarning") {
+        LoginWarningDialog(
+            onClose = { dialogChange("") },
+            onConfirmClick = { dialogChange("check") }
+        )
+    }
 
     Box {
 

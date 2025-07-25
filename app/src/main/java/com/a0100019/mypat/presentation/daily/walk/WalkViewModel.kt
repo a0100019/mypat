@@ -71,11 +71,6 @@ class WalkViewModel @Inject constructor(
                     hasLoadedInitialData = true
                     loadData()
 
-                    val systemWalk = userDao.getValue2ById(id = "walk")
-                    if(systemWalk == "0" ) {
-                        userDao.update(id = "walk", value2 = steps.toString())
-                    }
-
                     return@collectLatest
                 }
 
@@ -105,18 +100,30 @@ class WalkViewModel @Inject constructor(
         val currentStepCount = stepCounterManager.getStepCount()
         Log.d("WalkViewModel", "loadData - 현재 stepCounterManager 걸음 수: $currentStepCount")
 
-        val count = if (walkUserData.value2.toInt() <= currentStepCount) {
+        var count = if (walkUserData.value2.toInt() <= currentStepCount) {
             currentStepCount - walkUserData.value2.toInt()
         } else {
             currentStepCount
         }
 
-        userDao.update(
-            id = "walk",
-            value = (walkUserData.value.toInt() + count).toString(),
-            value2 = currentStepCount.toString(),
-            value3 = (walkUserData.value3.toInt() + count).toString()
-        )
+        val systemWalk = userDao.getValue2ById(id = "walk")
+
+        if(systemWalk == "0" ) {
+            // 다시 로그인 했을 때
+            userDao.update(id = "walk", value2 = currentStepCount.toString())
+            count = 0
+        } else if(systemWalk == "-1") {
+            // 첫 로그인
+            userDao.update(id = "walk", value = "10000", value2 = currentStepCount.toString())
+            count = 0
+        } else {
+            userDao.update(
+                id = "walk",
+                value = (walkUserData.value.toInt() + count).toString(),
+                value2 = currentStepCount.toString(),
+                value3 = (walkUserData.value3.toInt() + count).toString()
+            )
+        }
         Log.d("WalkViewModel", "loadData - userDao update 완료, count: $count")
 
         val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
@@ -184,14 +191,14 @@ class WalkViewModel @Inject constructor(
             //보상
             userDao.update(
                 id = "money",
-                value = (state.userDataList.find { it.id == "money" }!!.value.toInt() + 100).toString()
+                value = (state.userDataList.find { it.id == "money" }!!.value.toInt() + 1).toString()
             )
 
             val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
 
             walkDao.updateSuccessByDate(date = currentDate, success = "1")
 
-            postSideEffect(WalkSideEffect.Toast("미션 완료 money+100"))
+            postSideEffect(WalkSideEffect.Toast("일일 미션 완료"))
 
             loadData()
         } else {
