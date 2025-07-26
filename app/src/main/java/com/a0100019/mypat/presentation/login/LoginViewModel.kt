@@ -463,6 +463,72 @@ class LoginViewModel @Inject constructor(
         postSideEffect(LoginSideEffect.NavigateToMainScreen)
     }
 
+
+    fun newLetterGet() = intent {
+        try {
+            val letterDataList = letterDao.getAllLetterData()
+            val existingIds = letterDataList.map { it.id.toString() }
+
+            val letterRef = FirebaseFirestore.getInstance()
+                .collection("code")
+                .document("letter")
+
+            val documentSnapshot = letterRef.get().await() // 🔥 suspend 방식으로 대체
+
+            if (documentSnapshot.exists()) {
+                val map = documentSnapshot.data ?: emptyMap<String, Any>()
+                val firestoreKeys = map.keys
+                val missingKeys = firestoreKeys.filterNot { it in existingIds }
+
+                val missingData = missingKeys.mapNotNull { key ->
+                    val entry = map[key]
+                    if (entry is Map<*, *>) {
+                        val amount = entry["amount"] as String
+                        val date = entry["date"] as String
+                        val link = entry["link"] as String
+                        val message = entry["message"] as String
+                        val reward = entry["reward"] as String
+                        val state = entry["state"] as String
+                        val title = entry["title"] as String
+
+                        letterDao.insert(Letter(
+                            id = key.toInt(),
+                            amount = amount,
+                            date = date,
+                            link = link,
+                            message = message,
+                            reward = reward,
+                            state = state,
+                            title = title
+                        ))
+                        mapOf(
+                            "id" to key,
+                            "amount" to amount,
+                            "date" to date,
+                            "link" to link,
+                            "message" to message,
+                            "reward" to reward,
+                            "state" to state,
+                            "title" to title
+                        )
+                    } else null
+                }
+
+//
+//                if (missingData.isNotEmpty()) {
+//                    letterDao.insertAll(missingData) // 💾 저장
+//                    Log.d("Firestore", "새로운 Letter 저장됨: $missingData")
+//                } else {
+//                    Log.d("Firestore", "Room에 없는 데이터 없음")
+//                }
+            }
+        } catch (e: Exception) {
+            Log.e("Firestore", "데이터 가져오기 실패", e)
+        }
+    }
+
+
+
     fun dialogChange(string: String) = intent {
         reduce {
             state.copy(

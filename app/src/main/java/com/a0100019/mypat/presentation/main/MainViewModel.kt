@@ -317,6 +317,7 @@ class MainViewModel @Inject constructor(
     fun onLovePatStopClick() = intent {
 
         patDao.update(state.lovePatData.copy(love = state.lovePatData.love + state.loveAmount))
+        userDao.update(id = "moeny", value2 = (userDao.getValue2ById("money").toInt()+state.cashAmount).toString() )
 
         val newWorldData = state.worldDataList.find { it.value == state.lovePatData.id.toString() && it.type == "pat" }
         worldDao.update(newWorldData!!.copy(situation = ""))

@@ -99,8 +99,6 @@ fun StoreScreen(
     )
 }
 
-
-
 @Composable
 fun StoreScreen(
     onDialogCloseClick: () -> Unit,
@@ -782,40 +780,6 @@ fun StoreScreen(
                         .padding(start = 12.dp, end = 12.dp, top = 6.dp, bottom = 6.dp)
                 ) {
                     Box {
-
-//                        Row(
-//                            modifier = Modifier
-//                                .align(Alignment.CenterStart)
-//                        ) {
-//                            Spacer(modifier = Modifier.size(10.dp))
-//                            JustImage(
-//                                filePath = "pat/cat.json",
-//                                modifier = Modifier
-//                                    .size(50.dp)
-//                                    .rotate(10f)
-//                            )
-//                        }
-//
-//                        Row(
-//                            modifier = Modifier
-//                                .align(Alignment.CenterEnd)
-//                        ) {
-//                            JustImage(
-//                                filePath = "pat/cat.json",
-//                                modifier = Modifier
-//                                    .size(40.dp)
-//                                    .rotate(-10f)
-//                                    .align(Alignment.Bottom)
-//                            )
-//                            JustImage(
-//                                filePath = "pat/cat.json",
-//                                modifier = Modifier
-//                                    .size(30.dp)
-//                                    .rotate(10f)
-//                                    .align(Alignment.Top)
-//                            )
-//                            Spacer(modifier = Modifier.size(width = 10.dp, height = 50.dp))
-//                        }
 
                         Column(
                             modifier = Modifier

@@ -119,6 +119,7 @@ fun MainScreen(
         loveItemData2 = mainState.loveItemData2,
         loveItemData3 = mainState.loveItemData3,
         loveAmount = mainState.loveAmount,
+        cashAmount = mainState.cashAmount,
         timer = mainState.timer
 
     )
@@ -162,6 +163,7 @@ fun MainScreen(
     loveItemData2: Item,
     loveItemData3: Item,
     loveAmount: Int,
+    cashAmount: Int = 0,
     timer: String
 
     ) {
@@ -186,7 +188,8 @@ fun MainScreen(
             situation = situation,
             onLovePatNextClick = onLovePatNextClick,
             onLovePatStopClick = onLovePatStopClick,
-            loveAmount = loveAmount
+            loveAmount = loveAmount,
+            cashAmount = cashAmount
         )
     }
 

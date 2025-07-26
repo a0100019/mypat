@@ -1,3 +1,5 @@
+@file:Suppress("LABEL_NAME_CLASH")
+
 package com.a0100019.mypat.presentation.login
 
 import android.util.Log
@@ -55,6 +57,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 
 @Composable
 fun LoginScreen(
@@ -96,29 +101,42 @@ fun LoginScreen(
         }
     }
 
-
     LoginScreen(
         loginState = loginState.loginState,
         dialog = loginState.dialog,
 
         onNavigateToMainScreen = loginViewModel::onNavigateToMainScreen,
         dialogChange = loginViewModel::dialogChange,
+        newLetterGet = loginViewModel::newLetterGet,
 
         googleLoginClick = {
+            if (!isInternetAvailable(context)) {
+                Toast.makeText(context, "인터넷 연결을 확인해주세요.", Toast.LENGTH_SHORT).show()
+                return@LoginScreen
+            }
+
             val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(context.getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build()
 
             val googleSignInClient = GoogleSignIn.getClient(context, gso)
-            launcher.launch(googleSignInClient.signInIntent)
 
-            // 🔥 자동 로그인 방지: 이전 계정 로그아웃, 로그아웃 시 아이디 선택창 뜸
+            // 🔥 자동 로그인 방지: 로그아웃 후 다시 실행
             googleSignInClient.signOut().addOnCompleteListener {
                 launcher.launch(googleSignInClient.signInIntent)
             }
-        },
+        }
+        ,
     )
+}
+
+//인터넷 연결 확인 코드
+fun isInternetAvailable(context: Context): Boolean {
+    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val network = connectivityManager.activeNetwork ?: return false
+    val networkCapabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+    return networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
 }
 
 @Composable
@@ -126,6 +144,7 @@ fun LoginScreen(
     googleLoginClick: () -> Unit,
     onNavigateToMainScreen: () -> Unit,
     dialogChange: (String) -> Unit = {},
+    newLetterGet: () -> Unit = {},
 
     loginState: String,
     dialog: String = ""
@@ -192,6 +211,7 @@ fun LoginScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .clickable {
+                        newLetterGet()
                         onNavigateToMainScreen()
                     },
                 verticalArrangement = Arrangement.Bottom,

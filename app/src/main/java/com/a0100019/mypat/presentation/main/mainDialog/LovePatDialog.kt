@@ -44,6 +44,7 @@ fun LovePatDialog(
     onLovePatNextClick: () -> Unit,
     onLovePatStopClick: () -> Unit,
     situation: String,
+    cashAmount: Int = 0
     
 ) {
 
@@ -92,11 +93,9 @@ fun LovePatDialog(
 
                 }
 
-                돈이랑 애정도 얼마인비 보이게하기
-
                 if(situation == "lovePatOnGoing"){
                     Text(
-                        text = "장난감을 펫에게 흔들어주세요\n원하는 장난감을 맞추면 애정도를 계속 얻을 수 있습니다",
+                        text = "장난감을 펫에게 흔들어주세요\n원하는 장난감을 맞추면 더 큰 보상을 획득할 수 있습니다",
                         style = MaterialTheme.typography.bodyMedium,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
@@ -104,7 +103,6 @@ fun LovePatDialog(
                             .padding(10.dp)
                     )
                 }
-
 
                 when(situation) {
 
@@ -114,7 +112,7 @@ fun LovePatDialog(
                             .fillMaxSize()
                     ) {
                         Text(
-                            text = "펫이 원하는 장난감입니다!"
+                            text = "펫이 원하는 장난감입니다"
                             ,
                             style = MaterialTheme.typography.bodyMedium,
                             textAlign = TextAlign.Center,
@@ -125,13 +123,22 @@ fun LovePatDialog(
 
                         MainButton(
                             onClick = onLovePatNextClick,
-                            text = "한번 더",
+                            text = "한번 더 흔들기",
                             modifier = Modifier
                                 .fillMaxWidth(0.5f)
                                 .align(Alignment.Center) // ⭐ 중앙 정렬
                         )
-                    }
 
+                        Text(
+                            text = "애정도 +${loveAmount}, 달빛 +${cashAmount}"
+                            ,
+                            style = MaterialTheme.typography.titleMedium,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .padding(10.dp)
+                        )
+                    }
 
                     "lovePatFail" -> Box(
                         contentAlignment = Alignment.Center,
@@ -139,7 +146,7 @@ fun LovePatDialog(
                             .fillMaxSize()
                     ){
                         Text(
-                            text = "펫이 원하는 장난감이 아닙니다.."
+                            text = "펫이 원하는 장난감이 아닙니다"
                             ,
                             style = MaterialTheme.typography.bodyMedium,
                             textAlign = TextAlign.Center,
@@ -157,9 +164,9 @@ fun LovePatDialog(
                         )
 
                         Text(
-                            text = "애정도 +${loveAmount}"
+                            text = "애정도 +${loveAmount}, 달빛 +${cashAmount}"
                             ,
-                            style = MaterialTheme.typography.headlineMedium,
+                            style = MaterialTheme.typography.headlineSmall,
                             textAlign = TextAlign.Center,
                             modifier = Modifier
                                 .align(Alignment.BottomCenter)
@@ -168,7 +175,6 @@ fun LovePatDialog(
                     }
 
                 }
-
 
             }
 
