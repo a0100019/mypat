@@ -211,6 +211,7 @@ class FirstGameViewModel @Inject constructor(
                 //애정도, cash 추가
                 val updatePatData = state.patData
                 updatePatData.love = state.patData.love + plusValue
+                updatePatData.gameCount = state.patData.gameCount + 1
                 patDao.update(updatePatData)
 
                 userDao.update(

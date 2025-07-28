@@ -369,19 +369,32 @@ class SettingViewModel @Inject constructor(
 
         for (id in 1..userDataList.find { it.id == "date" }!!.value2.toInt()) {
             val docRef = dailyCollectionRef.document(id.toString())
-            val data = mapOf(
-                "date" to diaryDataList.find { it.id == id }!!.date,
+
+            // diary는 항상 존재
+            val diary = diaryDataList.find { it.id == id }!!
+            val walk = walkDataList.find { it.id == id }!!.success
+
+            // state 구성 (둘 중 하나라도 null이면 제외)
+            val englishState = englishDataList.find { it.id == id }?.state
+            val idiomState = koreanIdiomDataList.find { it.id == id }?.state
+
+            val data = mutableMapOf<String, Any>(
+                "date" to diary.date,
                 "diary" to mapOf(
-                    "emotion" to diaryDataList.find { it.id == id }!!.emotion,
-                    "state" to diaryDataList.find { it.id == id }!!.state,
-                    "contents" to diaryDataList.find { it.id == id }!!.contents,
+                    "emotion" to diary.emotion,
+                    "state" to diary.state,
+                    "contents" to diary.contents
                 ),
-                "state" to mapOf(
-                    "english" to englishDataList.find { it.id == id}!!.state,
-                    "koreanIdiom" to koreanIdiomDataList.find { it.id == id}!!.state
-                ),
-                "walk" to walkDataList.find {it.id == id}!!.success
+                "walk" to walk
             )
+
+            if (englishState != null && idiomState != null) {
+                data["state"] = mapOf(
+                    "english" to englishState,
+                    "koreanIdiom" to idiomState
+                )
+            }
+
             batch.set(docRef, data)
         }
 

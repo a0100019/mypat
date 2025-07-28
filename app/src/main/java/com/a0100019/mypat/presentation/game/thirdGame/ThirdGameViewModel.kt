@@ -282,6 +282,7 @@ class ThirdGameViewModel @Inject constructor(
                     }
                     val updatePatData = state.patData
                     updatePatData.love = state.patData.love + plusLove
+                    updatePatData.gameCount = state.patData.gameCount + 1
                     patDao.update(updatePatData)
 
                     userDao.update(

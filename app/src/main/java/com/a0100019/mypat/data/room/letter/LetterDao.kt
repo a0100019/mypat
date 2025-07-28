@@ -16,6 +16,9 @@ interface LetterDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(letter: Letter)
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertIgnore(letter: Letter)
+
     @Delete
     suspend fun delete(letter: Letter)
 

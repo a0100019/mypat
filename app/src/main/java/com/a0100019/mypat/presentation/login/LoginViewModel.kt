@@ -2,6 +2,7 @@ package com.a0100019.mypat.presentation.login
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.a0100019.mypat.data.room.diary.Diary
 import com.a0100019.mypat.data.room.diary.DiaryDao
 import com.a0100019.mypat.data.room.english.EnglishDao
@@ -27,6 +28,7 @@ import com.google.firebase.firestore.firestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import org.orbitmvi.orbit.Container
@@ -278,23 +280,45 @@ class LoginViewModel @Inject constructor(
                                 .await()
 
                             for (dailyDoc in dailySubCollectionSnapshot.documents) {
-                                val date = dailyDoc.getString("date")
+                                val date = dailyDoc.getString("date") ?: continue
 
-                                val diaryMap = dailyDoc.get("diary") as Map<String, String>
-                                val diaryContents = diaryMap["contents"]
-                                val diaryEmotion = diaryMap["emotion"]
-                                val diaryState = diaryMap["state"]
-                                diaryDao.insert(Diary(id = dailyDoc.id.toInt(), date = date.toString(), emotion = diaryEmotion.toString(), state = diaryState.toString(), contents = diaryContents.toString()))
+                                val diaryMap = dailyDoc.get("diary") as? Map<*, *>
+                                val diaryContents = diaryMap?.get("contents") as? String ?: ""
+                                val diaryEmotion = diaryMap?.get("emotion") as? String ?: ""
+                                val diaryState = diaryMap?.get("state") as? String ?: ""
+                                diaryDao.insert(
+                                    Diary(
+                                        id = dailyDoc.id.toInt(),
+                                        date = date,
+                                        emotion = diaryEmotion,
+                                        state = diaryState,
+                                        contents = diaryContents
+                                    )
+                                )
 
-                                val stateMap = dailyDoc.get("state") as Map<String, String>
-                                val englishState = stateMap["english"]
-                                val koreanIdiomState = stateMap["koreanIdiom"]
-                                englishDao.updateDateAndState(id = dailyDoc.id.toInt(), date = date.toString(), state = englishState.toString())
-                                koreanIdiomDao.updateDateAndState(id = dailyDoc.id.toInt(), date = date.toString(), state = koreanIdiomState.toString())
+                                // ✅ state 필드가 존재할 경우에만 처리
+                                val stateMap = dailyDoc.get("state") as? Map<*, *>
+                                val englishState = stateMap?.get("english") as? String
+                                val koreanIdiomState = stateMap?.get("koreanIdiom") as? String
 
-                                val walk = dailyDoc.getString("walk")
-                                walkDao.insert(Walk(id = dailyDoc.id.toInt(), date = date.toString(), success = walk.toString()))
+                                if (englishState != null) {
+                                    englishDao.updateDateAndState(
+                                        id = dailyDoc.id.toInt(),
+                                        date = date,
+                                        state = englishState
+                                    )
+                                }
 
+                                if (koreanIdiomState != null) {
+                                    koreanIdiomDao.updateDateAndState(
+                                        id = dailyDoc.id.toInt(),
+                                        date = date,
+                                        state = koreanIdiomState
+                                    )
+                                }
+
+                                val walk = dailyDoc.getString("walk") ?: ""
+                                walkDao.insert(Walk(id = dailyDoc.id.toInt(), date = date, success = walk))
                             }
 
                             // 'items' 문서 안의 Map 필드들을 가져오기
@@ -423,7 +447,7 @@ class LoginViewModel @Inject constructor(
                                     val amount = letterData["amount"] as? String ?: continue
                                     val state = letterData["state"] as? String ?: continue
 
-                                    letterDao.update(
+                                    letterDao.insert(
                                         Letter(
                                             id = letterId.toInt(),
                                             date = date,
@@ -463,36 +487,27 @@ class LoginViewModel @Inject constructor(
         postSideEffect(LoginSideEffect.NavigateToMainScreen)
     }
 
-
     fun newLetterGet() = intent {
-        try {
-            val letterDataList = letterDao.getAllLetterData()
-            val existingIds = letterDataList.map { it.id.toString() }
+        val letterDocRef = Firebase.firestore
+            .collection("code")
+            .document("letter")
 
-            val letterRef = FirebaseFirestore.getInstance()
-                .collection("code")
-                .document("letter")
+        letterDocRef.get()
+            .addOnSuccessListener { documentSnapshot ->
+                if (documentSnapshot.exists()) {
+                    val letterMap = documentSnapshot.data as Map<String, Map<String, String>>
+                    letterMap.forEach { (key, value) ->
+                        val id = key.toIntOrNull() ?: return@forEach
+                        val amount = value["amount"].orEmpty()
+                        val date = value["date"].orEmpty()
+                        val link = value["link"].orEmpty()
+                        val message = value["message"].orEmpty()
+                        val reward = value["reward"].orEmpty()
+                        val state = value["state"].orEmpty()
+                        val title = value["title"].orEmpty()
 
-            val documentSnapshot = letterRef.get().await() // 🔥 suspend 방식으로 대체
-
-            if (documentSnapshot.exists()) {
-                val map = documentSnapshot.data ?: emptyMap<String, Any>()
-                val firestoreKeys = map.keys
-                val missingKeys = firestoreKeys.filterNot { it in existingIds }
-
-                val missingData = missingKeys.mapNotNull { key ->
-                    val entry = map[key]
-                    if (entry is Map<*, *>) {
-                        val amount = entry["amount"] as String
-                        val date = entry["date"] as String
-                        val link = entry["link"] as String
-                        val message = entry["message"] as String
-                        val reward = entry["reward"] as String
-                        val state = entry["state"] as String
-                        val title = entry["title"] as String
-
-                        letterDao.insert(Letter(
-                            id = key.toInt(),
+                        val letter = Letter(
+                            id = id,
                             amount = amount,
                             date = date,
                             link = link,
@@ -500,32 +515,19 @@ class LoginViewModel @Inject constructor(
                             reward = reward,
                             state = state,
                             title = title
-                        ))
-                        mapOf(
-                            "id" to key,
-                            "amount" to amount,
-                            "date" to date,
-                            "link" to link,
-                            "message" to message,
-                            "reward" to reward,
-                            "state" to state,
-                            "title" to title
                         )
-                    } else null
-                }
 
-//
-//                if (missingData.isNotEmpty()) {
-//                    letterDao.insertAll(missingData) // 💾 저장
-//                    Log.d("Firestore", "새로운 Letter 저장됨: $missingData")
-//                } else {
-//                    Log.d("Firestore", "Room에 없는 데이터 없음")
-//                }
+                        viewModelScope.launch {
+                            letterDao.insertIgnore(letter)
+                        }
+                    }
+                }
             }
-        } catch (e: Exception) {
-            Log.e("Firestore", "데이터 가져오기 실패", e)
-        }
+            .addOnFailureListener { e ->
+                Log.e("Firestore", "letter 문서 가져오기 실패", e)
+            }
     }
+
 
 
 

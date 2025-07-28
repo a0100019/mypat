@@ -277,6 +277,16 @@ fun StoreScreen(
             ,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
+            item {
+
+                Text(
+                    text = "아래로 드래그하세요",
+                    style = MaterialTheme.typography.labelMedium
+                )
+
+            }
+
             item {
                 //버튼 기본 설정
                 val interactionSource = remember { MutableInteractionSource() }
@@ -560,7 +570,7 @@ fun StoreScreen(
                                 ,
                             )
                             Text(
-                                text = "$patSpacePrice 달빛",
+                                text = if(userData.find{it.id == "pat"}?.value2 != userData.find{it.id == "pat"}?.value) "$patSpacePrice 달빛" else "- 달빛",
                                 style = MaterialTheme.typography.titleMedium,
                                 modifier = Modifier,
                             )
@@ -660,7 +670,7 @@ fun StoreScreen(
                                 ,
                             )
                             Text(
-                                text = "$itemSpacePrice 달빛",
+                                text = if(userData.find{it.id == "item"}?.value2 != userData.find{it.id == "item"}?.value) "$itemSpacePrice 달빛" else "- 달빛",
                                 style = MaterialTheme.typography.titleMedium,
                                 modifier = Modifier,
                             )
