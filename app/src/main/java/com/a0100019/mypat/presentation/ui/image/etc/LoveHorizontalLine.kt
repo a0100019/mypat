@@ -20,15 +20,16 @@ fun LoveHorizontalLine(
     value: Int,
     totalValue: Int = 10000,
     plusValue: Int = 0,
-    modifier: Modifier = Modifier
+    @SuppressLint("ModifierParameter") modifier: Modifier = Modifier
 ) {
-    val baseValue = (value - plusValue).coerceAtLeast(0)
+    val nowValue = value % 10000
+    val yellowValue = (nowValue + plusValue).coerceAtMost(10000)
     val valuePercentage by animateFloatAsState(
-        targetValue = baseValue.toFloat() / totalValue.toFloat(),
+        targetValue = nowValue.toFloat() / totalValue.toFloat(),
         label = "baseProgress"
     )
     val plusValuePercentage by animateFloatAsState(
-        targetValue = value.toFloat() / totalValue.toFloat(),
+        targetValue = yellowValue.toFloat() / totalValue.toFloat(),
         label = "plusProgress"
     )
 
@@ -68,8 +69,8 @@ fun LoveHorizontalLinePreview() {
     ) {
         Spacer(modifier = Modifier.height(8.dp))
         LoveHorizontalLine(
-            value = 6700,
-            plusValue = 1200, // 5500 + 1200 = 6700
+            value = 16700,
+            plusValue = 200, // 5500 + 1200 = 6700
             totalValue = 10000
         )
     }

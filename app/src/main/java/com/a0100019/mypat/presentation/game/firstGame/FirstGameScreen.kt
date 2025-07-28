@@ -167,7 +167,7 @@ fun FirstGameScreen(
                 modifier = Modifier
                     .align(Alignment.Center)
             )
-
+게임했을때 게임 횟수 증가
             Text(
                 text = "최고 기록 : ${userData.find { it.id == "firstGame" }?.value}",
                 modifier = Modifier

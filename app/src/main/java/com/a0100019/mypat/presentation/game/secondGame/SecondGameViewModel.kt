@@ -230,8 +230,13 @@ class SecondGameViewModel @Inject constructor(
             }.toInt()
 
             val updatePatData = state.patData
-            updatePatData.love = state.patData.love + plusLove
+            updatePatData.love = state.patData.love + 15
             patDao.update(updatePatData)
+
+            userDao.update(
+                id = "money",
+                value2 = (state.userData.find { it.id == "money" }!!.value2.toInt() + 15).toString()
+            )
 
             var gameState = "성공"
             val time = state.time + state.plusTime

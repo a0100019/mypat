@@ -44,7 +44,7 @@ fun RoomUpDialog(
 
                 if(showRoomUpDialog == "pat") {
                     Text(
-                        text = "펫 공간이 (${userData.find { it.id == "pat" }?.value2} -> ${userData.find { it.id == "pat" }?.value2}) 로 증가하였습니다!\n최대 10칸",
+                        text = "펫 공간이 (${userData.find { it.id == "pat" }?.value2!!.toInt()-1} -> ${userData.find { it.id == "pat" }?.value2}) 로 증가하였습니다!\n최대 10칸",
                         style = MaterialTheme.typography.titleMedium,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
@@ -52,7 +52,7 @@ fun RoomUpDialog(
                     )
                 } else {
                     Text(
-                        text = "아이템 공간이 (${userData.find { it.id == "item" }?.value2} -> ${userData.find { it.id == "item" }?.value2}) 로 증가하였습니다!!\n최대 10칸",
+                        text = "아이템 공간이 (${userData.find { it.id == "item" }?.value2!!.toInt()-1} -> ${userData.find { it.id == "item" }?.value2}) 로 증가하였습니다!!\n최대 10칸",
                         style = MaterialTheme.typography.titleMedium,
                         textAlign = TextAlign.Center,
                         modifier = Modifier

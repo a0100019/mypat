@@ -95,6 +95,10 @@ fun StoreScreen(
         selectItemData = storeState.selectItemData,
         selectAreaData = storeState.selectAreaData,
         shuffledItemDataList = storeState.shuffledItemDataList,
+        patPrice = storeState.patPrice,
+        itemPrice = storeState.itemPrice,
+        patSpacePrice = storeState.patSpacePrice,
+        itemSpacePrice = storeState.itemSpacePrice
 
     )
 }
@@ -131,7 +135,12 @@ fun StoreScreen(
     selectPatData: Pat?,
     selectItemData: Item?,
     selectAreaData: Area?,
-    shuffledItemDataList: List<String>?
+    shuffledItemDataList: List<String>?,
+    patPrice: Int = 0,
+    itemPrice: Int = 0,
+    patSpacePrice: Int = 0,
+    itemSpacePrice: Int = 0,
+
 ) {
 
     if (selectPatData != null) {
@@ -295,39 +304,39 @@ fun StoreScreen(
                 ) {
                     Box {
 
-                        Row(
-                            modifier = Modifier
-                                .align(Alignment.CenterStart)
-                        ) {
-                            Spacer(modifier = Modifier.size(10.dp))
-                            JustImage(
-                                filePath = "pat/cat.json",
-                                modifier = Modifier
-                                    .size(50.dp)
-                                    .rotate(10f)
-                            )
-                        }
-
-                        Row(
-                            modifier = Modifier
-                                .align(Alignment.CenterEnd)
-                        ) {
-                            JustImage(
-                                filePath = "pat/cat.json",
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .rotate(-10f)
-                                    .align(Alignment.Bottom)
-                            )
-                            JustImage(
-                                filePath = "pat/cat.json",
-                                modifier = Modifier
-                                    .size(30.dp)
-                                    .rotate(10f)
-                                    .align(Alignment.Top)
-                            )
-                            Spacer(modifier = Modifier.size(width = 10.dp, height = 50.dp))
-                        }
+//                        Row(
+//                            modifier = Modifier
+//                                .align(Alignment.CenterStart)
+//                        ) {
+//                            Spacer(modifier = Modifier.size(10.dp))
+//                            JustImage(
+//                                filePath = "pat/cat.json",
+//                                modifier = Modifier
+//                                    .size(50.dp)
+//                                    .rotate(10f)
+//                            )
+//                        }
+//
+//                        Row(
+//                            modifier = Modifier
+//                                .align(Alignment.CenterEnd)
+//                        ) {
+//                            JustImage(
+//                                filePath = "pat/cat.json",
+//                                modifier = Modifier
+//                                    .size(40.dp)
+//                                    .rotate(-10f)
+//                                    .align(Alignment.Bottom)
+//                            )
+//                            JustImage(
+//                                filePath = "pat/cat.json",
+//                                modifier = Modifier
+//                                    .size(30.dp)
+//                                    .rotate(10f)
+//                                    .align(Alignment.Top)
+//                            )
+//                            Spacer(modifier = Modifier.size(width = 10.dp, height = 50.dp))
+//                        }
 
                         Column(
                             modifier = Modifier
@@ -351,7 +360,7 @@ fun StoreScreen(
                                 ,
                             )
                             Text(
-                                text = "100 money",
+                                text = "$patPrice 햇살",
                                 style = MaterialTheme.typography.titleMedium,
                                 modifier = Modifier,
                             )
@@ -388,39 +397,39 @@ fun StoreScreen(
                 ) {
                     Box {
 
-                        Row(
-                            modifier = Modifier
-                                .align(Alignment.CenterStart)
-                        ) {
-                            Spacer(modifier = Modifier.size(10.dp))
-                            JustImage(
-                                filePath = "pat/cat.json",
-                                modifier = Modifier
-                                    .size(50.dp)
-                                    .rotate(10f)
-                            )
-                        }
-
-                        Row(
-                            modifier = Modifier
-                                .align(Alignment.CenterEnd)
-                        ) {
-                            JustImage(
-                                filePath = "pat/cat.json",
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .rotate(-10f)
-                                    .align(Alignment.Bottom)
-                            )
-                            JustImage(
-                                filePath = "pat/cat.json",
-                                modifier = Modifier
-                                    .size(30.dp)
-                                    .rotate(10f)
-                                    .align(Alignment.Top)
-                            )
-                            Spacer(modifier = Modifier.size(width = 10.dp, height = 50.dp))
-                        }
+//                        Row(
+//                            modifier = Modifier
+//                                .align(Alignment.CenterStart)
+//                        ) {
+//                            Spacer(modifier = Modifier.size(10.dp))
+//                            JustImage(
+//                                filePath = "pat/cat.json",
+//                                modifier = Modifier
+//                                    .size(50.dp)
+//                                    .rotate(10f)
+//                            )
+//                        }
+//
+//                        Row(
+//                            modifier = Modifier
+//                                .align(Alignment.CenterEnd)
+//                        ) {
+//                            JustImage(
+//                                filePath = "pat/cat.json",
+//                                modifier = Modifier
+//                                    .size(40.dp)
+//                                    .rotate(-10f)
+//                                    .align(Alignment.Bottom)
+//                            )
+//                            JustImage(
+//                                filePath = "pat/cat.json",
+//                                modifier = Modifier
+//                                    .size(30.dp)
+//                                    .rotate(10f)
+//                                    .align(Alignment.Top)
+//                            )
+//                            Spacer(modifier = Modifier.size(width = 10.dp, height = 50.dp))
+//                        }
 
                         Column(
                             modifier = Modifier
@@ -451,7 +460,7 @@ fun StoreScreen(
                                 ,
                             )
                             Text(
-                                text = "100 cash",
+                                text = "$itemPrice 달빛",
                                 style = MaterialTheme.typography.titleMedium,
                                 modifier = Modifier,
                             )
@@ -551,7 +560,7 @@ fun StoreScreen(
                                 ,
                             )
                             Text(
-                                text = "100 money",
+                                text = "$patSpacePrice 달빛",
                                 style = MaterialTheme.typography.titleMedium,
                                 modifier = Modifier,
                             )
@@ -651,7 +660,7 @@ fun StoreScreen(
                                 ,
                             )
                             Text(
-                                text = "10 cash",
+                                text = "$itemSpacePrice 달빛",
                                 style = MaterialTheme.typography.titleMedium,
                                 modifier = Modifier,
                             )
@@ -744,7 +753,9 @@ fun StoreScreen(
                                 ,
                             )
                             Text(
-                                text = "10 cash",
+                                text =
+                                    if(userData.find{it.id == "name"}?.value == "유저") "0 햇살" else "5 햇살"
+                                ,
                                 style = MaterialTheme.typography.titleMedium,
                                 modifier = Modifier,
                             )
@@ -789,14 +800,14 @@ fun StoreScreen(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                text = "화폐 변경",
+                                text = "화폐 교환",
                                 style = MaterialTheme.typography.headlineMedium,
                                 modifier = Modifier
                                     .padding(bottom = 10.dp)
                                 ,
                             )
                             Text(
-                                text = "햇살 1개 -> 달빛 100개",
+                                text = "햇살 1개 -> 달빛 3000개",
                                 style = MaterialTheme.typography.titleMedium,
                                 modifier = Modifier
                                     .padding(bottom = 10.dp)

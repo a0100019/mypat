@@ -82,9 +82,16 @@ fun LovePatDialog(
                         Image(
                             painter = painterResource(id = R.drawable.heart),
                             contentDescription = "Sample Vector Image",
-                            modifier = Modifier.size(20.dp),
+                            modifier = Modifier
+                                .size(20.dp)
+                                .padding(end = 6.dp)
+                            ,
                         )
-                        Text("애정도 ${lovePatData.love / 100}")
+                        Text(
+                            text = "${lovePatData.love / 10000}",
+                            modifier = Modifier
+                                .padding(end = 6.dp)
+                        )
                         LoveHorizontalLine(
                             value = lovePatData.love,
                             plusValue = loveAmount,

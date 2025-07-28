@@ -9,13 +9,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -23,6 +26,7 @@ import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NameChangeDialog(
     onClose: () -> Unit,
@@ -60,22 +64,33 @@ fun NameChangeDialog(
 
                 OutlinedTextField(
                     value = newName,
-                    onValueChange = onNameTextChange,
+                    onValueChange = {
+                        // 최대 10자까지 입력 허용
+                        if (it.length <= 10) onNameTextChange(it)
+                    },
                     label = { Text("닉네임") },
                     placeholder = { Text("새 닉네임을 입력하세요.") },
                     singleLine = true,
-//            colors = TextFieldDefaults.outlinedTextFieldColors(
-//                focusedBorderColor = Color.Blue,
-//                unfocusedBorderColor = Color.Gray
-//            ),
-                    shape = RoundedCornerShape(8.dp), // 테두리를 둥글게
+//                    isError = !isNameValid, // ❗ 에러 여부
+//                    colors = TextFieldDefaults.outlinedTextFieldColors(
+//                        focusedBorderColor = if (isNameValid) Color.Blue else Color.Red,
+//                        unfocusedBorderColor = if (isNameValid) Color.Gray else Color.Red
+//                    ),
+                    shape = RoundedCornerShape(8.dp),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(8.dp)
                 )
 
-
                 Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "부적절한 닉네임을 사용할 경우, 경고 없이 제제를 받을 수 있습니다",
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier
+                        .padding(start = 6.dp, end = 6.dp)
+                )
 
                 // 추가로 원하는 Composable 요소
 

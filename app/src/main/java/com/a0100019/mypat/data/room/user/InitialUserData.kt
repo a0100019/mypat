@@ -7,7 +7,7 @@ fun getUserInitialData(): List<User> {
         User(id = "selectPat"),
         User(id = "money", value = "1000", value2 = "1000"),
         User(id = "pat", value = "5", value2 = "3", value3 = "2"), // 1-최종 개수, 2-오픈 개수, 3-사용 개수
-        User(id = "item", value = "5", value2 = "3", value3 = "1"),
+        User(id = "item", value = "10", value2 = "3", value3 = "1"),
         User(id = "name", value = "유저"),
         User(id = "auth"), // value2 는 테그, value3는 timeStemp
         User(id = "etc"), // page

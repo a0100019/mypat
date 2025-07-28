@@ -63,12 +63,6 @@ class StoreViewModel @Inject constructor(
 // 병렬로 실행할 작업들을 viewModelScope.launch로 묶음
         viewModelScope.launch(Dispatchers.IO) {
             try {
-
-                // 모든 오픈 된 데이터 가져오기
-                val allClosePatDataList = patDao.getAllClosePatData()
-                val allCloseItemDataList = itemDao.getAllCloseItemData()
-                val allCloseAreaDataList = areaDao.getAllCloseAreaData()
-
                 // 펫 월드 데이터 리스트 가져오기
                 val patWorldDataList = worldDao.getWorldDataListByType(type = "pat")
 
@@ -77,6 +71,18 @@ class StoreViewModel @Inject constructor(
 
                 // 유저 데이터 가져오기
                 val userDataList = userDao.getAllUserData()
+
+                val allClosePatDataList = patDao.getAllClosePatData()
+                val allCloseItemDataList = itemDao.getAllCloseItemData()
+                val allCloseAreaDataList = areaDao.getAllCloseAreaData()
+
+                val allOpenPatDataList = patDao.getAllOpenPatData()
+                val allOpenItemDataList = itemDao.getAllOpenItemData()
+
+                val patPrice = allOpenPatDataList.size * 2
+                val itemPrice = allOpenItemDataList.size * 200
+                val patSpacePrice = userDataList.find { it.id == "pat" }!!.value2.toInt() * 2000
+                val itemSpacePrice = userDataList.find { it.id == "item" }!!.value2.toInt() * 1000
 
                 // UI 상태 업데이트 (Main Dispatcher에서 실행)
                 withContext(Dispatchers.Main) {
@@ -90,7 +96,11 @@ class StoreViewModel @Inject constructor(
                             userData = userDataList,
                             selectAreaData = null,
                             selectItemData = null,
-                            selectPatData = null
+                            selectPatData = null,
+                            patPrice = patPrice,
+                            itemPrice = itemPrice,
+                            patSpacePrice = patSpacePrice,
+                            itemSpacePrice = itemSpacePrice
                         )
                     }
                 }
@@ -135,13 +145,13 @@ class StoreViewModel @Inject constructor(
         val emptyRoom = patRoomField?.value!!.toInt() > patRoomField.value2.toInt()
 
         //돈 있는지
-        if(moneyField!!.value.toInt() >= 10) {
+        if(moneyField!!.value2.toInt() >= state.patSpacePrice) {
 
             //빈방 있는지
             if(emptyRoom) {
 
-                userDao.update(id = "pat", value3 = (patRoomField.value2.toInt() + 1).toString())
-                userDao.update(id = moneyField.id, value = (moneyField.value.toInt() - 10).toString())
+                userDao.update(id = "pat", value2 = (patRoomField.value2.toInt() + 1).toString())
+                userDao.update(id = moneyField.id, value2 = (moneyField.value2.toInt() - state.patSpacePrice).toString())
                 reduce {
                     state.copy(
                         showDialog = "pat"
@@ -164,13 +174,13 @@ class StoreViewModel @Inject constructor(
         val emptyRoom = itemRoomField?.value!!.toInt() > itemRoomField.value2.toInt()
 
         //돈 있는지
-        if(moneyField!!.value.toInt() >= 10) {
+        if(moneyField!!.value2.toInt() >= state.itemSpacePrice) {
 
             //빈방 있는지
             if(emptyRoom) {
 
-                userDao.update(id = "item", value3 = (itemRoomField.value2.toInt() + 1).toString())
-                userDao.update(id = moneyField.id, value = (moneyField.value.toInt() - 10).toString())
+                userDao.update(id = "item", value2 = (itemRoomField.value2.toInt() + 1).toString())
+                userDao.update(id = moneyField.id, value2 = (moneyField.value2.toInt() - state.itemSpacePrice).toString())
                 reduce {
                     state.copy(
                         showDialog = "item"
@@ -187,25 +197,35 @@ class StoreViewModel @Inject constructor(
     }
 
     fun onNameChangeConfirm() = intent {
-        // 조건 추가
-        if(true) {
-            reduce {
-                state.copy(
-                    simpleDialogState = "가능한 닉네임입니다 변경하겠습니까?"
-                )
+        val newName = state.newName
+
+        when {
+            newName.isBlank() -> {
+                postSideEffect(StoreSideEffect.Toast("닉네임을 입력해주세요"))
             }
-        } else {
-            postSideEffect(StoreSideEffect.Toast("이미 존재하는 닉네임입니다."))
+
+            newName.length > 10 -> {
+                postSideEffect(StoreSideEffect.Toast("닉네임은 10자 이하로 입력해주세요"))
+            }
+
+            else -> {
+                reduce {
+                    state.copy(
+                        simpleDialogState = "가능한 닉네임입니다 변경하겠습니까?"
+                    )
+                }
+            }
         }
     }
+
 
     fun onNameChangeClick() = intent {
 
         val moneyField = state.userData.find { it.id == "money" }
 
-        if(moneyField!!.value.toInt() >= 1) {
+        if(moneyField!!.value.toInt() >= 3) {
 
-            moneyField.value = (moneyField.value.toInt() - 1).toString()
+            moneyField.value = (moneyField.value.toInt() - 3).toString()
             userDao.update(id = moneyField.id, value = moneyField.value)
 
             userDao.update("name", value = state.newName)
@@ -230,19 +250,19 @@ class StoreViewModel @Inject constructor(
     fun onMoneyChangeClick() = intent {
         val moneyField = state.userData.find { it.id == "money" }
 
-        if(moneyField!!.value2.toInt() >= 1) {
+        if(moneyField!!.value.toInt() >= 1) {
 
-            moneyField.value2 = (moneyField.value2.toInt() - 1).toString()
-            userDao.update(id = moneyField.id, value2 = moneyField.value2)
-            moneyField.value = (moneyField.value.toInt() + 100).toString()
+            moneyField.value = (moneyField.value.toInt() - 1).toString()
             userDao.update(id = moneyField.id, value = moneyField.value)
+            moneyField.value2 = (moneyField.value2.toInt() + 3000).toString()
+            userDao.update(id = moneyField.id, value2 = moneyField.value2)
 
-            postSideEffect(StoreSideEffect.Toast("교환 완료."))
+            postSideEffect(StoreSideEffect.Toast("교환 성공"))
             loadData()
             onDialogCloseClick()
 
         } else {
-            postSideEffect(StoreSideEffect.Toast("cash가 부족합니다!"))
+            postSideEffect(StoreSideEffect.Toast("햇살이 부족합니다!"))
         }
     }
 
@@ -315,8 +335,8 @@ class StoreViewModel @Inject constructor(
     fun onItemStoreClick() = intent {
         val moneyField = state.userData.find { it.id == "money" }
 
-        if(moneyField!!.value2.toInt() >= 1){
-            moneyField.value2 = (moneyField.value2.toInt() - 1).toString()
+        if(moneyField!!.value2.toInt() >= state.itemPrice){
+            moneyField.value2 = (moneyField.value2.toInt() - state.itemPrice).toString()
 
             val shuffledItemDataList: MutableList<String> = (
                     state.allCloseItemDataList.map { "item@${it.id}@${it.url}@${it.name}" } +
@@ -351,8 +371,8 @@ class StoreViewModel @Inject constructor(
     fun onPatStoreClick() = intent {
         val moneyField = state.userData.find { it.id == "money" }
 
-        if(moneyField!!.value2.toInt() >= 1){
-            moneyField.value2 = (moneyField.value2.toInt() - 1).toString()
+        if(moneyField!!.value.toInt() >= state.patPrice){
+            moneyField.value = (moneyField.value.toInt() - state.patPrice).toString()
 
             val randomPatList = state.allClosePatDataList
                 .shuffled()
@@ -372,7 +392,7 @@ class StoreViewModel @Inject constructor(
             // 각 요소를 두 번씩 추가
             val patEggDataList = (randomPatList + randomPatList).shuffled()
 
-            userDao.update(id = moneyField.id, value2 = moneyField.value2)
+            userDao.update(id = moneyField.id, value = moneyField.value)
             reduce {
                 state.copy(
                     patStoreDataList = randomPatList,
@@ -448,6 +468,10 @@ data class StoreState(
     val selectPatData: Pat? = null,
     val selectItemData: Item? = null,
     val selectAreaData: Area? = null,
+    val patPrice: Int = 0,
+    val itemPrice: Int = 0,
+    val patSpacePrice: Int = 0,
+    val itemSpacePrice: Int = 0,
 
     val userData: List<User> = emptyList(),
     val allClosePatDataList: List<Pat> = emptyList(),

@@ -98,7 +98,7 @@ fun PatDialog(
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = "${patFlowData?.love?.div(100) ?: 0}",
+                            text = "${patFlowData?.love?.div(10000) ?: 0}",
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                         )

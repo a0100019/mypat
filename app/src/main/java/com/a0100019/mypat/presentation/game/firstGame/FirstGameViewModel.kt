@@ -136,12 +136,14 @@ class FirstGameViewModel @Inject constructor(
     }
 
     fun onMoveClick() = intent {
+
         reduce {
             state.copy(
                 situation = "발사중",
                 isShotSetting = false
             )
         }
+
         val velocity = state.shotPower.dp
         val rotationAngle = if(state.rotationAngle >= 0) state.rotationAngle%360f else (state.rotationAngle+3600f)%360f
 
@@ -200,15 +202,27 @@ class FirstGameViewModel @Inject constructor(
 
             } else {
 
+                val level = state.level
+                var plusValue = 0
+                for (i in 0..level) {
+                    plusValue += (i / 10) + 1
+                }
+
                 //애정도, cash 추가
                 val updatePatData = state.patData
-                updatePatData.love = state.patData.love + state.score
+                updatePatData.love = state.patData.love + plusValue
                 patDao.update(updatePatData)
 
                 userDao.update(
-                    id = "cash",
-                    value = (state.userData.find { it.id == "cash" }!!.value.toInt() + state.score).toString()
+                    id = "money",
+                    value2 = (state.userData.find { it.id == "money" }!!.value2.toInt() + plusValue).toString()
                 )
+
+                reduce {
+                    state.copy(
+                        plusValue = plusValue
+                    )
+                }
 
                 if(state.userData.find { it.id == "firstGame" }!!.value.toDouble() < state.score){
 
@@ -284,8 +298,6 @@ class FirstGameViewModel @Inject constructor(
         }
     }
 
-
-
 }
 
 
@@ -311,7 +323,8 @@ data class FirstGameState(
     val isShotSetting: Boolean = false,
     val rotationDuration: Double = 100.0,
     val shotPower: Int = 0,
-    val patData: Pat = Pat(url = "")
+    val patData: Pat = Pat(url = ""),
+    val plusValue: Int = 0
 )
 
 

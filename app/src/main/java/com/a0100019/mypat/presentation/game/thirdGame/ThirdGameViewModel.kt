@@ -276,13 +276,18 @@ class ThirdGameViewModel @Inject constructor(
                     sudokuDao.update(id = "state", value = "0" )
 
                     val plusLove = when(state.level) {
-                        1 -> 1000
-                        2 -> 3000
-                        else -> 10000
+                        1 -> 60
+                        2 -> 250
+                        else -> 1000
                     }
                     val updatePatData = state.patData
                     updatePatData.love = state.patData.love + plusLove
                     patDao.update(updatePatData)
+
+                    userDao.update(
+                        id = "money",
+                        value2 = (state.userData.find { it.id == "money" }!!.value2.toInt() + plusLove).toString()
+                    )
 
                     val current = state.userData.find { it.id == "thirdGame" }!!
                     when (state.level) {
