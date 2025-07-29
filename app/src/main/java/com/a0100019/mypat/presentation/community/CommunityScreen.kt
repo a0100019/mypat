@@ -181,7 +181,7 @@ fun CommunityScreen(
             Text(
                 text = when (situation) {
                     "world" -> "마을 구경하기"
-                    "chat" -> "채팅"
+                    "chat" -> "통신"
                     "firstGame" -> "게임1"
                     "secondGame" -> "게임2"
                     "thirdGameEasy" -> "게임3 - 쉬움"
@@ -201,10 +201,16 @@ fun CommunityScreen(
                         .weight(1f)
                         .padding(16.dp)
                 ) {
+                    Text(
+                        text = "마음에 드는 마을에 좋아요를 눌러주세요!\n오늘의 첫 좋아요를 누르면 500달빛을 획득합니다",
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .padding(bottom = 24.dp)
+                    )
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                         modifier = Modifier
-                            .padding(bottom = 12.dp)
+                            .padding(bottom = 24.dp)
                     ) {
                         CommunityWorldCard(
                             modifier = Modifier
@@ -226,7 +232,11 @@ fun CommunityScreen(
                         )
                     }
 
-                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = Modifier
+                            .padding(bottom = 36.dp)
+                    ) {
                         CommunityWorldCard(
                             modifier = Modifier
                                 .weight(1f)
@@ -247,11 +257,12 @@ fun CommunityScreen(
                             onClick = { onUserWorldClick(4) }
                         )
                     }
+
                     MainButton(
                         onClick = onPageUpClick,
-                        text = "   넘어가기   ",
+                        text = "   다음   ",
                         modifier = Modifier
-                            .padding(top = 6.dp)
+                            .padding(bottom = 24.dp)
                     )
                 }
 
@@ -487,7 +498,7 @@ fun CommunityScreen(
                 "게임1" to "firstGame",
                 "게임2" to "secondGame",
                 "게임3" to "thirdGameEasy", // 대표 키만 지정
-                "채팅" to "chat"
+                "통신" to "chat"
             )
 
             Row(

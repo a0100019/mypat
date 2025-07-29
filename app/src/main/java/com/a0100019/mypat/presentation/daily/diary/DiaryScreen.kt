@@ -143,16 +143,15 @@ fun DiaryScreen(
         Text(
             text = "일기장",
             style = MaterialTheme.typography.displayMedium, // Large font size
-            color = Color.Black,
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(top = 20.dp)
+                .padding(top = 20.dp, bottom = 6.dp)
         )
 
         Row(
             modifier = Modifier
                 .align(Alignment.End)
-                .padding(end = 16.dp)
+                .padding(end = 32.dp)
             ,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -179,7 +178,7 @@ fun DiaryScreen(
                 onClick = {
                     onDialogStateChange("검색")
                 },
-                text = "검색"
+                text = " 검색 "
             )
         }
 
@@ -203,7 +202,7 @@ fun DiaryScreen(
                     Text(
                         text = diaryData.date.substring(0,7),
                         modifier = Modifier
-                            .padding(start = 16.dp)
+                            .padding(start = 24.dp)
                     )
                 }
 

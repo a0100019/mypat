@@ -1,6 +1,7 @@
 package com.a0100019.mypat.presentation.daily.diary
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,11 +15,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
 @Composable
@@ -35,17 +39,28 @@ fun DiarySearchDialog(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-//                .fillMaxHeight(0.8f)
-                .background(Color.White, shape = RoundedCornerShape(16.dp))
+                .shadow(12.dp, RoundedCornerShape(24.dp))
+                .border(
+                    width = 2.dp,
+                    color = MaterialTheme.colorScheme.outline,
+                    shape = RoundedCornerShape(24.dp)
+                )
+                .background(
+                    color = MaterialTheme.colorScheme.background,
+                    shape = RoundedCornerShape(24.dp)
+                )
                 .padding(16.dp)
         ) {
-            Column(modifier = Modifier) {
+            Column(
+                modifier = Modifier
+            ,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
 
                 Text(
                     text = "검색",
                     style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.padding(16.dp),
-                    color = Color.Black
+                    modifier = Modifier.padding(8.dp),
                 )
 
                 OutlinedTextField(
@@ -64,26 +79,25 @@ fun DiarySearchDialog(
                         .padding(8.dp)
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // 추가로 원하는 Composable 요소
-
-                Row {
-                    Button(
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    MainButton(
+                        text = " 지우기 ",
                         onClick = onClose,
                         modifier = Modifier
                             .padding(16.dp)
-                    ) {
-                        Text("지우기")
-                    }
+                    )
 
-                    Button(
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    MainButton(
+                        text = "  확인  ",
                         onClick = onConfirmClick,
                         modifier = Modifier
                             .padding(16.dp)
-                    ) {
-                        Text("확인")
-                    }
+                    )
                 }
             }
         }

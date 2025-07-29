@@ -62,8 +62,19 @@ fun DiaryWriteScreen(
     if (showExitDialog) {
         AlertDialog(
             onDismissRequest = { showExitDialog = false },
-            title = { Text("작성 중인 일기가 있어요") },
-            text = { Text("정말 나가시겠습니까?\n작성한 내용은 저장되지 않습니다.") },
+            title = {
+                Text(
+                    text = "작성 중인 일기가 있어요",
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                    )
+                    },
+            text = { Text(
+                text = "정말 나가시겠습니까?\n작성한 내용은 저장되지 않습니다.",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+                   },
             confirmButton = {
                 TextButton(onClick = {
                     showExitDialog = false  // 그냥 닫기
@@ -124,7 +135,6 @@ fun DiaryWriteScreen(
         Text(
             text = "일기장",
             style = MaterialTheme.typography.displayMedium,
-            color = Color.Black,
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
         )
@@ -163,13 +173,16 @@ fun DiaryWriteScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
+
                 Button(
-                    onClick = { onDialogStateChange("emotion") },
+                    onClick = {
+                        onDialogStateChange("emotion")
+                    },
                     shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.background
+                        containerColor = MaterialTheme.colorScheme.scrim
                     ),
-                    border = BorderStroke(3.dp, MaterialTheme.colorScheme.onPrimaryContainer)
+                    border = BorderStroke(2.dp, MaterialTheme.colorScheme.primaryContainer)
                 ) {
                     JustImage(
                         filePath = writeDiaryData.emotion,
@@ -187,10 +200,25 @@ fun DiaryWriteScreen(
             }
         }
 
-        Text(
-            text = "오늘에 대해 "
-        )
-
+        Column(
+            modifier = Modifier
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                modifier = Modifier
+                    .padding(bottom = 12.dp)
+                        ,
+                textAlign = TextAlign.Center,
+                text = "가볍게 하루를 정리해볼까요?\n\n" +
+                        "오늘 뭐 했는지, 뭐 먹었는지, 기분은 어땠는지\n" +
+                        "그냥 생각나는 대로 툭툭 써봐요\n" +
+                        "잘 쓰려고 애쓸 필요도 없고\n" +
+                        "누구한테 보여줄 것도 아니니까요 :)\n" +
+                        "하루를 정리하면, 마음도 조금 정돈될 거예요"
+            )
+        }
 
     }
 }

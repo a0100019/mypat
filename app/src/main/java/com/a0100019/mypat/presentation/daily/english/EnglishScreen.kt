@@ -133,7 +133,6 @@ fun EnglishScreen(
         Text(
             text = "영어 단어",
             style = MaterialTheme.typography.displayMedium, // Large font size
-            color = Color.Black,
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(top = 20.dp)
@@ -197,7 +196,6 @@ fun EnglishScreen(
                             Text(
                                 text = englishData.meaning,
                                 style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
 
                             Spacer(modifier = Modifier.weight(1f))
@@ -262,7 +260,6 @@ fun EnglishScreen(
                                 Text(
                                     text = "📅 ${englishData.date}",
                                     style = MaterialTheme.typography.labelMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
 

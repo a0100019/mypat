@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -52,8 +53,16 @@ fun KoreanReadyDialog(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-//                .fillMaxHeight(0.8f)
-                .background(Color.White, shape = RoundedCornerShape(16.dp))
+                .shadow(12.dp, RoundedCornerShape(24.dp))
+                .border(
+                    width = 2.dp,
+                    color = MaterialTheme.colorScheme.outline,
+                    shape = RoundedCornerShape(24.dp)
+                )
+                .background(
+                    color = MaterialTheme.colorScheme.background,
+                    shape = RoundedCornerShape(24.dp)
+                )
                 .padding(16.dp)
         ) {
             Column(
@@ -83,7 +92,10 @@ fun KoreanReadyDialog(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth(0.5f)
-                        .border(1.dp, Color.Gray) // 전체 Row 테두리
+                        .border(
+                            width = 2.dp,
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                        )
                 ) {
                     Text(
                         text = koreanCharacter1.takeLast(1).ifEmpty { " " },
@@ -91,7 +103,10 @@ fun KoreanReadyDialog(
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier
                             .weight(1f)
-                            .border(1.dp, Color.Gray) // 각 셀마다 테두리
+                            .border(
+                                width = 2.dp,
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                            )
                             .padding(8.dp)
                     )
 

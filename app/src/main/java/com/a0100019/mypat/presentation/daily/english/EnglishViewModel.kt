@@ -213,7 +213,7 @@ class EnglishViewModel @Inject constructor(
                         )
                     }
 
-                    postSideEffect(EnglishSideEffect.Toast("오답입니다"))
+//                    postSideEffect(EnglishSideEffect.Toast("오답입니다"))
 
                 }
 

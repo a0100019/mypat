@@ -22,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -51,7 +52,16 @@ fun EnglishReadyDialog(
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight(0.8f)
-                .background(Color.White, shape = RoundedCornerShape(16.dp))
+                .shadow(12.dp, RoundedCornerShape(24.dp))
+                .border(
+                    width = 2.dp,
+                    color = MaterialTheme.colorScheme.outline,
+                    shape = RoundedCornerShape(24.dp)
+                )
+                .background(
+                    color = MaterialTheme.colorScheme.background,
+                    shape = RoundedCornerShape(24.dp)
+                )
                 .padding(16.dp)
         ) {
             Column(
@@ -100,8 +110,11 @@ fun EnglishReadyDialog(
                             .padding(bottom = 12.dp)
                     ) {
                         itemsIndexed(failEnglishList.reversed()) { index, word ->
-                            Row {
-                                Spacer(modifier = Modifier.size(3.dp))
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth(0.5f)
+                            ) {
+                                Spacer(modifier = Modifier.weight(1f))
                                 repeat(5) {
                                     Text(
                                         text = word[it].toString(),
@@ -111,15 +124,15 @@ fun EnglishReadyDialog(
                                                 color = if (failEnglishStateList.reversed()[index][it] == '0') {
                                                     Color.Unspecified
                                                 } else if (failEnglishStateList.reversed()[index][it] == '1') {
-                                                    Color.Yellow
+                                                    Color(0xFFFFF59D)
                                                 } else {
-                                                    Color.Green
+                                                    Color(0xFFA5D6A7)
                                                 },
                                                 shape = RoundedCornerShape(8.dp)
                                             )
                                             .padding(horizontal = 8.dp, vertical = 2.dp)
                                     )
-                                    Spacer(modifier = Modifier.size(3.dp))
+                                    Spacer(modifier = Modifier.weight(1f))
                                 }
 
                             }
@@ -133,7 +146,7 @@ fun EnglishReadyDialog(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "영어 단어를 입력하여 정답을 추측하세요\n정답에 포함된 알파벳이면 노란색, 위치까지 일치하면 초록색으로 표시됩니다",
+                            text = "오늘의 단어를 찾아주세요!\n정답에 포함된 알파벳이면 노란색, 위치까지 일치하면 초록색으로 표시됩니다",
                             textAlign = TextAlign.Center,
                             modifier = Modifier
                                 .padding(16.dp) // 여백은 보기 좋게 추가
@@ -257,9 +270,9 @@ fun EnglishReadyDialog(
 fun EnglishReadyDialogPreview() {
     MypatTheme {
         EnglishReadyDialog(
-            failEnglishList = listOf(),
+            failEnglishList = listOf("happy", "iiiii"),
             failEnglishStateList = listOf("01210", "12221"),
-            englishTextList = listOf("a", "a", "a", "", "")
+            englishTextList = listOf("a", "a", "a", "", ""),
         )
     }
 }

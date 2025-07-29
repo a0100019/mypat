@@ -1,6 +1,8 @@
 package com.a0100019.mypat.presentation.daily.korean
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -43,13 +46,21 @@ fun KoreanDialog(
 ) {
 
     Dialog(onDismissRequest = onClose) {
-        Card(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp), // Dialog 바깥 여백
-            shape = RoundedCornerShape(16.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White)
+                .shadow(12.dp, RoundedCornerShape(24.dp))
+                .border(
+                    width = 2.dp,
+                    color = MaterialTheme.colorScheme.outline,
+                    shape = RoundedCornerShape(24.dp)
+                )
+                .background(
+                    color = MaterialTheme.colorScheme.background,
+                    shape = RoundedCornerShape(24.dp)
+                )
+                .padding(16.dp)
+
         ) {
             Column(
                 modifier = Modifier
@@ -77,7 +88,6 @@ fun KoreanDialog(
                 Text(
                     text = koreanData.korean,
                     style = MaterialTheme.typography.headlineLarge,
-                    color = Color.Black,
                     letterSpacing = 6.sp, // 글자 간격 추가
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
@@ -87,8 +97,7 @@ fun KoreanDialog(
                 Text(
                     text = koreanData.idiom,
                     style = MaterialTheme.typography.headlineMedium,
-                    color = Color.DarkGray,
-                    letterSpacing = 12.sp, // 글자 간격 추가
+                    letterSpacing = 16.sp, // 글자 간격 추가
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
 
@@ -112,7 +121,6 @@ fun KoreanDialog(
                     text = koreanData.meaning,
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.align(Alignment.CenterHorizontally),
-                    color = Color.Black,
                     textAlign = TextAlign.Center
                 )
 
