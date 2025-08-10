@@ -84,7 +84,10 @@ fun EnglishReadyDialog(
                     modifier = Modifier
                         .fillMaxWidth(0.5f)
                         .padding(top = 12.dp)
-                        .border(1.dp, Color.Gray) // 전체 Row 테두리
+                        .border(
+                            width = 2.dp,
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                        )
                 ) {
                     repeat(5) { index ->
                         Text(
@@ -93,7 +96,10 @@ fun EnglishReadyDialog(
                             style = MaterialTheme.typography.headlineMedium,
                             modifier = Modifier
                                 .weight(1f)
-                                .border(1.dp, Color.Gray) // 각 셀마다 테두리
+                                .border(
+                                    width = 2.dp,
+                                    color = MaterialTheme.colorScheme.primaryContainer,
+                                )
                                 .padding(8.dp)
                         )
 
@@ -253,7 +259,7 @@ fun EnglishReadyDialog(
                     Spacer(modifier = Modifier.size(10.dp)) // 나머지 공간 확보
 
                     MainButton(
-                        text = " x ",
+                        text = " 지우기 ",
                         onClick = onAlphabetDeleteClick,
                         modifier = Modifier
                         // weight 없이 자동으로 우측으로 감 (Spacer 덕분에)

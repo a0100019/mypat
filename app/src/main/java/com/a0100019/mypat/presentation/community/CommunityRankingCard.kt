@@ -85,7 +85,6 @@ fun CommunityRankingCard(
                 style = MaterialTheme.typography.titleMedium.copy(
                     fontWeight = FontWeight.Bold
                 ),
-                color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier
                     .padding(end = 3.dp)
             )

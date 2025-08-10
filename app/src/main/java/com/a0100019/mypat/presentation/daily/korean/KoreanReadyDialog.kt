@@ -116,7 +116,10 @@ fun KoreanReadyDialog(
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier
                             .weight(1f)
-                            .border(1.dp, Color.Gray)
+                            .border(
+                                width = 2.dp,
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                            )
                             .padding(8.dp)
                     )
 
@@ -126,7 +129,10 @@ fun KoreanReadyDialog(
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier
                             .weight(1f)
-                            .border(1.dp, Color.Gray)
+                            .border(
+                                width = 2.dp,
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                            )
                             .padding(8.dp)
                     )
 
@@ -136,7 +142,10 @@ fun KoreanReadyDialog(
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier
                             .weight(1f)
-                            .border(1.dp, Color.Gray)
+                            .border(
+                                width = 2.dp,
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                            )
                             .padding(8.dp)
                     )
                 }
@@ -182,12 +191,11 @@ fun KoreanReadyDialog(
                                         text = lastChar,
                                         style = MaterialTheme.typography.titleMedium,
                                         fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.onSurface
                                     )
                                     Text(
                                         text = front,
                                         style = MaterialTheme.typography.titleSmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        color = Color.DarkGray
                                     )
                                 }
                             }
@@ -214,7 +222,7 @@ fun KoreanReadyDialog(
                     Spacer(modifier = Modifier.size(10.dp)) // 나머지 공간 확보
 
                     MainButton(
-                        text = " x ",
+                        text = " 지우기 ",
                         onClick = onKoreanDeleteClick,
                         modifier = Modifier
                         // weight 없이 자동으로 우측으로 감 (Spacer 덕분에)

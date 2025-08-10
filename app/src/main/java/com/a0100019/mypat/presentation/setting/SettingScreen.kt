@@ -187,7 +187,7 @@ fun SettingScreen(
         )
 
         MainButton(
-            text = "버그 신고",
+            text = "대나무 숲",
             onClick = { onSituationChange("settingTalk") },
             modifier = Modifier.fillMaxWidth()
         )
@@ -210,7 +210,7 @@ fun SettingScreen(
         )
 
         MainButton(
-            text = "로그아웃",
+            text = "로그 아웃",
             onClick = onSignOutClick,
             modifier = Modifier
                 .fillMaxWidth()
@@ -221,7 +221,7 @@ fun SettingScreen(
                 .weight(1f)
         ) {
             Text(
-                text = "하루마을을 이용해주셔서 감사합니다\nㅡ제작자ㅡ",
+                text = "하루마을을 이용해주셔서 감사합니다 :)\nㅡ제작자ㅡ",
                 textAlign = TextAlign.Center,
                 modifier = Modifier.align(Alignment.Center)
             )

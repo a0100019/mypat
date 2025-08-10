@@ -142,7 +142,6 @@ fun KoreanScreen(
         Text(
             text = "사자성어",
             style = MaterialTheme.typography.displayMedium, // Large font size
-            color = Color.Black,
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(top = 20.dp)
@@ -203,7 +202,6 @@ fun KoreanScreen(
                             Text(
                                 text = koreanData.korean,
                                 style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
 
                             Spacer(modifier = Modifier.weight(1f)) // 텍스트와 이미지 사이 공간 확보

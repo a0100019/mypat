@@ -201,12 +201,6 @@ fun CommunityScreen(
                         .weight(1f)
                         .padding(16.dp)
                 ) {
-                    Text(
-                        text = "마음에 드는 마을에 좋아요를 눌러주세요!\n오늘의 첫 좋아요를 누르면 500달빛을 획득합니다",
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .padding(bottom = 24.dp)
-                    )
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                         modifier = Modifier
@@ -258,12 +252,30 @@ fun CommunityScreen(
                         )
                     }
 
-                    MainButton(
-                        onClick = onPageUpClick,
-                        text = "   다음   ",
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
                         modifier = Modifier
-                            .padding(bottom = 24.dp)
-                    )
+                            .fillMaxWidth()
+                    ) {
+
+                        Text(
+                            "         "
+                        )
+
+                        Text(
+                            text = "마음에 드는 마을에 좋아요를 눌러주세요!\n오늘의 첫 좋아요를 누르면 500달빛을 획득합니다",
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .padding(bottom = 24.dp)
+                        )
+
+                        MainButton(
+                            onClick = onPageUpClick,
+                            text = "   다음   ",
+                            modifier = Modifier
+                                .padding(bottom = 24.dp)
+                        )
+                    }
                 }
 
                 "chat" -> Column(
@@ -410,7 +422,6 @@ fun CommunityScreen(
                                     onChatSubmitClick()
                                 }
                         )
-
 
                     }
 

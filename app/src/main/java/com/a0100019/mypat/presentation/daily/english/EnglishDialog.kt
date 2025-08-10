@@ -96,7 +96,7 @@ fun EnglishDialog(
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(32.dp))
 
                 Text(
                     text = "획득 날짜 : ${english.date}",

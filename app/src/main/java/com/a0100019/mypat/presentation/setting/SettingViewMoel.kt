@@ -54,6 +54,7 @@ import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
+import java.time.LocalDateTime
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 
@@ -652,8 +653,12 @@ class SettingViewModel @Inject constructor(
 
     fun onSettingTalkConfirmClick() = intent {
         val db = Firebase.firestore
-        db.collection("settingTalk").document(state.userDataList.find { it.id == "auth" }!!.value)
-            .set(mapOf("contents" to state.editText))
+        db.collection("settingTalk")
+            .document(state.userDataList.find { it.id == "auth" }!!.value)
+            .set(
+                mapOf(LocalDateTime.now().toString() to state.editText),
+                SetOptions.merge() // 기존 데이터 유지 + 필드 추가
+            )
             .addOnSuccessListener {
                 viewModelScope.launch {
                     postSideEffect(SettingSideEffect.Toast("전송되었습니다."))
@@ -661,6 +666,7 @@ class SettingViewModel @Inject constructor(
                 }
             }
     }
+
 
     fun clickLetterDataChange(letterId: Int) = intent {
         if(letterId != 0) {

@@ -88,7 +88,7 @@ fun KoreanDialog(
                 Text(
                     text = koreanData.korean,
                     style = MaterialTheme.typography.headlineLarge,
-                    letterSpacing = 6.sp, // 글자 간격 추가
+                    letterSpacing = 8.sp, // 글자 간격 추가
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
 
@@ -97,6 +97,7 @@ fun KoreanDialog(
                 Text(
                     text = koreanData.idiom,
                     style = MaterialTheme.typography.headlineMedium,
+                    color = Color.Black,
                     letterSpacing = 16.sp, // 글자 간격 추가
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
@@ -114,7 +115,7 @@ fun KoreanDialog(
                     Text(koreanData.korean4)
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(36.dp))
 
                 // 의미
                 Text(
@@ -124,7 +125,7 @@ fun KoreanDialog(
                     textAlign = TextAlign.Center
                 )
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(36.dp))
 
                 Text(
                     text = "획득 날짜 : ${koreanData.date}",
