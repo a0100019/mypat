@@ -230,8 +230,9 @@ class SettingViewModel @Inject constructor(
 
             "area" to worldDataList.find { it.id == 1}!!.value,
             "name" to userDataList.find { it.id == "name"}!!.value,
-            "lastLogIn" to userDataList.find { it.id == "auth"}!!.value3,
+            "lastLogin" to userDataList.find { it.id == "auth"}!!.value3,
             "tag" to userDataList.find { it.id == "auth"}!!.value2,
+            "openArea" to areaDataList.count { it.date != "0"}.toString(),
 
             "online" to "0",
 

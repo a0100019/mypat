@@ -105,7 +105,7 @@ fun CommunityWorldCard(
             ) {
 
                 JustImage(
-                    filePath = userData.map,
+                    filePath = userData.area,
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.FillBounds
                 )
@@ -188,13 +188,13 @@ fun CommunityWorldCardPreview() {
 
             userData = AllUser(
                 tag = "436",
-                lastLogIn = 342112,
+                lastLogin = 342112,
                 ban = "0",
                 like = "54",
                 warning = "0",
                 firstDate = "2025-02-05",
                 openItem = "30",
-                map = "area/forest.jpg",
+                area = "area/forest.jpg",
                 name = "이222유빈",
                 openPat = "20",
                 totalDate = "134",

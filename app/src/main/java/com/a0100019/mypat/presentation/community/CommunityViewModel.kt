@@ -163,7 +163,7 @@ class CommunityViewModel @Inject constructor(
         val page = state.page
         val allUserDataList = state.allUserDataList
 
-        if (allUserDataList.size > page * 4 + 8) {
+        if (allUserDataList.size > page * 4 + 4) {
             //다음 페이지
             val allUserData1 = allUserDataList[4*page + 4]
             val allUserData2 = allUserDataList[4*page + 5]
@@ -200,10 +200,10 @@ class CommunityViewModel @Inject constructor(
         } else {
             //첫 페이지
 
-            val allUserData1 = allUserDataList[4*page]
-            val allUserData2 = allUserDataList[4*page + 1]
-            val allUserData3 = allUserDataList[4*page + 2]
-            val allUserData4 = allUserDataList[4*page + 3]
+            val allUserData1 = allUserDataList[0]
+            val allUserData2 = allUserDataList[1]
+            val allUserData3 = allUserDataList[2]
+            val allUserData4 = allUserDataList[3]
             val allUserWorldDataList1: List<String> = allUserData1.worldData
                 .split("/")
                 .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거

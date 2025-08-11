@@ -3,6 +3,8 @@ package com.a0100019.mypat.presentation.login
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.a0100019.mypat.data.room.allUser.AllUser
+import com.a0100019.mypat.data.room.allUser.AllUserDao
 import com.a0100019.mypat.data.room.diary.Diary
 import com.a0100019.mypat.data.room.diary.DiaryDao
 import com.a0100019.mypat.data.room.english.EnglishDao
@@ -54,7 +56,8 @@ class LoginViewModel @Inject constructor(
     private val walkDao: WalkDao,
     private val worldDao: WorldDao,
     private val letterDao: LetterDao,
-    private val areaDao: AreaDao
+    private val areaDao: AreaDao,
+    private val allUserDao: AllUserDao
 ) : ViewModel(), ContainerHost<LoginState, LoginSideEffect> {
 
     override val container: Container<LoginState, LoginSideEffect> = container(
@@ -497,24 +500,16 @@ class LoginViewModel @Inject constructor(
                 if (documentSnapshot.exists()) {
                     val letterMap = documentSnapshot.data as Map<String, Map<String, String>>
                     letterMap.forEach { (key, value) ->
-                        val id = key.toIntOrNull() ?: return@forEach
-                        val amount = value["amount"].orEmpty()
-                        val date = value["date"].orEmpty()
-                        val link = value["link"].orEmpty()
-                        val message = value["message"].orEmpty()
-                        val reward = value["reward"].orEmpty()
-                        val state = value["state"].orEmpty()
-                        val title = value["title"].orEmpty()
 
                         val letter = Letter(
-                            id = id,
-                            amount = amount,
-                            date = date,
-                            link = link,
-                            message = message,
-                            reward = reward,
-                            state = state,
-                            title = title
+                            id = key.toIntOrNull() ?: return@forEach,
+                            amount = value["amount"].orEmpty(),
+                            date = value["date"].orEmpty(),
+                            link = value["link"].orEmpty(),
+                            message = value["message"].orEmpty(),
+                            reward = value["reward"].orEmpty(),
+                            state = value["state"].orEmpty(),
+                            title = value["title"].orEmpty()
                         )
 
                         viewModelScope.launch {
@@ -528,8 +523,81 @@ class LoginViewModel @Inject constructor(
             }
     }
 
+    fun newAllUserDataGet() = intent {
 
+        val currentDate =
+            LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
 
+        if(currentDate != userDao.getValue2ById("etc") ){
+
+            val db = Firebase.firestore
+            db.collection("users")
+                .get()
+                .addOnSuccessListener { result ->
+                    for (doc in result) {
+
+                        val gameMap = doc.get("game") as? Map<String, String> ?: emptyMap()
+                        val communityMap =
+                            doc.get("community") as? Map<String, String> ?: emptyMap()
+                        val dateMap = doc.get("date") as? Map<String, String> ?: emptyMap()
+                        val itemMap = doc.get("item") as? Map<String, String> ?: emptyMap()
+                        val patMap = doc.get("pat") as? Map<String, String> ?: emptyMap()
+
+                        val worldMap =
+                            doc.get("world") as? Map<String, Map<String, String>> ?: emptyMap()
+
+                        val worldData = worldMap.entries.joinToString("/") { (_, innerMap) ->
+                            val id = innerMap["id"].orEmpty()
+                            val size = innerMap["size"].orEmpty()
+                            val type = innerMap["type"].orEmpty()
+                            val x = innerMap["x"].orEmpty()
+                            val y = innerMap["y"].orEmpty()
+                            "$id@$size@$type@$x@$y"
+                        }
+
+                        val allUser = AllUser(
+                            tag = doc.getString("tag").orEmpty(),
+                            lastLogin = doc.getString("lastLogin").orEmpty().toLong(),
+                            ban = communityMap["ban"].orEmpty(),
+                            like = communityMap["like"].orEmpty(),
+                            warning = communityMap["warning"].orEmpty(),
+                            firstDate = dateMap["firstDate"].orEmpty(),
+                            firstGame = gameMap["firstGame"].orEmpty(),
+                            secondGame = gameMap["secondGame"].orEmpty(),
+                            thirdGameEasy = gameMap["thirdGameEasy"].orEmpty(),
+                            thirdGameNormal = gameMap["thirdGameNormal"].orEmpty(),
+                            thirdGameHard = gameMap["thirdGameHard"].orEmpty(),
+                            openItem = itemMap["openItem"].orEmpty(),
+                            area = doc.getString("area").orEmpty(),
+                            name = doc.getString("name").orEmpty(),
+                            openPat = patMap["openPat"].orEmpty(),
+                            openArea = doc.getString("openArea").orEmpty(),
+                            totalDate = dateMap["totalDate"].orEmpty(),
+                            worldData = worldData
+                        )
+
+                        viewModelScope.launch {
+                            allUserDao.insert(allUser)
+                        }
+                    }
+
+                    viewModelScope.launch {
+                        try {
+                            userDao.update(id = "etc", value2 = currentDate)
+                            Log.d("DB", "update 성공")
+                        } catch(e: Exception) {
+                            Log.e("DB", "update 실패", e)
+                        }
+                    }
+
+                    Log.e("login", "allUser 가져옴")
+
+                }
+                .addOnFailureListener { e ->
+                    Log.e("login", "users 컬렉션 가져오기 실패", e)
+                }
+        }
+    }
 
     fun dialogChange(string: String) = intent {
         reduce {
@@ -541,7 +609,6 @@ class LoginViewModel @Inject constructor(
 
 }
 
-
 @Immutable
 data class LoginState(
     val userData: List<User> = emptyList(),
@@ -549,7 +616,6 @@ data class LoginState(
     val loginState: String = "",
     val dialog: String = ""
 )
-
 
 //상태와 관련없는 것
 sealed interface LoginSideEffect{

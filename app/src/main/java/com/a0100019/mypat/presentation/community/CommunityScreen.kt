@@ -73,7 +73,6 @@ fun CommunityScreen(
         situation = communityState.situation,
         patDataList = communityState.patDataList,
         itemDataList = communityState.itemDataList,
-        page = communityState.page,
         allUserDataList = communityState.allUserDataList,
         allUserData1 = communityState.allUserData1,
         allUserData2 = communityState.allUserData2,
@@ -104,14 +103,12 @@ fun CommunityScreen(
     )
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CommunityScreen(
     situation : String = "world",
     patDataList: List<Pat> = emptyList(),
     itemDataList: List<Item> = emptyList(),
-    page: Int = 0,
     allUserDataList: List<AllUser> = emptyList(),
     allUserData1: AllUser = AllUser(),
     allUserData2: AllUser = AllUser(),
@@ -142,7 +139,7 @@ fun CommunityScreen(
 
     ) {
 
-    if(clickAllUserData.id != 0) {
+    if(clickAllUserData.tag != "0") {
         CommunityUserDialog(
             onClose = { onUserWorldClick(0) },
             clickAllUserData = clickAllUserData,
