@@ -81,7 +81,7 @@ fun LetterViewDialog(
                         Column(
                             modifier = Modifier
                                 .verticalScroll(rememberScrollState())
-                                .weight(8f)
+                                .weight(10f)
                                 .background(color = Color.Yellow),
                             horizontalAlignment = Alignment.CenterHorizontally,
                         ) {

@@ -175,7 +175,7 @@ fun SettingScreen(
 
         // 기능 관련
         MainButton(
-            text = "편지 모음",
+            text = "우체통",
             onClick = { onSituationChange("letter") },
             modifier = Modifier.fillMaxWidth()
         )

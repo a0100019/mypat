@@ -1,6 +1,8 @@
 package com.a0100019.mypat.presentation.setting
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,11 +16,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
 @Composable
@@ -35,17 +40,28 @@ fun CouponDialog(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-//                .fillMaxHeight(0.8f)
-                .background(Color.White, shape = RoundedCornerShape(16.dp))
-                .padding(16.dp)
+                .shadow(12.dp, RoundedCornerShape(24.dp))
+                .border(
+                    width = 2.dp,
+                    color = MaterialTheme.colorScheme.outline,
+                    shape = RoundedCornerShape(24.dp)
+                )
+                .background(
+                    color = MaterialTheme.colorScheme.background,
+                    shape = RoundedCornerShape(24.dp)
+                )
+                .padding(24.dp)
         ) {
-            Column(modifier = Modifier) {
+            Column(
+                modifier = Modifier
+                ,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
 
                 Text(
                     text = "쿠폰 코드를 입력해주세요.",
                     style = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier.padding(10.dp),
-                    color = Color.Black
                 )
 
                 OutlinedTextField(
@@ -69,22 +85,25 @@ fun CouponDialog(
 
                 // 추가로 원하는 Composable 요소
 
-                Row {
-                    Button(
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                    ,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    MainButton(
+                        text = " 취소 ",
                         onClick = onClose,
                         modifier = Modifier
                             .padding(16.dp)
-                    ) {
-                        Text("취소")
-                    }
+                    )
 
-                    Button(
+                    MainButton(
+                        text = " 확인 ",
                         onClick = onConfirmClick,
                         modifier = Modifier
                             .padding(16.dp)
-                    ) {
-                        Text("확인")
-                    }
+                    )
                 }
 
             }

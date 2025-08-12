@@ -28,7 +28,6 @@ import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NameChangeDialog(
     onClose: () -> Unit,

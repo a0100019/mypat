@@ -90,6 +90,19 @@ class CommunityViewModel @Inject constructor(
             .split("/")
             .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
 
+        val currentDate =
+            LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+
+        if(currentDate != userDao.getValue2ById("etc") ){
+
+            reduce {
+                state.copy(
+                    situation = "update"
+                )
+            }
+
+        }
+
         reduce {
             state.copy(
                 userDataList = userDataList,
@@ -109,6 +122,85 @@ class CommunityViewModel @Inject constructor(
                 allAreaCount = allAreaCount
             )
         }
+    }
+
+    fun onUpdateCheckClick() = intent {
+
+        val db = Firebase.firestore
+        db.collection("users")
+            .get()
+            .addOnSuccessListener { result ->
+                for (doc in result) {
+
+                    val gameMap = doc.get("game") as? Map<String, String> ?: emptyMap()
+                    val communityMap =
+                        doc.get("community") as? Map<String, String> ?: emptyMap()
+                    val dateMap = doc.get("date") as? Map<String, String> ?: emptyMap()
+                    val itemMap = doc.get("item") as? Map<String, String> ?: emptyMap()
+                    val patMap = doc.get("pat") as? Map<String, String> ?: emptyMap()
+
+                    val worldMap =
+                        doc.get("world") as? Map<String, Map<String, String>> ?: emptyMap()
+
+                    val worldData = worldMap.entries.joinToString("/") { (_, innerMap) ->
+                        val id = innerMap["id"].orEmpty()
+                        val size = innerMap["size"].orEmpty()
+                        val type = innerMap["type"].orEmpty()
+                        val x = innerMap["x"].orEmpty()
+                        val y = innerMap["y"].orEmpty()
+                        "$id@$size@$type@$x@$y"
+                    }
+
+                    val allUser = AllUser(
+                        tag = doc.getString("tag").orEmpty(),
+                        lastLogin = doc.getString("lastLogin").orEmpty().toLong(),
+                        ban = communityMap["ban"].orEmpty(),
+                        like = communityMap["like"].orEmpty(),
+                        warning = communityMap["warning"].orEmpty(),
+                        firstDate = dateMap["firstDate"].orEmpty(),
+                        firstGame = gameMap["firstGame"].orEmpty(),
+                        secondGame = gameMap["secondGame"].orEmpty(),
+                        thirdGameEasy = gameMap["thirdGameEasy"].orEmpty(),
+                        thirdGameNormal = gameMap["thirdGameNormal"].orEmpty(),
+                        thirdGameHard = gameMap["thirdGameHard"].orEmpty(),
+                        openItem = itemMap["openItem"].orEmpty(),
+                        area = doc.getString("area").orEmpty(),
+                        name = doc.getString("name").orEmpty(),
+                        openPat = patMap["openPat"].orEmpty(),
+                        openArea = doc.getString("openArea").orEmpty(),
+                        totalDate = dateMap["totalDate"].orEmpty(),
+                        worldData = worldData
+                    )
+
+                    viewModelScope.launch {
+                        allUserDao.insert(allUser)
+                    }
+                }
+
+                viewModelScope.launch {
+
+                    userDao.update(id = "etc", value2 = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+
+                    reduce {
+                        state.copy(
+                            situation = "world"
+                        )
+                    }
+
+                    loadData()
+
+                }
+
+                Log.e("login", "allUser 가져옴")
+
+            }
+            .addOnFailureListener { e ->
+                Log.e("login", "users 컬렉션 가져오기 실패", e)
+                viewModelScope.launch {
+                    postSideEffect(CommunitySideEffect.Toast("인터넷 연결 오류"))
+                }
+            }
+
     }
 
     private fun loadChatMessages() {

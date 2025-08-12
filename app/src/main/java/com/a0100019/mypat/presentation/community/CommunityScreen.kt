@@ -99,7 +99,9 @@ fun CommunityScreen(
         onChatSubmitClick = communityViewModel::onChatSubmitClick,
         onUserRankClick = communityViewModel::onUserRankClick,
         onBanClick = communityViewModel::onBanClick,
-        alertStateChange = communityViewModel::alertStateChange
+        alertStateChange = communityViewModel::alertStateChange,
+        onUpdateCheckClick = communityViewModel::onUpdateCheckClick,
+
     )
 }
 
@@ -136,6 +138,7 @@ fun CommunityScreen(
     onUserRankClick: (Int) -> Unit = {},
     onBanClick: (Int) -> Unit = {},
     alertStateChange: (String) -> Unit = {},
+    onUpdateCheckClick: () -> Unit = {},
 
     ) {
 
@@ -154,6 +157,12 @@ fun CommunityScreen(
             },
             allUserDataList = allUserDataList,
             allMapCount = allAreaCount
+        )
+    }
+
+    if(situation == "update") {
+        CommunityUpdateCheckDialog(
+            onConfirmClick = onUpdateCheckClick
         )
     }
 

@@ -1,4 +1,4 @@
-package com.a0100019.mypat.presentation.main.mainDialog
+package com.a0100019.mypat.presentation.community
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -6,43 +6,38 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.a0100019.mypat.data.room.item.Item
+import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
 @Composable
-fun ItemSettingDialog(
-    onDelete: () -> Unit = {},
-    onDismiss: () -> Unit = {},
-    onSizeUp: () -> Unit = {},
-    onSizeDown: () -> Unit = {},
-    itemData: Item = Item(url = "", name = "이름")
+fun CommunityUpdateCheckDialog(
+    onConfirmClick: () -> Unit = {},
 ) {
 
     Dialog(
-        onDismissRequest = onDismiss
+        onDismissRequest = {  }
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-//                .fillMaxHeight(0.5f)
+//                .fillMaxHeight(0.8f)
                 .shadow(12.dp, shape = RoundedCornerShape(24.dp))
                 .background(
                     color = MaterialTheme.colorScheme.background,
@@ -55,6 +50,7 @@ fun ItemSettingDialog(
                 )
                 .padding(24.dp)
         ) {
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -63,48 +59,27 @@ fun ItemSettingDialog(
             ) {
 
                 Text(
-                    text = itemData.name,
-                    modifier = Modifier
-                        .padding(bottom = 24.dp)
-                    ,
-                    style = MaterialTheme.typography.headlineMedium
-                    )
-
-                Text(
-                    text = "현재 크기 : ${itemData.sizeFloat.toDouble()}",
-                    modifier = Modifier
-                        .padding(bottom = 12.dp)
+                    text = "인터넷 연결",
+                    style = MaterialTheme.typography.titleLarge
                 )
 
+                Spacer(modifier = Modifier.size(30.dp))
 
-                Row(
+                Text(
+                    text = "커뮤니티 기능을 이용하기 위해서 인터넷 연결이 필요합니다. 인터넷을 연결한 후 확인 버튼을 눌러주세요",
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(6.dp)
-                    ,
-                ) {
-                    MainButton(
-                        text = " 지우기 ",
-                        onClick = onDelete,
-                        modifier = Modifier
-                    )
+                        .padding(start = 6.dp, end = 6.dp)
+                )
 
-                    Spacer(modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.size(30.dp))
 
-                    MainButton(
-                        text = " 줄이기 ",
-                        onClick = onSizeDown,
-                        modifier = Modifier
-                    )
-
-                    Spacer(modifier = Modifier.size(6.dp))
-                    
-                    MainButton(
-                        text = " 키우기 ",
-                        onClick = onSizeUp,
-                        modifier = Modifier
-                    )
-                }
+                MainButton(
+                    text = "  확인  ",
+                    onClick = onConfirmClick,
+                    modifier = Modifier
+                )
 
             }
         }
@@ -114,9 +89,9 @@ fun ItemSettingDialog(
 
 @Preview(showBackground = true)
 @Composable
-fun SettingTalkDialogPreview() {
+fun CommunityUpdateCheckDialogPreview() {
     MypatTheme {
-        ItemSettingDialog(
+        CommunityUpdateCheckDialog(
         )
     }
 }

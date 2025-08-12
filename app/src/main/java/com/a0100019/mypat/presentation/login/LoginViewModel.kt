@@ -95,6 +95,9 @@ class LoginViewModel @Inject constructor(
             }
         }
 
+        newLetterGet()
+        newAllUserDataGet()
+
     }
 
     fun onGoogleLoginClick(idToken: String) = intent {
@@ -490,7 +493,7 @@ class LoginViewModel @Inject constructor(
         postSideEffect(LoginSideEffect.NavigateToMainScreen)
     }
 
-    fun newLetterGet() = intent {
+    private fun newLetterGet() = intent {
         val letterDocRef = Firebase.firestore
             .collection("code")
             .document("letter")
@@ -512,6 +515,8 @@ class LoginViewModel @Inject constructor(
                             title = value["title"].orEmpty()
                         )
 
+                        Log.e("Firestore", "letter 문서 가져옴")
+
                         viewModelScope.launch {
                             letterDao.insertIgnore(letter)
                         }
@@ -523,12 +528,13 @@ class LoginViewModel @Inject constructor(
             }
     }
 
-    fun newAllUserDataGet() = intent {
+
+    private fun newAllUserDataGet() = intent {
 
         val currentDate =
             LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
 
-        if(currentDate != userDao.getValue2ById("etc") ){
+        if (currentDate != userDao.getValue2ById("etc")) {
 
             val db = Firebase.firestore
             db.collection("users")

@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -71,7 +72,11 @@ fun DraggablePatImage(
             modifier = Modifier
                 .size(imageSize)
                 .offset(x = xOffset, y = yOffset)
-                .clickable { onClick() } // 클릭 이벤트 처리
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = onClick
+                )
                 .pointerInput(Unit) {
                     detectDragGestures { change, dragAmount ->
                         change.consume() // Consume the touch event

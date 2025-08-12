@@ -107,8 +107,6 @@ fun LoginScreen(
 
         onNavigateToMainScreen = loginViewModel::onNavigateToMainScreen,
         dialogChange = loginViewModel::dialogChange,
-        newLetterGet = loginViewModel::newLetterGet,
-        newAllUserDataGet = loginViewModel::newAllUserDataGet,
 
         googleLoginClick = {
             if (!isInternetAvailable(context)) {
@@ -145,8 +143,6 @@ fun LoginScreen(
     googleLoginClick: () -> Unit,
     onNavigateToMainScreen: () -> Unit,
     dialogChange: (String) -> Unit = {},
-    newLetterGet: () -> Unit = {},
-    newAllUserDataGet: () -> Unit = {},
 
     loginState: String,
     dialog: String = ""
@@ -180,7 +176,6 @@ fun LoginScreen(
                 Button(
                     onClick = {
                         googleLoginClick()
-                        newAllUserDataGet()
                               },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.White,
@@ -216,8 +211,6 @@ fun LoginScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .clickable {
-                        newLetterGet()
-                        newAllUserDataGet()
                         onNavigateToMainScreen()
                     },
                 verticalArrangement = Arrangement.Bottom,
