@@ -268,10 +268,10 @@ class LoginViewModel @Inject constructor(
                             val worldMap = userDoc.get("world") as Map<String, Map<String, String>>
                             for ((index, innerMap) in worldMap) {
                                 val id = innerMap["id"]
-                                val size = innerMap["size"]
+//                                val size = innerMap["size"]
                                 val type = innerMap["type"]
-                                val x = innerMap["x"]
-                                val y = innerMap["y"]
+//                                val x = innerMap["x"]
+//                                val y = innerMap["y"]
 
                                 worldDao.insert(World(id = index.toInt()+2, value = id.toString(), type = type.toString()))
 //                                Log.d("Firestore", "[$key] color=$color, font=$font")
@@ -394,6 +394,7 @@ class LoginViewModel @Inject constructor(
                                     val x = (patData["x"] as? String)?.toFloatOrNull() ?: continue
                                     val y = (patData["y"] as? String)?.toFloatOrNull() ?: continue
                                     val gameCount = (patData["gameCount"] as? String)?.toIntOrNull() ?: continue
+                                    val effect = (patData["effect"] as? String)?.toIntOrNull() ?: continue
 
                                     patDao.updatePatData(
                                         id = patId.toIntOrNull() ?: continue,
@@ -402,7 +403,8 @@ class LoginViewModel @Inject constructor(
                                         x = x,
                                         y = y,
                                         size = size,
-                                        gameCount = gameCount
+                                        gameCount = gameCount,
+                                        effect = effect
                                     )
                                 }
                             }
@@ -558,7 +560,8 @@ class LoginViewModel @Inject constructor(
                             val type = innerMap["type"].orEmpty()
                             val x = innerMap["x"].orEmpty()
                             val y = innerMap["y"].orEmpty()
-                            "$id@$size@$type@$x@$y"
+                            val effect = innerMap["effect"].orEmpty()
+                            "$id@$size@$type@$x@$y@$effect"
                         }
 
                         val allUser = AllUser(

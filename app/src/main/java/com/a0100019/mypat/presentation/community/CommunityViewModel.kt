@@ -148,7 +148,8 @@ class CommunityViewModel @Inject constructor(
                         val type = innerMap["type"].orEmpty()
                         val x = innerMap["x"].orEmpty()
                         val y = innerMap["y"].orEmpty()
-                        "$id@$size@$type@$x@$y"
+                        val effect = innerMap["effect"].orEmpty()
+                        "$id@$size@$type@$x@$y@$effect"
                     }
 
                     val allUser = AllUser(

@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
+import com.a0100019.mypat.presentation.ui.image.etc.PatEffectImage
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
@@ -19,6 +20,7 @@ fun PatInformationImage(
     xFloat: Float,
     yFloat: Float,
     sizeFloat: Float,
+    effect: Int = 0
 ) {
     // `assets` 폴더에서 Lottie 파일 로드
     val composition by rememberLottieComposition(
@@ -37,5 +39,14 @@ fun PatInformationImage(
                 x = (surfaceWidthDp * xFloat),
                 y = (surfaceHeightDp * yFloat)
             )
+    )
+
+    PatEffectImage(
+        surfaceWidthDp = surfaceWidthDp,
+        surfaceHeightDp = surfaceHeightDp,
+        effect = effect,
+        xFloat = xFloat,
+        yFloat = yFloat,
+        sizeFloat = sizeFloat,
     )
 }

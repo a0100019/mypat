@@ -2,6 +2,7 @@ package com.a0100019.mypat.presentation.main.mainDialog
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -55,8 +57,17 @@ fun LovePatDialog(
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight(0.6f)
-                .background(Color.White, shape = RoundedCornerShape(16.dp))
-                .padding(16.dp)
+                .shadow(12.dp, shape = RoundedCornerShape(24.dp))
+                .background(
+                    color = MaterialTheme.colorScheme.background,
+                    shape = RoundedCornerShape(24.dp)
+                )
+                .border(
+                    width = 2.dp,
+                    color = MaterialTheme.colorScheme.outline,
+                    shape = RoundedCornerShape(24.dp)
+                )
+                .padding(24.dp)
         ) {
 
             val density = LocalDensity.current
@@ -74,7 +85,15 @@ fun LovePatDialog(
                     modifier = Modifier
                         .fillMaxHeight(0.5f)
                         .fillMaxWidth()
-                        .background(Color.Gray, shape = RoundedCornerShape(16.dp))
+                        .background(
+                            MaterialTheme.colorScheme.scrim,
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                        .border(
+                            width = 2.dp,
+                            color = MaterialTheme.colorScheme.primaryContainer, // 테두리
+                            shape = RoundedCornerShape(16.dp)
+                        )
                         .padding(16.dp)
                 ) {
                     DialogPatImage(lovePatData.url)
@@ -102,7 +121,7 @@ fun LovePatDialog(
 
                 if(situation == "lovePatOnGoing"){
                     Text(
-                        text = "장난감을 펫에게 흔들어주세요\n원하는 장난감을 맞추면 더 큰 보상을 획득할 수 있습니다",
+                        text = "장난감을 펫에게 흔들어주세요\n펫을 기쁘게 하면 한번 더 흔들 수 있습니다",
                         style = MaterialTheme.typography.bodyMedium,
                         textAlign = TextAlign.Center,
                         modifier = Modifier

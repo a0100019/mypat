@@ -85,9 +85,9 @@ fun JustImage(
                 contentScale = contentScale
             )
         } else {
-            Box(contentAlignment = Alignment.Center) {
-                Text("?")
-            }
+//            Box(contentAlignment = Alignment.Center) {
+//                Text("?")
+//            }
         }
     }
 }

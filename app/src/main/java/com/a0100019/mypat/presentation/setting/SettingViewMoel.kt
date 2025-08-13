@@ -255,7 +255,8 @@ class SettingViewModel @Inject constructor(
                         "size" to patData!!.sizeFloat.toString(),
                         "type" to data.type,
                         "x" to patData.x.toString(),
-                        "y" to patData.y.toString()
+                        "y" to patData.y.toString(),
+                        "effect" to patData.effect.toString()
                     )
                 } else {
                     val itemData = itemDataList.find { it.id == data.value.toInt() }
@@ -265,7 +266,8 @@ class SettingViewModel @Inject constructor(
                         "size" to itemData!!.sizeFloat.toString(),
                         "type" to data.type,
                         "x" to itemData.x.toString(),
-                        "y" to itemData.y.toString()
+                        "y" to itemData.y.toString(),
+                        "effect" to "0"
                     )
                 }
 
@@ -291,7 +293,8 @@ class SettingViewModel @Inject constructor(
                 "size" to patData.sizeFloat.toString(),
                 "x" to patData.x.toString(),
                 "y" to patData.y.toString(),
-                "gameCount" to patData.gameCount.toString()
+                "gameCount" to patData.gameCount.toString(),
+                "effect" to patData.effect.toString()
             )
             combinedPatData[patData.id.toString()] = patMap
         }

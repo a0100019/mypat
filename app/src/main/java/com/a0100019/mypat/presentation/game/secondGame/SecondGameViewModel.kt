@@ -223,25 +223,41 @@ class SecondGameViewModel @Inject constructor(
 
             stopTimer()
 
-            val plusLove = if(state.time < 500) {
-                500 - state.time
+            val time = state.time + state.plusTime
+            var plusLove = 15
+
+            if(state.plusTime < 30) {
+
+                val updatePatData = state.patData
+                updatePatData.love = state.patData.love + 15
+                updatePatData.gameCount = state.patData.gameCount + 1
+
+                patDao.update(updatePatData)
+
+                userDao.update(
+                    id = "money",
+                    value2 = (state.userData.find { it.id == "money" }!!.value2.toInt() + 15).toString()
+                )
+
             } else {
-                10
-            }.toInt()
+                //막누르면 애정도 +5
 
-            val updatePatData = state.patData
-            updatePatData.love = state.patData.love + 15
-            updatePatData.gameCount = state.patData.gameCount + 1
+                val updatePatData = state.patData
+                updatePatData.love = state.patData.love + 5
+                updatePatData.gameCount = state.patData.gameCount + 1
 
-            patDao.update(updatePatData)
+                patDao.update(updatePatData)
 
-            userDao.update(
-                id = "money",
-                value2 = (state.userData.find { it.id == "money" }!!.value2.toInt() + 15).toString()
-            )
+                userDao.update(
+                    id = "money",
+                    value2 = (state.userData.find { it.id == "money" }!!.value2.toInt() + 5).toString()
+                )
+
+                plusLove = 5
+
+            }
 
             var gameState = "성공"
-            val time = state.time + state.plusTime
             val oldTime = state.userData.find {it.id == "secondGame"}?.value?.toDouble()
 
             if(time < oldTime!!) {

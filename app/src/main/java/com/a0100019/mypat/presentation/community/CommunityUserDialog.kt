@@ -150,6 +150,7 @@ fun CommunityUserDialog(
                                         xFloat = parts[3].toFloat(),
                                         yFloat = parts[4].toFloat(),
                                         sizeFloat = parts[1].toFloat(),
+                                        effect = parts[5].toInt()
                                     )
                                 }
 

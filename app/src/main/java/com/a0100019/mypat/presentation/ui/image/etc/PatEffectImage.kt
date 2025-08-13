@@ -46,6 +46,10 @@ fun PatEffectImage(
 fun patEffectIndexToUrl(index: Int): String {
     return when(index) {
         1 -> "patEffect/leaf.json"
-        else -> "etc/egg.json"
+        2 -> "etc/egg.json"
+        3 -> "etc/egg.json"
+        4 -> "etc/egg.json"
+        5 -> "etc/egg.json"
+        else -> ""
     }
 }

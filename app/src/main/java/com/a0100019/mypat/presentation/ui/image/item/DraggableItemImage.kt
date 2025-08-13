@@ -87,9 +87,9 @@ fun DraggableItemImage(
                 composition = composition,
                 iterations = Int.MAX_VALUE,
             )
-            Text(
-                text = (worldIndex.toInt() + 1).toString()
-            )
+//            Text(
+//                text = (worldIndex.toInt() + 1).toString()
+//            )
         }
 
     } else {
@@ -114,8 +114,8 @@ fun DraggableItemImage(
                     .size(imageSize)
                     .offset(x = xOffset, y = yOffset)
                     .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
+//                        interactionSource = remember { MutableInteractionSource() },
+//                        indication = null,
                         onClick = onClick
                     )
                     .pointerInput(Unit) {
@@ -138,11 +138,11 @@ fun DraggableItemImage(
                     bitmap = bitmap!!.asImageBitmap(),
                     contentDescription = "Asset Image",
                 )
-                if(worldIndex != ""){
-                    Text(
-                        text = (worldIndex.toInt() + 1).toString()
-                    )
-                }
+//                if(worldIndex != ""){
+//                    Text(
+//                        text = (worldIndex.toInt() + 1).toString()
+//                    )
+//                }
             }
         } else {
             // Placeholder while loading or on error

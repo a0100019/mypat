@@ -73,8 +73,8 @@ fun DraggablePatImage(
                 .size(imageSize)
                 .offset(x = xOffset, y = yOffset)
                 .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null,
+//                    interactionSource = remember { MutableInteractionSource() },
+//                    indication = null,
                     onClick = onClick
                 )
                 .pointerInput(Unit) {
@@ -102,12 +102,12 @@ fun DraggablePatImage(
                 filePath = patEffectIndexToUrl(effect),
                 modifier = Modifier.fillMaxSize()
             )
-            if(worldIndex != ""){
-                Text(
-                    text = (worldIndex.toInt() + 1).toString(),
-                )
-
-            }
+//            if(worldIndex != ""){
+//                Text(
+//                    text = (worldIndex.toInt() + 1).toString(),
+//                )
+//
+//            }
 
         }
     } else {
