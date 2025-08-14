@@ -217,7 +217,6 @@ fun StoreScreen(
             onClose = { },
             itemData = shuffledItemDataList,
             onItemClick = onItemClick,
-            onAdvertisementClick = {  }
         )
 
     }

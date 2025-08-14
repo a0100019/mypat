@@ -75,7 +75,7 @@ fun FirstGameScreen(
         shotPower = firstGameState.shotPower,
         patData = firstGameState.patData,
         maxPower = firstGameState.maxPower,
-
+        plusValue = firstGameState.plusValue,
 
         onGameStartClick = firstGameViewModel::onGameStartClick,
         onMoveClick = firstGameViewModel::onMoveClick,
@@ -106,7 +106,7 @@ fun FirstGameScreen(
     shotPower: Int,
     patData: Pat,
     maxPower: Int,
-
+    plusValue: Int = 0,
     onGameReStartClick: () -> Unit,
     onGameStartClick: (Dp, Dp) -> Unit,
     onMoveClick: () -> Unit,
@@ -141,7 +141,8 @@ fun FirstGameScreen(
             level = level,
             userData = userData,
             patData = patData,
-            situation = situation
+            situation = situation,
+            plusValue = plusValue
         )
     }
 

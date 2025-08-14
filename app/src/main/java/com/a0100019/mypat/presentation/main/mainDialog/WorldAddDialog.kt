@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -60,8 +61,17 @@ fun WorldAddDialog(
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight(0.8f)
-                .background(Color.White, shape = RoundedCornerShape(16.dp))
-                .padding(16.dp)
+                .shadow(12.dp, RoundedCornerShape(24.dp))
+                .border(
+                    width = 2.dp,
+                    color = MaterialTheme.colorScheme.outline, // 테두리
+                    shape = RoundedCornerShape(24.dp)
+                )
+                .background(
+                    color = MaterialTheme.colorScheme.background, // 배경색
+                    shape = RoundedCornerShape(24.dp)
+                )
+                .padding(24.dp)
         ) {
             Column(
                 modifier = Modifier.fillMaxSize(),
@@ -91,7 +101,15 @@ fun WorldAddDialog(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth()
-                        .background(Color.Gray, shape = RoundedCornerShape(16.dp))
+                        .background(
+                            MaterialTheme.colorScheme.scrim,
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                        .border(
+                            width = 2.dp,
+                            color = MaterialTheme.colorScheme.primaryContainer, // 테두리
+                            shape = RoundedCornerShape(16.dp)
+                        )
                         .padding(16.dp)
                 ) {
                     LazyVerticalGrid(

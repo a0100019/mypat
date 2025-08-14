@@ -172,10 +172,9 @@ fun ThirdGameScreen(
             )
         }
 
-
         Column(
             modifier = Modifier
-                .border(5.dp, Color.Black) // 전체 판 테두리
+                .border(5.dp, MaterialTheme.colorScheme.onError) // 전체 판 테두리
                 .padding(2.dp) // 테두리 여백
                 .fillMaxWidth()
                 .aspectRatio(1f)
@@ -200,13 +199,13 @@ fun ThirdGameScreen(
                                     val borderSize = 1.dp.toPx()
                                     val thickBorder = 3.dp.toPx()
                                     drawLine(
-                                        color = Color.Black,
+                                        color = Color(0xFFE0BBE4),
                                         start = Offset(0f, size.height), // 아래쪽 시작점
                                         end = Offset(size.width, size.height), // 아래쪽 끝점
                                         strokeWidth = if ((rowIndex + 1) % 3 == 0) thickBorder else borderSize
                                     )
                                     drawLine(
-                                        color = Color.Black,
+                                        color = Color(0xFFE0BBE4),
                                         start = Offset(size.width, 0f), // 오른쪽 시작점
                                         end = Offset(size.width, size.height), // 오른쪽 끝점
                                         strokeWidth = if ((colIndex + 1) % 3 == 0) thickBorder else borderSize
@@ -225,7 +224,7 @@ fun ThirdGameScreen(
                                     text = num,
                                     fontSize = 20.sp,
                                     color = if (firstBoard[rowIndex][colIndex] == "0") {
-                                        Color.Blue
+                                        Color(0xFF1E41F1)
                                     } else {
                                         Color.Black
                                     }

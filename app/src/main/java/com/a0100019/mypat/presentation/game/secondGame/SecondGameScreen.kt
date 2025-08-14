@@ -145,9 +145,9 @@ fun SecondGameScreen(
                                 .background(
                                     when (item) {
                                         '0' -> Color.LightGray
-                                        '1' -> Color.Gray
-                                        '2' -> Color.Green
-                                        else -> Color.Red
+                                        '1' -> MaterialTheme.colorScheme.onErrorContainer
+                                        '2' -> Color(0xFF40FF40)
+                                        else -> Color(0xFFF66C6C)
                                     }, shape = RoundedCornerShape(8.dp)
                                 ),
                             contentAlignment = Alignment.Center

@@ -141,7 +141,7 @@ fun EnglishScreen(
         LazyColumn(
             modifier = Modifier.weight(1f),
             contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp) // 카드 사이 간격 추가
+            verticalArrangement = Arrangement.spacedBy(4.dp) // 카드 사이 간격 추가
         ) {
             itemsIndexed(englishDataList) { index, englishData ->
 

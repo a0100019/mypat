@@ -1,6 +1,8 @@
 package com.a0100019.mypat.presentation.game.firstGame
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,16 +13,22 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.presentation.ui.component.MainButton
@@ -39,49 +47,91 @@ fun FirstGameOverDialog(
     userData: List<User>,
     patData: Pat,
     situation: String,
+    plusValue: Int = 0
 ) {
 
 
     Dialog(
-        onDismissRequest = onClose
+        onDismissRequest = {  }
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.6f)
-                .background(Color.White, shape = RoundedCornerShape(16.dp))
                 .padding(16.dp)
+                .shadow(12.dp, RoundedCornerShape(24.dp))
+                .border(
+                    width = 2.dp,
+                    color = MaterialTheme.colorScheme.outline, // 테두리
+                    shape = RoundedCornerShape(24.dp)
+                )
+                .background(
+                    color = MaterialTheme.colorScheme.background, // 배경색
+                    shape = RoundedCornerShape(24.dp)
+                )
+                .padding(24.dp)
+
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
                 ,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
                 Box(
                     modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                        .background(Color.Gray, shape = RoundedCornerShape(16.dp))
+                        .height(180.dp)
+                        .background(
+                            MaterialTheme.colorScheme.scrim,
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                        .border(
+                            width = 2.dp,
+                            color = MaterialTheme.colorScheme.primaryContainer, // 테두리
+                            shape = RoundedCornerShape(16.dp)
+                        )
                         .padding(16.dp)
                 ) {
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.heart),
+                            contentDescription = "하트",
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "${patData.love/10000}",
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        LoveHorizontalLine(
+                            value = patData.love,
+                            totalValue = 10000,
+                            plusValue = plusValue
+                        )
+                    }
+
                     DialogPatImage(patData.url)
-                    LoveHorizontalLine(
-                        value = patData.love,
-                        totalValue = 10000,
-                        plusValue = score
-                    )
+
                 }
+
+                Spacer(modifier = Modifier.size(16.dp))
 
                 Text(
                     text = "점수",
                     style = MaterialTheme.typography.titleMedium
                     )
                 Text(
-                    text = score.toString(),
-                    style = MaterialTheme.typography.displayMedium
+                    text = score.toString() + "점",
+                    style = MaterialTheme.typography.displaySmall
                 )
+
+                Spacer(modifier = Modifier.size(16.dp))
+
                 Text("레벨",
                     style = MaterialTheme.typography.titleMedium
                 )
@@ -89,9 +139,12 @@ fun FirstGameOverDialog(
                     text = level.toString(),
                     style = MaterialTheme.typography.headlineMedium
                 )
+
+                Spacer(modifier = Modifier.size(16.dp))
+
                 if(situation == "신기록") {
                     Text(
-                        text = "신기록 달성!!",
+                        text = "🎊 신기록 달성!! 🎊",
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier
                             .padding(30.dp)
@@ -107,7 +160,13 @@ fun FirstGameOverDialog(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.size(16.dp))
+
+                Text(
+                    text = "애정도, 달빛 +$plusValue"
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
 
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -116,14 +175,14 @@ fun FirstGameOverDialog(
                 ) {
 
                     MainButton(
-                        text = "다시 하기",
-                        onClick = onClose,
+                        text = "나가기",
+                        onClick = popBackStack,
                         modifier = Modifier
                     )
 
                     MainButton(
-                        text = "나가기",
-                        onClick = popBackStack,
+                        text = "다시 하기",
+                        onClick = onClose,
                         modifier = Modifier
                     )
 

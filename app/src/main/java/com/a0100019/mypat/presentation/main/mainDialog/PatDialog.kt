@@ -85,7 +85,6 @@ fun PatDialog(
                         )
                         .padding(16.dp)
                 ) {
-                    DialogPatImage(patData.url)
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -105,6 +104,9 @@ fun PatDialog(
                         Spacer(modifier = Modifier.width(6.dp))
                         patFlowData?.love?.let { LoveHorizontalLine(it) }
                     }
+
+                    DialogPatImage(patData.url)
+
                 }
 
                 Spacer(modifier = Modifier.height(20.dp))

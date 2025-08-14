@@ -1,6 +1,7 @@
 package com.a0100019.mypat.presentation.store
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,7 +35,16 @@ fun RoomUpDialog(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.White, shape = RoundedCornerShape(16.dp))
+                .shadow(12.dp, RoundedCornerShape(24.dp))
+                .border(
+                    width = 2.dp,
+                    color = MaterialTheme.colorScheme.outline,
+                    shape = RoundedCornerShape(24.dp)
+                )
+                .background(
+                    color = MaterialTheme.colorScheme.background,
+                    shape = RoundedCornerShape(24.dp)
+                )
                 .padding(16.dp)
         ) {
             Column(
@@ -44,27 +55,43 @@ fun RoomUpDialog(
 
                 if(showRoomUpDialog == "pat") {
                     Text(
-                        text = "펫 공간이 (${userData.find { it.id == "pat" }?.value2!!.toInt()-1} -> ${userData.find { it.id == "pat" }?.value2}) 로 증가하였습니다!\n최대 10칸",
+                        text = "펫 공간이 (${userData.find { it.id == "pat" }?.value2!!.toInt()-1} -> ${userData.find { it.id == "pat" }?.value2}) 로 증가하였습니다!",
                         style = MaterialTheme.typography.titleMedium,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
                             .fillMaxWidth()
                     )
-                } else {
+
                     Text(
-                        text = "아이템 공간이 (${userData.find { it.id == "item" }?.value2!!.toInt()-1} -> ${userData.find { it.id == "item" }?.value2}) 로 증가하였습니다!!\n최대 10칸",
+                        text = "최대 10칸",
+                        style = MaterialTheme.typography.headlineMedium,
+                        modifier = Modifier
+                            .padding(32.dp)
+                    )
+
+                } else {
+
+                    Text(
+                        text = "아이템 공간이 (${userData.find { it.id == "item" }?.value2!!.toInt()-1} -> ${userData.find { it.id == "item" }?.value2}) 로 증가하였습니다!!",
                         style = MaterialTheme.typography.titleMedium,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
                             .fillMaxWidth()
                     )
+
+                    Text(
+                        text = "최대 10칸",
+                        style = MaterialTheme.typography.headlineMedium,
+                        modifier = Modifier
+                            .padding(32.dp)
+                    )
+
                 }
 
                 MainButton(
                     text = " 닫기 ",
                     onClick = onClose,
                     modifier = Modifier
-                        .padding(top = 16.dp)
                 )
 
             }

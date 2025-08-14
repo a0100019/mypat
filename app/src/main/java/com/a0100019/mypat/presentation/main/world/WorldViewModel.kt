@@ -137,10 +137,38 @@ class WorldViewModel @Inject constructor(
 
     fun onWorldSelectClick() = intent {
         state.itemDataList.forEach { item ->
-            itemDao.update(item)
+            //화면 밖으로 옮길때
+            if(
+                (item.x + item.sizeFloat/2 < 0) ||
+                (item.y + item.sizeFloat/2 < 0) ||
+                (item.x + item.sizeFloat/2 > 1) ||
+                (item.y + item.sizeFloat/2 > 1)
+            ){
+
+                itemDao.update(item.copy(x = 0.5f - item.sizeFloat/2, y = 0.5f - item.sizeFloat/2))
+
+            } else {
+
+                itemDao.update(item)
+
+            }
         }
         state.patDataList.forEach { pat ->
-            patDao.update(pat)
+            //화면 밖으로 옮길때
+            if(
+                (pat.x + pat.sizeFloat/2 < 0) ||
+                (pat.y + pat.sizeFloat/2 < 0) ||
+                (pat.x + pat.sizeFloat/2 > 1) ||
+                (pat.y + pat.sizeFloat/2 > 1)
+            ){
+
+                patDao.update(pat.copy(x = 0.5f - pat.sizeFloat/2, y = 0.5f - pat.sizeFloat/2))
+
+            } else {
+
+                patDao.update(pat)
+
+            }
         }
         worldDao.deleteAllExceptIdOne()
         state.worldDataList.forEach { world ->
@@ -292,6 +320,7 @@ class WorldViewModel @Inject constructor(
 
     fun onPatDrag(patId: String, newX: Float, newY: Float) = intent {
         val targetPat = state.patDataList.find { it.id.toString() == patId }
+
         if (targetPat != null) {
             val updatedPat = targetPat.copy(x = newX, y = newY)
             val updatedPatDataList = state.patDataList.toMutableList().apply {
@@ -302,6 +331,7 @@ class WorldViewModel @Inject constructor(
                 state.copy(patDataList = updatedPatDataList)
             }
         }
+
     }
 
     fun onPatSizeUpClick() = intent {
@@ -379,13 +409,24 @@ class WorldViewModel @Inject constructor(
 
         val targetPat = state.patDataList.find { it.id.toString() == state.dialogPatId }!!
 
-        val updatedPat = targetPat.copy(effect = effectIndex)
-        val updatedPatDataList = state.patDataList.toMutableList().apply {
-            set(indexOf(targetPat), updatedPat)
-        }
+        if(
+            effectIndex == 0 ||
+            (effectIndex == 1 && targetPat.love >= 10000) ||
+            (effectIndex == 2 && targetPat.love >= 30000) ||
+            (effectIndex == 3 && targetPat.love >= 100000) ||
+            (effectIndex == 4 && targetPat.love >= 250000) ||
+            (effectIndex == 5 && targetPat.love >= 500000)
+        ) {
+            val updatedPat = targetPat.copy(effect = effectIndex)
+            val updatedPatDataList = state.patDataList.toMutableList().apply {
+                set(indexOf(targetPat), updatedPat)
+            }
 
-        reduce {
-            state.copy(patDataList = updatedPatDataList)
+            reduce {
+                state.copy(patDataList = updatedPatDataList)
+            }
+        } else {
+            postSideEffect(WorldSideEffect.Toast("애정도가 부족합니다"))
         }
 
     }

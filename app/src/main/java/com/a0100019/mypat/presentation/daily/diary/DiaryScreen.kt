@@ -185,7 +185,7 @@ fun DiaryScreen(
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp) // 카드 사이 간격 추가
+            verticalArrangement = Arrangement.spacedBy(4.dp) // 카드 사이 간격 추가
         ) {
             itemsIndexed(diaryDataList) { index, diaryData ->
 

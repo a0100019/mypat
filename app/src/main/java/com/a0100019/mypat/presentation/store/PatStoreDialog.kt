@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,8 +25,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -52,7 +55,16 @@ fun PatStoreDialog(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.White, shape = RoundedCornerShape(16.dp))
+                .shadow(12.dp, RoundedCornerShape(24.dp))
+                .border(
+                    width = 2.dp,
+                    color = MaterialTheme.colorScheme.outline,
+                    shape = RoundedCornerShape(24.dp)
+                )
+                .background(
+                    color = MaterialTheme.colorScheme.background,
+                    shape = RoundedCornerShape(24.dp)
+                )
                 .padding(16.dp)
         ) {
             Column(
@@ -73,15 +85,16 @@ fun PatStoreDialog(
                 Column(
                     modifier = Modifier
                         .background(
-                            color = MaterialTheme.colorScheme.surfaceVariant,
+                            color = MaterialTheme.colorScheme.tertiaryContainer,
                             shape = RoundedCornerShape(12.dp)
                         )
                         .border(
-                            width = 1.dp,
-                            color = MaterialTheme.colorScheme.outline,
+                            width = 2.dp,
+                            color = MaterialTheme.colorScheme.onTertiaryContainer,
                             shape = RoundedCornerShape(12.dp)
                         )
-                        .padding(6.dp),
+                        .padding(6.dp)
+                    ,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Row(
@@ -92,10 +105,11 @@ fun PatStoreDialog(
                             Surface(
                                 shape = RoundedCornerShape(10.dp),
                                 tonalElevation = 4.dp,
-                                shadowElevation = 4.dp,
-                                color = MaterialTheme.colorScheme.surface,
-                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                                shadowElevation = 2.dp,
+                                color = MaterialTheme.colorScheme.scrim,
+                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primaryContainer),
                                 modifier = Modifier
+
                             ) {
                                 Column(
                                     modifier = Modifier,
@@ -117,7 +131,7 @@ fun PatStoreDialog(
                     Spacer(modifier = Modifier.height(4.dp))
 
                     Text(
-                        text = "후보 펫",
+                        text = "후보",
                         style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -127,9 +141,16 @@ fun PatStoreDialog(
 
                 Box(
                     modifier = Modifier
-                        .background(Color.Gray, shape = RoundedCornerShape(16.dp))
+                        .background(
+                            MaterialTheme.colorScheme.scrim,
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                        .border(
+                            width = 2.dp,
+                            color = MaterialTheme.colorScheme.primaryContainer, // 테두리
+                            shape = RoundedCornerShape(16.dp)
+                        )
                         .padding(16.dp)
-                        //.fillMaxHeight(0.5f)
                 ) {
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(5),
@@ -141,9 +162,13 @@ fun PatStoreDialog(
                                     filePath = "etc/egg.json",
                                     modifier = Modifier
                                         .size(50.dp)
-                                        .clickable {
-                                            onPatEggClick(index)
-                                        }
+                                        .clickable(
+                                            interactionSource = remember { MutableInteractionSource() },
+                                            indication = null,
+                                            onClick = {
+                                                onPatEggClick(index)
+                                            }
+                                        )
                                 )
                             } else {
                                 Column(
@@ -163,7 +188,7 @@ fun PatStoreDialog(
                 Spacer(modifier = Modifier.size(16.dp))
 
                 Text(
-                    text = "알을 눌러 부화시켜 주세요\n같은 펫 2개가 열리면 펫을 획득합니다",
+                    text = "알을 눌러 부화시켜 주세요\n가장 먼저 2개가 부화된 펫을 획득합니다",
                     textAlign = TextAlign.Center,
 
                 )

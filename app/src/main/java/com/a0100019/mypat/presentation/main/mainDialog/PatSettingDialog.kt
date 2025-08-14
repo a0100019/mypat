@@ -136,7 +136,10 @@ fun PatSettingDialog(
                 }
 
                 Text(
-                    text = "필요 애정도"
+                    text = "현재 애정도 레벨 : ${patData.love/10000}"
+                    ,
+                    modifier = Modifier
+                        .padding(top = 6.dp)
                 )
 
                 Spacer(modifier = Modifier.size(16.dp))
@@ -147,7 +150,7 @@ fun PatSettingDialog(
                 ) {
 
                     MainButton(
-                        text = "지우기",
+                        text = " 지우기 ",
                         onClick = onDelete,
                         modifier = Modifier
                     )
@@ -155,14 +158,14 @@ fun PatSettingDialog(
                     Spacer(modifier = Modifier.weight(1f))
 
                     MainButton(
-                        text = "줄이기",
+                        text = " 줄이기 ",
                         onClick = onSizeDown,
                         modifier = Modifier
-                            .padding(end = 6.dp)
+                            .padding(end = 12.dp)
                     )
 
                     MainButton(
-                        text = "키우기",
+                        text = " 키우기 ",
                         onClick = onSizeUp,
                         modifier = Modifier
                     )
