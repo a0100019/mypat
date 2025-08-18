@@ -220,11 +220,12 @@ class MainViewModel @Inject constructor(
         val letterData = state.showLetterData
 
         if(letterData.reward == "money") {
+            postSideEffect(MainSideEffect.Toast("햇살 +${letterData.amount}"))
             userDao.update(id = "money", value = (state.userDataList.find { it.id == "money" }!!.value.toInt() + letterData.amount.toInt()).toString())
         } else {
+            postSideEffect(MainSideEffect.Toast("달빛 +${letterData.amount}"))
             userDao.update(id = "money", value2 = (state.userDataList.find { it.id == "money" }!!.value2.toInt() + letterData.amount.toInt()).toString())
         }
-        postSideEffect(MainSideEffect.Toast("보상 획득 : ${letterData.reward} +${letterData.amount}"))
 
         letterData.state = "read"
         letterDao.update(letterData)

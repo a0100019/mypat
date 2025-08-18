@@ -90,6 +90,8 @@ class ThirdGameViewModel @Inject constructor(
 
     fun newGame() = intent {
 
+        loadData()
+
         sudokuDao.update(id = "state", value = "0")
         sudokuDao.update(id = "time", value = "0.0")
         reduce {
@@ -277,8 +279,8 @@ class ThirdGameViewModel @Inject constructor(
 
                     val plusLove = when(state.level) {
                         1 -> 60
-                        2 -> 250
-                        else -> 1000
+                        2 -> 150
+                        else -> 500
                     }
                     val updatePatData = state.patData
                     updatePatData.love = state.patData.love + plusLove
@@ -300,7 +302,8 @@ class ThirdGameViewModel @Inject constructor(
                     reduce {
                         state.copy(
                             gameState = "성공",
-                            plusLove = plusLove
+                            plusLove = plusLove,
+                            time = 0.0
                         )
                     }
                 } else {
@@ -420,16 +423,19 @@ class ThirdGameViewModel @Inject constructor(
             2 -> makeSudoku(40)
             3 -> makeSudoku(50)
         }
-        startTimer()
+
         sudokuDao.update(id = "state", value = "1")
         sudokuDao.update(id = "level", value = level.toString())
 
         reduce {
             state.copy(
                 gameState = "",
-                level = level
+                level = level,
+                time = 0.0
             )
         }
+
+        startTimer()
 
         saveData()
 

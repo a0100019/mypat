@@ -10,7 +10,7 @@ import androidx.room.Update
 @Dao
 interface AllUserDao {
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE) // 기존 데이터 덮어쓰기
     suspend fun insert(allUser: AllUser)
 
     @Delete
@@ -25,10 +25,8 @@ interface AllUserDao {
     @Query("UPDATE allUser_table SET `like` = :newLike WHERE tag = :tag")
     suspend fun updateLikeByTag(tag: String, newLike: String)
 
-
     @Update
     suspend fun update(allUser: AllUser)
-
 
     //초기에 데이터 한번에 넣기 위한 코드
     @Insert(onConflict = OnConflictStrategy.REPLACE)

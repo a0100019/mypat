@@ -26,10 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -39,6 +36,7 @@ import com.a0100019.mypat.data.room.letter.Letter
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.world.World
+import com.a0100019.mypat.presentation.ui.MusicPlayer
 import com.a0100019.mypat.presentation.main.mainDialog.LovePatDialog
 import com.a0100019.mypat.presentation.main.management.ManagementViewModel
 import com.a0100019.mypat.presentation.setting.LetterViewDialog
@@ -336,9 +334,7 @@ fun MainScreen(
                     onLovePatChange = onLovePatChange
                 )
 
-
             }
-
 
             Column(
 

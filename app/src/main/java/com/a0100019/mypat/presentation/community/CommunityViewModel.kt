@@ -131,69 +131,72 @@ class CommunityViewModel @Inject constructor(
             .get()
             .addOnSuccessListener { result ->
                 for (doc in result) {
+                    try {
+                        val gameMap = doc.get("game") as? Map<String, String> ?: emptyMap()
+                        val communityMap = doc.get("community") as? Map<String, String> ?: emptyMap()
+                        val dateMap = doc.get("date") as? Map<String, String> ?: emptyMap()
+                        val itemMap = doc.get("item") as? Map<String, String> ?: emptyMap()
+                        val patMap = doc.get("pat") as? Map<String, String> ?: emptyMap()
 
-                    val gameMap = doc.get("game") as? Map<String, String> ?: emptyMap()
-                    val communityMap =
-                        doc.get("community") as? Map<String, String> ?: emptyMap()
-                    val dateMap = doc.get("date") as? Map<String, String> ?: emptyMap()
-                    val itemMap = doc.get("item") as? Map<String, String> ?: emptyMap()
-                    val patMap = doc.get("pat") as? Map<String, String> ?: emptyMap()
+                        val worldMap = doc.get("world") as? Map<String, Map<String, String>> ?: emptyMap()
 
-                    val worldMap =
-                        doc.get("world") as? Map<String, Map<String, String>> ?: emptyMap()
+                        val worldData = worldMap.entries.joinToString("/") { (_, innerMap) ->
+                            val id = innerMap["id"].orEmpty()
+                            val size = innerMap["size"].orEmpty()
+                            val type = innerMap["type"].orEmpty()
+                            val x = innerMap["x"].orEmpty()
+                            val y = innerMap["y"].orEmpty()
+                            val effect = innerMap["effect"].orEmpty()
+                            "$id@$size@$type@$x@$y@$effect"
+                        }
 
-                    val worldData = worldMap.entries.joinToString("/") { (_, innerMap) ->
-                        val id = innerMap["id"].orEmpty()
-                        val size = innerMap["size"].orEmpty()
-                        val type = innerMap["type"].orEmpty()
-                        val x = innerMap["x"].orEmpty()
-                        val y = innerMap["y"].orEmpty()
-                        val effect = innerMap["effect"].orEmpty()
-                        "$id@$size@$type@$x@$y@$effect"
-                    }
+                        val allUser = AllUser(
+                            tag = doc.getString("tag").orEmpty(),
+                            lastLogin = doc.getString("lastLogin").orEmpty().toLongOrNull() ?: 0L,
+                            ban = communityMap["ban"].orEmpty(),
+                            like = communityMap["like"].orEmpty(),
+                            warning = communityMap["warning"].orEmpty(),
+                            firstDate = dateMap["firstDate"].orEmpty(),
+                            firstGame = gameMap["firstGame"].orEmpty(),
+                            secondGame = gameMap["secondGame"].orEmpty(),
+                            thirdGameEasy = gameMap["thirdGameEasy"].orEmpty(),
+                            thirdGameNormal = gameMap["thirdGameNormal"].orEmpty(),
+                            thirdGameHard = gameMap["thirdGameHard"].orEmpty(),
+                            openItem = itemMap["openItem"].orEmpty(),
+                            area = doc.getString("area").orEmpty(),
+                            name = doc.getString("name").orEmpty(),
+                            openPat = patMap["openPat"].orEmpty(),
+                            openArea = doc.getString("openArea").orEmpty(),
+                            totalDate = dateMap["totalDate"].orEmpty(),
+                            worldData = worldData
+                        )
 
-                    val allUser = AllUser(
-                        tag = doc.getString("tag").orEmpty(),
-                        lastLogin = doc.getString("lastLogin").orEmpty().toLong(),
-                        ban = communityMap["ban"].orEmpty(),
-                        like = communityMap["like"].orEmpty(),
-                        warning = communityMap["warning"].orEmpty(),
-                        firstDate = dateMap["firstDate"].orEmpty(),
-                        firstGame = gameMap["firstGame"].orEmpty(),
-                        secondGame = gameMap["secondGame"].orEmpty(),
-                        thirdGameEasy = gameMap["thirdGameEasy"].orEmpty(),
-                        thirdGameNormal = gameMap["thirdGameNormal"].orEmpty(),
-                        thirdGameHard = gameMap["thirdGameHard"].orEmpty(),
-                        openItem = itemMap["openItem"].orEmpty(),
-                        area = doc.getString("area").orEmpty(),
-                        name = doc.getString("name").orEmpty(),
-                        openPat = patMap["openPat"].orEmpty(),
-                        openArea = doc.getString("openArea").orEmpty(),
-                        totalDate = dateMap["totalDate"].orEmpty(),
-                        worldData = worldData
-                    )
+                        viewModelScope.launch {
+                            allUserDao.insert(allUser)
+                        }
 
-                    viewModelScope.launch {
-                        allUserDao.insert(allUser)
+                    } catch (e: Exception) {
+                        Log.e("DB", "문서 처리 실패: ${doc.id}", e)
                     }
                 }
 
                 viewModelScope.launch {
-
-                    userDao.update(id = "etc", value2 = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
-
-                    reduce {
-                        state.copy(
-                            situation = "world"
+                    try {
+                        userDao.update(
+                            id = "etc",
+                            value2 = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
                         )
+
+                        reduce { state.copy(situation = "world") }
+
+                        loadData()
+
+                    } catch (e: Exception) {
+                        Log.e("DB", "update 실패", e)
                     }
-
-                    loadData()
-
                 }
 
                 Log.e("login", "allUser 가져옴")
-
             }
             .addOnFailureListener { e ->
                 Log.e("login", "users 컬렉션 가져오기 실패", e)
@@ -256,7 +259,7 @@ class CommunityViewModel @Inject constructor(
         val page = state.page
         val allUserDataList = state.allUserDataList
 
-        if (allUserDataList.size > page * 4 + 4) {
+        if (allUserDataList.size > page * 4 + 8) {
             //다음 페이지
             val allUserData1 = allUserDataList[4*page + 4]
             val allUserData2 = allUserDataList[4*page + 5]

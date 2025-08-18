@@ -229,14 +229,14 @@ class SecondGameViewModel @Inject constructor(
             if(state.plusTime < 30) {
 
                 val updatePatData = state.patData
-                updatePatData.love = state.patData.love + 15
+                updatePatData.love = state.patData.love + 20
                 updatePatData.gameCount = state.patData.gameCount + 1
 
                 patDao.update(updatePatData)
 
                 userDao.update(
                     id = "money",
-                    value2 = (state.userData.find { it.id == "money" }!!.value2.toInt() + 15).toString()
+                    value2 = (state.userData.find { it.id == "money" }!!.value2.toInt() + 20).toString()
                 )
 
             } else {

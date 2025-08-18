@@ -93,10 +93,12 @@ class LoginViewModel @Inject constructor(
                     loginState = "login"
                 )
             }
+
+            newLetterGet()
+            newAllUserDataGetAndDataSave()
+
         }
 
-        newLetterGet()
-        newAllUserDataGet()
 
     }
 
@@ -531,81 +533,330 @@ class LoginViewModel @Inject constructor(
     }
 
 
-    private fun newAllUserDataGet() = intent {
+    private fun newAllUserDataGetAndDataSave() = intent {
 
-        val currentDate =
-            LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+        val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
 
         if (currentDate != userDao.getValue2ById("etc")) {
 
+            //allUser 가져오기
             val db = Firebase.firestore
             db.collection("users")
                 .get()
                 .addOnSuccessListener { result ->
                     for (doc in result) {
+                        try {
+                            val gameMap = doc.get("game") as? Map<String, String> ?: emptyMap()
+                            val communityMap = doc.get("community") as? Map<String, String> ?: emptyMap()
+                            val dateMap = doc.get("date") as? Map<String, String> ?: emptyMap()
+                            val itemMap = doc.get("item") as? Map<String, String> ?: emptyMap()
+                            val patMap = doc.get("pat") as? Map<String, String> ?: emptyMap()
 
-                        val gameMap = doc.get("game") as? Map<String, String> ?: emptyMap()
-                        val communityMap =
-                            doc.get("community") as? Map<String, String> ?: emptyMap()
-                        val dateMap = doc.get("date") as? Map<String, String> ?: emptyMap()
-                        val itemMap = doc.get("item") as? Map<String, String> ?: emptyMap()
-                        val patMap = doc.get("pat") as? Map<String, String> ?: emptyMap()
+                            val worldMap = doc.get("world") as? Map<String, Map<String, String>> ?: emptyMap()
+                            val worldData = worldMap.entries.joinToString("/") { (_, innerMap) ->
+                                val id = innerMap["id"].orEmpty()
+                                val size = innerMap["size"].orEmpty()
+                                val type = innerMap["type"].orEmpty()
+                                val x = innerMap["x"].orEmpty()
+                                val y = innerMap["y"].orEmpty()
+                                val effect = innerMap["effect"].orEmpty()
+                                "$id@$size@$type@$x@$y@$effect"
+                            }
 
-                        val worldMap =
-                            doc.get("world") as? Map<String, Map<String, String>> ?: emptyMap()
+                            val allUser = AllUser(
+                                tag = doc.getString("tag").orEmpty(),
+                                lastLogin = doc.getString("lastLogin").orEmpty().toLongOrNull() ?: 0L,
+                                ban = communityMap["ban"].orEmpty(),
+                                like = communityMap["like"].orEmpty(),
+                                warning = communityMap["warning"].orEmpty(),
+                                firstDate = dateMap["firstDate"].orEmpty(),
+                                firstGame = gameMap["firstGame"].orEmpty(),
+                                secondGame = gameMap["secondGame"].orEmpty(),
+                                thirdGameEasy = gameMap["thirdGameEasy"].orEmpty(),
+                                thirdGameNormal = gameMap["thirdGameNormal"].orEmpty(),
+                                thirdGameHard = gameMap["thirdGameHard"].orEmpty(),
+                                openItem = itemMap["openItem"].orEmpty(),
+                                area = doc.getString("area").orEmpty(),
+                                name = doc.getString("name").orEmpty(),
+                                openPat = patMap["openPat"].orEmpty(),
+                                openArea = doc.getString("openArea").orEmpty(),
+                                totalDate = dateMap["totalDate"].orEmpty(),
+                                worldData = worldData
+                            )
 
-                        val worldData = worldMap.entries.joinToString("/") { (_, innerMap) ->
-                            val id = innerMap["id"].orEmpty()
-                            val size = innerMap["size"].orEmpty()
-                            val type = innerMap["type"].orEmpty()
-                            val x = innerMap["x"].orEmpty()
-                            val y = innerMap["y"].orEmpty()
-                            val effect = innerMap["effect"].orEmpty()
-                            "$id@$size@$type@$x@$y@$effect"
-                        }
+                            viewModelScope.launch {
+                                allUserDao.insert(allUser)
+                            }
 
-                        val allUser = AllUser(
-                            tag = doc.getString("tag").orEmpty(),
-                            lastLogin = doc.getString("lastLogin").orEmpty().toLong(),
-                            ban = communityMap["ban"].orEmpty(),
-                            like = communityMap["like"].orEmpty(),
-                            warning = communityMap["warning"].orEmpty(),
-                            firstDate = dateMap["firstDate"].orEmpty(),
-                            firstGame = gameMap["firstGame"].orEmpty(),
-                            secondGame = gameMap["secondGame"].orEmpty(),
-                            thirdGameEasy = gameMap["thirdGameEasy"].orEmpty(),
-                            thirdGameNormal = gameMap["thirdGameNormal"].orEmpty(),
-                            thirdGameHard = gameMap["thirdGameHard"].orEmpty(),
-                            openItem = itemMap["openItem"].orEmpty(),
-                            area = doc.getString("area").orEmpty(),
-                            name = doc.getString("name").orEmpty(),
-                            openPat = patMap["openPat"].orEmpty(),
-                            openArea = doc.getString("openArea").orEmpty(),
-                            totalDate = dateMap["totalDate"].orEmpty(),
-                            worldData = worldData
-                        )
-
-                        viewModelScope.launch {
-                            allUserDao.insert(allUser)
+                        } catch (e: Exception) {
+                            Log.e("DB", "문서 처리 실패: ${doc.id}", e)
                         }
                     }
 
+                    // 마지막으로 etc 날짜 업데이트
                     viewModelScope.launch {
                         try {
                             userDao.update(id = "etc", value2 = currentDate)
                             Log.d("DB", "update 성공")
-                        } catch(e: Exception) {
+                        } catch (e: Exception) {
                             Log.e("DB", "update 실패", e)
                         }
                     }
 
-                    Log.e("login", "allUser 가져옴")
-
+                    Log.d("login", "allUser 가져오기 완료")
                 }
                 .addOnFailureListener { e ->
                     Log.e("login", "users 컬렉션 가져오기 실패", e)
                 }
+
+            //data 파이어베이스에 저장
+            try {
+
+                // ... 전체 dataSave() 내용
+                val db = Firebase.firestore
+                val userDataList = userDao.getAllUserData()
+                val userId = userDataList.find { it.id == "auth" }!!.value
+                val itemDataList = itemDao.getAllItemData()
+                val patDataList = patDao.getAllPatData()
+                val worldDataList = worldDao.getAllWorldData()
+                val letterDataList = letterDao.getAllLetterData()
+                val walkDataList = walkDao.getAllWalkData()
+                val englishDataList = englishDao.getOpenEnglishData()
+                val koreanIdiomDataList = koreanIdiomDao.getOpenKoreanIdiomData()
+                val diaryDataList = diaryDao.getAllDiaryData()
+                val sudokuDataList = sudokuDao.getAllSudokuData()
+                val areaDataList = areaDao.getAllAreaData()
+
+                val batch = db.batch()
+
+                val userData = mapOf(
+                    "cash" to userDataList.find { it.id == "money"}!!.value2,
+                    "money" to userDataList.find { it.id == "money"}!!.value,
+
+                    "community" to mapOf(
+                        "ban" to userDataList.find { it.id == "community"}!!.value3,
+//                "like" to userDataList.find { it.id == "community"}!!.value,
+                        "warning" to userDataList.find {it.id == "community"}!!.value2
+                    ),
+
+                    "date" to mapOf(
+                        "firstDate" to userDataList.find { it.id == "date"}!!.value,
+                        "totalDate" to userDataList.find { it.id == "date"}!!.value2,
+                        "lastDate" to userDataList.find { it.id == "date"}!!.value3
+                    ),
+
+                    "game" to mapOf(
+                        "firstGame" to userDataList.find { it.id == "firstGame"}!!.value,
+                        "secondGame" to userDataList.find { it.id == "secondGame"}!!.value,
+                        "thirdGameEasy" to userDataList.find { it.id == "thirdGame"}!!.value,
+                        "thirdGameNormal" to userDataList.find { it.id == "thirdGame"}!!.value2,
+                        "thirdGameHard" to userDataList.find { it.id == "thirdGame"}!!.value3,
+                    ),
+
+                    "item" to mapOf(
+                        "openItem" to itemDataList.count { it.date != "0"}.toString(),
+                        "openItemSpace" to userDataList.find { it.id == "item"}!!.value2,
+                        "useItem" to userDataList.find { it.id == "item"}!!.value3
+                    ),
+
+                    "pat" to mapOf(
+                        "openPat" to patDataList.count { it.date != "0"}.toString(),
+                        "openPatSpace" to userDataList.find { it.id == "pat"}!!.value2,
+                        "usePat" to userDataList.find { it.id == "pat"}!!.value3
+                    ),
+
+                    "area" to worldDataList.find { it.id == 1}!!.value,
+                    "name" to userDataList.find { it.id == "name"}!!.value,
+                    "lastLogin" to userDataList.find { it.id == "auth"}!!.value3,
+                    "tag" to userDataList.find { it.id == "auth"}!!.value2,
+                    "openArea" to areaDataList.count { it.date != "0"}.toString(),
+
+                    "online" to "0",
+
+                    "walk" to mapOf(
+                        "saveWalk" to userDataList.find { it.id == "walk"}!!.value,
+                        "totalWalk" to userDataList.find { it.id == "walk"}!!.value3,
+                    )
+
+                )
+
+                //월드 데이터
+                val worldMap = worldDataList.drop(1)
+                    .mapIndexed { index, data ->
+
+                        if(data.type == "pat") {
+                            val patData = patDataList.find { it.id == data.value.toInt() }
+                            // index는 0부터 시작하니까 +1 해서 문자열로 만듦
+                            index.toString() to mapOf(
+                                "id" to data.value,
+                                "size" to patData!!.sizeFloat.toString(),
+                                "type" to data.type,
+                                "x" to patData.x.toString(),
+                                "y" to patData.y.toString(),
+                                "effect" to patData.effect.toString()
+                            )
+                        } else {
+                            val itemData = itemDataList.find { it.id == data.value.toInt() }
+                            // index는 0부터 시작하니까 +1 해서 문자열로 만듦
+                            index.toString() to mapOf(
+                                "id" to data.value,
+                                "size" to itemData!!.sizeFloat.toString(),
+                                "type" to data.type,
+                                "x" to itemData.x.toString(),
+                                "y" to itemData.y.toString(),
+                                "effect" to "0"
+                            )
+                        }
+
+                    }
+                    .toMap()
+
+                val finalData = userData + mapOf("world" to worldMap)
+                val userDocRef = Firebase.firestore.collection("users").document(userId)
+                batch.set(userDocRef, finalData, SetOptions.merge()) // 필드 기준 병합 저장
+
+                //펫 데이터 저장
+                val patCollectionRef = db.collection("users")
+                    .document(userId)
+                    .collection("dataCollection")
+
+                val combinedPatData = mutableMapOf<String, Any>()
+                patDataList
+                    .filter { it.date != "0" }
+                    .forEach { patData ->
+                        val patMap = mapOf(
+                            "date" to patData.date,
+                            "love" to patData.love.toString(),
+                            "size" to patData.sizeFloat.toString(),
+                            "x" to patData.x.toString(),
+                            "y" to patData.y.toString(),
+                            "gameCount" to patData.gameCount.toString(),
+                            "effect" to patData.effect.toString()
+                        )
+                        combinedPatData[patData.id.toString()] = patMap
+                    }
+                batch.set(patCollectionRef.document("pats"), combinedPatData)
+
+                val itemCollectionRef = db.collection("users")
+                    .document(userId)
+                    .collection("dataCollection")
+
+                val combinedItemData = mutableMapOf<String, Any>()
+                itemDataList
+                    .filter { it.date != "0" }
+                    .forEach { itemData ->
+                        val itemMap = mapOf(
+                            "date" to itemData.date,
+                            "size" to itemData.sizeFloat.toString(),
+                            "x" to itemData.x.toString(),
+                            "y" to itemData.y.toString()
+                        )
+                        combinedItemData[itemData.id.toString()] = itemMap
+                    }
+                batch.set(itemCollectionRef.document("items"), combinedItemData)
+
+                val areaCollectionRef = db.collection("users")
+                    .document(userId)
+                    .collection("dataCollection")
+
+                val combinedMapData = mutableMapOf<String, Any>()
+                areaDataList
+                    .filter { it.date != "0" }
+                    .forEach { areaData ->
+                        val areaMap = mapOf(
+                            "date" to areaData.date,
+                        )
+                        combinedMapData[areaData.id.toString()] = areaMap
+                    }
+                batch.set(areaCollectionRef.document("areas"), combinedMapData)
+
+                val letterCollectionRef = db.collection("users")
+                    .document(userId)
+                    .collection("dataCollection")
+
+                val combinedLetterData = mutableMapOf<String, Any>()
+                letterDataList.forEach { letterData ->
+                    val letterMap = mapOf(
+                        "date" to letterData.date,
+                        "title" to letterData.title,
+                        "message" to letterData.message,
+                        "link" to letterData.link,
+                        "reward" to letterData.reward,
+                        "amount" to letterData.amount,
+                        "state" to letterData.state,
+                    )
+                    combinedLetterData[letterData.id.toString()] = letterMap
+                }
+                // 하나의 문서에 전체 데이터를 저장
+                batch.set(letterCollectionRef.document("letters"), combinedLetterData)
+
+                val sudokuCollectionRef = db.collection("users")
+                    .document(userId)
+                    .collection("dataCollection")
+                    .document("sudoku")
+
+                val sudokuData = mapOf(
+                    "sudokuBoard" to sudokuDataList.find {it.id == "sudokuBoard"}!!.value,
+                    "sudokuFirstBoard" to sudokuDataList.find {it.id == "sudokuFirstBoard"}!!.value,
+                    "sudokuMemoBoard" to sudokuDataList.find {it.id == "sudokuMemoBoard"}!!.value,
+                    "time" to sudokuDataList.find {it.id == "time"}!!.value,
+                    "level" to sudokuDataList.find {it.id == "level"}!!.value,
+                    "state" to sudokuDataList.find {it.id == "state"}!!.value
+                )
+                batch.set(sudokuCollectionRef, sudokuData)
+
+                val dailyCollectionRef = db.collection("users")
+                    .document(userId)
+                    .collection("daily")
+
+                for (id in 1..userDataList.find { it.id == "date" }!!.value2.toInt()) {
+                    val docRef = dailyCollectionRef.document(id.toString())
+
+                    // diary는 항상 존재
+                    val diary = diaryDataList.find { it.id == id }!!
+                    val walk = walkDataList.find { it.id == id }!!.success
+
+                    // state 구성 (둘 중 하나라도 null이면 제외)
+                    val englishState = englishDataList.find { it.id == id }?.state
+                    val idiomState = koreanIdiomDataList.find { it.id == id }?.state
+
+                    val data = mutableMapOf<String, Any>(
+                        "date" to diary.date,
+                        "diary" to mapOf(
+                            "emotion" to diary.emotion,
+                            "state" to diary.state,
+                            "contents" to diary.contents
+                        ),
+                        "walk" to walk
+                    )
+
+                    if (englishState != null && idiomState != null) {
+                        data["state"] = mapOf(
+                            "english" to englishState,
+                            "koreanIdiom" to idiomState
+                        )
+                    }
+
+                    batch.set(docRef, data)
+                }
+
+                Log.d("Firestore", "batch.commit() 직전")
+
+                // 전체 커밋 실행
+                batch.commit()
+                    .addOnSuccessListener {
+                        Log.e("Firestore", "일일 저장 성공")
+                    }
+                    .addOnFailureListener {
+                        Log.e("Firestore", "저장 실패", it)
+                    }
+
+            } catch (e: Exception) {
+                Log.e("Firestore", "예외 발생", e)
+            }
+
         }
+
     }
 
     fun dialogChange(string: String) = intent {

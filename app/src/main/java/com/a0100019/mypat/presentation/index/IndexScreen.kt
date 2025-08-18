@@ -188,352 +188,348 @@ fun IndexScreen(
         }
 
         when (typeChange) {
-            "pat" -> {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(4),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                ) {
-                    items(allPatDataList.size) { index ->
-                        val interactionSource = remember { MutableInteractionSource() }
-                        val isPressed by interactionSource.collectIsPressedAsState()
-                        val scale by animateFloatAsState(
-                            targetValue = if (isPressed) 0.95f else 1f,
-                            label = "scale"
-                        )
+            "pat" -> LazyVerticalGrid(
+                columns = GridCells.Fixed(4),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            ) {
+                val reversedList = allPatDataList.asReversed() // 역순 리스트 생성
 
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(6.dp)
-                                .border(
-                                    width = 2.dp,
-                                    color = MaterialTheme.colorScheme.primaryContainer,
-                                    shape = RoundedCornerShape(16.dp)
-                                )
-                                .aspectRatio(0.7f)
-                                .graphicsLayer {
-                                    scaleX = scale
-                                    scaleY = scale
-                                }
-                                .clickable(
-                                    interactionSource = interactionSource,
-                                    indication = rememberRipple(bounded = true, color = Color.White),
-                                    onClick = { onCardClick(index) }
-                                )
-                            ,
-                            shape = RoundedCornerShape(16.dp),
-//                            elevation = CardDefaults.cardElevation(6.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.scrim
-                            ),
-                        ) {
-                            Box(modifier = Modifier.fillMaxSize()) {
+                items(reversedList.size) { index ->
+                    val pat = reversedList[index] // 현재 아이템
 
-                                // 전체 컨텐츠
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .padding(12.dp),
-                                    verticalArrangement = Arrangement.SpaceBetween,
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    // 🐾 이미지 박스
-                                    Box(
-                                        modifier = Modifier
-                                            .weight(1f)
-                                            .fillMaxWidth()
-                                            .background(
-                                                color = if (allPatDataList[index].date != "0") {
-                                                    MaterialTheme.colorScheme.tertiaryContainer
-                                                } else {
-                                                    Color.LightGray
-                                                },
-                                                shape = RoundedCornerShape(16.dp)
-                                            )
-                                            .border(
-                                                width = 2.dp,
-                                                color = MaterialTheme.colorScheme.onTertiaryContainer,
-                                                shape = RoundedCornerShape(16.dp)
-                                            )
-                                        ,
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        DialogPatImage(allPatDataList[index].url)
-                                        if(allPatDataList[index].date == "0") {
-                                            Box(
-                                                modifier = Modifier
-                                                    .fillMaxSize()
-                                                    .background(
-                                                        Color.LightGray.copy(alpha = 0.5f),
-                                                        shape = RoundedCornerShape(16.dp)
-                                                    ) // 반투명 배경
-                                            )
-                                        }
-                                    }
+                    val interactionSource = remember { MutableInteractionSource() }
+                    val isPressed by interactionSource.collectIsPressedAsState()
+                    val scale by animateFloatAsState(
+                        targetValue = if (isPressed) 0.95f else 1f,
+                        label = "scale"
+                    )
 
-                                    // 📝 이름
-                                    Text(
-                                        text = allPatDataList[index].name,
-                                        modifier = Modifier
-                                            .padding(top = 10.dp)
-                                            .fillMaxWidth(),
-                                        textAlign = TextAlign.Center,
-                                        style = MaterialTheme.typography.bodyMedium.copy(
-                                            color = MaterialTheme.colorScheme.onSurface
-                                        )
-                                    )
-                                }
-
-                                // 🔒 잠금 아이콘
-                                if (allPatDataList[index].date == "0") {
-                                    JustImage(
-                                        filePath = "etc/lock.png",
-                                        modifier = Modifier
-                                            .size(35.dp)
-                                            .align(Alignment.TopStart)
-                                            .padding(8.dp)
-                                    )
-                                }
-
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(6.dp)
+                            .border(
+                                width = 2.dp,
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                            .aspectRatio(0.7f)
+                            .graphicsLayer {
+                                scaleX = scale
+                                scaleY = scale
                             }
-                        }
-
-                    }
-                }
-            }
-            "item" -> {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(4),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                ) {
-                    items(allItemDataList.size) { index ->
-                        val interactionSource = remember { MutableInteractionSource() }
-                        val isPressed by interactionSource.collectIsPressedAsState()
-                        val scale by animateFloatAsState(
-                            targetValue = if (isPressed) 0.95f else 1f,
-                            label = "scale"
-                        )
-
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(6.dp)
-                                .border(
-                                    width = 2.dp,
-                                    color = MaterialTheme.colorScheme.primaryContainer,
-                                    shape = RoundedCornerShape(16.dp)
-                                )
-                                .aspectRatio(0.7f)
-                                .graphicsLayer {
-                                    scaleX = scale
-                                    scaleY = scale
+                            .clickable(
+                                interactionSource = interactionSource,
+                                indication = rememberRipple(bounded = true, color = Color.White),
+                                onClick = {
+                                    val originalIndex = allPatDataList.size - 1 - index // 원래 리스트 기준 인덱스
+                                    onCardClick(originalIndex)
                                 }
-                                .clickable(
-                                    interactionSource = interactionSource,
-                                    indication = rememberRipple(bounded = true, color = Color.White),
-                                    onClick = { onCardClick(index) }
-                                )
-                            ,
-                            shape = RoundedCornerShape(16.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.scrim
                             ),
-                        ) {
-                            Box(modifier = Modifier.fillMaxSize()) {
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.scrim
+                        ),
+                    ) {
+                        Box(modifier = Modifier.fillMaxSize()) {
 
-                                Column(
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(12.dp),
+                                verticalArrangement = Arrangement.SpaceBetween,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Box(
                                     modifier = Modifier
-                                        .fillMaxSize()
-                                        .padding(12.dp),
-                                    verticalArrangement = Arrangement.SpaceBetween,
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    // 이미지 박스
-                                    Box(
-                                        modifier = Modifier
-                                            .weight(1f)
-                                            .fillMaxWidth()
-                                            .background(
-                                                color = if (allItemDataList[index].date != "0") {
-                                                    MaterialTheme.colorScheme.tertiaryContainer
-                                                } else {
-                                                    Color.LightGray
-                                                },
-                                                shape = RoundedCornerShape(16.dp)
-                                            )
-                                            .border(
-                                                width = 2.dp,
-                                                color = MaterialTheme.colorScheme.onTertiaryContainer,
-                                                shape = RoundedCornerShape(16.dp)
-                                            )
-                                            .padding(6.dp)
-                                            ,
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        JustImage(
-                                            filePath = allItemDataList[index].url,
-                                            contentScale = ContentScale.Fit
+                                        .weight(1f)
+                                        .fillMaxWidth()
+                                        .background(
+                                            color = if (pat.date != "0") {
+                                                MaterialTheme.colorScheme.tertiaryContainer
+                                            } else {
+                                                Color.LightGray
+                                            },
+                                            shape = RoundedCornerShape(16.dp)
                                         )
-                                        if(allItemDataList[index].date == "0") {
-                                            Box(
-                                                modifier = Modifier
-                                                    .fillMaxSize()
-                                                    .background(
-                                                        Color.LightGray.copy(alpha = 0.5f),
-                                                        shape = RoundedCornerShape(16.dp)
-                                                    ) // 반투명 배경
-                                            )
-                                        }
-                                    }
-
-                                    // 아이템 이름 텍스트
-                                    Text(
-                                        text = allItemDataList[index].name,
-                                        modifier = Modifier
-                                            .padding(top = 10.dp)
-                                            .fillMaxWidth(),
-                                        textAlign = TextAlign.Center,
-                                        style = MaterialTheme.typography.bodyMedium.copy(
-                                            color = MaterialTheme.colorScheme.onSurface
-                                        )
-                                    )
-                                }
-
-                                // 🔒 잠금 아이콘
-                                if (allItemDataList[index].date == "0") {
-                                    JustImage(
-                                        filePath = "etc/lock.png",
-                                        modifier = Modifier
-                                            .size(35.dp)
-                                            .align(Alignment.TopStart)
-                                            .padding(8.dp)
-                                    )
-                                }
-                            }
-                        }
-                    }
-
-                }
-            }
-            else -> {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(3),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                ) {
-                    items(allAreaDataList.size) { index ->
-                        val interactionSource = remember { MutableInteractionSource() }
-                        val isPressed by interactionSource.collectIsPressedAsState()
-                        val scale by animateFloatAsState(
-                            targetValue = if (isPressed) 0.95f else 1f,
-                            label = "scale"
-                        )
-
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(6.dp)
-                                .border(
-                                    width = 2.dp,
-                                    color = MaterialTheme.colorScheme.primaryContainer,
-                                    shape = RoundedCornerShape(16.dp)
-                                )
-                                .aspectRatio(0.8f)
-                                .graphicsLayer {
-                                    scaleX = scale
-                                    scaleY = scale
-                                }
-                                .clickable(
-                                    interactionSource = interactionSource,
-                                    indication = rememberRipple(bounded = true, color = Color.White),
-                                    onClick = { onCardClick(index) }
-                                )
-                            ,
-                            shape = RoundedCornerShape(16.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.scrim
-                            ),
-                        ) {
-                            Box(modifier = Modifier.fillMaxSize()) {
-
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .padding(12.dp),
-                                    verticalArrangement = Arrangement.SpaceBetween,
-                                    horizontalAlignment = Alignment.CenterHorizontally
+                                        .border(
+                                            width = 2.dp,
+                                            color = MaterialTheme.colorScheme.onTertiaryContainer,
+                                            shape = RoundedCornerShape(16.dp)
+                                        ),
+                                    contentAlignment = Alignment.Center
                                 ) {
-                                    // 이미지 박스
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .background(
-                                                color = if (allAreaDataList[index].date != "0") {
-                                                    MaterialTheme.colorScheme.tertiaryContainer
-                                                } else {
-                                                    Color.LightGray
-                                                },
-                                                shape = RoundedCornerShape(16.dp)
-                                            )
-                                            .border(
-                                                width = 2.dp,
-                                                color = MaterialTheme.colorScheme.onTertiaryContainer,
-                                                shape = RoundedCornerShape(16.dp)
-                                            ),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        JustImage(
-                                            filePath = allAreaDataList[index].url,
+                                    DialogPatImage(pat.url)
+                                    if (pat.date == "0") {
+                                        Box(
                                             modifier = Modifier
-                                                .clip(RoundedCornerShape(16.dp)) // 곡률 적용
-                                            )
-                                        if(allAreaDataList[index].date == "0") {
-                                            Box(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .aspectRatio(1f)
-                                                    .background(
-                                                        Color.LightGray.copy(alpha = 0.8f),
-                                                        shape = RoundedCornerShape(16.dp)
-                                                    ) // 반투명 배경
-                                            )
-                                        }
-                                    }
-
-                                    // 텍스트
-                                    Text(
-                                        text = allAreaDataList[index].name,
-                                        modifier = Modifier
-                                            .padding(top = 10.dp)
-                                            .fillMaxWidth(),
-                                        textAlign = TextAlign.Center,
-                                        style = MaterialTheme.typography.bodyMedium.copy(
-                                            color = MaterialTheme.colorScheme.onSurface
+                                                .fillMaxSize()
+                                                .background(
+                                                    Color.LightGray.copy(alpha = 0.5f),
+                                                    shape = RoundedCornerShape(16.dp)
+                                                )
                                         )
-                                    )
+                                    }
                                 }
 
-                                // 🔒 잠금 아이콘
-                                if (allAreaDataList[index].date == "0") {
-                                    JustImage(
-                                        filePath = "etc/lock.png",
-                                        modifier = Modifier
-                                            .size(35.dp)
-                                            .align(Alignment.TopStart)
-                                            .padding(8.dp)
+                                Text(
+                                    text = pat.name,
+                                    modifier = Modifier
+                                        .padding(top = 10.dp)
+                                        .fillMaxWidth(),
+                                    textAlign = TextAlign.Center,
+                                    style = MaterialTheme.typography.bodyMedium.copy(
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
-                                }
+                                )
+                            }
+
+                            if (pat.date == "0") {
+                                JustImage(
+                                    filePath = "etc/lock.png",
+                                    modifier = Modifier
+                                        .size(35.dp)
+                                        .align(Alignment.TopStart)
+                                        .padding(8.dp)
+                                )
                             }
                         }
                     }
-
                 }
             }
+            "item" -> LazyVerticalGrid(
+                columns = GridCells.Fixed(4),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            ) {
+                val reversedList = allItemDataList.asReversed() // 역순 리스트 생성
+
+                items(reversedList.size) { index ->
+                    val item = reversedList[index] // 현재 아이템
+
+                    val interactionSource = remember { MutableInteractionSource() }
+                    val isPressed by interactionSource.collectIsPressedAsState()
+                    val scale by animateFloatAsState(
+                        targetValue = if (isPressed) 0.95f else 1f,
+                        label = "scale"
+                    )
+
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(6.dp)
+                            .border(
+                                width = 2.dp,
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                            .aspectRatio(0.7f)
+                            .graphicsLayer {
+                                scaleX = scale
+                                scaleY = scale
+                            }
+                            .clickable(
+                                interactionSource = interactionSource,
+                                indication = rememberRipple(bounded = true, color = Color.White),
+                                onClick = {
+                                    val originalIndex = allItemDataList.size - 1 - index
+                                    onCardClick(originalIndex)
+                                }
+                            ),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.scrim
+                        ),
+                    ) {
+                        Box(modifier = Modifier.fillMaxSize()) {
+
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(12.dp),
+                                verticalArrangement = Arrangement.SpaceBetween,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .fillMaxWidth()
+                                        .background(
+                                            color = if (item.date != "0") {
+                                                MaterialTheme.colorScheme.tertiaryContainer
+                                            } else {
+                                                Color.LightGray
+                                            },
+                                            shape = RoundedCornerShape(16.dp)
+                                        )
+                                        .border(
+                                            width = 2.dp,
+                                            color = MaterialTheme.colorScheme.onTertiaryContainer,
+                                            shape = RoundedCornerShape(16.dp)
+                                        )
+                                        .padding(6.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    JustImage(
+                                        filePath = item.url,
+                                        contentScale = ContentScale.Fit
+                                    )
+                                    if(item.date == "0") {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .background(
+                                                    Color.LightGray.copy(alpha = 0.5f),
+                                                    shape = RoundedCornerShape(16.dp)
+                                                )
+                                        )
+                                    }
+                                }
+
+                                Text(
+                                    text = item.name,
+                                    modifier = Modifier
+                                        .padding(top = 10.dp)
+                                        .fillMaxWidth(),
+                                    textAlign = TextAlign.Center,
+                                    style = MaterialTheme.typography.bodyMedium.copy(
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                )
+                            }
+
+                            if (item.date == "0") {
+                                JustImage(
+                                    filePath = "etc/lock.png",
+                                    modifier = Modifier
+                                        .size(35.dp)
+                                        .align(Alignment.TopStart)
+                                        .padding(8.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            else -> LazyVerticalGrid(
+                columns = GridCells.Fixed(3),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            ) {
+                val reversedList = allAreaDataList.asReversed() // 역순 리스트
+
+                items(reversedList.size) { index ->
+                    val area = reversedList[index]
+
+                    val interactionSource = remember { MutableInteractionSource() }
+                    val isPressed by interactionSource.collectIsPressedAsState()
+                    val scale by animateFloatAsState(
+                        targetValue = if (isPressed) 0.95f else 1f,
+                        label = "scale"
+                    )
+
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(6.dp)
+                            .border(
+                                width = 2.dp,
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                            .aspectRatio(0.8f)
+                            .graphicsLayer {
+                                scaleX = scale
+                                scaleY = scale
+                            }
+                            .clickable(
+                                interactionSource = interactionSource,
+                                indication = rememberRipple(bounded = true, color = Color.White),
+                                onClick = {
+                                    val originalIndex = allAreaDataList.size - 1 - index
+                                    onCardClick(originalIndex)
+                                }
+                            ),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.scrim
+                        ),
+                    ) {
+                        Box(modifier = Modifier.fillMaxSize()) {
+
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(12.dp),
+                                verticalArrangement = Arrangement.SpaceBetween,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(
+                                            color = if (area.date != "0") {
+                                                MaterialTheme.colorScheme.tertiaryContainer
+                                            } else {
+                                                Color.LightGray
+                                            },
+                                            shape = RoundedCornerShape(16.dp)
+                                        )
+                                        .border(
+                                            width = 2.dp,
+                                            color = MaterialTheme.colorScheme.onTertiaryContainer,
+                                            shape = RoundedCornerShape(16.dp)
+                                        ),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    JustImage(
+                                        filePath = area.url,
+                                        modifier = Modifier.clip(RoundedCornerShape(16.dp))
+                                    )
+                                    if(area.date == "0") {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .aspectRatio(1f)
+                                                .background(
+                                                    Color.LightGray.copy(alpha = 0.8f),
+                                                    shape = RoundedCornerShape(16.dp)
+                                                )
+                                        )
+                                    }
+                                }
+
+                                Text(
+                                    text = area.name,
+                                    modifier = Modifier
+                                        .padding(top = 10.dp)
+                                        .fillMaxWidth(),
+                                    textAlign = TextAlign.Center,
+                                    style = MaterialTheme.typography.bodyMedium.copy(
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                )
+                            }
+
+                            if (area.date == "0") {
+                                JustImage(
+                                    filePath = "etc/lock.png",
+                                    modifier = Modifier
+                                        .size(35.dp)
+                                        .align(Alignment.TopStart)
+                                        .padding(8.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
         }
 
         Row(
