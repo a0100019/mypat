@@ -47,7 +47,14 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import androidx.compose.foundation.border
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.draw.alpha
+import com.a0100019.mypat.presentation.setting.TermsDialog
 import com.a0100019.mypat.presentation.ui.MusicPlayer
 
 @Composable
@@ -141,10 +148,18 @@ fun LoginScreen(
 //        R.raw.bmg1
 //    )
 
+    // 상태를 remember로 관리해야 UI가 갱신됨
+    var termsChecked by remember { mutableStateOf(false) }
+    var privacyChecked by remember { mutableStateOf(false) }
+
     if(dialog == "loginWarning") {
         LoginWarningDialog(
             onClose = { dialogChange("") },
             onConfirmClick = { dialogChange("check") }
+        )
+    } else if(dialog == "terms") {
+        TermsDialog(
+            onClose = { dialogChange("") }
         )
     }
 
@@ -176,21 +191,69 @@ fun LoginScreen(
                     ,
                     shape = RoundedCornerShape(16.dp),
                     tonalElevation = 2.dp,
-                    color = MaterialTheme.colorScheme.scrim
+                    color = MaterialTheme.colorScheme.scrim.copy(alpha = 0.7f) // 50% 투명
                 ) {
+
                     Column(
                         modifier = Modifier
                             .padding(horizontal = 16.dp, vertical = 12.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
 
+                        Text(
+                            text = "마을 친구들을 만나려면 작은 약속이 필요해요",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+
+                            Column {
+                                Text(
+                                    text = "이용약관에 동의합니다.",
+                                )
+                            }
+
+                            Checkbox(
+                                checked = termsChecked,
+                                onCheckedChange = { termsChecked = it }
+                            )
+
+                        }
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "개인정보 처리방침에 동의합니다.",
+                            )
+                            Checkbox(
+                                checked = privacyChecked,
+                                onCheckedChange = { privacyChecked = it }
+                            )
+
+                        }
+
+                        Text(
+                            text = "이용약관 및 개인정보 처리방침 보기",
+                            modifier = Modifier.clickable {
+                                dialogChange("terms")
+                            },
+                            color = Color.Black
+                        )
+
+
                     }
+
                 }
+
+                Spacer(modifier = Modifier.size(20.dp))
 
                 // ✅ 구글 로그인 버튼
                 Button(
                     onClick = {
-                        googleLoginClick()
+                        if(termsChecked && privacyChecked) { googleLoginClick() }
                               },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.White,
@@ -201,6 +264,7 @@ fun LoginScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(48.dp)
+                        .alpha(if(termsChecked && privacyChecked) 1f else 0.7f) // 🔹 전체 투명도 (70% 불투명)
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically

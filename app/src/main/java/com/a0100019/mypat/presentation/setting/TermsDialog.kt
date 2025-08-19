@@ -41,10 +41,13 @@ import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 @Composable
 fun TermsDialog(
     onClose: () -> Unit,
+    privacy: Boolean = false
 ) {
 
     // 상태를 remember로 관리해야 UI가 갱신됨
     var situation by remember { mutableStateOf("이용 약관") }
+
+    if(privacy) situation = "개인정보 처리방침"
 
     Dialog(
         onDismissRequest = onClose
