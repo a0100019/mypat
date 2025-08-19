@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 data class KoreanIdiom(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     var date: String = "0",
-    var state: String = "미정",
+    var state: String = "대기",
     val idiom: String = "한자",
     val korean: String = "해설",
     val meaning: String = "뜻",

@@ -67,7 +67,6 @@ fun SettingScreen(
 
         userData = settingState.userDataList,
         settingSituation = settingState.settingSituation,
-        imageUrl = settingState.imageUrl,
         editText = settingState.editText,
         clickLetterData = settingState.clickLetterData,
         letterDataList = settingState.letterDataList,
@@ -91,7 +90,6 @@ fun SettingScreen(
 
     userData: List<User>,
     settingSituation: String,
-    imageUrl: String,
     editText: String,
     letterDataList: List<Letter>,
     clickLetterData: Letter,
@@ -113,7 +111,6 @@ fun SettingScreen(
     when (settingSituation) {
         "terms" -> TermsDialog(
             onClose = onClose,
-            imageUrl = imageUrl
         )
 
         "accountDelete" -> AccountDeleteDialog(
@@ -198,19 +195,19 @@ fun SettingScreen(
 
         // 기타 정보
         MainButton(
-            text = "이용 약관",
+            text = "이용약관 & 개인정보 처리방침",
             onClick = { onSituationChange("terms") },
             modifier = Modifier.fillMaxWidth()
         )
 
         MainButton(
-            text = "계정 삭제",
+            text = "계정삭제",
             onClick = { onSituationChange("accountDelete") },
             modifier = Modifier.fillMaxWidth()
         )
 
         MainButton(
-            text = "로그 아웃",
+            text = "로그아웃",
             onClick = onSignOutClick,
             modifier = Modifier
                 .fillMaxWidth()
@@ -250,8 +247,6 @@ fun SettingScreenPreview() {
             onLetterLinkClick = {},
             onLetterCloseClick = {},
             onLetterConfirmClick = {},
-            imageUrl = ""
-
 
         )
     }

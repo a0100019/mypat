@@ -184,6 +184,8 @@ class KoreanViewModel @Inject constructor(
 
                 koreanDao.update(newClickKoreanData)
 
+                postSideEffect(KoreanSideEffect.Toast("정답입니다"))
+
                 reduce {
                     state.copy(
                         clickKoreanDataState = "완료",
@@ -201,7 +203,6 @@ class KoreanViewModel @Inject constructor(
                     value = (state.userData.find { it.id == "money" }!!.value.toInt() + 1).toString()
                 )
 
-                postSideEffect(KoreanSideEffect.Toast("정답입니다"))
 
             } else {
 

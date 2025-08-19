@@ -192,7 +192,8 @@ fun CommunityScreen(
                     "secondGame" -> "게임2"
                     "thirdGameEasy" -> "게임3 - 쉬움"
                     "thirdGameNormal" -> "게임3 - 보통"
-                    else -> "게임3 - 어려움"
+                    "thirdGameHard" -> "게임3 - 어려움"
+                    else -> "로딩중.."
                 },
                 style = MaterialTheme.typography.displayMedium,
                 modifier = Modifier

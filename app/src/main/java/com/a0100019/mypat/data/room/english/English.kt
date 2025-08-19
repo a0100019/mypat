@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 data class English(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     var date: String = "0",
-    var state: String = "미정",
+    var state: String = "대기",
     val word: String = "단어",
     val meaning: String = "뜻",
 )

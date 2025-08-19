@@ -336,8 +336,8 @@ class WorldViewModel @Inject constructor(
 
     fun onPatSizeUpClick() = intent {
         val targetPat = state.patDataList.find { it.id.toString() == state.dialogPatId }!!
-        val maxSize = targetPat.minFloat * 4 // 최대 크기 계산
-        val updatedSize = (targetPat.sizeFloat + 0.1f).coerceAtMost(maxSize) // 크기를 제한
+        val maxSize = targetPat.minFloat * 2 // 최대 크기 계산
+        val updatedSize = (targetPat.sizeFloat + 0.025f).coerceAtMost(maxSize) // 크기를 제한
 
         val updatedPat = targetPat.copy(sizeFloat = updatedSize)
         val updatedPatDataList = state.patDataList.toMutableList().apply {
@@ -351,8 +351,8 @@ class WorldViewModel @Inject constructor(
 
     fun onItemSizeUpClick() = intent {
         val targetItem = state.itemDataList.find { it.id.toString() == state.dialogItemId }!!
-        val maxSize = targetItem.minFloat * 4 // 최대 크기 계산
-        val updatedSize = (targetItem.sizeFloat + 0.1f).coerceAtMost(maxSize) // 크기를 제한
+        val maxSize = targetItem.minFloat * 2 // 최대 크기 계산
+        val updatedSize = (targetItem.sizeFloat + 0.025f).coerceAtMost(maxSize) // 크기를 제한
 
         val updatedItem = targetItem.copy(sizeFloat = updatedSize)
         val updatedItemDataList = state.itemDataList.toMutableList().apply {
@@ -368,7 +368,7 @@ class WorldViewModel @Inject constructor(
     fun onPatSizeDownClick() =  intent {
         val targetPat = state.patDataList.find { it.id.toString() == state.dialogPatId }!!
         val minSize = targetPat.minFloat // 최소 크기
-        val updatedSize = (targetPat.sizeFloat - 0.1f).coerceAtLeast(minSize) // 크기를 제한
+        val updatedSize = (targetPat.sizeFloat - 0.025f).coerceAtLeast(minSize) // 크기를 제한
 
         val updatedPat = targetPat.copy(sizeFloat = updatedSize)
         val updatedPatDataList = state.patDataList.toMutableList().apply {
@@ -383,7 +383,7 @@ class WorldViewModel @Inject constructor(
     fun onItemSizeDownClick() =  intent {
         val targetItem = state.itemDataList.find { it.id.toString() == state.dialogItemId }!!
         val minSize = targetItem.minFloat // 최소 크기
-        val updatedSize = (targetItem.sizeFloat - 0.1f).coerceAtLeast(minSize) // 크기를 제한
+        val updatedSize = (targetItem.sizeFloat - 0.025f).coerceAtLeast(minSize) // 크기를 제한
 
         val updatedItem = targetItem.copy(sizeFloat = updatedSize)
         val updatedItemDataList = state.itemDataList.toMutableList().apply {
@@ -435,6 +435,7 @@ class WorldViewModel @Inject constructor(
 
 @Immutable
 data class WorldState(
+
     val userFlowDataList: Flow<List<User>> = flowOf(emptyList()),
     val patDataList: List<Pat> = emptyList(),
     val itemDataList: List<Item> = emptyList(),

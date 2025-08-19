@@ -135,6 +135,8 @@ class DiaryViewModel @Inject constructor(
 
         } else {
 
+            postSideEffect(DiarySideEffect.Toast("10자 이상 작성해주세요"))
+
             reduce {
                 state.copy(
                     isError = true

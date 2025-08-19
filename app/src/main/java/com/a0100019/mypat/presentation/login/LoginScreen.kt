@@ -46,6 +46,8 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import androidx.compose.foundation.border
+import androidx.compose.material3.Surface
 import com.a0100019.mypat.presentation.ui.MusicPlayer
 
 @Composable
@@ -162,6 +164,28 @@ fun LoginScreen(
                 verticalArrangement = Arrangement.Bottom,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(
+                            width = 2.dp,
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                    ,
+                    shape = RoundedCornerShape(16.dp),
+                    tonalElevation = 2.dp,
+                    color = MaterialTheme.colorScheme.scrim
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+
+                    }
+                }
 
                 // ✅ 구글 로그인 버튼
                 Button(

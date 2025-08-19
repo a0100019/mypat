@@ -71,10 +71,6 @@ fun PatSettingDialog(
 
                 Spacer(modifier = Modifier.size(16.dp))
 
-                Text("현재 크기 : ${patData.sizeFloat.toDouble()}")
-
-                Spacer(modifier = Modifier.size(16.dp))
-
                 Text(
                     text = "효과를 선택해주세요"
                 )
@@ -140,6 +136,21 @@ fun PatSettingDialog(
                     ,
                     modifier = Modifier
                         .padding(top = 6.dp)
+                )
+
+                Spacer(modifier = Modifier.size(16.dp))
+
+                val sizeRatio = when (patData.sizeFloat/patData.minFloat) {
+                    in 0.9..1.1 -> "1"
+                    in 1.15..1.35 -> "1.25"
+                    in 1.4..1.6 -> "1.5"
+                    in 1.65..1.85 -> "1.75"
+                    in 1.9..2.1 -> "2"
+                    else -> "??"
+                }
+                Text(
+                    text = "크기 X $sizeRatio",
+                    style = MaterialTheme.typography.titleMedium
                 )
 
                 Spacer(modifier = Modifier.size(16.dp))

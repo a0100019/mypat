@@ -460,8 +460,10 @@ class SettingViewModel @Inject constructor(
                     }
                     ?.addOnFailureListener {
                         Log.e("Auth", "계정 삭제 실패", it)
+                        viewModelScope.launch {
+                            postSideEffect(SettingSideEffect.Toast("다시 로그인 후 재시도 해주세요."))
+                        }
                     }
-
                 Log.d("Firestore", "사용자 전체 삭제 완료")
             } catch (e: Exception) {
                 Log.e("Firestore", "삭제 실패", e)

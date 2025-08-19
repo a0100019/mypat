@@ -169,6 +169,8 @@ class EnglishViewModel @Inject constructor(
 
                     englishDao.update(newClickEnglishData)
 
+                    postSideEffect(EnglishSideEffect.Toast("정답입니다"))
+
                     reduce {
                         state.copy(
                             clickEnglishDataState = "완료",
@@ -184,7 +186,6 @@ class EnglishViewModel @Inject constructor(
                         value = (state.userData.find { it.id == "money" }!!.value.toInt() + 1).toString()
                     )
 
-                    postSideEffect(EnglishSideEffect.Toast("정답입니다"))
 
                 } else {
 
