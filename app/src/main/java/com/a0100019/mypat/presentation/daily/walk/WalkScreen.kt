@@ -163,6 +163,11 @@ fun WalkScreen(
                         text = "로딩중...",
                         style = MaterialTheme.typography.headlineMedium
                     )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "핸드폰을 흔들어주세요",
+                        style = MaterialTheme.typography.titleMedium
+                    )
                 }
 
             }

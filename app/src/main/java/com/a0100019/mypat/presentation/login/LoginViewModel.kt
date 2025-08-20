@@ -169,8 +169,6 @@ class LoginViewModel @Inject constructor(
                     val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
                     userDao.update(id = "date", value3 = currentDate)
 
-                    userDao.update(id = "walk", value2 = "-1")
-
                     val userRef = db.collection("users").document(it.uid)
                     userRef.set(mapOf("online" to "1"), SetOptions.merge())
                         .addOnSuccessListener {

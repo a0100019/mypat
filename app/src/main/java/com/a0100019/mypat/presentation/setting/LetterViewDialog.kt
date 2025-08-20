@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -93,11 +94,19 @@ fun LetterViewDialog(
                                 color = Color.Black
                             )
 
+                            Spacer(modifier = Modifier.size(12.dp))
+
                             Text(
-                                text = clickLetterData.message
+                                text = clickLetterData.message,
+                                style = MaterialTheme.typography.bodyMedium,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .fillMaxWidth()
                             )
 
                             Spacer(modifier = Modifier.weight(1f))
+
+                            Spacer(modifier = Modifier.size(12.dp))
 
                             Row(
                                 modifier = Modifier

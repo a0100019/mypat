@@ -106,26 +106,30 @@ class MainViewModel @Inject constructor(
                 val userFlowDataList = userDao.getAllUserDataFlow()
                 val userDataList = userDao.getAllUserData()
 
-                //한달 이내 편지 찾기
                 val allLetterData = letterDao.getAllLetterData()
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                 val todayDate = LocalDate.now()
-                val showLetterData = allLetterData.firstOrNull {
-                    it.state == "open" && run {
-                        val itemDate = LocalDate.parse(it.date, formatter)
-                        val daysBetween = ChronoUnit.DAYS.between(itemDate, todayDate)
-                        daysBetween in 0..30
+
+                val showLetterData = allLetterData.firstOrNull { item ->
+                    item.state == "open" && run {
+                        val itemDate = runCatching {
+                            LocalDate.parse(item.date, formatter)
+                        }.getOrNull() // 파싱 실패하면 null 반환
+                        if (itemDate != null) {
+                            val daysBetween = ChronoUnit.DAYS.between(itemDate, todayDate)
+                            daysBetween in 0..30
+                        } else {
+                            false // 형식 안 맞으면 그냥 건너뜀
+                        }
                     }
                 }
 
-                if(showLetterData != null){
-
+                if (showLetterData != null) {
                     reduce {
                         state.copy(
                             showLetterData = showLetterData
                         )
                     }
-
                 }
 
                 ////지난 시간만큼 love
