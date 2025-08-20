@@ -59,7 +59,7 @@ fun LoginWarningDialog(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "정상적으로 로그아웃 하지 않은 계정입니다. 하루마을은 데이터 관리를 위해 하나의 기기에서 로그인 해야하며, 여러 기기에서 로그인 시 데이터 손실이 발생합니다. 그래도 로그인 하겠습니까?",
+                    text = "정상적으로 로그아웃 하지 않은 계정입니다. 하루마을은 데이터 관리를 위해 하나의 기기에서 로그인 해야하며, 여러 기기에서 로그인 시 데이터 손실이 발생합니다. 또한 반복적으로 발생할 경우 버그로 간주하여 제제를 받습니다. 그래도 로그인 하겠습니까?",
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(10.dp),
                     textAlign = TextAlign.Center
