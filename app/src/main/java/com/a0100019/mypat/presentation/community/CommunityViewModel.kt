@@ -709,7 +709,7 @@ class CommunityViewModel @Inject constructor(
 
 
                     viewModelScope.launch {
-                        postSideEffect(CommunitySideEffect.Toast("좋아요를 눌렀습니다 (+ 500달빛"))
+                        postSideEffect(CommunitySideEffect.Toast("좋아요를 눌렀습니다 +500달빛"))
                     }
                 }
             }

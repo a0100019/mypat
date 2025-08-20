@@ -9,12 +9,12 @@ data class Letter(
 
     //autoGenerate = true 는 Int만 가능
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val date: String = "0",
-    val title: String = "0",
-    val message: String = "0",
+    var date: String = "0",
+    var title: String = "0",
     val link: String = "0",
     val reward: String = "0",
     val amount: String = "0",
-    var state: String = "open"
+    var state: String = "open",
+    val message: String = "0",
 
     )

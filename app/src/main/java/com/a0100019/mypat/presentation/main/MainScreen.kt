@@ -212,7 +212,7 @@ fun MainScreen(
 
                     MainButton(
                         text = "내 정보",
-                        iconResId = R.drawable.information,
+//                        iconResId = R.drawable.information,
                         onClick = onInformationNavigateClick,
                     )
 
@@ -259,28 +259,13 @@ fun MainScreen(
 
                     }
 
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
+                    Row(
+//                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         MainButton(
                             onClick = onSettingNavigateClick,
                             text = "설정"
                         )
-                        //편지 이미지
-                        if(showLetterData.id != 0){
-                            JustImage(
-                                filePath = "etc/letter.json",
-                                modifier = Modifier
-                                    .size(50.dp)
-                                    .clickable(
-                                        interactionSource = remember { MutableInteractionSource() },
-                                        indication = null,
-                                        onClick = {
-                                            onSituationChange("letter")
-                                        }
-                                    )
-                            )
-                        }
                     }
 
                 }
@@ -310,6 +295,21 @@ fun MainScreen(
                         )
                     }
                     Spacer(modifier = Modifier.weight(1f))
+                    //편지 이미지
+                    if(showLetterData.id != 0){
+                        JustImage(
+                            filePath = "etc/letter.json",
+                            modifier = Modifier
+                                .size(50.dp)
+                                .clickable(
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication = null,
+                                    onClick = {
+                                        onSituationChange("letter")
+                                    }
+                                )
+                        )
+                    }
                     MainButton(
                         text = "커뮤니티",
                         onClick = onCommunityNavigateClick

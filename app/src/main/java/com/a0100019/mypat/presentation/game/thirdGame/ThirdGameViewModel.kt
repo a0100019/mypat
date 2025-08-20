@@ -303,7 +303,6 @@ class ThirdGameViewModel @Inject constructor(
                         state.copy(
                             gameState = "성공",
                             plusLove = plusLove,
-                            time = 0.0
                         )
                     }
                 } else {
