@@ -37,6 +37,8 @@ fun EnglishReadyDialog(
     englishTextList: List<String> = listOf(" ", " ", " ", " ", " "),
     failEnglishList: List<String> = emptyList(),
     failEnglishStateList: List<String> = emptyList(),
+    notUseEnglishList: List<String> = emptyList(),
+    useEnglishList: List<String> = emptyList(),
 
     onClose: () -> Unit = {},
     onAlphabetDeleteClick: () -> Unit = {},
@@ -189,6 +191,15 @@ fun EnglishReadyDialog(
                                             onAlphabetClick(char.toString())
                                         }
                                         .weight(1f)
+                                        .background(
+                                            color = if(char.toString() in notUseEnglishList) Color.LightGray else Color.Unspecified,
+                                            shape = RoundedCornerShape(8.dp)
+                                        )
+                                        .border( // ✅ 둥근 테두리 추가
+                                            width = 1.dp,
+                                            color = if (char.toString() in useEnglishList) MaterialTheme.colorScheme.errorContainer else Color.Unspecified,
+                                            shape = RoundedCornerShape(8.dp)
+                                        )
                                 )
                             }
                         }
@@ -211,6 +222,15 @@ fun EnglishReadyDialog(
                                         onAlphabetClick(char.toString())
                                     }
                                     .weight(0.1f)
+                                    .background(
+                                        color = if(char.toString() in notUseEnglishList) Color.LightGray else Color.Unspecified,
+                                        shape = RoundedCornerShape(8.dp)
+                                    )
+                                    .border( // ✅ 둥근 테두리 추가
+                                        width = 1.dp,
+                                        color = if (char.toString() in useEnglishList) MaterialTheme.colorScheme.errorContainer else Color.Unspecified,
+                                        shape = RoundedCornerShape(8.dp)
+                                    )
                             )
                         }
                         Spacer(modifier = Modifier.weight(0.1f))
@@ -233,6 +253,15 @@ fun EnglishReadyDialog(
                                         onAlphabetClick(char.toString())
                                     }
                                     .weight(0.1f)
+                                    .background(
+                                        color = if(char.toString() in notUseEnglishList) Color.LightGray else Color.Unspecified,
+                                        shape = RoundedCornerShape(8.dp)
+                                    )
+                                    .border( // ✅ 둥근 테두리 추가
+                                        width = 1.dp,
+                                        color = if (char.toString() in useEnglishList) MaterialTheme.colorScheme.errorContainer else Color.Unspecified,
+                                        shape = RoundedCornerShape(8.dp)
+                                    )
                             )
                         }
                         Spacer(modifier = Modifier.weight(0.2f))

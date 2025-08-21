@@ -73,6 +73,8 @@ fun EnglishScreen(
         englishDataList = englishState.englishDataList,
         failEnglishList = englishState.failEnglishList,
         failEnglishStateList = englishState.failEnglishStateList,
+        notUseEnglishList = englishState.notUseEnglishList,
+        useEnglishList = englishState.useEnglishList,
 
         onEnglishClick = englishViewModel::onEnglishClick,
         onAlphabetClick = englishViewModel::onAlphabetClick,
@@ -95,6 +97,8 @@ fun EnglishScreen(
     englishTextList: List<String> = listOf("", "", "", "", ""),
     failEnglishList: List<String> = emptyList(),
     failEnglishStateList: List<String> = emptyList(),
+    notUseEnglishList: List<String> = emptyList(),
+    useEnglishList: List<String> = emptyList(),
 
     onEnglishClick: (English) -> Unit = {},
     onAlphabetClick: (String) -> Unit = {},
@@ -115,6 +119,8 @@ fun EnglishScreen(
             onAlphabetClick = onAlphabetClick,
             onSubmitClick = onSubmitClick,
             onAlphabetDeleteClick = onAlphabetDeleteClick,
+            notUseEnglishList = notUseEnglishList,
+            useEnglishList = useEnglishList
         )
     } else if(clickEnglishData != null && clickEnglishDataState in listOf("완료", "별")) {
         EnglishDialog(

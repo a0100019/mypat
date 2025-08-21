@@ -49,11 +49,13 @@ class KoreanViewModel @Inject constructor(
     private fun loadData() = intent {
         val koreanDataList = koreanDao.getOpenKoreanIdiomData()
         val allKoreanDataList = koreanDao.getAllKoreanIdiomData()
+        val userData = userDao.getAllUserData()
 
         reduce {
             state.copy(
                 koreanDataList = koreanDataList,
-                allKoreanDataList = allKoreanDataList
+                allKoreanDataList = allKoreanDataList,
+                userData = userData
             )
         }
     }

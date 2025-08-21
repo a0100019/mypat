@@ -1,6 +1,7 @@
 package com.a0100019.mypat.presentation.daily.english
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.a0100019.mypat.data.room.english.English
 import com.a0100019.mypat.data.room.english.EnglishDao
@@ -50,11 +51,13 @@ class EnglishViewModel @Inject constructor(
 
         val englishDataList = englishDao.getOpenEnglishData()
         val words = WordRepository.loadWords(application)
+        val userData = userDao.getAllUserData()
 
         reduce {
             state.copy(
                 englishDataList = englishDataList,
-                allWordsData = words
+                allWordsData = words,
+                userData = userData
             )
         }
 
@@ -167,15 +170,15 @@ class EnglishViewModel @Inject constructor(
                     val newClickEnglishData = state.clickEnglishData
                     newClickEnglishData!!.state = "완료"
 
-                    englishDao.update(newClickEnglishData)
-
-                    postSideEffect(EnglishSideEffect.Toast("정답입니다"))
-
                     //보상
                     userDao.update(
                         id = "money",
                         value = (state.userData.find { it.id == "money" }!!.value.toInt() + 1).toString()
                     )
+
+                    englishDao.update(newClickEnglishData)
+
+                    postSideEffect(EnglishSideEffect.Toast("정답입니다"))
 
                     reduce {
                         state.copy(
@@ -205,15 +208,29 @@ class EnglishViewModel @Inject constructor(
                     }.joinToString("")
                     failEnglishStateList.add(failEnglishState)
 
+                    val notUseEnglishList = state.notUseEnglishList.toMutableList()
+                    state.englishTextList.forEach {
+                        if(it !in answerEnglish) {
+                            notUseEnglishList.add(it)
+                        }
+                    }
+
+                    val useEnglishList = state.useEnglishList.toMutableList()
+                    state.englishTextList.forEach {
+                        if(it in answerEnglish) {
+                            useEnglishList.add(it)
+                        }
+                    }
+
                     reduce {
                         state.copy(
                             failEnglishList = failEnglishList,
                             failEnglishStateList = failEnglishStateList,
-                            englishTextList = listOf(" ", " ", " ", " ", " ")
+                            englishTextList = listOf(" ", " ", " ", " ", " "),
+                            notUseEnglishList = notUseEnglishList,
+                            useEnglishList = useEnglishList
                         )
                     }
-
-//                    postSideEffect(EnglishSideEffect.Toast("오답입니다"))
 
                 }
 
@@ -255,7 +272,10 @@ class EnglishViewModel @Inject constructor(
                 clickEnglishDataState = "",
                 englishTextList = listOf(" ", " ", " ", " ", " "),
                 failEnglishList = emptyList(),
-                failEnglishStateList = emptyList()
+                failEnglishStateList = emptyList(),
+                notUseEnglishList = emptyList(),
+                useEnglishList = emptyList(),
+
             )
         }
     }
@@ -296,7 +316,8 @@ data class EnglishState(
     val allWordsData: List<String> = emptyList(),
     val failEnglishList: List<String> = emptyList(),
     val failEnglishStateList: List<String> = emptyList(),
-
+    val notUseEnglishList: List<String> = emptyList(),
+    val useEnglishList: List<String> = emptyList(),
     )
 
 
