@@ -171,6 +171,12 @@ class EnglishViewModel @Inject constructor(
 
                     postSideEffect(EnglishSideEffect.Toast("정답입니다"))
 
+                    //보상
+                    userDao.update(
+                        id = "money",
+                        value = (state.userData.find { it.id == "money" }!!.value.toInt() + 1).toString()
+                    )
+
                     reduce {
                         state.copy(
                             clickEnglishDataState = "완료",
@@ -179,13 +185,6 @@ class EnglishViewModel @Inject constructor(
                             failEnglishStateList = emptyList(),
                         )
                     }
-
-                    //보상
-                    userDao.update(
-                        id = "money",
-                        value = (state.userData.find { it.id == "money" }!!.value.toInt() + 1).toString()
-                    )
-
 
                 } else {
 

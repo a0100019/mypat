@@ -46,6 +46,8 @@ fun MainButton(
     imageSize: Dp = 30.dp,
     onClick: () -> Unit = {},
     style: TextStyle = MaterialTheme.typography.titleMedium,
+    backgroundColor: Color = MaterialTheme.colorScheme.scrim, // ✅ 추가
+    borderColor: Color = MaterialTheme.colorScheme.primaryContainer, // ✅ 추가
     @SuppressLint("ModifierParameter") modifier: Modifier = Modifier
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -57,10 +59,9 @@ fun MainButton(
 
     Surface(
         shape = RoundedCornerShape(16.dp),
-        color = MaterialTheme.colorScheme.scrim,
-        border = BorderStroke(2.dp, MaterialTheme.colorScheme.primaryContainer),
-//        shadowElevation = 6.dp,
-        modifier = modifier // ← 여기로 옮김
+        color = backgroundColor, // ✅ 외부에서 지정 가능
+        border = BorderStroke(2.dp, borderColor),
+        modifier = modifier
             .graphicsLayer {
                 scaleX = scale
                 scaleY = scale

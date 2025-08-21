@@ -186,6 +186,12 @@ class KoreanViewModel @Inject constructor(
 
                 postSideEffect(KoreanSideEffect.Toast("정답입니다"))
 
+                //보상
+                userDao.update(
+                    id = "money",
+                    value = (state.userData.find { it.id == "money" }!!.value.toInt() + 1).toString()
+                )
+                
                 reduce {
                     state.copy(
                         clickKoreanDataState = "완료",
@@ -196,12 +202,6 @@ class KoreanViewModel @Inject constructor(
                         informationText = "아래 카드를 눌러 사자성어를 입력해주세요"
                     )
                 }
-
-                //보상
-                userDao.update(
-                    id = "money",
-                    value = (state.userData.find { it.id == "money" }!!.value.toInt() + 1).toString()
-                )
 
 
             } else {

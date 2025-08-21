@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -284,10 +285,11 @@ fun ThirdGameScreen(
             )
 
             MainButton(
-                text = if(memoMode) "메모 모드 on" else "메모 모드 off",
+                text = if (memoMode) "메모 모드 on" else "메모 모드 off",
                 onClick = onMemoClick,
-                modifier = Modifier
-                    .fillMaxWidth(0.66f)
+                modifier = Modifier.fillMaxWidth(0.66f),
+                backgroundColor = if (memoMode) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.scrim,
+                borderColor = if (memoMode) MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.primaryContainer
             )
 
         }
