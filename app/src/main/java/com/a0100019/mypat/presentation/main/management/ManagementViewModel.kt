@@ -8,6 +8,7 @@ import com.a0100019.mypat.data.room.diary.Diary
 import com.a0100019.mypat.data.room.diary.DiaryDao
 import com.a0100019.mypat.data.room.english.EnglishDao
 import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiomDao
+import com.a0100019.mypat.data.room.letter.LetterDao
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.walk.Walk
@@ -36,6 +37,7 @@ class ManagementViewModel @Inject constructor(
     private val koreanIdiomDao: KoreanIdiomDao,
     private val englishDao: EnglishDao,
     private val diaryDao: DiaryDao,
+    private val letterDao: LetterDao,
     private val stepCounterManager: StepCounterManager,
     @ApplicationContext private val context: Context
 
@@ -67,6 +69,13 @@ class ManagementViewModel @Inject constructor(
             userDao.update(id = "date", value = currentDate)
             userDao.update(id = "date", value2 = ( userData.find { it.id == "date" }!!.value2.toInt() + 1 ).toString())
 
+            //출석 일수 확인해서 편지 전송
+            when(userData.find { it.id == "date" }!!.value2.toInt() + 1) {
+                7 -> letterDao.updateDateByTitle(title = "7일 출석 감사 편지", todayDate = currentDate)
+                30 -> letterDao.updateDateByTitle(title = "30일 출석 감사 편지", todayDate = currentDate)
+                100 -> letterDao.updateDateByTitle(title = "100일 출석 감사 편지", todayDate = currentDate)
+            }
+
             val closeKoreanIdiomData = koreanIdiomDao.getCloseKoreanIdiom()
             if (closeKoreanIdiomData != null) {
                 closeKoreanIdiomData.date = currentDate
@@ -84,18 +93,7 @@ class ManagementViewModel @Inject constructor(
             diaryDao.insert(Diary(date = currentDate))
 
             walkDao.insert(Walk(date = currentDate))
-//            // ✅ Walk 자동 채우기 부분, 빈 날짜 없도록
-//            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-//            val latestWalkDate = LocalDate.parse(walkDao.getLatestWalkData().date, formatter)
-//            val today = LocalDate.now()
-//
-//            var dateToInsert = latestWalkDate.plusDays(1)
-//            while (!dateToInsert.isAfter(today)) {
-//                walkDao.insert(Walk(date = dateToInsert.format(formatter)))
-//                dateToInsert = dateToInsert.plusDays(1)
-//            }
 
-            // TODO: 일일 알림 다이얼로그 띄우기
         }
     }
 

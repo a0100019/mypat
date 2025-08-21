@@ -80,14 +80,10 @@ fun SettingTalkDialog(
                     placeholder = { Text(
                         textAlign = TextAlign.Center,
                         text = "안녕하세요, 소중한 이웃님!\n" +
-                            "대나무 숲에 작성한 내용은 오직 개발자만 확인할 수 있으니 말 못할 고민이 있을 땐 언제든 편하게 이야기해주세요.\n" +
-                            "또는 우리 마을과 앱이 더 좋아질 수 있도록, 발견한 버그나 바라는 점도 들려주세요.\n" +
-                            "하루마을과 관련 없어도 평소 아무에게도 하지 못했던 이야기나 고민 상담 등 어떠한 내용이든 좋으니 부담없이 편하게 이야기해주세요. 답변이 필요한 내용이라면 편지로 답변을 보내드릴게요") },
-//                    singleLine = true,
-//            colors = TextFieldDefaults.outlinedTextFieldColors(
-//                focusedBorderColor = Color.Blue,
-//                unfocusedBorderColor = Color.Gray
-//            ),
+                                "하루마을이 더욱 발전할 수 있도록, 발견한 버그나 바라는 점을 적어주세요.\n" +
+                                "또한 대나무 숲에 작성한 내용은 오직 개발자만 확인할 수 있으니 말 못할 고민이 있을 땐 언제든 편하게 적어주세요. 하루마을과 관련 없는 내용도 괜찮아요!\n" +
+                                "답변이 필요한 내용이라면 편지로 답변을 보내드릴게요") },
+
                     shape = RoundedCornerShape(8.dp), // 테두리를 둥글게
                     modifier = Modifier
                         .fillMaxWidth()

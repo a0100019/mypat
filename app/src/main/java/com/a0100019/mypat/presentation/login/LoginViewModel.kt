@@ -24,6 +24,7 @@ import com.a0100019.mypat.data.room.world.WorldDao
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.firestore
@@ -168,6 +169,7 @@ class LoginViewModel @Inject constructor(
 
                     val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
                     userDao.update(id = "date", value3 = currentDate)
+                    letterDao.updateDateByTitle(title = "시작의 편지", todayDate = currentDate)
 
                     val userRef = db.collection("users").document(it.uid)
                     userRef.set(mapOf("online" to "1"), SetOptions.merge())
@@ -500,27 +502,50 @@ class LoginViewModel @Inject constructor(
             .collection("code")
             .document("letter")
 
+        val tag = userDao.getValue2ById("auth")
+
         letterDocRef.get()
             .addOnSuccessListener { documentSnapshot ->
                 if (documentSnapshot.exists()) {
                     val letterMap = documentSnapshot.data as Map<String, Map<String, String>>
+
                     letterMap.forEach { (key, value) ->
+                        val idInt = key.toIntOrNull() ?: return@forEach
+                        var shouldDelete = false
 
-                        val letter = Letter(
-                            id = key.toIntOrNull() ?: return@forEach,
-                            amount = value["amount"].orEmpty(),
-                            date = value["date"].orEmpty(),
-                            link = value["link"].orEmpty(),
-                            message = value["message"].orEmpty(),
-                            reward = value["reward"].orEmpty(),
-                            state = value["state"].orEmpty(),
-                            title = value["title"].orEmpty()
-                        )
+                        val shouldInsert = when {
+                            key.length == 8 -> true
+                            key.length >= 9 -> {
+                                val subId = key.drop(8)
+                                val match = (tag == subId)
+                                if (match) shouldDelete = true
+                                match
+                            }
+                            else -> false
+                        }
 
-                        Log.e("Firestore", "letter 문서 가져옴")
+                        if (shouldInsert) {
+                            val letter = Letter(
+                                id = idInt,
+                                amount = value["amount"].orEmpty(),
+                                date = value["date"].orEmpty(),
+                                link = value["link"].orEmpty(),
+                                message = value["message"].orEmpty(),
+                                reward = value["reward"].orEmpty(),
+                                state = value["state"].orEmpty(),
+                                title = value["title"].orEmpty()
+                            )
 
-                        viewModelScope.launch {
-                            letterDao.insertIgnore(letter)
+                            Log.e("Firestore", "letter 문서 가져옴: $idInt")
+
+                            viewModelScope.launch {
+                                letterDao.insertIgnore(letter)
+                            }
+
+                            // 9자리 이상이고 조건에 맞는 경우에만 Firestore에서 삭제
+                            if (shouldDelete) {
+                                letterDocRef.update(key, FieldValue.delete())
+                            }
                         }
                     }
                 }
@@ -529,7 +554,6 @@ class LoginViewModel @Inject constructor(
                 Log.e("Firestore", "letter 문서 가져오기 실패", e)
             }
     }
-
 
     private fun newAllUserDataGetAndDataSave() = intent {
 

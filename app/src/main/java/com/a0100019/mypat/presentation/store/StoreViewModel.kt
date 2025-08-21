@@ -7,6 +7,7 @@ import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.item.ItemDao
 import com.a0100019.mypat.data.room.area.Area
 import com.a0100019.mypat.data.room.area.AreaDao
+import com.a0100019.mypat.data.room.letter.LetterDao
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.pat.PatDao
 import com.a0100019.mypat.data.room.user.User
@@ -38,6 +39,7 @@ class StoreViewModel @Inject constructor(
     private val worldDao: WorldDao,
     private val patDao: PatDao,
     private val itemDao: ItemDao,
+    private val letterDao: LetterDao,
     private val areaDao: AreaDao
 
 ) : ViewModel(), ContainerHost<StoreState, StoreSideEffect> {
@@ -348,6 +350,8 @@ class StoreViewModel @Inject constructor(
 
             if(shuffledItemDataList.isEmpty()) {
                 postSideEffect(StoreSideEffect.Toast("아이템을 모두 얻었습니다!"))
+                val today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+                letterDao.updateDateByTitle(title = "모든 아이템 획득 축하 편지", todayDate = today)
                 return@intent
             }
             // 부족한 경우 기본 객체 추가

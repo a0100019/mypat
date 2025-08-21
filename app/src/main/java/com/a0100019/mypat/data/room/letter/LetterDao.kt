@@ -6,9 +6,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.a0100019.mypat.data.room.sudoku.Sudoku
-import com.a0100019.mypat.data.room.world.World
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface LetterDao {
@@ -30,6 +27,25 @@ interface LetterDao {
 
     @Update
     suspend fun update(letter: Letter)
+
+    // ✅ title 기준으로 state가 "waiting"인 경우만 state를 "open"으로 변경하고 date를 오늘 날짜로 업데이트
+    @Query("""
+    UPDATE letter_table
+    SET state = 'open', date = :todayDate
+    WHERE title = :title AND state = 'waiting'
+""")
+    suspend fun updateDateByTitle(title: String, todayDate: String)
+
+    // ✅ title을 새 값으로 변경하고, state가 "waiting"일 때만 "open"으로 변경
+    @Query("""
+    UPDATE letter_table
+    SET title = :newTitle,
+        state = 'open',
+        date = :todayDate
+    WHERE title = :oldTitle AND state = 'waiting'
+""")
+    suspend fun updateTitleAndOpenState(oldTitle: String, newTitle: String, todayDate: String): Int
+
 
     @Query("""
         SELECT *

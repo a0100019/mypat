@@ -186,6 +186,10 @@ class MainViewModel @Inject constructor(
         reduce {
             state.copy(dialogPatId = clickId)
         }
+        val patData = patDao.getPatDataById(clickId)
+        if (patData.love>=10000) {
+            letterDao.updateTitleAndOpenState(oldTitle = "의 편지", newTitle = "${patData.name}의 편지", todayDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+        }
     }
 
     fun onLovePatChange(patId: Int) = intent {
@@ -340,6 +344,7 @@ class MainViewModel @Inject constructor(
         }
 
         loadData()
+
     }
 
     //하트 타이머
