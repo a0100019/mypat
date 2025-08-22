@@ -23,10 +23,6 @@ fun getEnglishInitialData(): List<English> {
             meaning = "꿈",
         ),
         English(
-            word = "grasp",
-            meaning = "붙잡다, 이해하다",
-        ),
-        English(
             word = "water",
             meaning = "물",
         ),
@@ -43,10 +39,14 @@ fun getEnglishInitialData(): List<English> {
             meaning = "식탁, 테이블",
         ),
         English(
-            word = "jolly",
-            meaning = "즐거운, 쾌활한",
+            word = "apple",
+            meaning = "사과",
         ),
-        // 10
+        English(
+            word = "chair",
+            meaning = "의자",
+        ),
+        // １０
         English(
             word = "plant",
             meaning = "식물; 심다",
@@ -62,10 +62,6 @@ fun getEnglishInitialData(): List<English> {
         English(
             word = "river",
             meaning = "강",
-        ),
-        English(
-            word = "knead",
-            meaning = "반죽하다",
         ),
         English(
             word = "brave",
@@ -84,8 +80,12 @@ fun getEnglishInitialData(): List<English> {
             meaning = "충격",
         ),
         English(
-            word = "lodge",
-            meaning = "숙박하다, 오두막",
+            word = "green",
+            meaning = "초록색",
+        ),
+        English(
+            word = "heart",
+            meaning = "심장, 마음",
         ),
         //20
         English(
@@ -97,20 +97,12 @@ fun getEnglishInitialData(): List<English> {
             meaning = "해변",
         ),
         English(
-            word = "blitz",
-            meaning = "급습, 돌격",
-        ),
-        English(
             word = "pride",
             meaning = "자존심, 자부심",
         ),
         English(
             word = "enemy",
             meaning = "적, 원수",
-        ),
-        English(
-            word = "faith",
-            meaning = "믿음, 신념",
         ),
         English(
             word = "storm",
@@ -128,7 +120,23 @@ fun getEnglishInitialData(): List<English> {
             word = "giant",
             meaning = "거인, 거대한",
         ),
+        English(
+            word = "lemon",
+            meaning = "레몬",
+        ),
+        English(
+            word = "light",
+            meaning = "빛, 가벼운",
+        ),
         //30
+        English(
+            word = "cream",
+            meaning = "크림",
+        ),
+        English(
+            word = "clock",
+            meaning = "시계",
+        ),
         English(
             word = "bread",
             meaning = "빵",
@@ -162,14 +170,22 @@ fun getEnglishInitialData(): List<English> {
             meaning = "이야기",
         ),
         English(
-            word = "laugh",
-            meaning = "웃다",
-        ),
-        English(
             word = "sweet",
             meaning = "달콤한",
         ),
+        English(
+            word = "earth",
+            meaning = "지구",
+        ),
+        English(
+            word = "shirt",
+            meaning = "셔츠",
+        ),
         //40
+        English(
+            word = "fruit",
+            meaning = "과일",
+        ),
         English(
             word = "paper",
             meaning = "종이; 신문",
@@ -185,10 +201,6 @@ fun getEnglishInitialData(): List<English> {
         English(
             word = "brown",
             meaning = "갈색",
-        ),
-        English(
-            word = "droll",
-            meaning = "익살스러운, 우스꽝스러운",
         ),
         English(
             word = "angry",
@@ -210,18 +222,14 @@ fun getEnglishInitialData(): List<English> {
             word = "dance",
             meaning = "춤추다",
         ),
+        English(
+            word = "sound",
+            meaning = "소리",
+        ),
         //50
         English(
             word = "actor",
             meaning = "배우",
-        ),
-        English(
-            word = "irony",
-            meaning = "반어, 풍자",
-        ),
-        English(
-            word = "clerk",
-            meaning = "사무원, 점원",
         ),
         English(
             word = "eagle",
@@ -230,10 +238,6 @@ fun getEnglishInitialData(): List<English> {
         English(
             word = "fairy",
             meaning = "요정",
-        ),
-        English(
-            word = "ivory",
-            meaning = "상아",
         ),
         English(
             word = "honor",
@@ -251,6 +255,18 @@ fun getEnglishInitialData(): List<English> {
             word = "nurse",
             meaning = "간호사",
         ),
+        English(
+            word = "voice",
+            meaning = "목소리",
+        ),
+        English(
+            word = "mouse",
+            meaning = "쥐",
+        ),
+        English(
+            word = "radio",
+            meaning = "라디오",
+        ),
         //60
         English(
             word = "crane",
@@ -259,14 +275,6 @@ fun getEnglishInitialData(): List<English> {
         English(
             word = "bless",
             meaning = "축복하다",
-        ),
-        English(
-            word = "cabin",
-            meaning = "오두막, 객실",
-        ),
-        English(
-            word = "charm",
-            meaning = "매력, 부적",
         ),
         English(
             word = "drama",
@@ -281,6 +289,27 @@ fun getEnglishInitialData(): List<English> {
             meaning = "지구, 구체",
         ),
         English(
+            word = "angel",
+            meaning = "천사",
+        ),
+        English(
+            word = "baker",
+            meaning = "제빵사",
+        ),
+        English(
+            word = "crown",
+            meaning = "왕관",
+        ),
+        English(
+            word = "honey",
+            meaning = "꿀",
+        ),
+        English(
+            word = "knife",
+            meaning = "칼",
+        ),
+//        ７０
+        English(
             word = "piano",
             meaning = "피아노",
         ),
@@ -291,15 +320,6 @@ fun getEnglishInitialData(): List<English> {
         English(
             word = "towel",
             meaning = "수건",
-        ),
-        //70
-        English(
-            word = "jewel",
-            meaning = "보석",
-        ),
-        English(
-            word = "gland",
-            meaning = "샘, 선",
         ),
         English(
             word = "medal",
@@ -316,10 +336,6 @@ fun getEnglishInitialData(): List<English> {
         English(
             word = "quest",
             meaning = "탐색, 모험",
-        ),
-        English(
-            word = "realm",
-            meaning = "영역, 왕국",
         ),
         English(
             word = "shade",
@@ -355,10 +371,6 @@ fun getEnglishInitialData(): List<English> {
             meaning = "색인, 지수",
         ),
         English(
-            word = "kneel",
-            meaning = "무릎을 꿇다",
-        ),
-        English(
             word = "laser",
             meaning = "레이저",
         ),
@@ -374,6 +386,10 @@ fun getEnglishInitialData(): List<English> {
             word = "orbit",
             meaning = "궤도",
         ),
+        English(
+            word = "ocean",
+            meaning = "대양, 바다",
+        ),
         //90
         English(
             word = "abase",
@@ -388,8 +404,8 @@ fun getEnglishInitialData(): List<English> {
             meaning = "갈망하다",
         ),
         English(
-            word = "dwelt",
-            meaning = "거주했다 (dwell의 과거)",
+            word = "quiet",
+            meaning = "조용한",
         ),
         English(
             word = "evoke",
@@ -404,8 +420,8 @@ fun getEnglishInitialData(): List<English> {
             meaning = "불평하다",
         ),
         English(
-            word = "havoc",
-            meaning = "대파괴, 혼란",
+            word = "ivory",
+            meaning = "상아",
         ),
         English(
             word = "inlet",

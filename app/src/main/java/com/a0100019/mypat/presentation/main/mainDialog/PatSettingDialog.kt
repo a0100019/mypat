@@ -149,7 +149,7 @@ fun PatSettingDialog(
                     else -> "??"
                 }
                 Text(
-                    text = "크기 X $sizeRatio",
+                    text = "현재 크기 ： ｘ$sizeRatio",
                     style = MaterialTheme.typography.titleMedium
                 )
 

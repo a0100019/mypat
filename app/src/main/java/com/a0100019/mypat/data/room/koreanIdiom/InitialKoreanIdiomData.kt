@@ -5,13 +5,13 @@ package com.a0100019.mypat.data.room.koreanIdiom
 fun getKoreanIdiomInitialData(): List<KoreanIdiom> {
     return listOf(
         KoreanIdiom(
-            idiom = "三三五五",
-            korean = "삼삼오오",
+            idiom = "一喜一悲",
+            korean = "일희일비",
             meaning = "몇 명씩 무리를 지어 다니거나 함께 일을 하는 모양",
-            korean1 = "석 삼",
-            korean2 = "석 삼",
-            korean3 = "다섯 오",
-            korean4 = "다섯 오",
+            korean1 = "한 일",
+            korean2 = "기쁠 희",
+            korean3 = "한 일",
+            korean4 = "슬플 비",
         ),
         KoreanIdiom(
             idiom = "十中八九",
@@ -59,13 +59,13 @@ fun getKoreanIdiomInitialData(): List<KoreanIdiom> {
             korean4 = "대답 답",
         ),
         KoreanIdiom(
-            idiom = "三十六計",
-            korean = "삼십육계",
-            meaning = "곤란할 때는 주저하지 말고 도망가는 것이 가장 좋다",
-            korean1 = "석 삼",
-            korean2 = "열 십",
-            korean3 = "여섯 육",
-            korean4 = "셀 계",
+            idiom = "九曲肝腸",
+            korean = "구곡간장",
+            meaning = "걱정, 근심, 불안 등이 쌓여 심란한 마음",
+            korean1 = "아홉 구",
+            korean2 = "굽을 곡",
+            korean3 = "간 간",
+            korean4 = "창자 장",
         ),
         KoreanIdiom(
             idiom = "千差萬別",
@@ -753,7 +753,7 @@ fun getKoreanIdiomInitialData(): List<KoreanIdiom> {
         KoreanIdiom(
             idiom = "一刻千金",
             korean = "일각천금",
-            meaning = "일각이 천금, 극히 짧은 시간도 귀중함",
+            meaning = "극히 짧은 시간도 귀중함",
             korean1 = "한 일",
             korean2 = "새길 각",
             korean3 = "일 천",
