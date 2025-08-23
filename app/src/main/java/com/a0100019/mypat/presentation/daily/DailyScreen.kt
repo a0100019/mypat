@@ -13,6 +13,7 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -37,6 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.presentation.daily.walk.RequestPermissionScreen
+import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -49,6 +51,7 @@ fun DailyScreen(
     onDiaryNavigateClick: () -> Unit,
     onEnglishNavigateClick: () -> Unit,
     onKoreanNavigateClick: () -> Unit,
+    popBackStack: () -> Unit
 ) {
 
     val dailyState : DailyState = dailyViewModel.collectAsState().value
@@ -71,6 +74,7 @@ fun DailyScreen(
         onKoreanNavigateClick = onKoreanNavigateClick,
         onCloseClick = dailyViewModel::onCloseClick,
         onDialogPermissionCheckClick = dailyViewModel::onDialogPermissionCheckClick,
+        popBackStack = popBackStack,
 
         situation = dailyState.situation,
     )
@@ -86,6 +90,7 @@ fun DailyScreen(
     onCloseClick: () -> Unit = {},
     onDialogPermissionCheckClick: (Context) -> Unit = {},
     situation: String,
+    popBackStack: () -> Unit = {}
 ) {
 
     if(situation == "walkPermissionRequest") {
@@ -101,23 +106,36 @@ fun DailyScreen(
     Surface(
         modifier = Modifier
             .fillMaxSize()
+            .padding(24.dp)
     ) {
         Column (
             horizontalAlignment = Alignment.CenterHorizontally
         ){
-            Column (
-                modifier = Modifier.padding(top = 30.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ){
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                        ,
+                contentAlignment = Alignment.Center
+            ) {
+                // 가운데 텍스트
                 Text(
                     text = "Daily",
                     style = MaterialTheme.typography.displaySmall
                 )
+
+                // 오른쪽 버튼
+                MainButton(
+                    text = "닫기",
+                    onClick = popBackStack,
+                    modifier = Modifier.align(Alignment.CenterEnd)
+                )
             }
+
 
             LazyColumn (
                 modifier = Modifier
-                    .padding(top = 24.dp, start = 10.dp, end = 10.dp)
+                    .padding(top = 24.dp)
                     .weight(1f)
             ){
 
@@ -144,7 +162,7 @@ fun DailyScreen(
                                 indication = rememberRipple(bounded = true, color = Color.White),
                                 onClick = onWalkNavigateClick
                             )
-                            .padding(start = 12.dp, end = 12.dp, top = 6.dp, bottom = 6.dp)
+                            .padding(top = 6.dp, bottom = 6.dp)
                     ) {
                         Box {
 
@@ -203,7 +221,7 @@ fun DailyScreen(
                                 indication = rememberRipple(bounded = true, color = Color.White),
                                 onClick = onEnglishNavigateClick
                             )
-                            .padding(start = 12.dp, end = 12.dp, top = 6.dp, bottom = 6.dp)
+                            .padding(top = 6.dp, bottom = 6.dp)
                     ) {
                         Box {
 
@@ -262,7 +280,7 @@ fun DailyScreen(
                                 indication = rememberRipple(bounded = true, color = Color.White),
                                 onClick = onKoreanNavigateClick
                             )
-                            .padding(start = 12.dp, end = 12.dp, top = 6.dp, bottom = 6.dp)
+                            .padding(top = 6.dp, bottom = 6.dp)
                     ) {
                         Box {
 
@@ -321,7 +339,7 @@ fun DailyScreen(
                                 indication = rememberRipple(bounded = true, color = Color.White),
                                 onClick = onDiaryNavigateClick
                             )
-                            .padding(start = 12.dp, end = 12.dp, top = 6.dp, bottom = 6.dp)
+                            .padding(top = 6.dp, bottom = 6.dp)
                     ) {
                         Box {
 

@@ -195,7 +195,7 @@ class WalkViewModel @Inject constructor(
             userDao.update(
                 id = "walk",
                 //두번 더해지는 거 방지
-                value = (state.todayWalk - 10000 - (state.todayWalk-10000)).toString(),
+                value = (state.todayWalk - 10000).toString(),
             )
 
             //보상
@@ -210,7 +210,12 @@ class WalkViewModel @Inject constructor(
 
             postSideEffect(WalkSideEffect.Toast("일일 미션 완료"))
 
-            loadData()
+            reduce {
+                state.copy(
+                    todayWalk = state.todayWalk - 10000
+                )
+            }
+
         } else {
             postSideEffect(WalkSideEffect.Toast("걸음 수가 부족합니다"))
         }

@@ -29,10 +29,11 @@ import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 @Composable
 fun CommunityUpdateCheckDialog(
     onConfirmClick: () -> Unit = {},
+    onDismissClick : () -> Unit = {}
 ) {
 
     Dialog(
-        onDismissRequest = {  }
+        onDismissRequest = onDismissClick
     ) {
         Box(
             modifier = Modifier
@@ -75,11 +76,24 @@ fun CommunityUpdateCheckDialog(
 
                 Spacer(modifier = Modifier.size(30.dp))
 
-                MainButton(
-                    text = "  확인  ",
-                    onClick = onConfirmClick,
+                Row (
                     modifier = Modifier
-                )
+                        .fillMaxWidth(0.5f)
+                ){
+                    MainButton(
+                        text = "  취소  ",
+                        onClick = onConfirmClick,
+                        modifier = Modifier
+                    )
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    MainButton(
+                        text = "  확인  ",
+                        onClick = onConfirmClick,
+                        modifier = Modifier
+                    )
+                }
 
             }
         }

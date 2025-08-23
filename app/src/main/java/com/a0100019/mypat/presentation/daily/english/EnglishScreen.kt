@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -50,7 +51,8 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 fun EnglishScreen(
-    englishViewModel: EnglishViewModel = hiltViewModel()
+    englishViewModel: EnglishViewModel = hiltViewModel(),
+    popBackStack: () -> Unit = {}
 
 ) {
 
@@ -82,7 +84,8 @@ fun EnglishScreen(
         onSubmitClick = englishViewModel::onSubmitClick,
         onFilterClick = englishViewModel::onFilterClick,
         onCloseClick = englishViewModel::onCloseClick,
-        onStateChangeClick = englishViewModel::onStateChangeClick
+        onStateChangeClick = englishViewModel::onStateChangeClick,
+        popBackStack = popBackStack
 
     )
 }
@@ -106,7 +109,8 @@ fun EnglishScreen(
     onSubmitClick: () -> Unit = {},
     onFilterClick: () -> Unit = {},
     onCloseClick: () -> Unit = {},
-    onStateChangeClick: () -> Unit = {}
+    onStateChangeClick: () -> Unit = {},
+    popBackStack: () -> Unit = {},
 
 ) {
 
@@ -135,14 +139,27 @@ fun EnglishScreen(
         modifier = Modifier.fillMaxSize()
     ) {
 
-        // Text in the center
-        Text(
-            text = "영어 단어",
-            style = MaterialTheme.typography.displayMedium, // Large font size
+        Box(
             modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(top = 20.dp)
-        )
+                .fillMaxWidth()
+                .padding(24.dp)
+            ,
+            contentAlignment = Alignment.Center
+        ) {
+            // Text in the center
+            Text(
+                text = "영어 단어",
+                style = MaterialTheme.typography.displayMedium, // Large font size
+                modifier = Modifier
+            )
+
+            // 오른쪽 버튼
+            MainButton(
+                text = "닫기",
+                onClick = popBackStack,
+                modifier = Modifier.align(Alignment.CenterEnd)
+            )
+        }
 
         LazyColumn(
             modifier = Modifier.weight(1f),

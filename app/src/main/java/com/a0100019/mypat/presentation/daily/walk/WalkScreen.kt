@@ -54,6 +54,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.walk.Walk
+import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
@@ -66,7 +67,8 @@ import kotlin.math.sin
 
 @Composable
 fun WalkScreen(
-    walkViewModel: WalkViewModel = hiltViewModel()
+    walkViewModel: WalkViewModel = hiltViewModel(),
+    popBackStack: () -> Unit = {},
 
 ) {
 
@@ -100,6 +102,7 @@ fun WalkScreen(
 
         onTodayWalkSubmitClick = walkViewModel::onTodayWalkSubmitClick,
         onCalendarMonthChangeClick = walkViewModel::onCalendarMonthChangeClick,
+        popBackStack = popBackStack
 //        onSensorChangeClick = walkViewModel::onSensorChangeClick
     )
 }
@@ -123,6 +126,7 @@ fun WalkScreen(
     onCalendarMonthChangeClick: (String)-> Unit = {},
     onTodayWalkSubmitClick: ()-> Unit = {},
     onSensorChangeClick: () -> Unit = {},
+    popBackStack: () -> Unit = {},
 
 ) {
 
@@ -131,18 +135,19 @@ fun WalkScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
+
         Box(
             contentAlignment = Alignment.Center, // ✅ 내부 내용물 중앙 정렬
             modifier = Modifier
                 .weight(0.3f)
                 .fillMaxWidth()
+                .padding(10.dp)
         ) {
 
             StepProgressCircle(
                 steps = todayWalk,
                 modifier = Modifier
                     .size(200.dp)
-                    .padding(10.dp)
             )
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -171,6 +176,15 @@ fun WalkScreen(
                 }
 
             }
+
+            // 오른쪽 버튼
+            MainButton(
+                text = "닫기",
+                onClick = popBackStack,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(8.dp)
+            )
         }
 
         if(walkState == "완료") {
@@ -228,8 +242,6 @@ fun WalkScreen(
                 )
             }
         }
-
-
 
         Column(
             modifier = Modifier

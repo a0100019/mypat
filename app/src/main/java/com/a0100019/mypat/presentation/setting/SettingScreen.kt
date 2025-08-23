@@ -45,7 +45,8 @@ import com.google.android.gms.common.api.ApiException
 @Composable
 fun SettingScreen(
     settingViewModel: SettingViewModel = hiltViewModel(),
-    onSignOutClick: () -> Unit
+    onSignOutClick: () -> Unit,
+    popBackStack: () -> Unit = {}
 ) {
     val settingState: SettingState = settingViewModel.collectAsState().value
     val context = LocalContext.current
@@ -81,7 +82,8 @@ fun SettingScreen(
         clickLetterDataChange = settingViewModel::clickLetterDataChange,
         onLetterConfirmClick = settingViewModel::onLetterConfirmClick,
         onLetterLinkClick = settingViewModel::onLetterLinkClick,
-        onLetterCloseClick = settingViewModel::onLetterCloseClick
+        onLetterCloseClick = settingViewModel::onLetterCloseClick,
+        popBackStack = popBackStack
     )
 }
 
@@ -104,7 +106,8 @@ fun SettingScreen(
     clickLetterDataChange: (Int) -> Unit,
     onLetterLinkClick: () -> Unit,
     onLetterConfirmClick: () -> Unit = {},
-    onLetterCloseClick: () -> Unit = {}
+    onLetterCloseClick: () -> Unit = {},
+    popBackStack: () -> Unit = {},
 
 ) {
 
@@ -158,13 +161,27 @@ fun SettingScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+            ,
+            contentAlignment = Alignment.Center
+        ) {
+            // 상단 제목
+            Text(
+                text = "설정",
+                style = MaterialTheme.typography.displayMedium,
+            )
 
-        // 상단 제목
-        Text(
-            text = "설정",
-            style = MaterialTheme.typography.headlineMedium,
-        )
+            // 오른쪽 버튼
+            MainButton(
+                text = "닫기",
+                onClick = popBackStack,
+                modifier = Modifier.align(Alignment.CenterEnd)
+            )
+        }
+
+
 
         Spacer(modifier = Modifier.height(12.dp))
         Divider()
@@ -212,6 +229,10 @@ fun SettingScreen(
             modifier = Modifier
                 .fillMaxWidth()
         )
+
+        Spacer(modifier = Modifier.height(12.dp))
+        Divider()
+
 
         Box(
             modifier = Modifier

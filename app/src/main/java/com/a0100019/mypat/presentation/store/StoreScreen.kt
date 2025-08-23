@@ -41,6 +41,7 @@ import com.a0100019.mypat.presentation.index.IndexItemDialog
 import com.a0100019.mypat.presentation.index.IndexAreaDialog
 import com.a0100019.mypat.presentation.index.IndexPatDialog
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
+import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
@@ -48,8 +49,8 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 fun StoreScreen(
-    storeViewModel: StoreViewModel = hiltViewModel()
-
+    storeViewModel: StoreViewModel = hiltViewModel(),
+    popBackStack: () -> Unit = {}
 ) {
 
     val storeState : StoreState = storeViewModel.collectAsState().value
@@ -80,6 +81,7 @@ fun StoreScreen(
         onItemStoreClick = storeViewModel::onItemStoreClick,
         onItemSelectClick = storeViewModel::onItemSelectClick,
         onItemSelectCloseClick = storeViewModel::onItemSelectCloseClick,
+        popBackStack = popBackStack,
 
         newPat = storeState.newPat,
         userData = storeState.userData,
@@ -121,6 +123,7 @@ fun StoreScreen(
     onItemStoreClick: () -> Unit,
     onItemSelectClick: () -> Unit,
     onItemSelectCloseClick: () -> Unit,
+    popBackStack: () -> Unit = {},
 
     newPat: Pat?,
     newItem: Item?,
@@ -242,16 +245,30 @@ fun StoreScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .padding(24.dp)
         ,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Text(
-            text = "상점",
-            style = MaterialTheme.typography.displaySmall,
+        Box(
             modifier = Modifier
-                .padding(top = 10.dp)
-        )
+                .fillMaxWidth()
+            ,
+            contentAlignment = Alignment.Center
+        ) {
+            // 가운데 텍스트
+            Text(
+                text = "상점",
+                style = MaterialTheme.typography.displaySmall
+            )
+
+            // 오른쪽 버튼
+            MainButton(
+                text = "닫기",
+                onClick = popBackStack,
+                modifier = Modifier.align(Alignment.CenterEnd)
+            )
+        }
 
         Row(
             modifier = Modifier
@@ -309,7 +326,7 @@ fun StoreScreen(
                             indication = rememberRipple(bounded = true, color = Color.White),
                             onClick = { onSimpleDialog("펫을 뽑으시겠습니까?") }
                         )
-                        .padding(start = 12.dp, end = 12.dp, top = 6.dp, bottom = 6.dp)
+                        .padding(top = 6.dp, bottom = 6.dp)
                 ) {
                     Box {
 
@@ -402,7 +419,7 @@ fun StoreScreen(
                             indication = rememberRipple(bounded = true, color = Color.White),
                             onClick = { onSimpleDialog("아이템을 뽑으시겠습니까?") }
                         )
-                        .padding(start = 12.dp, end = 12.dp, top = 6.dp, bottom = 6.dp)
+                        .padding(top = 6.dp, bottom = 6.dp)
                 ) {
                     Box {
 
@@ -502,7 +519,7 @@ fun StoreScreen(
                             indication = rememberRipple(bounded = true, color = Color.White),
                             onClick = { onSimpleDialog("펫 공간을 늘리겠습니까?") }
                         )
-                        .padding(start = 12.dp, end = 12.dp, top = 6.dp, bottom = 6.dp)
+                        .padding(top = 6.dp, bottom = 6.dp)
                 ) {
                     Box {
 
@@ -602,7 +619,7 @@ fun StoreScreen(
                             indication = rememberRipple(bounded = true, color = Color.White),
                             onClick = { onSimpleDialog("아이템 공간을 늘리겠습니까?") }
                         )
-                        .padding(start = 12.dp, end = 12.dp, top = 6.dp, bottom = 6.dp)
+                        .padding(top = 6.dp, bottom = 6.dp)
                 ) {
                     Box {
 
@@ -702,7 +719,7 @@ fun StoreScreen(
                             indication = rememberRipple(bounded = true, color = Color.White),
                             onClick = { changeShowDialog("name") }
                         )
-                        .padding(start = 12.dp, end = 12.dp, top = 6.dp, bottom = 6.dp)
+                        .padding(top = 6.dp, bottom = 6.dp)
                 ) {
                     Box {
 
@@ -797,7 +814,7 @@ fun StoreScreen(
                             indication = rememberRipple(bounded = true, color = Color.White),
                             onClick = { onSimpleDialog("화폐를 변경하겠습니까?") }
                         )
-                        .padding(start = 12.dp, end = 12.dp, top = 6.dp, bottom = 6.dp)
+                        .padding(top = 6.dp, bottom = 6.dp)
                 ) {
                     Box {
 

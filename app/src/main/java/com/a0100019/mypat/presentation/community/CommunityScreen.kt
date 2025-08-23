@@ -55,7 +55,8 @@ import java.util.Locale
 
 @Composable
 fun CommunityScreen(
-    communityViewModel: CommunityViewModel = hiltViewModel()
+    communityViewModel: CommunityViewModel = hiltViewModel(),
+    popBackStack: () -> Unit = {}
 
 ) {
 
@@ -101,6 +102,7 @@ fun CommunityScreen(
         onBanClick = communityViewModel::onBanClick,
         alertStateChange = communityViewModel::alertStateChange,
         onUpdateCheckClick = communityViewModel::onUpdateCheckClick,
+        popBackStack = popBackStack
 
     )
 }
@@ -139,6 +141,7 @@ fun CommunityScreen(
     onBanClick: (Int) -> Unit = {},
     alertStateChange: (String) -> Unit = {},
     onUpdateCheckClick: () -> Unit = {},
+    popBackStack: () -> Unit = {},
 
     ) {
 
@@ -162,7 +165,8 @@ fun CommunityScreen(
 
     if(situation == "update") {
         CommunityUpdateCheckDialog(
-            onConfirmClick = onUpdateCheckClick
+            onConfirmClick = onUpdateCheckClick,
+            onDismissClick = popBackStack
         )
     }
 
@@ -184,21 +188,37 @@ fun CommunityScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            Text(
-                text = when (situation) {
-                    "world" -> "마을 구경하기"
-                    "chat" -> "통신"
-                    "firstGame" -> "게임1"
-                    "secondGame" -> "게임2"
-                    "thirdGameEasy" -> "게임3 - 쉬움"
-                    "thirdGameNormal" -> "게임3 - 보통"
-                    "thirdGameHard" -> "게임3 - 어려움"
-                    else -> "로딩중.."
-                },
-                style = MaterialTheme.typography.displayMedium,
+            Box(
                 modifier = Modifier
-                    .padding(top = 12.dp)
-            )
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                ,
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = when (situation) {
+                        "world" -> "마을 구경하기"
+                        "chat" -> "통신"
+                        "firstGame" -> "게임1"
+                        "secondGame" -> "게임2"
+                        "thirdGameEasy" -> "게임3 - 쉬움"
+                        "thirdGameNormal" -> "게임3 - 보통"
+                        "thirdGameHard" -> "게임3 - 어려움"
+                        else -> "로딩중.."
+                    },
+                    style = MaterialTheme.typography.displayMedium,
+                    modifier = Modifier
+                )
+
+                // 오른쪽 버튼
+                MainButton(
+                    text = "닫기",
+                    onClick = popBackStack,
+                    modifier = Modifier.align(Alignment.CenterEnd)
+                )
+            }
+
+
 
             when (situation) {
                 "world" -> Column(

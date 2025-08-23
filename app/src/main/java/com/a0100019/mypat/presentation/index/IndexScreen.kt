@@ -53,7 +53,8 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 fun IndexScreen(
-    indexViewModel: IndexViewModel = hiltViewModel()
+    indexViewModel: IndexViewModel = hiltViewModel(),
+    popBackStack: () -> Unit = {}
 
 ) {
 
@@ -75,6 +76,7 @@ fun IndexScreen(
         onTypeChangeClick = indexViewModel::onTypeChangeClick,
         onCloseDialog = indexViewModel::onCloseDialog,
         onCardClick = indexViewModel::onCardClick,
+        popBackStack = popBackStack,
 
         typeChange = indexState.typeChange,
         dialogPatIndex = indexState.dialogPatIndex,
@@ -94,6 +96,7 @@ fun IndexScreen(
     onTypeChangeClick: (String) -> Unit,
     onCloseDialog: () -> Unit,
     onCardClick: (Int) -> Unit,
+    popBackStack: () -> Unit = {},
 
     typeChange: String,
     dialogPatIndex: Int,
@@ -127,14 +130,28 @@ fun IndexScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
-            .padding(6.dp)
     ) {
-        Text(
-            text = "도감",
-            style = MaterialTheme.typography.headlineLarge,
+        Box(
             modifier = Modifier
+                .fillMaxWidth()
                 .padding(12.dp)
-        )
+            ,
+            contentAlignment = Alignment.Center
+        ) {
+            // 가운데 텍스트
+            Text(
+                text = "도감",
+                style = MaterialTheme.typography.displaySmall
+            )
+
+            // 오른쪽 버튼
+            MainButton(
+                text = "닫기",
+                onClick = popBackStack,
+                modifier = Modifier.align(Alignment.CenterEnd)
+            )
+        }
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,

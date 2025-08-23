@@ -78,7 +78,6 @@ fun MainNavHost() {
             LoginScreen(navController = navController)
         }
 
-
         composable(route = MainRoute.DailyScreen.name) {
             DailyScreen(
                 onDiaryNavigateClick = {
@@ -93,6 +92,7 @@ fun MainNavHost() {
                 onWalkNavigateClick = {
                     navController.navigate(route = MainRoute.WalkScreen.name)
                 },
+                popBackStack = { navController.popBackStack() }
             )
         }
 
@@ -108,11 +108,15 @@ fun MainNavHost() {
         }
 
         composable(route = MainRoute.StoreScreen.name) {
-            StoreScreen()
+            StoreScreen(
+                popBackStack = { navController.popBackStack() }
+            )
         }
 
         composable(route = MainRoute.IndexScreen.name) {
-            IndexScreen()
+            IndexScreen(
+                popBackStack = { navController.popBackStack() }
+            )
         }
 
         composable(route = MainRoute.InformationScreen.name) {
@@ -120,10 +124,10 @@ fun MainNavHost() {
         }
 
         composable(route = MainRoute.CommunityScreen.name) {
-            CommunityScreen()
+            CommunityScreen(
+                popBackStack = { navController.popBackStack() }
+            )
         }
-
-
 
         composable(route = MainRoute.FirstGameScreen.name) {
             FirstGameScreen(
@@ -148,7 +152,8 @@ fun MainNavHost() {
                 diaryViewModel = diaryViewModel, // ViewModel을 전달
                 onDiaryClick = {
                     navController.navigate(route = MainRoute.DiaryWriteScreen.name)
-                }
+                },
+                popBackStack = { navController.popBackStack() }
             )
         }
 
@@ -162,11 +167,15 @@ fun MainNavHost() {
         }
 
         composable(route = MainRoute.EnglishScreen.name) {
-            EnglishScreen()
+            EnglishScreen(
+                popBackStack = { navController.popBackStack() }
+            )
         }
 
         composable(route = MainRoute.KoreanScreen.name) {
-            KoreanScreen()
+            KoreanScreen(
+                popBackStack = { navController.popBackStack() }
+            )
         }
 
         composable(route = MainRoute.SettingScreen.name) {
@@ -176,12 +185,15 @@ fun MainNavHost() {
                         popUpTo(0) { inclusive = true } // 백스택 전체 제거
                         launchSingleTop = true // 같은 화면 여러 번 안 쌓이게
                     }
-                }
+                },
+                popBackStack = { navController.popBackStack() }
             )
         }
 
         composable(route = MainRoute.WalkScreen.name) {
-            WalkScreen()
+            WalkScreen(
+                popBackStack = { navController.popBackStack() }
+            )
         }
 
 //

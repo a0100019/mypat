@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -57,6 +58,7 @@ fun DiaryScreen(
     diaryViewModel: DiaryViewModel = hiltViewModel(),
 
     onDiaryClick: () -> Unit,
+    popBackStack: () -> Unit = {},
 
     ) {
 
@@ -86,7 +88,8 @@ fun DiaryScreen(
         onSearchTextChange = diaryViewModel::onSearchTextChange,
         onDialogStateChange = diaryViewModel::onDialogStateChange,
         onEmotionFilterClick = diaryViewModel::onEmotionFilterClick,
-        onSearchClearClick = diaryViewModel::onSearchClearClick
+        onSearchClearClick = diaryViewModel::onSearchClearClick,
+        popBackStack = popBackStack
     )
 }
 
@@ -107,6 +110,7 @@ fun DiaryScreen(
     onDialogStateChange: (String) -> Unit,
     onEmotionFilterClick: (String) -> Unit,
     onSearchClearClick: () -> Unit,
+    popBackStack: () -> Unit = {},
 ) {
 
     if(clickDiaryData != null) {
@@ -140,18 +144,34 @@ fun DiaryScreen(
     ) {
         // Text in the center
 
-        Text(
-            text = "일기장",
-            style = MaterialTheme.typography.displayMedium, // Large font size
+
+
+        Box(
             modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(top = 20.dp, bottom = 6.dp)
-        )
+                .fillMaxWidth()
+                .padding(24.dp)
+            ,
+            contentAlignment = Alignment.Center
+        ) {
+
+            Text(
+                text = "일기장",
+                style = MaterialTheme.typography.displayMedium, // Large font size
+                modifier = Modifier
+            )
+
+            // 오른쪽 버튼
+            MainButton(
+                text = "닫기",
+                onClick = popBackStack,
+                modifier = Modifier.align(Alignment.CenterEnd)
+            )
+        }
 
         Row(
             modifier = Modifier
                 .align(Alignment.End)
-                .padding(end = 32.dp)
+                .padding(end = 24.dp)
             ,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -184,7 +204,7 @@ fun DiaryScreen(
 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(16.dp),
+            contentPadding = PaddingValues(8.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp) // 카드 사이 간격 추가
         ) {
             itemsIndexed(diaryDataList) { index, diaryData ->
