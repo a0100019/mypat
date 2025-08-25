@@ -23,6 +23,7 @@ import android.provider.Settings
 import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
@@ -41,7 +42,7 @@ fun WalkPermissionDialog(
     ) {
         Box(
             modifier = Modifier
-                .fillMaxWidth()
+                .width(340.dp)
                 .padding(16.dp)
                 .shadow(12.dp, RoundedCornerShape(20.dp))
                 .background(Color(0xFFFDF7FF), shape = RoundedCornerShape(20.dp)) // 부드러운 배경

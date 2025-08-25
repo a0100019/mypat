@@ -69,7 +69,6 @@ fun WorldViewScreen(
 
     Surface(
         modifier = Modifier
-            .fillMaxWidth() // 가로 크기는 최대
             .aspectRatio(1 / 1.25f), // 세로가 가로의 1.25배
         shape = RoundedCornerShape(16.dp),
         color = Color(0xFFFFF8E7),

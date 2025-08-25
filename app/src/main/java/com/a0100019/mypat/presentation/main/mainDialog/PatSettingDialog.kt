@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -44,7 +45,7 @@ fun PatSettingDialog(
     ) {
         Box(
             modifier = Modifier
-                .fillMaxWidth()
+                .width(340.dp)
                 .shadow(12.dp, RoundedCornerShape(24.dp))
                 .border(
                     width = 2.dp,

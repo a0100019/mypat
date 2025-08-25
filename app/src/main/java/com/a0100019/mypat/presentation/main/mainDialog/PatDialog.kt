@@ -44,7 +44,7 @@ fun PatDialog(
     Dialog(onDismissRequest = onClose) {
         Box(
             modifier = Modifier
-                .fillMaxWidth()
+                .width(340.dp)
                 .padding(16.dp)
                 .shadow(12.dp, RoundedCornerShape(24.dp))
                 .border(
@@ -104,7 +104,11 @@ fun PatDialog(
                         patFlowData?.love?.let { LoveHorizontalLine(it) }
                     }
 
-                    DialogPatImage(patData.url)
+                    DialogPatImage(
+                        patUrl = patData.url,
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                    )
 
                 }
 

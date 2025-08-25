@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -42,7 +43,7 @@ fun NameChangeDialog(
     ) {
         Box(
             modifier = Modifier
-                .fillMaxWidth()
+                .width(340.dp)
 //                .fillMaxHeight(0.8f)
                 .shadow(12.dp, shape = RoundedCornerShape(24.dp))
                 .background(

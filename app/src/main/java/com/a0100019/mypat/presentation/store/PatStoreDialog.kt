@@ -54,7 +54,7 @@ fun PatStoreDialog(
     ) {
         Box(
             modifier = Modifier
-                .fillMaxWidth()
+                .width(340.dp)
                 .shadow(12.dp, RoundedCornerShape(24.dp))
                 .border(
                     width = 2.dp,

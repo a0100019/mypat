@@ -54,7 +54,7 @@ fun SecondGameDialog(
     ) {
         Box(
             modifier = Modifier
-                .fillMaxWidth()
+                .width(340.dp)
                 .padding(16.dp)
                 .shadow(12.dp, RoundedCornerShape(24.dp))
                 .border(

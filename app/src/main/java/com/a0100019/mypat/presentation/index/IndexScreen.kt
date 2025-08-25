@@ -130,6 +130,7 @@ fun IndexScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
+            .padding(12.dp)
     ) {
         Box(
             modifier = Modifier

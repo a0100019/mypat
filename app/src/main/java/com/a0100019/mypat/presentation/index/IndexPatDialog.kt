@@ -48,7 +48,7 @@ fun IndexPatDialog(
     ) {
         Box(
             modifier = Modifier
-                .fillMaxWidth()
+                .width(340.dp)
                 .padding(16.dp)
                 .shadow(12.dp, RoundedCornerShape(24.dp))
                 .border(
@@ -89,7 +89,11 @@ fun IndexPatDialog(
                         )
                         .padding(16.dp)
                 ) {
-                    DialogPatImage(patData.url)
+                    DialogPatImage(
+                        patUrl = patData.url,
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                    )
                     if(open) {
                         Column {
                             Row(verticalAlignment = Alignment.CenterVertically) {

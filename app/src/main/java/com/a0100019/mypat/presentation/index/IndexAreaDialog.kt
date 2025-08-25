@@ -41,7 +41,7 @@ fun IndexAreaDialog(
     Dialog(onDismissRequest = onClose) {
         Box(
             modifier = Modifier
-                .fillMaxWidth()
+                .width(340.dp)
                 .padding(16.dp)
                 .shadow(12.dp, shape = RoundedCornerShape(24.dp))
                 .background(

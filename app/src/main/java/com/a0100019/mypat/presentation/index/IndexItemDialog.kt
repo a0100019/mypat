@@ -46,7 +46,7 @@ fun IndexItemDialog(
     ) {
         Box(
             modifier = Modifier
-                .fillMaxWidth()
+                .width(340.dp)
                 .padding(16.dp)
                 .shadow(12.dp, shape = RoundedCornerShape(24.dp))
                 .background(
@@ -97,7 +97,11 @@ fun IndexItemDialog(
                         .padding(16.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    JustImage(itemData.url)
+                    JustImage(
+                        filePath = itemData.url,
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                    )
                     if(!open) {
                         Box(
                             modifier = Modifier

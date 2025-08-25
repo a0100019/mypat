@@ -193,7 +193,10 @@ fun MainScreen(
         )
     }
 
-    Surface {
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
         Column (
             modifier = Modifier
                 .fillMaxSize(),
@@ -201,7 +204,9 @@ fun MainScreen(
         ){
 
             Column(
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .padding(12.dp)
             ) {
                 Row(
                     modifier = Modifier
@@ -274,7 +279,11 @@ fun MainScreen(
 
             Column(
                 modifier = Modifier
-                    .padding(10.dp)
+                    .padding(16.dp)
+                    .weight(1f)
+                ,
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Row(
                     modifier = Modifier
@@ -337,7 +346,11 @@ fun MainScreen(
             }
 
             Column(
-
+                modifier = Modifier
+                    .weight(0.3f)
+                    .padding(24.dp)
+                ,
+                verticalArrangement = Arrangement.Bottom
             ) {
                 Row(
                     modifier = Modifier
@@ -347,7 +360,7 @@ fun MainScreen(
                     MainButton(
                         text = "일일 루틴",
                         modifier = Modifier
-                            .fillMaxWidth(0.7f)
+                            .fillMaxWidth()
                             .padding(bottom = 10.dp),
                         onClick = onDailyNavigateClick,
                     )
@@ -355,38 +368,26 @@ fun MainScreen(
 
                 Row(
                     modifier = Modifier
-                        .padding(bottom = 10.dp)
                         .fillMaxWidth(),
-//                    horizontalArrangement = Arrangement.spacedBy(10.dp) // 버튼 간 간격
-                ) {
+                    horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
 
-                    Row(
-                        horizontalArrangement = Arrangement.End,
+                    MainButton(
+                        text = "상점",
                         modifier = Modifier
-                            .weight(0.4f)
-                    ){
-                        MainButton(
-                            text = "상점",
-                            modifier = Modifier
-                                .fillMaxWidth(0.6f),
-                            onClick = onStoreNavigateClick
-                        )
+                            .fillMaxWidth(0.4f),
+                        onClick = onStoreNavigateClick
+                    )
 
-                    }
 
-                    Spacer(modifier = Modifier.weight(0.2f))
 
-                    Row(
+                    MainButton(
+                        text = "도감",
                         modifier = Modifier
-                            .weight(0.4f)
-                    ){
-                        MainButton(
-                            text = "도감",
-                            modifier = Modifier
-                                .fillMaxWidth(0.6f),
-                            onClick = onIndexNavigateClick
-                        )
-                    }
+                            .fillMaxWidth(0.66f),
+                        onClick = onIndexNavigateClick
+                    )
+
 
                 }
 

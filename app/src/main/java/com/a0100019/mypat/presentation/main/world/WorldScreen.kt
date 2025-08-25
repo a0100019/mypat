@@ -189,31 +189,29 @@ fun WorldScreen(
             text = "꾸미기",
             style = MaterialTheme.typography.headlineLarge,
             modifier = Modifier
-                .padding(top = 16.dp)
+                .padding(16.dp)
         )
 
         Column(
             modifier = Modifier
                 .weight(1f),
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(end = 16.dp, bottom = 6.dp),
-                horizontalArrangement = Arrangement.End
+                    .padding(bottom = 6.dp),
             ) {
                 Text(
                     text = "펫 ${userDataList.find { it.id == "pat" }?.value3} / ${userDataList.find { it.id == "pat" }?.value2}   " +
                             "아이템 ${userDataList.find { it.id == "item" }?.value3} / ${userDataList.find { it.id == "item" }?.value2}",
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.titleMedium
                 )
             }
 
             Surface(
                 modifier = Modifier
-                    .fillMaxWidth() // 가로 크기는 최대
                     .aspectRatio(1 / 1.25f)
                     .padding(start = 10.dp, end = 10.dp),
                 shape = RoundedCornerShape(16.dp),
@@ -305,7 +303,12 @@ fun WorldScreen(
             }
         }
 
-        Column {
+        Column(
+            modifier = Modifier
+                .weight(0.3f)
+            ,
+            verticalArrangement = Arrangement.Bottom
+        ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth(),

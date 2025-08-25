@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -55,7 +56,7 @@ fun LovePatDialog(
     ) {
         BoxWithConstraints(
             modifier = Modifier
-                .fillMaxWidth()
+                .width(340.dp)
                 .fillMaxHeight(0.6f)
                 .shadow(12.dp, shape = RoundedCornerShape(24.dp))
                 .background(
@@ -96,7 +97,11 @@ fun LovePatDialog(
                         )
                         .padding(16.dp)
                 ) {
-                    DialogPatImage(lovePatData.url)
+                    DialogPatImage(
+                        patUrl = lovePatData.url,
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                                )
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Image(
                             painter = painterResource(id = R.drawable.heart),
