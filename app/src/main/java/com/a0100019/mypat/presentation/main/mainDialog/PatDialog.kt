@@ -165,7 +165,7 @@ fun DialogScreenContentPreview() {
         PatDialog(
             onClose = {},
             patData = Pat(
-                url = "pat/cat.json",
+                url = "pat/flight.json",
                 name = "고양이",
                 love = 1000,
                 memo = "귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다."
