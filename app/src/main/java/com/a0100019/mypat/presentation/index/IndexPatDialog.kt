@@ -241,7 +241,7 @@ fun IndexPatDialogPreview() {
             onClose = {},
             open = false,
             patData = Pat(
-                url = "pat/cat.json",
+                url = "pat/dragon.json",
                 name = "고양이",
                 love = 1000,
                 memo = "귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다. 귀여운 고양이 입니다."

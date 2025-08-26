@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "pat_table")
 data class Pat(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    var date: String = "0",
+    var date: String = "2025-01-01",
     val name: String = "",
     val url: String,
     var effect: Int = 0,
@@ -17,5 +17,4 @@ data class Pat(
     var sizeFloat: Float = 0.2f,
     var gameCount: Int = 0,
     val memo: String = "",
-
     )
