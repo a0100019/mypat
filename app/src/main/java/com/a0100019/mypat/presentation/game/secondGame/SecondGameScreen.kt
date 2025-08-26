@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -29,6 +30,7 @@ import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.component.XmlButton
+import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
 import com.a0100019.mypat.presentation.ui.image.pat.DialogPatImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
@@ -101,141 +103,147 @@ fun SecondGameScreen(
         )
     }
 
-    Column(
-        modifier = Modifier.fillMaxSize()
-        ,
-        horizontalAlignment = Alignment.CenterHorizontally
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
     ) {
 
-        Text(
-            text = String.format("%.3f", time) + "초",
-            style = MaterialTheme.typography.displayMedium,
-            modifier = Modifier
-                .padding(top = 32.dp, bottom = 8.dp)
-            )
-        Text(
-            text = "+ " + String.format("%.0f", plusTime) + "초",
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier
-                .padding(bottom = 16.dp)
-        )
-
-        Text(
-            text = "${(round + 1)} / 10",
-            style = MaterialTheme.typography.titleMedium
-        )
+        BackGroundImage()
 
         Column(
-            modifier = Modifier
-                .weight(1f)
-            ,
-            verticalArrangement = Arrangement.Center
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            mapList[round].chunked(5).forEachIndexed { rowIndex, rowItems -> // 행 인덱스
-                Row {
-                    rowItems.forEachIndexed { columnIndex, item -> // 열 인덱스
 
-                        val actualIndex = rowIndex * 5 + columnIndex // 실제 인덱스 계산
+            Text(
+                text = String.format("%.3f", time) + "초",
+                style = MaterialTheme.typography.displayMedium,
+                modifier = Modifier
+                    .padding(top = 32.dp, bottom = 8.dp)
+            )
+            Text(
+                text = "+ " + String.format("%.0f", plusTime) + "초",
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier
+                    .padding(bottom = 16.dp)
+            )
 
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .aspectRatio(1f) // 정사각형 유지
-                                .padding(4.dp)
-                                .background(
-                                    when (item) {
-                                        '0' -> Color.LightGray
-                                        '1' -> MaterialTheme.colorScheme.onErrorContainer
-                                        '2' -> Color(0xFF40FF40)
-                                        else -> Color(0xFFF66C6C)
-                                    }, shape = RoundedCornerShape(8.dp)
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            if(item == '1') {
-                                DialogPatImage(patData.url)
+            Text(
+                text = "${(round + 1)} / 10",
+                style = MaterialTheme.typography.titleMedium
+            )
+
+            Column(
+                modifier = Modifier
+                    .weight(1f),
+                verticalArrangement = Arrangement.Center
+            ) {
+                mapList[round].chunked(5).forEachIndexed { rowIndex, rowItems -> // 행 인덱스
+                    Row {
+                        rowItems.forEachIndexed { columnIndex, item -> // 열 인덱스
+
+                            val actualIndex = rowIndex * 5 + columnIndex // 실제 인덱스 계산
+
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .aspectRatio(1f) // 정사각형 유지
+                                    .padding(4.dp)
+                                    .background(
+                                        when (item) {
+                                            '0' -> Color.LightGray
+                                            '1' -> MaterialTheme.colorScheme.onErrorContainer
+                                            '2' -> Color(0xFF40FF40)
+                                            else -> Color(0xFFF66C6C)
+                                        }, shape = RoundedCornerShape(8.dp)
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                if (item == '1') {
+                                    DialogPatImage(patData.url)
+                                }
                             }
                         }
                     }
                 }
             }
-        }
 
-        when (gameState) {
-            "시작" -> {
-                MainButton(
-                    onClick = onGameStartClick,
-                    text = "\n게임 시작\n",
-                    modifier = Modifier
-                        .fillMaxWidth(0.5f)
-                        .padding(bottom = 32.dp)
-                )
-            }
-            else ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 32.dp)
-                    ,
-                    horizontalArrangement = Arrangement.SpaceAround
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        XmlButton(
-                            iconResId = R.drawable.arrow,
-                            onClick = { onMoveClick("up") }
-                        )
-                        Row {
-                            XmlButton(
-                                iconResId = R.drawable.arrow,
-                                rotationDegree = 270f,
-                                onClick = { onMoveClick("left") }
-                            )
-                            Spacer(modifier = Modifier.size(50.dp))
-                            XmlButton(
-                                iconResId = R.drawable.arrow,
-                                rotationDegree = 90f,
-                                onClick = { onMoveClick("right") }
-                            )
-                        }
-                        XmlButton(
-                            iconResId = R.drawable.arrow,
-                            rotationDegree = 180f,
-                            onClick = { onMoveClick("down") }
-                        )
-                    }
-
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        XmlButton(
-                            iconResId = R.drawable.double_arrow,
-                            rotationDegree = 270f,
-                            onClick = { onFastMoveClick("up") }
-                        )
-                        Row {
-                            XmlButton(
-                                iconResId = R.drawable.double_arrow,
-                                rotationDegree = 180f,
-                                onClick = { onFastMoveClick("left") }
-                            )
-                            Spacer(modifier = Modifier.size(50.dp))
-                            XmlButton(
-                                iconResId = R.drawable.double_arrow,
-                                onClick = { onFastMoveClick("right") }
-                            )
-                        }
-                        XmlButton(
-                            iconResId = R.drawable.double_arrow,
-                            rotationDegree = 90f,
-                            onClick = { onFastMoveClick("down") }
-                        )
-                    }
+            when (gameState) {
+                "시작" -> {
+                    MainButton(
+                        onClick = onGameStartClick,
+                        text = "\n게임 시작\n",
+                        modifier = Modifier
+                            .fillMaxWidth(0.5f)
+                            .padding(bottom = 32.dp)
+                    )
                 }
 
-        }
+                else ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 32.dp),
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            XmlButton(
+                                iconResId = R.drawable.arrow,
+                                onClick = { onMoveClick("up") }
+                            )
+                            Row {
+                                XmlButton(
+                                    iconResId = R.drawable.arrow,
+                                    rotationDegree = 270f,
+                                    onClick = { onMoveClick("left") }
+                                )
+                                Spacer(modifier = Modifier.size(50.dp))
+                                XmlButton(
+                                    iconResId = R.drawable.arrow,
+                                    rotationDegree = 90f,
+                                    onClick = { onMoveClick("right") }
+                                )
+                            }
+                            XmlButton(
+                                iconResId = R.drawable.arrow,
+                                rotationDegree = 180f,
+                                onClick = { onMoveClick("down") }
+                            )
+                        }
 
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            XmlButton(
+                                iconResId = R.drawable.double_arrow,
+                                rotationDegree = 270f,
+                                onClick = { onFastMoveClick("up") }
+                            )
+                            Row {
+                                XmlButton(
+                                    iconResId = R.drawable.double_arrow,
+                                    rotationDegree = 180f,
+                                    onClick = { onFastMoveClick("left") }
+                                )
+                                Spacer(modifier = Modifier.size(50.dp))
+                                XmlButton(
+                                    iconResId = R.drawable.double_arrow,
+                                    onClick = { onFastMoveClick("right") }
+                                )
+                            }
+                            XmlButton(
+                                iconResId = R.drawable.double_arrow,
+                                rotationDegree = 90f,
+                                onClick = { onFastMoveClick("down") }
+                            )
+                        }
+                    }
+
+            }
+
+        }
     }
 }
 

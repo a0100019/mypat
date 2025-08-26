@@ -45,6 +45,7 @@ import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
 import com.a0100019.mypat.presentation.ui.component.MainButton
+import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
@@ -181,389 +182,408 @@ fun CommunityScreen(
         )
     }
 
-    Box {
-        Column(
-            modifier = Modifier
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
 
-            Box(
+        BackGroundImage()
+
+        Box {
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                ,
-                contentAlignment = Alignment.Center
+                    .fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = when (situation) {
-                        "world" -> "마을 구경하기"
-                        "chat" -> "통신"
-                        "firstGame" -> "게임1"
-                        "secondGame" -> "게임2"
-                        "thirdGameEasy" -> "게임3 - 쉬움"
-                        "thirdGameNormal" -> "게임3 - 보통"
-                        "thirdGameHard" -> "게임3 - 어려움"
-                        else -> "로딩중.."
-                    },
-                    style = MaterialTheme.typography.displayMedium,
+
+                Box(
                     modifier = Modifier
-                )
-
-                // 오른쪽 버튼
-                MainButton(
-                    text = "닫기",
-                    onClick = popBackStack,
-                    modifier = Modifier.align(Alignment.CenterEnd)
-                )
-            }
-
-
-
-            when (situation) {
-                "world" -> Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(16.dp)
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    Text(
+                        text = when (situation) {
+                            "world" -> "마을 구경하기"
+                            "chat" -> "통신"
+                            "firstGame" -> "게임1"
+                            "secondGame" -> "게임2"
+                            "thirdGameEasy" -> "게임3 - 쉬움"
+                            "thirdGameNormal" -> "게임3 - 보통"
+                            "thirdGameHard" -> "게임3 - 어려움"
+                            else -> "로딩중.."
+                        },
+                        style = MaterialTheme.typography.displayMedium,
                         modifier = Modifier
-                            .padding(bottom = 24.dp)
-                    ) {
-                        CommunityWorldCard(
-                            modifier = Modifier
-                                .weight(1f),
-                            userData = allUserData1,
-                            worldDataList = allUserWorldDataList1,
-                            patDataList = patDataList,
-                            itemDataList = itemDataList,
-                            onClick = { onUserWorldClick(1) }
-                        )
-                        CommunityWorldCard(
-                            modifier = Modifier
-                                .weight(1f),
-                            userData = allUserData2,
-                            worldDataList = allUserWorldDataList2,
-                            patDataList = patDataList,
-                            itemDataList = itemDataList,
-                            onClick = { onUserWorldClick(2) }
-                        )
-                    }
+                    )
 
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        modifier = Modifier
-                            .padding(bottom = 36.dp)
-                    ) {
-                        CommunityWorldCard(
-                            modifier = Modifier
-                                .weight(1f)
-                            ,
-                            userData = allUserData3,
-                            worldDataList = allUserWorldDataList3,
-                            patDataList = patDataList,
-                            itemDataList = itemDataList,
-                            onClick = { onUserWorldClick(3) }
-                        )
-                        CommunityWorldCard(
-                            modifier = Modifier
-                                .weight(1f),
-                            userData = allUserData4,
-                            worldDataList = allUserWorldDataList4,
-                            patDataList = patDataList,
-                            itemDataList = itemDataList,
-                            onClick = { onUserWorldClick(4) }
-                        )
-                    }
-
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    ) {
-
-                        Text(
-                            "         "
-                        )
-
-                        Text(
-                            text = "마음에 드는 마을에 좋아요를 눌러주세요!\n오늘의 첫 좋아요를 누르면 500달빛을 획득합니다",
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier
-                                .padding(bottom = 24.dp)
-                        )
-
-                        MainButton(
-                            onClick = onPageUpClick,
-                            text = "   다음   ",
-                            modifier = Modifier
-                                .padding(bottom = 24.dp)
-                        )
-                    }
+                    // 오른쪽 버튼
+                    MainButton(
+                        text = "닫기",
+                        onClick = popBackStack,
+                        modifier = Modifier.align(Alignment.CenterEnd)
+                    )
                 }
 
-                "chat" -> Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 70.dp)
-                        .border(
-                            width = 2.dp,
-                            color = MaterialTheme.colorScheme.outline,
-                            shape = RoundedCornerShape(16.dp)
-                        )
-                        .background(
-                            color = MaterialTheme.colorScheme.onSecondary,
-                            shape = RoundedCornerShape(16.dp)
-                        )
-                ) {
 
-                    LazyColumn(
+
+                when (situation) {
+                    "world" -> Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier
                             .weight(1f)
-                            .fillMaxWidth()
-                            .padding(start = 6.dp, end = 6.dp, top = 12.dp)
-                        ,
-                        reverseLayout = true,
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                            .padding(16.dp)
                     ) {
-                        itemsIndexed(chatMessages.reversed()) { index, message ->
-                            val isMine =
-                                message.tag == userDataList.find { it.id == "auth" }!!.value2
-                            val alignment = if (isMine) Arrangement.End else Arrangement.Start
-                            val bubbleColor = if (isMine) MaterialTheme.colorScheme.scrim else Color(0xFFAEDFF7)
-                            val bubbleBorderColor = if (isMine) MaterialTheme.colorScheme.primaryContainer else Color(0xFF4A90E2)
-
-                            Row(
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            modifier = Modifier
+                                .padding(bottom = 24.dp)
+                        ) {
+                            CommunityWorldCard(
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(bottom = 6.dp)
-                                ,
-                                horizontalArrangement = alignment
-                            ) {
-                                Column(
+                                    .weight(1f),
+                                userData = allUserData1,
+                                worldDataList = allUserWorldDataList1,
+                                patDataList = patDataList,
+                                itemDataList = itemDataList,
+                                onClick = { onUserWorldClick(1) }
+                            )
+                            CommunityWorldCard(
+                                modifier = Modifier
+                                    .weight(1f),
+                                userData = allUserData2,
+                                worldDataList = allUserWorldDataList2,
+                                patDataList = patDataList,
+                                itemDataList = itemDataList,
+                                onClick = { onUserWorldClick(2) }
+                            )
+                        }
+
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            modifier = Modifier
+                                .padding(bottom = 36.dp)
+                        ) {
+                            CommunityWorldCard(
+                                modifier = Modifier
+                                    .weight(1f),
+                                userData = allUserData3,
+                                worldDataList = allUserWorldDataList3,
+                                patDataList = patDataList,
+                                itemDataList = itemDataList,
+                                onClick = { onUserWorldClick(3) }
+                            )
+                            CommunityWorldCard(
+                                modifier = Modifier
+                                    .weight(1f),
+                                userData = allUserData4,
+                                worldDataList = allUserWorldDataList4,
+                                patDataList = patDataList,
+                                itemDataList = itemDataList,
+                                onClick = { onUserWorldClick(4) }
+                            )
+                        }
+
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        ) {
+
+                            Text(
+                                "         "
+                            )
+
+                            Text(
+                                text = "마음에 드는 마을에 좋아요를 눌러주세요!\n오늘의 첫 좋아요를 누르면 500달빛을 획득합니다",
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .padding(bottom = 24.dp)
+                            )
+
+                            MainButton(
+                                onClick = onPageUpClick,
+                                text = "   다음   ",
+                                modifier = Modifier
+                                    .padding(bottom = 24.dp)
+                            )
+                        }
+                    }
+
+                    "chat" -> Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 70.dp)
+                            .border(
+                                width = 2.dp,
+                                color = MaterialTheme.colorScheme.outline,
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                            .background(
+                                color = MaterialTheme.colorScheme.onSecondary,
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                    ) {
+
+                        LazyColumn(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxWidth()
+                                .padding(start = 6.dp, end = 6.dp, top = 12.dp),
+                            reverseLayout = true,
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            itemsIndexed(chatMessages.reversed()) { index, message ->
+                                val isMine =
+                                    message.tag == userDataList.find { it.id == "auth" }!!.value2
+                                val alignment = if (isMine) Arrangement.End else Arrangement.Start
+                                val bubbleColor =
+                                    if (isMine) MaterialTheme.colorScheme.scrim else Color(
+                                        0xFFAEDFF7
+                                    )
+                                val bubbleBorderColor =
+                                    if (isMine) MaterialTheme.colorScheme.primaryContainer else Color(
+                                        0xFF4A90E2
+                                    )
+
+                                Row(
                                     modifier = Modifier
-                                        .widthIn(max = 280.dp)
-                                        .padding(horizontal = 8.dp),
-                                    horizontalAlignment = if (isMine) Alignment.End else Alignment.Start
+                                        .fillMaxWidth()
+                                        .padding(bottom = 6.dp),
+                                    horizontalArrangement = alignment
                                 ) {
-                                    Row {
-                                        Text(
-                                            text = message.name,
-                                            style = MaterialTheme.typography.labelSmall,
-                                            modifier = Modifier.padding(start = 4.dp, bottom = 2.dp)
-                                        )
-
-                                        Text(
-                                            text = "#" + message.tag,
-                                            style = MaterialTheme.typography.labelSmall,
-                                            modifier = Modifier.padding(start = 4.dp, bottom = 2.dp)
-                                        )
-
-                                        // 시간 포맷
-                                        val time = remember(message.timestamp) {
-                                            SimpleDateFormat("HH:mm", Locale.getDefault()).format(
-                                                Date(message.timestamp)
-                                            )
-                                        }
-
-                                        Text(
-                                            text = time,
-                                            style = MaterialTheme.typography.labelSmall,
-                                            modifier = Modifier.padding(start = 4.dp, bottom = 2.dp)
-                                        )
-
-                                        if (!isMine) {
-                                            JustImage(
-                                                filePath = "etc/ban.png",
-                                                modifier = Modifier
-                                                    .size(10.dp)
-                                                    .clickable {
-                                                        alertStateChange(index.toString())
-                                                    }
-                                            )
-                                        }
-
-                                    }
-                                    Box(
+                                    Column(
                                         modifier = Modifier
-                                            .background(bubbleColor, RoundedCornerShape(8.dp))
-                                            .border(
-                                                width = 2.dp,
-                                                color = bubbleBorderColor,
-                                                shape = RoundedCornerShape(8.dp)
-                                            )
-                                            .padding(8.dp)
+                                            .widthIn(max = 280.dp)
+                                            .padding(horizontal = 8.dp),
+                                        horizontalAlignment = if (isMine) Alignment.End else Alignment.Start
                                     ) {
-                                        Text(text = message.message)
+                                        Row {
+                                            Text(
+                                                text = message.name,
+                                                style = MaterialTheme.typography.labelSmall,
+                                                modifier = Modifier.padding(
+                                                    start = 4.dp,
+                                                    bottom = 2.dp
+                                                )
+                                            )
+
+                                            Text(
+                                                text = "#" + message.tag,
+                                                style = MaterialTheme.typography.labelSmall,
+                                                modifier = Modifier.padding(
+                                                    start = 4.dp,
+                                                    bottom = 2.dp
+                                                )
+                                            )
+
+                                            // 시간 포맷
+                                            val time = remember(message.timestamp) {
+                                                SimpleDateFormat(
+                                                    "HH:mm",
+                                                    Locale.getDefault()
+                                                ).format(
+                                                    Date(message.timestamp)
+                                                )
+                                            }
+
+                                            Text(
+                                                text = time,
+                                                style = MaterialTheme.typography.labelSmall,
+                                                modifier = Modifier.padding(
+                                                    start = 4.dp,
+                                                    bottom = 2.dp
+                                                )
+                                            )
+
+                                            if (!isMine) {
+                                                JustImage(
+                                                    filePath = "etc/ban.png",
+                                                    modifier = Modifier
+                                                        .size(10.dp)
+                                                        .clickable {
+                                                            alertStateChange(index.toString())
+                                                        }
+                                                )
+                                            }
+
+                                        }
+                                        Box(
+                                            modifier = Modifier
+                                                .background(bubbleColor, RoundedCornerShape(8.dp))
+                                                .border(
+                                                    width = 2.dp,
+                                                    color = bubbleBorderColor,
+                                                    shape = RoundedCornerShape(8.dp)
+                                                )
+                                                .padding(8.dp)
+                                        ) {
+                                            Text(text = message.message)
+                                        }
                                     }
                                 }
                             }
                         }
+
+                        // 입력창 + 전송버튼
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 3.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            TextField(
+                                value = newChat,
+                                onValueChange = onChatTextChange,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .border(
+                                        width = 2.dp,
+                                        color = MaterialTheme.colorScheme.outline,
+                                        shape = RoundedCornerShape(16.dp)
+                                    )
+                                    .background(
+                                        color = MaterialTheme.colorScheme.background,
+                                        shape = RoundedCornerShape(16.dp)
+                                    ),
+                                shape = RoundedCornerShape(16.dp),
+                                placeholder = { Text("메시지를 입력하세요") },
+                                maxLines = 4,
+                                colors = TextFieldDefaults.textFieldColors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceContainerLow,// 배경색 필요 시 조정
+                                    focusedIndicatorColor = Color.Transparent, // 포커스 상태 밑줄 제거
+                                    unfocusedIndicatorColor = Color.Transparent, // 비포커스 상태 밑줄 제거
+                                    disabledIndicatorColor = Color.Transparent // 비활성화 상태 밑줄 제거
+                                )
+                            )
+
+                            Image(
+                                painter = painterResource(id = R.drawable.forwarding),
+                                contentDescription = "회전된 이미지",
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .rotate(90f)
+                                    .padding(8.dp)
+                                    .clickable {
+                                        onChatSubmitClick()
+                                    }
+                            )
+
+                        }
+
                     }
 
-                    // 입력창 + 전송버튼
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 3.dp)
-                        ,
-                        verticalAlignment = Alignment.CenterVertically
+                    else -> LazyColumn(
+                        modifier = Modifier.weight(1f),
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp) // 카드 간 간격
                     ) {
-                        TextField(
-                            value = newChat,
-                            onValueChange = onChatTextChange,
-                            modifier = Modifier
-                                .weight(1f)
-                                .border(
-                                    width = 2.dp,
-                                    color = MaterialTheme.colorScheme.outline,
-                                    shape = RoundedCornerShape(16.dp)
+                        itemsIndexed(allUserRankDataList) { index, user ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = "${index + 1}",
+                                    style = MaterialTheme.typography.headlineMedium,
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier
+                                        .weight(0.1f)
                                 )
-                                .background(
-                                    color = MaterialTheme.colorScheme.background,
-                                    shape = RoundedCornerShape(16.dp)
+
+                                CommunityRankingCard(
+                                    userData = user,
+                                    situation = situation,
+                                    onClick = { onUserRankClick(index) },
+                                    modifier = Modifier
+                                        .weight(0.9f)
                                 )
-                            ,
-                            shape = RoundedCornerShape(16.dp),
-                            placeholder = { Text("메시지를 입력하세요") },
-                            maxLines = 4,
-                            colors = TextFieldDefaults.textFieldColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceContainerLow,// 배경색 필요 시 조정
-                                focusedIndicatorColor = Color.Transparent, // 포커스 상태 밑줄 제거
-                                unfocusedIndicatorColor = Color.Transparent, // 비포커스 상태 밑줄 제거
-                                disabledIndicatorColor = Color.Transparent // 비활성화 상태 밑줄 제거
-                            )
-                        )
-
-                        Image(
-                            painter = painterResource(id = R.drawable.forwarding),
-                            contentDescription = "회전된 이미지",
-                            modifier = Modifier
-                                .size(40.dp)
-                                .rotate(90f)
-                                .padding(8.dp)
-                                .clickable {
-                                    onChatSubmitClick()
-                                }
-                        )
-
+                            }
+                        }
                     }
 
                 }
 
-                else -> LazyColumn(
-                    modifier = Modifier.weight(1f),
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp) // 카드 간 간격
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                val thirdGameKeys = listOf("thirdGameEasy", "thirdGameNormal", "thirdGameHard")
+
+                if (situation in thirdGameKeys) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(0.5f),
+                        verticalAlignment = Alignment.Bottom,
+                    ) {
+                        MainButton(
+                            onClick = { onSituationChange("thirdGameEasy") },
+                            text = "쉬움",
+                            imageSize = 16.dp,
+                            iconResId = if (situation == "thirdGameEasy") R.drawable.check else null,
+                            modifier = Modifier.weight(1f)
+                        )
+
+                        MainButton(
+                            onClick = { onSituationChange("thirdGameNormal") },
+                            text = "보통",
+                            imageSize = 16.dp,
+                            iconResId = if (situation == "thirdGameNormal") R.drawable.check else null,
+                            modifier = Modifier.weight(1f)
+                        )
+
+                        MainButton(
+                            onClick = { onSituationChange("thirdGameHard") },
+                            text = "어려움",
+                            imageSize = 16.dp,
+                            iconResId = if (situation == "thirdGameHard") R.drawable.check else null,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
+
+                val buttons = listOf(
+                    "마을" to "world",
+                    "게임1" to "firstGame",
+                    "게임2" to "secondGame",
+                    "게임3" to "thirdGameEasy", // 대표 키만 지정
+                    "통신" to "chat"
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.Bottom
                 ) {
-                    itemsIndexed(allUserRankDataList) { index, user ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                ,
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
+                    buttons.forEach { (label, key) ->
+                        val isSelected = when (key) {
+                            "thirdGameEasy" -> false // situation in thirdGameKeys
+                            else -> situation == key
+                        }
+
+                        Surface(
+                            modifier = Modifier.weight(1f),
+                            color = Color.Transparent, // ✅ 배경 투명
                         ) {
-                            Text(
-                                text = "${index+1}",
-                                style = MaterialTheme.typography.headlineMedium,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier
-                                    .weight(0.1f)
-                            )
-                            
-                            CommunityRankingCard(
-                                userData = user,
-                                situation = situation,
-                                onClick = { onUserRankClick(index) },
-                                modifier = Modifier
-                                    .weight(0.9f)
+                            MainButton(
+                                onClick = { onSituationChange(key) },
+                                text = label,
+                                iconResId = if (isSelected) R.drawable.check else null,
+                                imageSize = 16.dp,
+                                modifier = Modifier.fillMaxWidth()
                             )
                         }
                     }
                 }
-
             }
 
         }
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                    ,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            val thirdGameKeys = listOf("thirdGameEasy", "thirdGameNormal", "thirdGameHard")
-
-            if (situation in thirdGameKeys) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(0.5f),
-                    verticalAlignment = Alignment.Bottom,
-                ) {
-                    MainButton(
-                        onClick = { onSituationChange("thirdGameEasy") },
-                        text = "쉬움",
-                        imageSize = 16.dp,
-                        iconResId = if (situation == "thirdGameEasy") R.drawable.check else null,
-                        modifier = Modifier.weight(1f)
-                    )
-
-                    MainButton(
-                        onClick = { onSituationChange("thirdGameNormal") },
-                        text = "보통",
-                        imageSize = 16.dp,
-                        iconResId = if (situation == "thirdGameNormal") R.drawable.check else null,
-                        modifier = Modifier.weight(1f)
-                    )
-
-                    MainButton(
-                        onClick = { onSituationChange("thirdGameHard") },
-                        text = "어려움",
-                        imageSize = 16.dp,
-                        iconResId = if (situation == "thirdGameHard") R.drawable.check else null,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-            }
-
-            val buttons = listOf(
-                "마을" to "world",
-                "게임1" to "firstGame",
-                "게임2" to "secondGame",
-                "게임3" to "thirdGameEasy", // 대표 키만 지정
-                "통신" to "chat"
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.Bottom
-            ) {
-                buttons.forEach { (label, key) ->
-                    val isSelected = when (key) {
-                        "thirdGameEasy" -> false // situation in thirdGameKeys
-                        else -> situation == key
-                    }
-
-                    Surface(
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        MainButton(
-                            onClick = { onSituationChange(key) },
-                            text = label,
-                            iconResId = if (isSelected) R.drawable.check else null,
-                            imageSize = 16.dp,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-                }
-            }
-        }
-
     }
 }
 

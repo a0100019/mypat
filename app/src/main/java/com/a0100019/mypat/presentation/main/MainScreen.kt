@@ -44,6 +44,7 @@ import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import com.a0100019.mypat.presentation.main.world.WorldViewScreen
 import com.a0100019.mypat.presentation.ui.component.MainButton
+import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import org.orbitmvi.orbit.compose.collectAsState
@@ -197,6 +198,9 @@ fun MainScreen(
         modifier = Modifier
             .fillMaxSize()
     ) {
+
+        BackGroundImage()
+
         Column (
             modifier = Modifier
                 .fillMaxSize(),

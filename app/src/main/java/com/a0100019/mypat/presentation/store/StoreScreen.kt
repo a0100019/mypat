@@ -42,6 +42,7 @@ import com.a0100019.mypat.presentation.index.IndexAreaDialog
 import com.a0100019.mypat.presentation.index.IndexPatDialog
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
 import com.a0100019.mypat.presentation.ui.component.MainButton
+import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
@@ -242,611 +243,599 @@ fun StoreScreen(
         )
     }
 
-    Column(
+    Surface(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp)
-        ,
-        horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-            ,
-            contentAlignment = Alignment.Center
-        ) {
-            // 가운데 텍스트
-            Text(
-                text = "상점",
-                style = MaterialTheme.typography.displaySmall
-            )
+        BackGroundImage()
 
-            // 오른쪽 버튼
-            MainButton(
-                text = "닫기",
-                onClick = popBackStack,
-                modifier = Modifier.align(Alignment.CenterEnd)
-            )
-        }
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp)
-            ,
-            horizontalArrangement = Arrangement.SpaceAround
-        ) {
-            Text(
-                text = "money : ${userData.find { it.id == "money" }?.value}",
-                style = MaterialTheme.typography.titleMedium
-            )
-            Text(
-                text = "cash : ${userData.find {it.id == "money"}?.value2}",
-                style = MaterialTheme.typography.titleMedium
-            )
-        }
-
-        LazyColumn(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-            ,
+                .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            item {
-
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                // 가운데 텍스트
                 Text(
-                    text = "아래로 드래그하세요",
-                    style = MaterialTheme.typography.labelMedium
+                    text = "상점",
+                    style = MaterialTheme.typography.displaySmall
                 )
 
+                // 오른쪽 버튼
+                MainButton(
+                    text = "닫기",
+                    onClick = popBackStack,
+                    modifier = Modifier.align(Alignment.CenterEnd)
+                )
             }
 
-            item {
-                //버튼 기본 설정
-                val interactionSource = remember { MutableInteractionSource() }
-                val isPressed by interactionSource.collectIsPressedAsState()
-                val scale by animateFloatAsState(
-                    targetValue = if (isPressed) 0.95f else 1f,
-                    label = "scale"
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp),
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
+                Text(
+                    text = "money : ${userData.find { it.id == "money" }?.value}",
+                    style = MaterialTheme.typography.titleMedium
                 )
-
-                Surface(
-                    shape = RoundedCornerShape(16.dp),
-                    color = MaterialTheme.colorScheme.scrim,
-                    border = BorderStroke(3.dp, MaterialTheme.colorScheme.primaryContainer),
-                    modifier = Modifier
-                        .graphicsLayer {
-                            scaleX = scale
-                            scaleY = scale
-                        }
-                        .clickable(
-                            interactionSource = interactionSource,
-                            indication = rememberRipple(bounded = true, color = Color.White),
-                            onClick = { onSimpleDialog("펫을 뽑으시겠습니까?") }
-                        )
-                        .padding(top = 6.dp, bottom = 6.dp)
-                ) {
-                    Box {
-
-//                        Row(
-//                            modifier = Modifier
-//                                .align(Alignment.CenterStart)
-//                        ) {
-//                            Spacer(modifier = Modifier.size(10.dp))
-//                            JustImage(
-//                                filePath = "pat/cat.json",
-//                                modifier = Modifier
-//                                    .size(50.dp)
-//                                    .rotate(10f)
-//                            )
-//                        }
-//
-//                        Row(
-//                            modifier = Modifier
-//                                .align(Alignment.CenterEnd)
-//                        ) {
-//                            JustImage(
-//                                filePath = "pat/cat.json",
-//                                modifier = Modifier
-//                                    .size(40.dp)
-//                                    .rotate(-10f)
-//                                    .align(Alignment.Bottom)
-//                            )
-//                            JustImage(
-//                                filePath = "pat/cat.json",
-//                                modifier = Modifier
-//                                    .size(30.dp)
-//                                    .rotate(10f)
-//                                    .align(Alignment.Top)
-//                            )
-//                            Spacer(modifier = Modifier.size(width = 10.dp, height = 50.dp))
-//                        }
-
-                        Column(
-                            modifier = Modifier
-                                .padding(8.dp)
-                                .fillMaxWidth(),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(
-                                text = "펫 뽑기",
-                                style = MaterialTheme.typography.headlineMedium,
-                                modifier = Modifier
-                                    .padding(bottom = 10.dp)
-                                ,
-                            )
-                            Text(
-                                text = "랜덤으로 하나의 펫을 획득할 수 있습니다",
-                                style = MaterialTheme.typography.titleMedium,
-                                modifier = Modifier
-                                    .padding(bottom = 10.dp)
-                                ,
-                            )
-                            Text(
-                                text = "$patPrice 햇살",
-                                style = MaterialTheme.typography.titleMedium,
-                                modifier = Modifier,
-                            )
-                        }
-                    }
-
-                }
+                Text(
+                    text = "cash : ${userData.find { it.id == "money" }?.value2}",
+                    style = MaterialTheme.typography.titleMedium
+                )
             }
 
-            item {
-                //버튼 기본 설정
-                val interactionSource = remember { MutableInteractionSource() }
-                val isPressed by interactionSource.collectIsPressedAsState()
-                val scale by animateFloatAsState(
-                    targetValue = if (isPressed) 0.95f else 1f,
-                    label = "scale"
-                )
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
 
-                Surface(
-                    shape = RoundedCornerShape(16.dp),
-                    color = MaterialTheme.colorScheme.scrim,
-                    border = BorderStroke(3.dp, MaterialTheme.colorScheme.primaryContainer),
-                    modifier = Modifier
-                        .graphicsLayer {
-                            scaleX = scale
-                            scaleY = scale
-                        }
-                        .clickable(
-                            interactionSource = interactionSource,
-                            indication = rememberRipple(bounded = true, color = Color.White),
-                            onClick = { onSimpleDialog("아이템을 뽑으시겠습니까?") }
-                        )
-                        .padding(top = 6.dp, bottom = 6.dp)
-                ) {
-                    Box {
+                item {
 
-//                        Row(
-//                            modifier = Modifier
-//                                .align(Alignment.CenterStart)
-//                        ) {
-//                            Spacer(modifier = Modifier.size(10.dp))
-//                            JustImage(
-//                                filePath = "pat/cat.json",
-//                                modifier = Modifier
-//                                    .size(50.dp)
-//                                    .rotate(10f)
-//                            )
-//                        }
-//
-//                        Row(
-//                            modifier = Modifier
-//                                .align(Alignment.CenterEnd)
-//                        ) {
-//                            JustImage(
-//                                filePath = "pat/cat.json",
-//                                modifier = Modifier
-//                                    .size(40.dp)
-//                                    .rotate(-10f)
-//                                    .align(Alignment.Bottom)
-//                            )
-//                            JustImage(
-//                                filePath = "pat/cat.json",
-//                                modifier = Modifier
-//                                    .size(30.dp)
-//                                    .rotate(10f)
-//                                    .align(Alignment.Top)
-//                            )
-//                            Spacer(modifier = Modifier.size(width = 10.dp, height = 50.dp))
-//                        }
-
-                        Column(
-                            modifier = Modifier
-                                .padding(8.dp)
-                                .fillMaxWidth(),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(
-                                text = "아이템 뽑기",
-                                style = MaterialTheme.typography.headlineMedium,
-                                modifier = Modifier
-                                    .padding(bottom = 10.dp)
-                                ,
-                            )
-                            Text(
-                                text = "랜덤한 5개의 아이템 중 하나를 선택할 수 있습니다",
-                                style = MaterialTheme.typography.titleMedium,
-                                modifier = Modifier
-                                    .padding(bottom = 10.dp)
-                                ,
-                            )
-                            Text(
-                                text = "(낮은 확률로 맵이 등장합니다)",
-                                style = MaterialTheme.typography.titleSmall,
-                                modifier = Modifier
-                                    .padding(bottom = 10.dp)
-                                ,
-                            )
-                            Text(
-                                text = "$itemPrice 달빛",
-                                style = MaterialTheme.typography.titleMedium,
-                                modifier = Modifier,
-                            )
-                        }
-                    }
+                    Text(
+                        text = "아래로 드래그하세요",
+                        style = MaterialTheme.typography.labelMedium
+                    )
 
                 }
-            }
 
-            item {
-                //버튼 기본 설정
-                val interactionSource = remember { MutableInteractionSource() }
-                val isPressed by interactionSource.collectIsPressedAsState()
-                val scale by animateFloatAsState(
-                    targetValue = if (isPressed) 0.95f else 1f,
-                    label = "scale"
-                )
+                item {
+                    //버튼 기본 설정
+                    val interactionSource = remember { MutableInteractionSource() }
+                    val isPressed by interactionSource.collectIsPressedAsState()
+                    val scale by animateFloatAsState(
+                        targetValue = if (isPressed) 0.95f else 1f,
+                        label = "scale"
+                    )
 
-                Surface(
-                    shape = RoundedCornerShape(16.dp),
-                    color = MaterialTheme.colorScheme.scrim,
-                    border = BorderStroke(3.dp, MaterialTheme.colorScheme.primaryContainer),
-                    modifier = Modifier
-                        .graphicsLayer {
-                            scaleX = scale
-                            scaleY = scale
+                    Surface(
+                        shape = RoundedCornerShape(16.dp),
+                        color = MaterialTheme.colorScheme.scrim,
+                        border = BorderStroke(3.dp, MaterialTheme.colorScheme.primaryContainer),
+                        modifier = Modifier
+                            .graphicsLayer {
+                                scaleX = scale
+                                scaleY = scale
+                            }
+                            .clickable(
+                                interactionSource = interactionSource,
+                                indication = rememberRipple(bounded = true, color = Color.White),
+                                onClick = { onSimpleDialog("펫을 뽑으시겠습니까?") }
+                            )
+                            .padding(top = 6.dp, bottom = 6.dp)
+                    ) {
+                        Box {
+
+                            //                        Row(
+                            //                            modifier = Modifier
+                            //                                .align(Alignment.CenterStart)
+                            //                        ) {
+                            //                            Spacer(modifier = Modifier.size(10.dp))
+                            //                            JustImage(
+                            //                                filePath = "pat/cat.json",
+                            //                                modifier = Modifier
+                            //                                    .size(50.dp)
+                            //                                    .rotate(10f)
+                            //                            )
+                            //                        }
+                            //
+                            //                        Row(
+                            //                            modifier = Modifier
+                            //                                .align(Alignment.CenterEnd)
+                            //                        ) {
+                            //                            JustImage(
+                            //                                filePath = "pat/cat.json",
+                            //                                modifier = Modifier
+                            //                                    .size(40.dp)
+                            //                                    .rotate(-10f)
+                            //                                    .align(Alignment.Bottom)
+                            //                            )
+                            //                            JustImage(
+                            //                                filePath = "pat/cat.json",
+                            //                                modifier = Modifier
+                            //                                    .size(30.dp)
+                            //                                    .rotate(10f)
+                            //                                    .align(Alignment.Top)
+                            //                            )
+                            //                            Spacer(modifier = Modifier.size(width = 10.dp, height = 50.dp))
+                            //                        }
+
+                            Column(
+                                modifier = Modifier
+                                    .padding(8.dp)
+                                    .fillMaxWidth(),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = "펫 뽑기",
+                                    style = MaterialTheme.typography.headlineMedium,
+                                    modifier = Modifier
+                                        .padding(bottom = 10.dp),
+                                )
+                                Text(
+                                    text = "랜덤으로 하나의 펫을 획득할 수 있습니다",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    modifier = Modifier
+                                        .padding(bottom = 10.dp),
+                                )
+                                Text(
+                                    text = "$patPrice 햇살",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    modifier = Modifier,
+                                )
+                            }
                         }
-                        .clickable(
-                            interactionSource = interactionSource,
-                            indication = rememberRipple(bounded = true, color = Color.White),
-                            onClick = { onSimpleDialog("펫 공간을 늘리겠습니까?") }
-                        )
-                        .padding(top = 6.dp, bottom = 6.dp)
-                ) {
-                    Box {
 
-//                        Row(
-//                            modifier = Modifier
-//                                .align(Alignment.CenterStart)
-//                        ) {
-//                            Spacer(modifier = Modifier.size(10.dp))
-//                            JustImage(
-//                                filePath = "pat/cat.json",
-//                                modifier = Modifier
-//                                    .size(50.dp)
-//                                    .rotate(10f)
-//                            )
-//                        }
-//
-//                        Row(
-//                            modifier = Modifier
-//                                .align(Alignment.CenterEnd)
-//                        ) {
-//                            JustImage(
-//                                filePath = "pat/cat.json",
-//                                modifier = Modifier
-//                                    .size(40.dp)
-//                                    .rotate(-10f)
-//                                    .align(Alignment.Bottom)
-//                            )
-//                            JustImage(
-//                                filePath = "pat/cat.json",
-//                                modifier = Modifier
-//                                    .size(30.dp)
-//                                    .rotate(10f)
-//                                    .align(Alignment.Top)
-//                            )
-//                            Spacer(modifier = Modifier.size(width = 10.dp, height = 50.dp))
-//                        }
-
-                        Column(
-                            modifier = Modifier
-                                .padding(8.dp)
-                                .fillMaxWidth(),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(
-                                text = "펫 공간 늘리기",
-                                style = MaterialTheme.typography.headlineMedium,
-                                modifier = Modifier
-                                    .padding(bottom = 10.dp)
-                                ,
-                            )
-                            Text(
-                                text = "마을의 펫 공간이 한 칸 늘어납니다",
-                                style = MaterialTheme.typography.titleMedium,
-                                modifier = Modifier
-                                    .padding(bottom = 10.dp)
-                                ,
-                            )
-                            Text(
-                                text = "(현재 ${userData.find{it.id == "pat"}?.value2}칸, 최대 ${userData.find{it.id == "pat"}?.value}칸)",
-                                style = MaterialTheme.typography.titleSmall,
-                                modifier = Modifier
-                                    .padding(bottom = 10.dp)
-                                ,
-                            )
-                            Text(
-                                text = if(userData.find{it.id == "pat"}?.value2 != userData.find{it.id == "pat"}?.value) "$patSpacePrice 달빛" else "- 달빛",
-                                style = MaterialTheme.typography.titleMedium,
-                                modifier = Modifier,
-                            )
-                        }
                     }
-
                 }
-            }
 
-            item {
-                //버튼 기본 설정
-                val interactionSource = remember { MutableInteractionSource() }
-                val isPressed by interactionSource.collectIsPressedAsState()
-                val scale by animateFloatAsState(
-                    targetValue = if (isPressed) 0.95f else 1f,
-                    label = "scale"
-                )
+                item {
+                    //버튼 기본 설정
+                    val interactionSource = remember { MutableInteractionSource() }
+                    val isPressed by interactionSource.collectIsPressedAsState()
+                    val scale by animateFloatAsState(
+                        targetValue = if (isPressed) 0.95f else 1f,
+                        label = "scale"
+                    )
 
-                Surface(
-                    shape = RoundedCornerShape(16.dp),
-                    color = MaterialTheme.colorScheme.scrim,
-                    border = BorderStroke(3.dp, MaterialTheme.colorScheme.primaryContainer),
-                    modifier = Modifier
-                        .graphicsLayer {
-                            scaleX = scale
-                            scaleY = scale
+                    Surface(
+                        shape = RoundedCornerShape(16.dp),
+                        color = MaterialTheme.colorScheme.scrim,
+                        border = BorderStroke(3.dp, MaterialTheme.colorScheme.primaryContainer),
+                        modifier = Modifier
+                            .graphicsLayer {
+                                scaleX = scale
+                                scaleY = scale
+                            }
+                            .clickable(
+                                interactionSource = interactionSource,
+                                indication = rememberRipple(bounded = true, color = Color.White),
+                                onClick = { onSimpleDialog("아이템을 뽑으시겠습니까?") }
+                            )
+                            .padding(top = 6.dp, bottom = 6.dp)
+                    ) {
+                        Box {
+
+                            //                        Row(
+                            //                            modifier = Modifier
+                            //                                .align(Alignment.CenterStart)
+                            //                        ) {
+                            //                            Spacer(modifier = Modifier.size(10.dp))
+                            //                            JustImage(
+                            //                                filePath = "pat/cat.json",
+                            //                                modifier = Modifier
+                            //                                    .size(50.dp)
+                            //                                    .rotate(10f)
+                            //                            )
+                            //                        }
+                            //
+                            //                        Row(
+                            //                            modifier = Modifier
+                            //                                .align(Alignment.CenterEnd)
+                            //                        ) {
+                            //                            JustImage(
+                            //                                filePath = "pat/cat.json",
+                            //                                modifier = Modifier
+                            //                                    .size(40.dp)
+                            //                                    .rotate(-10f)
+                            //                                    .align(Alignment.Bottom)
+                            //                            )
+                            //                            JustImage(
+                            //                                filePath = "pat/cat.json",
+                            //                                modifier = Modifier
+                            //                                    .size(30.dp)
+                            //                                    .rotate(10f)
+                            //                                    .align(Alignment.Top)
+                            //                            )
+                            //                            Spacer(modifier = Modifier.size(width = 10.dp, height = 50.dp))
+                            //                        }
+
+                            Column(
+                                modifier = Modifier
+                                    .padding(8.dp)
+                                    .fillMaxWidth(),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = "아이템 뽑기",
+                                    style = MaterialTheme.typography.headlineMedium,
+                                    modifier = Modifier
+                                        .padding(bottom = 10.dp),
+                                )
+                                Text(
+                                    text = "랜덤한 5개의 아이템 중 하나를 선택할 수 있습니다",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    modifier = Modifier
+                                        .padding(bottom = 10.dp),
+                                )
+                                Text(
+                                    text = "(낮은 확률로 맵이 등장합니다)",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    modifier = Modifier
+                                        .padding(bottom = 10.dp),
+                                )
+                                Text(
+                                    text = "$itemPrice 달빛",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    modifier = Modifier,
+                                )
+                            }
                         }
-                        .clickable(
-                            interactionSource = interactionSource,
-                            indication = rememberRipple(bounded = true, color = Color.White),
-                            onClick = { onSimpleDialog("아이템 공간을 늘리겠습니까?") }
-                        )
-                        .padding(top = 6.dp, bottom = 6.dp)
-                ) {
-                    Box {
 
-//                        Row(
-//                            modifier = Modifier
-//                                .align(Alignment.CenterStart)
-//                        ) {
-//                            Spacer(modifier = Modifier.size(10.dp))
-//                            JustImage(
-//                                filePath = "pat/cat.json",
-//                                modifier = Modifier
-//                                    .size(50.dp)
-//                                    .rotate(10f)
-//                            )
-//                        }
-//
-//                        Row(
-//                            modifier = Modifier
-//                                .align(Alignment.CenterEnd)
-//                        ) {
-//                            JustImage(
-//                                filePath = "pat/cat.json",
-//                                modifier = Modifier
-//                                    .size(40.dp)
-//                                    .rotate(-10f)
-//                                    .align(Alignment.Bottom)
-//                            )
-//                            JustImage(
-//                                filePath = "pat/cat.json",
-//                                modifier = Modifier
-//                                    .size(30.dp)
-//                                    .rotate(10f)
-//                                    .align(Alignment.Top)
-//                            )
-//                            Spacer(modifier = Modifier.size(width = 10.dp, height = 50.dp))
-//                        }
-
-                        Column(
-                            modifier = Modifier
-                                .padding(8.dp)
-                                .fillMaxWidth(),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(
-                                text = "아이템 공간 늘리기",
-                                style = MaterialTheme.typography.headlineMedium,
-                                modifier = Modifier
-                                    .padding(bottom = 10.dp)
-                                ,
-                            )
-                            Text(
-                                text = "마을의 아이템 공간이 한 칸 늘어납니다",
-                                style = MaterialTheme.typography.titleMedium,
-                                modifier = Modifier
-                                    .padding(bottom = 10.dp)
-                                ,
-                            )
-                            Text(
-                                text = "(현재 ${userData.find{it.id == "item"}?.value2}칸, 최대 ${userData.find{it.id == "item"}?.value}칸)",
-                                style = MaterialTheme.typography.titleSmall,
-                                modifier = Modifier
-                                    .padding(bottom = 10.dp)
-                                ,
-                            )
-                            Text(
-                                text = if(userData.find{it.id == "item"}?.value2 != userData.find{it.id == "item"}?.value) "$itemSpacePrice 달빛" else "- 달빛",
-                                style = MaterialTheme.typography.titleMedium,
-                                modifier = Modifier,
-                            )
-                        }
                     }
-
                 }
-            }
 
-            item {
-                //버튼 기본 설정
-                val interactionSource = remember { MutableInteractionSource() }
-                val isPressed by interactionSource.collectIsPressedAsState()
-                val scale by animateFloatAsState(
-                    targetValue = if (isPressed) 0.95f else 1f,
-                    label = "scale"
-                )
+                item {
+                    //버튼 기본 설정
+                    val interactionSource = remember { MutableInteractionSource() }
+                    val isPressed by interactionSource.collectIsPressedAsState()
+                    val scale by animateFloatAsState(
+                        targetValue = if (isPressed) 0.95f else 1f,
+                        label = "scale"
+                    )
 
-                Surface(
-                    shape = RoundedCornerShape(16.dp),
-                    color = MaterialTheme.colorScheme.scrim,
-                    border = BorderStroke(3.dp, MaterialTheme.colorScheme.primaryContainer),
-                    modifier = Modifier
-                        .graphicsLayer {
-                            scaleX = scale
-                            scaleY = scale
-                        }
-                        .clickable(
-                            interactionSource = interactionSource,
-                            indication = rememberRipple(bounded = true, color = Color.White),
-                            onClick = { changeShowDialog("name") }
-                        )
-                        .padding(top = 6.dp, bottom = 6.dp)
-                ) {
-                    Box {
+                    Surface(
+                        shape = RoundedCornerShape(16.dp),
+                        color = MaterialTheme.colorScheme.scrim,
+                        border = BorderStroke(3.dp, MaterialTheme.colorScheme.primaryContainer),
+                        modifier = Modifier
+                            .graphicsLayer {
+                                scaleX = scale
+                                scaleY = scale
+                            }
+                            .clickable(
+                                interactionSource = interactionSource,
+                                indication = rememberRipple(bounded = true, color = Color.White),
+                                onClick = { onSimpleDialog("펫 공간을 늘리겠습니까?") }
+                            )
+                            .padding(top = 6.dp, bottom = 6.dp)
+                    ) {
+                        Box {
 
-//                        Row(
-//                            modifier = Modifier
-//                                .align(Alignment.CenterStart)
-//                        ) {
-//                            Spacer(modifier = Modifier.size(10.dp))
-//                            JustImage(
-//                                filePath = "pat/cat.json",
-//                                modifier = Modifier
-//                                    .size(50.dp)
-//                                    .rotate(10f)
-//                            )
-//                        }
-//
-//                        Row(
-//                            modifier = Modifier
-//                                .align(Alignment.CenterEnd)
-//                        ) {
-//                            JustImage(
-//                                filePath = "pat/cat.json",
-//                                modifier = Modifier
-//                                    .size(40.dp)
-//                                    .rotate(-10f)
-//                                    .align(Alignment.Bottom)
-//                            )
-//                            JustImage(
-//                                filePath = "pat/cat.json",
-//                                modifier = Modifier
-//                                    .size(30.dp)
-//                                    .rotate(10f)
-//                                    .align(Alignment.Top)
-//                            )
-//                            Spacer(modifier = Modifier.size(width = 10.dp, height = 50.dp))
-//                        }
+                            //                        Row(
+                            //                            modifier = Modifier
+                            //                                .align(Alignment.CenterStart)
+                            //                        ) {
+                            //                            Spacer(modifier = Modifier.size(10.dp))
+                            //                            JustImage(
+                            //                                filePath = "pat/cat.json",
+                            //                                modifier = Modifier
+                            //                                    .size(50.dp)
+                            //                                    .rotate(10f)
+                            //                            )
+                            //                        }
+                            //
+                            //                        Row(
+                            //                            modifier = Modifier
+                            //                                .align(Alignment.CenterEnd)
+                            //                        ) {
+                            //                            JustImage(
+                            //                                filePath = "pat/cat.json",
+                            //                                modifier = Modifier
+                            //                                    .size(40.dp)
+                            //                                    .rotate(-10f)
+                            //                                    .align(Alignment.Bottom)
+                            //                            )
+                            //                            JustImage(
+                            //                                filePath = "pat/cat.json",
+                            //                                modifier = Modifier
+                            //                                    .size(30.dp)
+                            //                                    .rotate(10f)
+                            //                                    .align(Alignment.Top)
+                            //                            )
+                            //                            Spacer(modifier = Modifier.size(width = 10.dp, height = 50.dp))
+                            //                        }
 
-                        Column(
-                            modifier = Modifier
-                                .padding(8.dp)
-                                .fillMaxWidth(),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(
-                                text = "닉네임 변경",
-                                style = MaterialTheme.typography.headlineMedium,
+                            Column(
                                 modifier = Modifier
-                                    .padding(bottom = 10.dp)
-                                ,
-                            )
-                            Text(
-                                text = "현재 닉네임 : ${userData.find{it.id == "name"}?.value}",
-                                style = MaterialTheme.typography.titleMedium,
-                                modifier = Modifier
-                                    .padding(bottom = 10.dp)
-                                ,
-                            )
-                            Text(
-                                text =
-                                    if(userData.find{it.id == "name"}?.value == "유저") "0 햇살" else "5 햇살"
-                                ,
-                                style = MaterialTheme.typography.titleMedium,
-                                modifier = Modifier,
-                            )
+                                    .padding(8.dp)
+                                    .fillMaxWidth(),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = "펫 공간 늘리기",
+                                    style = MaterialTheme.typography.headlineMedium,
+                                    modifier = Modifier
+                                        .padding(bottom = 10.dp),
+                                )
+                                Text(
+                                    text = "마을의 펫 공간이 한 칸 늘어납니다",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    modifier = Modifier
+                                        .padding(bottom = 10.dp),
+                                )
+                                Text(
+                                    text = "(현재 ${userData.find { it.id == "pat" }?.value2}칸, 최대 ${userData.find { it.id == "pat" }?.value}칸)",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    modifier = Modifier
+                                        .padding(bottom = 10.dp),
+                                )
+                                Text(
+                                    text = if (userData.find { it.id == "pat" }?.value2 != userData.find { it.id == "pat" }?.value) "$patSpacePrice 달빛" else "- 달빛",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    modifier = Modifier,
+                                )
+                            }
                         }
+
                     }
-
                 }
-            }
 
-            item {
-                //버튼 기본 설정
-                val interactionSource = remember { MutableInteractionSource() }
-                val isPressed by interactionSource.collectIsPressedAsState()
-                val scale by animateFloatAsState(
-                    targetValue = if (isPressed) 0.95f else 1f,
-                    label = "scale"
-                )
+                item {
+                    //버튼 기본 설정
+                    val interactionSource = remember { MutableInteractionSource() }
+                    val isPressed by interactionSource.collectIsPressedAsState()
+                    val scale by animateFloatAsState(
+                        targetValue = if (isPressed) 0.95f else 1f,
+                        label = "scale"
+                    )
 
-                Surface(
-                    shape = RoundedCornerShape(16.dp),
-                    color = MaterialTheme.colorScheme.scrim,
-                    border = BorderStroke(3.dp, MaterialTheme.colorScheme.primaryContainer),
-                    modifier = Modifier
-                        .graphicsLayer {
-                            scaleX = scale
-                            scaleY = scale
-                        }
-                        .clickable(
-                            interactionSource = interactionSource,
-                            indication = rememberRipple(bounded = true, color = Color.White),
-                            onClick = { onSimpleDialog("화폐를 변경하겠습니까?") }
-                        )
-                        .padding(top = 6.dp, bottom = 6.dp)
-                ) {
-                    Box {
-
-                        Column(
-                            modifier = Modifier
-                                .padding(8.dp)
-                                .fillMaxWidth(),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(
-                                text = "화폐 교환",
-                                style = MaterialTheme.typography.headlineMedium,
-                                modifier = Modifier
-                                    .padding(bottom = 10.dp)
-                                ,
+                    Surface(
+                        shape = RoundedCornerShape(16.dp),
+                        color = MaterialTheme.colorScheme.scrim,
+                        border = BorderStroke(3.dp, MaterialTheme.colorScheme.primaryContainer),
+                        modifier = Modifier
+                            .graphicsLayer {
+                                scaleX = scale
+                                scaleY = scale
+                            }
+                            .clickable(
+                                interactionSource = interactionSource,
+                                indication = rememberRipple(bounded = true, color = Color.White),
+                                onClick = { onSimpleDialog("아이템 공간을 늘리겠습니까?") }
                             )
-                            Text(
-                                text = "햇살 1개 -> 달빛 3000개",
-                                style = MaterialTheme.typography.titleMedium,
+                            .padding(top = 6.dp, bottom = 6.dp)
+                    ) {
+                        Box {
+
+                            //                        Row(
+                            //                            modifier = Modifier
+                            //                                .align(Alignment.CenterStart)
+                            //                        ) {
+                            //                            Spacer(modifier = Modifier.size(10.dp))
+                            //                            JustImage(
+                            //                                filePath = "pat/cat.json",
+                            //                                modifier = Modifier
+                            //                                    .size(50.dp)
+                            //                                    .rotate(10f)
+                            //                            )
+                            //                        }
+                            //
+                            //                        Row(
+                            //                            modifier = Modifier
+                            //                                .align(Alignment.CenterEnd)
+                            //                        ) {
+                            //                            JustImage(
+                            //                                filePath = "pat/cat.json",
+                            //                                modifier = Modifier
+                            //                                    .size(40.dp)
+                            //                                    .rotate(-10f)
+                            //                                    .align(Alignment.Bottom)
+                            //                            )
+                            //                            JustImage(
+                            //                                filePath = "pat/cat.json",
+                            //                                modifier = Modifier
+                            //                                    .size(30.dp)
+                            //                                    .rotate(10f)
+                            //                                    .align(Alignment.Top)
+                            //                            )
+                            //                            Spacer(modifier = Modifier.size(width = 10.dp, height = 50.dp))
+                            //                        }
+
+                            Column(
                                 modifier = Modifier
-                                    .padding(bottom = 10.dp)
-                                ,
-                            )
+                                    .padding(8.dp)
+                                    .fillMaxWidth(),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = "아이템 공간 늘리기",
+                                    style = MaterialTheme.typography.headlineMedium,
+                                    modifier = Modifier
+                                        .padding(bottom = 10.dp),
+                                )
+                                Text(
+                                    text = "마을의 아이템 공간이 한 칸 늘어납니다",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    modifier = Modifier
+                                        .padding(bottom = 10.dp),
+                                )
+                                Text(
+                                    text = "(현재 ${userData.find { it.id == "item" }?.value2}칸, 최대 ${userData.find { it.id == "item" }?.value}칸)",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    modifier = Modifier
+                                        .padding(bottom = 10.dp),
+                                )
+                                Text(
+                                    text = if (userData.find { it.id == "item" }?.value2 != userData.find { it.id == "item" }?.value) "$itemSpacePrice 달빛" else "- 달빛",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    modifier = Modifier,
+                                )
+                            }
                         }
+
                     }
-
                 }
+
+                item {
+                    //버튼 기본 설정
+                    val interactionSource = remember { MutableInteractionSource() }
+                    val isPressed by interactionSource.collectIsPressedAsState()
+                    val scale by animateFloatAsState(
+                        targetValue = if (isPressed) 0.95f else 1f,
+                        label = "scale"
+                    )
+
+                    Surface(
+                        shape = RoundedCornerShape(16.dp),
+                        color = MaterialTheme.colorScheme.scrim,
+                        border = BorderStroke(3.dp, MaterialTheme.colorScheme.primaryContainer),
+                        modifier = Modifier
+                            .graphicsLayer {
+                                scaleX = scale
+                                scaleY = scale
+                            }
+                            .clickable(
+                                interactionSource = interactionSource,
+                                indication = rememberRipple(bounded = true, color = Color.White),
+                                onClick = { changeShowDialog("name") }
+                            )
+                            .padding(top = 6.dp, bottom = 6.dp)
+                    ) {
+                        Box {
+
+                            //                        Row(
+                            //                            modifier = Modifier
+                            //                                .align(Alignment.CenterStart)
+                            //                        ) {
+                            //                            Spacer(modifier = Modifier.size(10.dp))
+                            //                            JustImage(
+                            //                                filePath = "pat/cat.json",
+                            //                                modifier = Modifier
+                            //                                    .size(50.dp)
+                            //                                    .rotate(10f)
+                            //                            )
+                            //                        }
+                            //
+                            //                        Row(
+                            //                            modifier = Modifier
+                            //                                .align(Alignment.CenterEnd)
+                            //                        ) {
+                            //                            JustImage(
+                            //                                filePath = "pat/cat.json",
+                            //                                modifier = Modifier
+                            //                                    .size(40.dp)
+                            //                                    .rotate(-10f)
+                            //                                    .align(Alignment.Bottom)
+                            //                            )
+                            //                            JustImage(
+                            //                                filePath = "pat/cat.json",
+                            //                                modifier = Modifier
+                            //                                    .size(30.dp)
+                            //                                    .rotate(10f)
+                            //                                    .align(Alignment.Top)
+                            //                            )
+                            //                            Spacer(modifier = Modifier.size(width = 10.dp, height = 50.dp))
+                            //                        }
+
+                            Column(
+                                modifier = Modifier
+                                    .padding(8.dp)
+                                    .fillMaxWidth(),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = "닉네임 변경",
+                                    style = MaterialTheme.typography.headlineMedium,
+                                    modifier = Modifier
+                                        .padding(bottom = 10.dp),
+                                )
+                                Text(
+                                    text = "현재 닉네임 : ${userData.find { it.id == "name" }?.value}",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    modifier = Modifier
+                                        .padding(bottom = 10.dp),
+                                )
+                                Text(
+                                    text =
+                                    if (userData.find { it.id == "name" }?.value == "유저") "0 햇살" else "5 햇살",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    modifier = Modifier,
+                                )
+                            }
+                        }
+
+                    }
+                }
+
+                item {
+                    //버튼 기본 설정
+                    val interactionSource = remember { MutableInteractionSource() }
+                    val isPressed by interactionSource.collectIsPressedAsState()
+                    val scale by animateFloatAsState(
+                        targetValue = if (isPressed) 0.95f else 1f,
+                        label = "scale"
+                    )
+
+                    Surface(
+                        shape = RoundedCornerShape(16.dp),
+                        color = MaterialTheme.colorScheme.scrim,
+                        border = BorderStroke(3.dp, MaterialTheme.colorScheme.primaryContainer),
+                        modifier = Modifier
+                            .graphicsLayer {
+                                scaleX = scale
+                                scaleY = scale
+                            }
+                            .clickable(
+                                interactionSource = interactionSource,
+                                indication = rememberRipple(bounded = true, color = Color.White),
+                                onClick = { onSimpleDialog("화폐를 변경하겠습니까?") }
+                            )
+                            .padding(top = 6.dp, bottom = 6.dp)
+                    ) {
+                        Box {
+
+                            Column(
+                                modifier = Modifier
+                                    .padding(8.dp)
+                                    .fillMaxWidth(),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = "화폐 교환",
+                                    style = MaterialTheme.typography.headlineMedium,
+                                    modifier = Modifier
+                                        .padding(bottom = 10.dp),
+                                )
+                                Text(
+                                    text = "햇살 1개 -> 달빛 3000개",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    modifier = Modifier
+                                        .padding(bottom = 10.dp),
+                                )
+                            }
+                        }
+
+                    }
+                }
+
             }
 
         }
-
     }
 }
 

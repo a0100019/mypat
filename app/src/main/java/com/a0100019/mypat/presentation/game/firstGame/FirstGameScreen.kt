@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -35,6 +36,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.presentation.ui.component.MainButton
+import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
@@ -146,172 +148,180 @@ fun FirstGameScreen(
         )
     }
 
-    Column(
+    Surface(
         modifier = Modifier
             .fillMaxSize()
-        ,
-        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text(
-            text = "$score",
-            style = MaterialTheme.typography.displayMedium,
+
+        BackGroundImage()
+
+        Column(
             modifier = Modifier
-                .padding(top = 30.dp, bottom = 20.dp)
-        )
-        Box(
-            modifier = Modifier.fillMaxWidth()
-        ){
-
-            Text(
-                text = "레벨 : ${level + 1} / 100",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier
-                    .align(Alignment.Center)
-            )
-
-            Text(
-                text = "최고 기록 : ${userData.find { it.id == "firstGame" }?.value}",
-                modifier = Modifier
-                    .padding(end = 12.dp)
-                    .align(Alignment.BottomEnd)
-            )
-        }
-
-        BoxWithConstraints(
-            modifier = Modifier
-                .aspectRatio(1 / 1.25f)
-                .fillMaxWidth()
-//                .border(10.dp, Color.Black)
-                .padding(16.dp)
-            ,
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-
-            val density = LocalDensity.current
-
-            // Surface 크기 가져오기 (px → dp 변환)
-            val surfaceWidth = constraints.maxWidth
-            val surfaceHeight = constraints.maxHeight
-
-            val surfaceWidthDp = with(density) { surfaceWidth.toDp() }
-            val surfaceHeightDp = with(density) { surfaceHeight.toDp() }
-
-            JustImage(
-                filePath = "etc/icySurface_white_bg.jpg",
+            Text(
+                text = "$score",
+                style = MaterialTheme.typography.displayMedium,
                 modifier = Modifier
-                    .fillMaxSize(),
-                contentScale = ContentScale.FillBounds
+                    .padding(top = 30.dp, bottom = 20.dp)
             )
-            JustImage(
-                filePath = "etc/target.png",
+            Box(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+
+                Text(
+                    text = "레벨 : ${level + 1} / 100",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                )
+
+                Text(
+                    text = "최고 기록 : ${userData.find { it.id == "firstGame" }?.value}",
+                    modifier = Modifier
+                        .padding(end = 12.dp)
+                        .align(Alignment.BottomEnd)
+                )
+            }
+
+            BoxWithConstraints(
                 modifier = Modifier
-                    .size(targetSize)
-                    .offset(x = targetX, y = targetY)
-            )
-            JustImage(
-                filePath = "etc/snowball.png",
-                modifier = Modifier
-                    .size(snowballSize)
-                    .offset(x = animatedX, y = animatedY)
-            )
-            if(situation == "회전" || situation == "준비"){
+                    .aspectRatio(1 / 1.25f)
+                    .fillMaxWidth()
+                    //                .border(10.dp, Color.Black)
+                    .padding(16.dp),
+            ) {
+
+                val density = LocalDensity.current
+
+                // Surface 크기 가져오기 (px → dp 변환)
+                val surfaceWidth = constraints.maxWidth
+                val surfaceHeight = constraints.maxHeight
+
+                val surfaceWidthDp = with(density) { surfaceWidth.toDp() }
+                val surfaceHeightDp = with(density) { surfaceHeight.toDp() }
+
                 JustImage(
-                    filePath = "etc/arrow.png",
+                    filePath = "etc/icySurface_white_bg.jpg",
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    contentScale = ContentScale.FillBounds
+                )
+                JustImage(
+                    filePath = "etc/target.png",
+                    modifier = Modifier
+                        .size(targetSize)
+                        .offset(x = targetX, y = targetY)
+                )
+                JustImage(
+                    filePath = "etc/snowball.png",
                     modifier = Modifier
                         .size(snowballSize)
                         .offset(x = animatedX, y = animatedY)
-                        .rotate(animatedRotation),
-                    contentScale = ContentScale.Fit
                 )
-            }
-
-            if(situation == "시작"){
-                MainButton(
-                    onClick = {
-                        onGameStartClick(surfaceWidthDp, surfaceHeightDp)
-                    },
-                    text = "\n게임 시작\n",
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .fillMaxWidth(0.5f)
-                )
-                Text(
-                    text = "가로 : 100m   세로 : 125m",
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(bottom = 30.dp)
-                    ,
-                    style = MaterialTheme.typography.titleLarge
-                )
-
-            }
-        }
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        when (situation) {
-            "회전" -> {
-                MainButton(
-                    onClick = onRotateStopClick,
-                    text = "\n정지\n",
-                    modifier = Modifier
-                        .fillMaxWidth(0.5f)
-                )
-
-            }
-            "준비" -> {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .padding(start = 20.dp, end = 20.dp)
-                ) {
-
-                    FirstGameHorizontalLine(shotPower, maxPower)
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
+                if (situation == "회전" || situation == "준비") {
+                    JustImage(
+                        filePath = "etc/arrow.png",
                         modifier = Modifier
-                            .fillMaxWidth()
-                    ) {
-                        Text(
-                            text = "0m"
-                        )
-                        Text(
-                            text = "75m"
-                        )
-                        Text(
-                            text = "150m"
-                        )
-                    }
+                            .size(snowballSize)
+                            .offset(x = animatedX, y = animatedY)
+                            .rotate(animatedRotation),
+                        contentScale = ContentScale.Fit
+                    )
+                }
+
+                if (situation == "시작") {
                     MainButton(
-                        onClick = onMoveClick,
-                        text = "\n발사\n",
+                        onClick = {
+                            onGameStartClick(surfaceWidthDp, surfaceHeightDp)
+                        },
+                        text = "\n게임 시작\n",
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .fillMaxWidth(0.5f)
+                    )
+                    Text(
+                        text = "가로 : 100m   세로 : 125m",
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = 30.dp),
+                        style = MaterialTheme.typography.titleLarge
+                    )
+
+                }
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            when (situation) {
+                "회전" -> {
+                    MainButton(
+                        onClick = onRotateStopClick,
+                        text = "\n정지\n",
                         modifier = Modifier
                             .fillMaxWidth(0.5f)
                     )
 
                 }
 
+                "준비" -> {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .padding(start = 20.dp, end = 20.dp)
+                    ) {
+
+                        FirstGameHorizontalLine(shotPower, maxPower)
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        ) {
+                            Text(
+                                text = "0m"
+                            )
+                            Text(
+                                text = "75m"
+                            )
+                            Text(
+                                text = "150m"
+                            )
+                        }
+                        MainButton(
+                            onClick = onMoveClick,
+                            text = "\n발사\n",
+                            modifier = Modifier
+                                .fillMaxWidth(0.5f)
+                        )
+
+                    }
+
+                }
+
+                "다음" -> {
+                    MainButton(
+                        onClick = onNextLevelClick,
+                        text = "\n다음 레벨\n",
+                        modifier = Modifier
+                            .fillMaxWidth(0.5f)
+                    )
+                }
+
+                "발사중" -> {
+                    Text(
+                        text = "${(shotPower.toFloat() / maxPower.toFloat() * 150).toInt()}m",
+                        style = MaterialTheme.typography.headlineMedium,
+                        modifier = Modifier
+                            .padding(bottom = 20.dp)
+                    )
+                }
             }
-            "다음" -> {
-                MainButton(
-                    onClick = onNextLevelClick,
-                    text = "\n다음 레벨\n",
-                    modifier = Modifier
-                        .fillMaxWidth(0.5f)
-                )
-            }
-            "발사중" -> {
-                Text(
-                    text = "${(shotPower.toFloat()/maxPower.toFloat()*150).toInt()}m",
-                    style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier
-                        .padding(bottom = 20.dp)
-                )
-            }
+
+            Spacer(modifier = Modifier.size(30.dp))
+
+
         }
-
-        Spacer(modifier = Modifier.size(30.dp))
-
-
     }
 
 }

@@ -68,7 +68,7 @@ fun MainButton(
             }
             .clickable(
                 interactionSource = interactionSource,
-                indication = rememberRipple(bounded = true, color = Color.White),
+                indication = null, // 👈 눌렀을 때 색 효과 완전히 제거
                 onClick = onClick
             )
     ) {

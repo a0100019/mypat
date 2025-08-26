@@ -33,6 +33,7 @@ import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -55,6 +56,7 @@ import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.walk.Walk
 import com.a0100019.mypat.presentation.ui.component.MainButton
+import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
@@ -130,89 +132,71 @@ fun WalkScreen(
 
 ) {
 
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
     ) {
 
+        BackGroundImage()
 
-        Box(
-            contentAlignment = Alignment.Center, // ✅ 내부 내용물 중앙 정렬
-            modifier = Modifier
-                .weight(0.3f)
-                .fillMaxWidth()
-                .padding(10.dp)
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            StepProgressCircle(
-                steps = todayWalk,
+
+            Box(
+                contentAlignment = Alignment.Center, // ✅ 내부 내용물 중앙 정렬
                 modifier = Modifier
-                    .size(200.dp)
-            )
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .weight(0.3f)
+                    .fillMaxWidth()
+                    .padding(10.dp)
             ) {
-                if (todayWalk != 0) {
-                    Text(
-                        text = "충전된 걸음 수",
-                        style = MaterialTheme.typography.headlineMedium
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = todayWalk.toString(),
-                        style = MaterialTheme.typography.displaySmall,
-                        fontWeight = FontWeight.Bold
-                    )
-                } else {
-                    Text(
-                        text = "로딩중...",
-                        style = MaterialTheme.typography.headlineMedium
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = "핸드폰을 흔들어주세요",
-                        style = MaterialTheme.typography.titleMedium
-                    )
+
+                StepProgressCircle(
+                    steps = todayWalk,
+                    modifier = Modifier
+                        .size(200.dp)
+                )
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    if (todayWalk != 0) {
+                        Text(
+                            text = "충전된 걸음 수",
+                            style = MaterialTheme.typography.headlineMedium
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = todayWalk.toString(),
+                            style = MaterialTheme.typography.displaySmall,
+                            fontWeight = FontWeight.Bold
+                        )
+                    } else {
+                        Text(
+                            text = "로딩중...",
+                            style = MaterialTheme.typography.headlineMedium
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "핸드폰을 흔들어주세요",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
+
                 }
 
-            }
-
-            // 오른쪽 버튼
-            MainButton(
-                text = "닫기",
-                onClick = popBackStack,
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(8.dp)
-            )
-        }
-
-        if(walkState == "완료") {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .background(
-                        MaterialTheme.colorScheme.scrim,
-                        shape = RoundedCornerShape(16.dp)
-                    )
-                    .border(
-                        width = 2.dp,
-                        color = MaterialTheme.colorScheme.primaryContainer,
-                        shape = RoundedCornerShape(16.dp)
-                    )
-                    .padding(16.dp)
-            ) {
-                Text(
-                    text = "오늘도 수고하셨어요!",
-                    style = MaterialTheme.typography.bodyLarge,
+                // 오른쪽 버튼
+                MainButton(
+                    text = "닫기",
+                    onClick = popBackStack,
                     modifier = Modifier
-                        .fillMaxWidth(),
-                    textAlign = TextAlign.Center
+                        .align(Alignment.TopEnd)
+                        .padding(8.dp)
                 )
             }
-        } else {
-            if (todayWalk <= 10000) {
+
+            if (walkState == "완료") {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -229,7 +213,7 @@ fun WalkScreen(
                         .padding(16.dp)
                 ) {
                     Text(
-                        text = "10000보를 모아 일일 미션을 완료하세요!",
+                        text = "오늘도 수고하셨어요!",
                         style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier
                             .fillMaxWidth(),
@@ -237,157 +221,192 @@ fun WalkScreen(
                     )
                 }
             } else {
-                ShinyMissionCard(
-                    onClick = onTodayWalkSubmitClick
-                )
+                if (todayWalk <= 10000) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                            .background(
+                                MaterialTheme.colorScheme.scrim,
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                            .border(
+                                width = 2.dp,
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                            .padding(16.dp)
+                    ) {
+                        Text(
+                            text = "10000보를 모아 일일 미션을 완료하세요!",
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                } else {
+                    ShinyMissionCard(
+                        onClick = onTodayWalkSubmitClick
+                    )
+                }
             }
-        }
 
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .background(
-                    MaterialTheme.colorScheme.scrim,
-                    shape = RoundedCornerShape(16.dp)
-                )
-                .border(
-                    width = 2.dp,
-                    color = MaterialTheme.colorScheme.primaryContainer,
-                    shape = RoundedCornerShape(16.dp)
-                )
-                .padding(16.dp)
-        ) {
-            Text(
-                text = "📊 걸음 수 통계",
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                color = MaterialTheme.colorScheme.primary,
+            Column(
                 modifier = Modifier
-                    .padding(bottom = 12.dp)
-                    .align(Alignment.CenterHorizontally)
-                ,
-            )
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(bottom = 12.dp)
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .background(
+                        MaterialTheme.colorScheme.scrim,
+                        shape = RoundedCornerShape(16.dp)
+                    )
+                    .border(
+                        width = 2.dp,
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        shape = RoundedCornerShape(16.dp)
+                    )
+                    .padding(16.dp)
             ) {
-                Icon(Icons.Default.Favorite, contentDescription = "총 걸음", tint = Color.Red)
-                Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "총 걸음 수 : ",
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Medium
-                )
-                Text(
-                    text = totalWalkCount,
-                    style = MaterialTheme.typography.bodyLarge
+                    text = "📊 걸음 수 통계",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier
+                        .padding(bottom = 12.dp)
+                        .align(Alignment.CenterHorizontally),
                 )
 
-                Spacer(modifier = Modifier.weight(1f))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(bottom = 12.dp)
+                ) {
+                    Icon(Icons.Default.Favorite, contentDescription = "총 걸음", tint = Color.Red)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "총 걸음 수 : ",
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Medium
+                    )
+                    Text(
+                        text = totalWalkCount,
+                        style = MaterialTheme.typography.bodyLarge
+                    )
 
-                Icon(Icons.Default.ThumbUp, contentDescription = "최고 기록", tint = Color(0xFFFFC107))
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "성공 비율 : ",
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Medium
-                )
-                Text(
-                    text = "${successRate}%",
-                    style = MaterialTheme.typography.bodyLarge
-                )
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    Icon(
+                        Icons.Default.ThumbUp,
+                        contentDescription = "최고 기록",
+                        tint = Color(0xFFFFC107)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "성공 비율 : ",
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Medium
+                    )
+                    Text(
+                        text = "${successRate}%",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        Icons.Default.Check,
+                        contentDescription = "만보 달성",
+                        tint = Color(0xFF4CAF50)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "만보 달성 횟수 : ",
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Medium
+                    )
+                    Text(text = "$totalSuccessCount")
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    Icon(
+                        Icons.Default.Refresh,
+                        contentDescription = "연속 횟수",
+                        tint = Color(0xFF00BCD4)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "최대 연속 횟수 : ",
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Medium
+                    )
+                    Text(text = "$maxContinuous")
+                }
             }
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.Check, contentDescription = "만보 달성", tint = Color(0xFF4CAF50))
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "만보 달성 횟수 : ",
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Medium
-                )
-                Text(text = "$totalSuccessCount")
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                Icon(Icons.Default.Refresh, contentDescription = "연속 횟수", tint = Color(0xFF00BCD4))
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "최대 연속 횟수 : ",
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Medium
-                )
-                Text(text = "$maxContinuous")
-            }
-        }
-
-        Column (
-            modifier = Modifier
-                .weight(0.4f)
-                .padding(10.dp)
-            ,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Bottom
-        ) {
-
-            Row(
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth(0.5f)
-                ,
-                horizontalArrangement = Arrangement.SpaceBetween
+                    .weight(0.4f)
+                    .padding(10.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Bottom
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.arrow),
-                    contentDescription = "별 아이콘",
+
+                Row(
                     modifier = Modifier
-                        .rotate(270f)
-                        .clickable(
-                            indication = null, // ← ripple 효과 제거
-                            interactionSource = remember { MutableInteractionSource() } // ← 필수
-                        ) {
-                            onCalendarMonthChangeClick("left")
-                        }
-                )
+                        .fillMaxWidth(0.5f),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.arrow),
+                        contentDescription = "별 아이콘",
+                        modifier = Modifier
+                            .rotate(270f)
+                            .clickable(
+                                indication = null, // ← ripple 효과 제거
+                                interactionSource = remember { MutableInteractionSource() } // ← 필수
+                            ) {
+                                onCalendarMonthChangeClick("left")
+                            }
+                    )
+                    Text(
+                        text = "오늘로 이동",
+                        modifier = Modifier
+                            .clickable(
+                                indication = null, // ← ripple 효과 제거
+                                interactionSource = remember { MutableInteractionSource() } // ← 필수
+                            ) {
+                                onCalendarMonthChangeClick("today")
+                            }
+                    )
+                    Image(
+                        painter = painterResource(id = R.drawable.arrow),
+                        contentDescription = "별 아이콘",
+                        modifier = Modifier
+                            .rotate(90f)
+                            .clickable(
+                                indication = null, // ← ripple 효과 제거
+                                interactionSource = remember { MutableInteractionSource() } // ← 필수
+                            ) {
+                                onCalendarMonthChangeClick("right")
+                            }
+                    )
+                }
+
                 Text(
-                    text = "오늘로 이동",
+                    text = calendarMonth,
+                    style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier
-                        .clickable(
-                            indication = null, // ← ripple 효과 제거
-                            interactionSource = remember { MutableInteractionSource() } // ← 필수
-                        ) {
-                            onCalendarMonthChangeClick("today")
-                        }
+                        .padding(top = 6.dp)
                 )
-                Image(
-                    painter = painterResource(id = R.drawable.arrow),
-                    contentDescription = "별 아이콘",
-                    modifier = Modifier
-                        .rotate(90f)
-                        .clickable(
-                            indication = null, // ← ripple 효과 제거
-                            interactionSource = remember { MutableInteractionSource() } // ← 필수
-                        ) {
-                            onCalendarMonthChangeClick("right")
-                        }
+
+                CalendarView(
+                    today = today,
+                    calendarMonth = calendarMonth,
+                    walkList = walkDataList.filter { it.success == "1" }
                 )
+
             }
 
-            Text(
-                text = calendarMonth,
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier
-                    .padding(top = 6.dp)
-            )
-
-            CalendarView(
-                today = today,
-                calendarMonth = calendarMonth,
-                walkList = walkDataList.filter { it.success == "1" }
-            )
-
         }
-
     }
 
 }

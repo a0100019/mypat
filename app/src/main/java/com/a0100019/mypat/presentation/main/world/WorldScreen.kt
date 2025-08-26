@@ -40,6 +40,7 @@ import com.a0100019.mypat.presentation.ui.image.pat.DraggablePatImage
 import com.a0100019.mypat.presentation.main.mainDialog.PatSettingDialog
 import com.a0100019.mypat.presentation.main.mainDialog.WorldAddDialog
 import com.a0100019.mypat.presentation.ui.component.MainButton
+import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -178,190 +179,197 @@ fun WorldScreen(
         )
     }
 
-    Column(
+    Surface(
         modifier = Modifier
             .fillMaxSize()
-        ,
-        horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Text(
-            text = "꾸미기",
-            style = MaterialTheme.typography.headlineLarge,
-            modifier = Modifier
-                .padding(16.dp)
-        )
+        BackGroundImage()
 
         Column(
             modifier = Modifier
-                .weight(1f),
-            verticalArrangement = Arrangement.Center,
+                .fillMaxSize()
+            ,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            Row(
+            Text(
+                text = "꾸미기",
+                style = MaterialTheme.typography.headlineLarge,
                 modifier = Modifier
-                    .padding(bottom = 6.dp),
-            ) {
-                Text(
-                    text = "펫 ${userDataList.find { it.id == "pat" }?.value3} / ${userDataList.find { it.id == "pat" }?.value2}   " +
-                            "아이템 ${userDataList.find { it.id == "item" }?.value3} / ${userDataList.find { it.id == "item" }?.value2}",
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
+                    .padding(16.dp)
+            )
 
-            Surface(
+            Column(
                 modifier = Modifier
-                    .aspectRatio(1 / 1.25f)
-                    .padding(start = 10.dp, end = 10.dp),
-                shape = RoundedCornerShape(16.dp),
-                color = MaterialTheme.colorScheme.scrim,
-                border = BorderStroke(2.dp, MaterialTheme.colorScheme.primaryContainer),
-                shadowElevation = 6.dp,
+                    .weight(1f),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-                Box(
+                Row(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.White), // Optional: Set background color
-                    contentAlignment = Alignment.Center // Center content
+                        .padding(bottom = 6.dp),
                 ) {
-                    JustImage(
-                        filePath = mapUrl,
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.FillBounds
+                    Text(
+                        text = "펫 ${userDataList.find { it.id == "pat" }?.value3} / ${userDataList.find { it.id == "pat" }?.value2}   " +
+                                "아이템 ${userDataList.find { it.id == "item" }?.value3} / ${userDataList.find { it.id == "item" }?.value2}",
+                        style = MaterialTheme.typography.titleMedium
                     )
+                }
 
-                    BoxWithConstraints(
-                        modifier = Modifier.fillMaxSize()
+                Surface(
+                    modifier = Modifier
+                        .aspectRatio(1 / 1.25f)
+                        .padding(start = 10.dp, end = 10.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    color = MaterialTheme.colorScheme.scrim,
+                    border = BorderStroke(2.dp, MaterialTheme.colorScheme.primaryContainer),
+                    shadowElevation = 6.dp,
+                ) {
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.White), // Optional: Set background color
+                        contentAlignment = Alignment.Center // Center content
                     ) {
-                        val density = LocalDensity.current
+                        JustImage(
+                            filePath = mapUrl,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.FillBounds
+                        )
 
-                        // Surface 크기 가져오기 (px → dp 변환)
-                        val surfaceWidth = constraints.maxWidth
-                        val surfaceHeight = constraints.maxHeight
+                        BoxWithConstraints(
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            val density = LocalDensity.current
 
-                        val surfaceWidthDp = with(density) { surfaceWidth.toDp() }
-                        val surfaceHeightDp = with(density) { surfaceHeight.toDp() }
+                            // Surface 크기 가져오기 (px → dp 변환)
+                            val surfaceWidth = constraints.maxWidth
+                            val surfaceHeight = constraints.maxHeight
 
-                        worldDataList.forEachIndexed { index, worldData ->
-                            key("${worldData.id}_${worldData.type}") {
-                                if (worldData.type == "pat") {
-                                    patDataList.find { it.id.toString() == worldData.value }
-                                        ?.let { patData ->
+                            val surfaceWidthDp = with(density) { surfaceWidth.toDp() }
+                            val surfaceHeightDp = with(density) { surfaceHeight.toDp() }
 
-                                            DraggablePatImage(
-                                                worldIndex = index.toString(),
-                                                patUrl = patData.url,
-                                                surfaceWidthDp = surfaceWidthDp,
-                                                surfaceHeightDp = surfaceHeightDp,
-                                                xFloat = patData.x,
-                                                yFloat = patData.y,
-                                                sizeFloat = patData.sizeFloat,
-                                                effect = patData.effect,
-                                                onClick = { dialogPatIdChange(patData.id.toString()) }
-                                            ) { newXFloat, newYFloat ->
-                                                onPatDrag(
-                                                    patData.id.toString(),
-                                                    newXFloat,
-                                                    newYFloat
-                                                )
+                            worldDataList.forEachIndexed { index, worldData ->
+                                key("${worldData.id}_${worldData.type}") {
+                                    if (worldData.type == "pat") {
+                                        patDataList.find { it.id.toString() == worldData.value }
+                                            ?.let { patData ->
+
+                                                DraggablePatImage(
+                                                    worldIndex = index.toString(),
+                                                    patUrl = patData.url,
+                                                    surfaceWidthDp = surfaceWidthDp,
+                                                    surfaceHeightDp = surfaceHeightDp,
+                                                    xFloat = patData.x,
+                                                    yFloat = patData.y,
+                                                    sizeFloat = patData.sizeFloat,
+                                                    effect = patData.effect,
+                                                    onClick = { dialogPatIdChange(patData.id.toString()) }
+                                                ) { newXFloat, newYFloat ->
+                                                    onPatDrag(
+                                                        patData.id.toString(),
+                                                        newXFloat,
+                                                        newYFloat
+                                                    )
+                                                }
+
                                             }
 
-                                        }
+                                    } else {
+                                        itemDataList.find { it.id.toString() == worldData.value }
+                                            ?.let { itemData ->
 
-                                } else {
-                                    itemDataList.find { it.id.toString() == worldData.value }
-                                        ?.let { itemData ->
+                                                DraggableItemImage(
+                                                    worldIndex = index.toString(),
+                                                    itemUrl = itemData.url,
+                                                    surfaceWidthDp = surfaceWidthDp,
+                                                    surfaceHeightDp = surfaceHeightDp,
+                                                    xFloat = itemData.x,
+                                                    yFloat = itemData.y,
+                                                    sizeFloat = itemData.sizeFloat,
+                                                    onClick = { dialogItemIdChange(itemData.id.toString()) }
+                                                ) { newXFloat, newYFloat ->
+                                                    onItemDrag(
+                                                        itemData.id.toString(),
+                                                        newXFloat,
+                                                        newYFloat
+                                                    )
+                                                }
 
-                                            DraggableItemImage(
-                                                worldIndex = index.toString(),
-                                                itemUrl = itemData.url,
-                                                surfaceWidthDp = surfaceWidthDp,
-                                                surfaceHeightDp = surfaceHeightDp,
-                                                xFloat = itemData.x,
-                                                yFloat = itemData.y,
-                                                sizeFloat = itemData.sizeFloat,
-                                                onClick = { dialogItemIdChange(itemData.id.toString()) }
-                                            ) { newXFloat, newYFloat ->
-                                                onItemDrag(
-                                                    itemData.id.toString(),
-                                                    newXFloat,
-                                                    newYFloat
-                                                )
                                             }
-
-                                        }
+                                    }
                                 }
                             }
+
                         }
 
                     }
 
                 }
-
             }
-        }
 
-        Column(
-            modifier = Modifier
-                .weight(0.3f)
-            ,
-            verticalArrangement = Arrangement.Bottom
-        ) {
-            Row(
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
+                    .weight(0.3f)
+                ,
+                verticalArrangement = Arrangement.Bottom
             ) {
-                MainButton(
+                Row(
                     modifier = Modifier
-                        .fillMaxWidth(0.7f)
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    MainButton(
+                        modifier = Modifier
+                            .fillMaxWidth(0.7f)
+                            .padding(bottom = 10.dp),
+                        onClick = onShowAddDialogClick,
+                        text = "수정 하기"
+                    )
+                }
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
                         .padding(bottom = 10.dp),
-                    onClick = onShowAddDialogClick,
-                    text = "수정 하기"
-                )
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 10.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-
-                Row(
-                    horizontalArrangement = Arrangement.End,
-                    modifier = Modifier
-                        .weight(0.4f)
+                    horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    MainButton(
+
+                    Row(
+                        horizontalArrangement = Arrangement.End,
                         modifier = Modifier
-                            .fillMaxWidth(0.6f),
-                        onClick = onMainNavigateClick,
-                        text = "취소"
-                    )
+                            .weight(0.4f)
+                    ) {
+                        MainButton(
+                            modifier = Modifier
+                                .fillMaxWidth(0.6f),
+                            onClick = onMainNavigateClick,
+                            text = "취소"
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.weight(0.2f))
+
+                    Row(
+                        modifier = Modifier
+                            .weight(0.4f)
+                    ) {
+                        MainButton(
+                            modifier = Modifier
+                                .fillMaxWidth(0.6f),
+                            onClick = onWorldSelectClick,
+                            text = "확인"
+                        )
+                    }
                 }
 
-                Spacer(modifier = Modifier.weight(0.2f))
-
-                Row(
-                    modifier = Modifier
-                        .weight(0.4f)
-                ) {
-                    MainButton(
-                        modifier = Modifier
-                            .fillMaxWidth(0.6f),
-                        onClick = onWorldSelectClick,
-                        text = "확인"
-                    )
-                }
             }
 
         }
-
     }
-
 }
 
 @Preview(showBackground = true)

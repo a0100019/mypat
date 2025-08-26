@@ -25,6 +25,7 @@ import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -44,6 +45,7 @@ import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiom
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.component.SparkleText
+import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -127,8 +129,8 @@ fun KoreanScreen(
             onKoreanCharacterClick = onKoreanCharacterClick,
             onKoreanDeleteClick = onKoreanDeleteClick,
 
-        )
-    } else if(clickKoreanData != null && clickKoreanDataState in listOf("완료", "별")) {
+            )
+    } else if (clickKoreanData != null && clickKoreanDataState in listOf("완료", "별")) {
         KoreanDialog(
             koreanData = clickKoreanData,
             onClose = onCloseClick,
@@ -137,181 +139,186 @@ fun KoreanScreen(
         )
     }
 
-    Column(
-        modifier = Modifier.fillMaxSize()
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
     ) {
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(24.dp)
-            ,
-            contentAlignment = Alignment.Center
+        BackGroundImage()
+
+        Column(
+        modifier = Modifier.fillMaxSize()
         ) {
-            // Text in the center
-            Text(
-                text = "사자성어",
-                style = MaterialTheme.typography.displayMedium, // Large font size
+
+            Box(
                 modifier = Modifier
-            )
-
-            // 오른쪽 버튼
-            MainButton(
-                text = "닫기",
-                onClick = popBackStack,
-                modifier = Modifier.align(Alignment.CenterEnd)
-            )
-        }
-
-        LazyColumn(
-            modifier = Modifier.weight(1f),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp) // 카드 사이 간격 추가
-        ) {
-            itemsIndexed(koreanDataList) { index, koreanData ->
-
-                val interactionSource = remember { MutableInteractionSource() }
-                val isPressed by interactionSource.collectIsPressedAsState()
-                val scale by animateFloatAsState(
-                    targetValue = if (isPressed) 0.95f else 1f,
-                    label = "scale"
+                    .fillMaxWidth()
+                    .padding(24.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                // Text in the center
+                Text(
+                    text = "사자성어",
+                    style = MaterialTheme.typography.displayMedium, // Large font size
+                    modifier = Modifier
                 )
 
-                if(koreanData.state != "대기"){
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .graphicsLayer {
-                                scaleX = scale
-                                scaleY = scale
-                            }
-                            .clickable(
-                                interactionSource = interactionSource,
-                                indication = rememberRipple(bounded = true, color = Color.White),
-                                onClick = { onKoreanClick(koreanData) }
-                            )
-                            .padding(horizontal = 16.dp, vertical = 8.dp)
-                            .border(
-                                width = 2.dp,
-                                color = MaterialTheme.colorScheme.primaryContainer,
-                                shape = RoundedCornerShape(16.dp)
-                            )
-                                ,
-                        shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.scrim
-                        )
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(16.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
+                // 오른쪽 버튼
+                MainButton(
+                    text = "닫기",
+                    onClick = popBackStack,
+                    modifier = Modifier.align(Alignment.CenterEnd)
+                )
+            }
 
-                            Text(
-                                text = koreanData.idiom,
-                                style = MaterialTheme.typography.titleMedium,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                            Spacer(modifier = Modifier.size(10.dp))
-                            Text(
-                                text = koreanData.korean,
-                                style = MaterialTheme.typography.bodyLarge,
-                            )
+            LazyColumn(
+                modifier = Modifier.weight(1f),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp) // 카드 사이 간격 추가
+            ) {
+                itemsIndexed(koreanDataList) { index, koreanData ->
 
-                            Spacer(modifier = Modifier.weight(1f)) // 텍스트와 이미지 사이 공간 확보
+                    val interactionSource = remember { MutableInteractionSource() }
+                    val isPressed by interactionSource.collectIsPressedAsState()
+                    val scale by animateFloatAsState(
+                        targetValue = if (isPressed) 0.95f else 1f,
+                        label = "scale"
+                    )
 
-                            val iconRes = if (koreanData.state == "완료") {
-                                R.drawable.star_gray
-                            } else {
-                                R.drawable.star_yellow
-                            }
-
-                            Image(
-                                painter = painterResource(id = iconRes),
-                                contentDescription = "State Icon",
-                                modifier = Modifier.size(20.dp)
-                            )
-                        }
-
-                    }
-                } else {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .graphicsLayer {
-                                scaleX = scale
-                                scaleY = scale
-                            }
-                            .clickable(
-                                interactionSource = interactionSource,
-                                indication = rememberRipple(bounded = true, color = Color.White),
-                                onClick = { onKoreanClick(koreanData) }
-                            )
-                            .padding(horizontal = 16.dp, vertical = 8.dp)
-                            .border(
-                                width = 2.dp,
-                                color = MaterialTheme.colorScheme.primaryContainer,
-                                shape = RoundedCornerShape(16.dp)
-                            )
-                            ,
-                        shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.scrim // 더 강조된 배경색
-                        )
-                    ) {
-                        Row(
+                    if (koreanData.state != "대기") {
+                        Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(20.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
+                                .graphicsLayer {
+                                    scaleX = scale
+                                    scaleY = scale
+                                }
+                                .clickable(
+                                    interactionSource = interactionSource,
+                                    indication = rememberRipple(bounded = true, color = Color.White),
+                                    onClick = { onKoreanClick(koreanData) }
+                                )
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                                .border(
+                                    width = 2.dp,
+                                    color = MaterialTheme.colorScheme.primaryContainer,
+                                    shape = RoundedCornerShape(16.dp)
+                                ),
+                            shape = RoundedCornerShape(16.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.scrim
+                            )
                         ) {
-                            Column(
-                                modifier = Modifier.weight(1f)
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
+
                                 Text(
-                                    text = "문제를 풀고 보상을 받으세요!",
+                                    text = koreanData.idiom,
                                     style = MaterialTheme.typography.titleMedium,
-                                    color = MaterialTheme.colorScheme.primary,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Spacer(modifier = Modifier.size(10.dp))
+                                Text(
+                                    text = koreanData.korean,
+                                    style = MaterialTheme.typography.bodyLarge,
                                 )
 
-                                Spacer(modifier = Modifier.height(6.dp))
+                                Spacer(modifier = Modifier.weight(1f)) // 텍스트와 이미지 사이 공간 확보
 
-                                Text(
-                                    text = "📅 ${koreanData.date}",
-                                    style = MaterialTheme.typography.labelMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                val iconRes = if (koreanData.state == "완료") {
+                                    R.drawable.star_gray
+                                } else {
+                                    R.drawable.star_yellow
+                                }
+
+                                Image(
+                                    painter = painterResource(id = iconRes),
+                                    contentDescription = "State Icon",
+                                    modifier = Modifier.size(20.dp)
                                 )
                             }
 
-                            SparkleText(
-                                text = "NEW!!",
-                                fontSize = 20,
-                                modifier = Modifier.padding(start = 12.dp)
-                            )
                         }
+                    } else {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .graphicsLayer {
+                                    scaleX = scale
+                                    scaleY = scale
+                                }
+                                .clickable(
+                                    interactionSource = interactionSource,
+                                    indication = rememberRipple(bounded = true, color = Color.White),
+                                    onClick = { onKoreanClick(koreanData) }
+                                )
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                                .border(
+                                    width = 2.dp,
+                                    color = MaterialTheme.colorScheme.primaryContainer,
+                                    shape = RoundedCornerShape(16.dp)
+                                ),
+                            shape = RoundedCornerShape(16.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.scrim // 더 강조된 배경색
+                            )
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(20.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Column(
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Text(
+                                        text = "문제를 풀고 보상을 받으세요!",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        color = MaterialTheme.colorScheme.primary,
+                                    )
+
+                                    Spacer(modifier = Modifier.height(6.dp))
+
+                                    Text(
+                                        text = "📅 ${koreanData.date}",
+                                        style = MaterialTheme.typography.labelMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+
+                                SparkleText(
+                                    text = "NEW!!",
+                                    fontSize = 20,
+                                    modifier = Modifier.padding(start = 12.dp)
+                                )
+                            }
+                        }
+
+
                     }
 
-
                 }
-
             }
-        }
 
-        Row {
-            Spacer(modifier = Modifier.weight(1f))
-            MainButton(
-                onClick = onFilterClick,
-                text = " 필터 ",
-                imageSize = 20.dp,
-                iconResId = if (filter == "일반") R.drawable.star_gray else R.drawable.star_yellow,
-                modifier = Modifier
-                    .padding(20.dp)
-            )
-        }
+            Row {
+                Spacer(modifier = Modifier.weight(1f))
+                MainButton(
+                    onClick = onFilterClick,
+                    text = " 필터 ",
+                    imageSize = 20.dp,
+                    iconResId = if (filter == "일반") R.drawable.star_gray else R.drawable.star_yellow,
+                    modifier = Modifier
+                        .padding(20.dp)
+                )
+            }
 
+        }
     }
 }
 

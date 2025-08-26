@@ -83,7 +83,7 @@ fun CommunityUpdateCheckDialog(
                 ){
                     MainButton(
                         text = "  취소  ",
-                        onClick = onConfirmClick,
+                        onClick = onDismissClick,
                         modifier = Modifier
                     )
 

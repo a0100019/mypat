@@ -32,12 +32,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.letter.Letter
 import com.a0100019.mypat.presentation.ui.component.MainButton
+import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
+import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
@@ -153,96 +157,101 @@ fun SettingScreen(
         )
     }
 
-    Column(
+    Surface(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-            ,
-            contentAlignment = Alignment.Center
-        ) {
-            // 상단 제목
-            Text(
-                text = "설정",
-                style = MaterialTheme.typography.displayMedium,
-            )
+        BackGroundImage()
 
-            // 오른쪽 버튼
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                // 상단 제목
+                Text(
+                    text = "설정",
+                    style = MaterialTheme.typography.displayMedium,
+                )
+
+                // 오른쪽 버튼
+                MainButton(
+                    text = "닫기",
+                    onClick = popBackStack,
+                    modifier = Modifier.align(Alignment.CenterEnd)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+            Divider()
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // 기능 관련
             MainButton(
-                text = "닫기",
-                onClick = popBackStack,
-                modifier = Modifier.align(Alignment.CenterEnd)
+                text = "우체통",
+                onClick = { onSituationChange("letter") },
+                modifier = Modifier.fillMaxWidth()
             )
-        }
 
-
-
-        Spacer(modifier = Modifier.height(12.dp))
-        Divider()
-        Spacer(modifier = Modifier.height(12.dp))
-
-        // 기능 관련
-        MainButton(
-            text = "우체통",
-            onClick = { onSituationChange("letter") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        MainButton(
-            text = "쿠폰 코드",
-            onClick = { onSituationChange("coupon") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        MainButton(
-            text = "대나무 숲",
-            onClick = { onSituationChange("settingTalk") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-        Divider()
-        Spacer(modifier = Modifier.height(12.dp))
-
-        // 기타 정보
-        MainButton(
-            text = "이용약관 & 개인정보 처리방침",
-            onClick = { onSituationChange("terms") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        MainButton(
-            text = "계정삭제",
-            onClick = { onSituationChange("accountDelete") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        MainButton(
-            text = "로그아웃",
-            onClick = onSignOutClick,
-            modifier = Modifier
-                .fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-        Divider()
-
-
-        Box(
-            modifier = Modifier
-                .weight(1f)
-        ) {
-            Text(
-                text = "하루마을을 이용해주셔서 감사합니다\nㅡ제작자ㅡ",
-                textAlign = TextAlign.Center,
-                modifier = Modifier.align(Alignment.Center)
+            MainButton(
+                text = "쿠폰 코드",
+                onClick = { onSituationChange("coupon") },
+                modifier = Modifier.fillMaxWidth()
             )
+
+            MainButton(
+                text = "대나무 숲",
+                onClick = { onSituationChange("settingTalk") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+            Divider()
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // 기타 정보
+            MainButton(
+                text = "이용약관 & 개인정보 처리방침",
+                onClick = { onSituationChange("terms") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            MainButton(
+                text = "계정삭제",
+                onClick = { onSituationChange("accountDelete") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            MainButton(
+                text = "로그아웃",
+                onClick = onSignOutClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+            Divider()
+
+
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+            ) {
+                Text(
+                    text = "하루마을을 이용해주셔서 감사합니다\nㅡ제작자ㅡ",
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
         }
     }
 }

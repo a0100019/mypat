@@ -34,6 +34,7 @@ import org.orbitmvi.orbit.compose.collectAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Surface
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,6 +42,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.*
 import androidx.compose.ui.text.input.ImeAction
+import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
 
 @Composable
 fun DiaryWriteScreen(
@@ -127,99 +129,106 @@ fun DiaryWriteScreen(
         )
     }
 
-    Column(
+    Surface(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
     ) {
-        Text(
-            text = "일기장",
-            style = MaterialTheme.typography.displayMedium,
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-        )
 
-        val configuration = LocalConfiguration.current
-        val screenHeightDp = configuration.screenHeightDp
-        val halfHeightDp = (screenHeightDp * 0.5).dp
-        OutlinedTextField(
-            value = writeDiaryData.contents,
-            onValueChange = onContentsTextChange,
-            label = { Text("내용") },
-            isError = isError,
-            placeholder = { Text("내용을 10자 이상 입력하세요") },
-            shape = RoundedCornerShape(8.dp),
-            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Default),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(halfHeightDp)
-                .padding(bottom = 16.dp)
-        )
-
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = writeDiaryData.date,
-                style = MaterialTheme.typography.headlineMedium,
-                textAlign = TextAlign.Center
-            )
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-
-                Button(
-                    onClick = {
-                        onDialogStateChange("emotion")
-                    },
-                    shape = RoundedCornerShape(16.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.scrim
-                    ),
-                    border = BorderStroke(2.dp, MaterialTheme.colorScheme.primaryContainer)
-                ) {
-                    JustImage(
-                        filePath = writeDiaryData.emotion,
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-
-                MainButton(
-                    onClick = {
-                        onDiaryFinishClick()
-                        if (writePossible) popBackStack()
-                    },
-                    text = "작성 완료"
-                )
-            }
-        }
+        BackGroundImage()
 
         Column(
             modifier = Modifier
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+                .fillMaxSize()
+                .padding(16.dp)
         ) {
             Text(
+                text = "일기장",
+                style = MaterialTheme.typography.displayMedium,
                 modifier = Modifier
-                    .padding(bottom = 12.dp)
-                        ,
-                textAlign = TextAlign.Center,
-                text = "가볍게 하루를 정리해볼까요?\n\n" +
-                        "오늘 뭐 했는지, 뭐 먹었는지, 기분은 어땠는지\n" +
-                        "그냥 생각나는 대로 툭툭 써봐요\n" +
-                        "잘 쓰려고 애쓸 필요도 없고\n" +
-                        "누구한테 보여줄 것도 아니니까요\n" +
-                        "하루를 정리하면, 마음도 조금 정돈될 거예요"
+                    .align(Alignment.CenterHorizontally)
             )
-        }
 
+            val configuration = LocalConfiguration.current
+            val screenHeightDp = configuration.screenHeightDp
+            val halfHeightDp = (screenHeightDp * 0.5).dp
+            OutlinedTextField(
+                value = writeDiaryData.contents,
+                onValueChange = onContentsTextChange,
+                label = { Text("내용") },
+                isError = isError,
+                placeholder = { Text("내용을 10자 이상 입력하세요") },
+                shape = RoundedCornerShape(8.dp),
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Default),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(halfHeightDp)
+                    .padding(bottom = 16.dp)
+            )
+
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = writeDiaryData.date,
+                    style = MaterialTheme.typography.headlineMedium,
+                    textAlign = TextAlign.Center
+                )
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+
+                    Button(
+                        onClick = {
+                            onDialogStateChange("emotion")
+                        },
+                        shape = RoundedCornerShape(16.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.scrim
+                        ),
+                        border = BorderStroke(2.dp, MaterialTheme.colorScheme.primaryContainer)
+                    ) {
+                        JustImage(
+                            filePath = writeDiaryData.emotion,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+
+                    MainButton(
+                        onClick = {
+                            onDiaryFinishClick()
+                            if (writePossible) popBackStack()
+                        },
+                        text = "작성 완료"
+                    )
+                }
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    modifier = Modifier
+                        .padding(bottom = 12.dp),
+                    textAlign = TextAlign.Center,
+                    text = "가볍게 하루를 정리해볼까요?\n\n" +
+                            "오늘 뭐 했는지, 뭐 먹었는지, 기분은 어땠는지\n" +
+                            "그냥 생각나는 대로 툭툭 써봐요\n" +
+                            "잘 쓰려고 애쓸 필요도 없고\n" +
+                            "누구한테 보여줄 것도 아니니까요\n" +
+                            "하루를 정리하면, 마음도 조금 정돈될 거예요"
+                )
+            }
+
+        }
     }
 }
 

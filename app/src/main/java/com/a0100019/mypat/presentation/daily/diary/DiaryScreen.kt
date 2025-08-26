@@ -27,6 +27,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -44,6 +45,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.data.room.diary.Diary
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.component.SparkleText
+import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
@@ -134,141 +136,223 @@ fun DiaryScreen(
             removeEmotion = true
         )
     }
-    
-    // Fullscreen container
-    Column(
+
+    Surface(
         modifier = Modifier
             .fillMaxSize()
-        ,
-
     ) {
-        // Text in the center
 
+        BackGroundImage()
 
-
-        Box(
+        // Fullscreen container
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(24.dp)
-            ,
-            contentAlignment = Alignment.Center
-        ) {
+                .fillMaxSize(),
 
-            Text(
-                text = "일기장",
-                style = MaterialTheme.typography.displayMedium, // Large font size
-                modifier = Modifier
-            )
-
-            // 오른쪽 버튼
-            MainButton(
-                text = "닫기",
-                onClick = popBackStack,
-                modifier = Modifier.align(Alignment.CenterEnd)
-            )
-        }
-
-        Row(
-            modifier = Modifier
-                .align(Alignment.End)
-                .padding(end = 24.dp)
-            ,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-
-            Button(
-                onClick = {
-                    onDialogStateChange("감정")
-                },
-                shape = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.scrim
-                ),
-                border = BorderStroke(2.dp, MaterialTheme.colorScheme.primaryContainer)
             ) {
-                JustImage(
-                    filePath = emotionFilter,
-                    modifier = Modifier.size(20.dp)
+            // Text in the center
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp),
+                contentAlignment = Alignment.Center
+            ) {
+
+                Text(
+                    text = "일기장",
+                    style = MaterialTheme.typography.displayMedium, // Large font size
+                    modifier = Modifier
+                )
+
+                // 오른쪽 버튼
+                MainButton(
+                    text = "닫기",
+                    onClick = popBackStack,
+                    modifier = Modifier.align(Alignment.CenterEnd)
                 )
             }
 
-            Spacer(modifier = Modifier.width(8.dp))
+            Row(
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .padding(end = 24.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
 
-            MainButton(
-                onClick = {
-                    onDialogStateChange("검색")
-                },
-                text = " 검색 "
-            )
-        }
-
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(8.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp) // 카드 사이 간격 추가
-        ) {
-            itemsIndexed(diaryDataList) { index, diaryData ->
-
-                val interactionSource = remember { MutableInteractionSource() }
-                val isPressed by interactionSource.collectIsPressedAsState()
-                val scale by animateFloatAsState(
-                    targetValue = if (isPressed) 0.95f else 1f,
-                    label = "scale"
-                )
-
-                val monthChange = index > 0 && diaryData.date.substring(5, 7) != diaryDataList[index -1].date.substring(5, 7)
-
-                if(monthChange) {
-                    Text(
-                        text = diaryData.date.substring(0,7),
-                        modifier = Modifier
-                            .padding(start = 24.dp)
+                Button(
+                    onClick = {
+                        onDialogStateChange("감정")
+                    },
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.scrim
+                    ),
+                    border = BorderStroke(2.dp, MaterialTheme.colorScheme.primaryContainer)
+                ) {
+                    JustImage(
+                        filePath = emotionFilter,
+                        modifier = Modifier.size(20.dp)
                     )
                 }
 
-                if(diaryData.state =="대기") {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .graphicsLayer {
-                                scaleX = scale
-                                scaleY = scale
-                            }
-                            .clickable(
-                                interactionSource = interactionSource,
-                                indication = rememberRipple(bounded = true, color = Color.White),
-                                onClick = { onDiaryClick(diaryData) }
-                            )
-                            .padding(horizontal = 16.dp, vertical = 8.dp)
-                            .border(
-                                width = 2.dp,
-                                color = MaterialTheme.colorScheme.primaryContainer,
-                                shape = RoundedCornerShape(16.dp)
-                            )
-                                ,
-                        shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.scrim
-                        )
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(6.dp)
-                            ,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
+                Spacer(modifier = Modifier.width(8.dp))
 
+                MainButton(
+                    onClick = {
+                        onDialogStateChange("검색")
+                    },
+                    text = " 검색 "
+                )
+            }
+
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(8.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp) // 카드 사이 간격 추가
+            ) {
+                itemsIndexed(diaryDataList) { index, diaryData ->
+
+                    val interactionSource = remember { MutableInteractionSource() }
+                    val isPressed by interactionSource.collectIsPressedAsState()
+                    val scale by animateFloatAsState(
+                        targetValue = if (isPressed) 0.95f else 1f,
+                        label = "scale"
+                    )
+
+                    val monthChange = index > 0 && diaryData.date.substring(
+                        5,
+                        7
+                    ) != diaryDataList[index - 1].date.substring(5, 7)
+
+                    if (monthChange) {
+                        Text(
+                            text = diaryData.date.substring(0, 7),
+                            modifier = Modifier
+                                .padding(start = 24.dp)
+                        )
+                    }
+
+                    if (diaryData.state == "대기") {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .graphicsLayer {
+                                    scaleX = scale
+                                    scaleY = scale
+                                }
+                                .clickable(
+                                    interactionSource = interactionSource,
+                                    indication = rememberRipple(
+                                        bounded = true,
+                                        color = Color.White
+                                    ),
+                                    onClick = { onDiaryClick(diaryData) }
+                                )
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                                .border(
+                                    width = 2.dp,
+                                    color = MaterialTheme.colorScheme.primaryContainer,
+                                    shape = RoundedCornerShape(16.dp)
+                                ),
+                            shape = RoundedCornerShape(16.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.scrim
+                            )
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(6.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+
+                                Column(
+                                    modifier = Modifier
+                                        .padding(6.dp)
+                                ) {
+                                    Row {
+                                        Text(
+                                            text = diaryData.date,
+                                            style = MaterialTheme.typography.bodyLarge
+                                        )
+
+                                        //요일 알려주는 코드
+                                        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                                        val date = LocalDate.parse(diaryData.date, formatter)
+                                        Text(
+                                            text = date.dayOfWeek.getDisplayName(
+                                                TextStyle.FULL,
+                                                Locale.KOREAN
+                                            ),
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            modifier = Modifier
+                                                .padding(start = 6.dp)
+                                        )
+                                    }
+
+                                    Text(
+                                        text = "눌러서 일기를 작성해주세요",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        color = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier
+                                            .padding(top = 6.dp)
+                                    )
+                                }
+
+                                Spacer(modifier = Modifier.weight(1f))
+
+                                SparkleText(
+                                    text = "new!!",
+                                    fontSize = 20,
+                                    modifier = Modifier
+                                        .padding(end = 32.dp)
+                                )
+
+                            }
+                        }
+                    } else {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .graphicsLayer {
+                                    scaleX = scale
+                                    scaleY = scale
+                                }
+                                .clickable(
+                                    interactionSource = interactionSource,
+                                    indication = rememberRipple(
+                                        bounded = true,
+                                        color = Color.White
+                                    ),
+                                    onClick = { onDiaryClick(diaryData) }
+                                )
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                                .border(
+                                    width = 2.dp,
+                                    color = MaterialTheme.colorScheme.primaryContainer,
+                                    shape = RoundedCornerShape(16.dp)
+                                ),
+                            shape = RoundedCornerShape(16.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.scrim
+                            )
+                        ) {
                             Column(
                                 modifier = Modifier
-                                    .padding(6.dp)
+                                    .fillMaxSize()
+                                    .padding(6.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                Row {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
                                     Text(
                                         text = diaryData.date,
-                                        style = MaterialTheme.typography.bodyLarge
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        modifier = Modifier
+                                            .padding(start = 6.dp)
                                     )
-
                                     //요일 알려주는 코드
                                     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                                     val date = LocalDate.parse(diaryData.date, formatter)
@@ -281,101 +365,26 @@ fun DiaryScreen(
                                         modifier = Modifier
                                             .padding(start = 6.dp)
                                     )
+                                    Spacer(modifier = Modifier.weight(1f))
+                                    JustImage(
+                                        filePath = diaryData.emotion,
+                                        modifier = Modifier
+                                            .size(25.dp)
+                                            .padding(end = 8.dp)
+                                    )
                                 }
-
                                 Text(
-                                    text = "눌러서 일기를 작성해주세요",
-                                    style = MaterialTheme.typography.titleMedium,
+                                    text = diaryData.contents,
+                                    style = MaterialTheme.typography.titleSmall,
                                     color = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier
-                                        .padding(top = 6.dp)
-                                    )
-                            }
-
-                            Spacer(modifier = Modifier.weight(1f))
-
-                            SparkleText(
-                                text = "new!!",
-                                fontSize = 20,
-                                modifier = Modifier
-                                    .padding(end = 32.dp)
-                            )
-
-                        }
-                    }
-                } else {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .graphicsLayer {
-                                scaleX = scale
-                                scaleY = scale
-                            }
-                            .clickable(
-                                interactionSource = interactionSource,
-                                indication = rememberRipple(bounded = true, color = Color.White),
-                                onClick = { onDiaryClick(diaryData) }
-                            )
-                            .padding(horizontal = 16.dp, vertical = 8.dp)
-                            .border(
-                                width = 2.dp,
-                                color = MaterialTheme.colorScheme.primaryContainer,
-                                shape = RoundedCornerShape(16.dp)
-                            )
-                                ,
-                        shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.scrim
-                        )
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(6.dp)
-                            ,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = diaryData.date,
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    modifier = Modifier
-                                        .padding(start = 6.dp)
-                                    )
-                                //요일 알려주는 코드
-                                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                                val date = LocalDate.parse(diaryData.date, formatter)
-                                Text(
-                                    text = date.dayOfWeek.getDisplayName(
-                                        TextStyle.FULL,
-                                        Locale.KOREAN
-                                    ),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    modifier = Modifier
-                                        .padding(start = 6.dp)
+                                        .padding(6.dp)
+                                        .fillMaxWidth(),
+                                    maxLines = 3,
+                                    overflow = TextOverflow.Ellipsis,
                                 )
-                                Spacer(modifier = Modifier.weight(1f))
-                                JustImage(
-                                    filePath = diaryData.emotion,
-                                    modifier = Modifier
-                                        .size(25.dp)
-                                        .padding(end = 8.dp)
-                                )
-                            }
-                            Text(
-                                text = diaryData.contents,
-                                style = MaterialTheme.typography.titleSmall,
-                                color = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier
-                                    .padding(6.dp)
-                                    .fillMaxWidth()
-                                        ,
-                                maxLines = 3,
-                                overflow = TextOverflow.Ellipsis,
-                            )
 
+                            }
                         }
                     }
                 }
