@@ -33,8 +33,8 @@ import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.presentation.ui.component.MainButton
+import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.image.etc.LoveHorizontalLine
-import com.a0100019.mypat.presentation.ui.image.pat.DialogPatImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
 @Composable
@@ -112,7 +112,9 @@ fun SecondGameDialog(
                         )
                     }
 
-                    DialogPatImage(patData.url)
+                    JustImage(
+                        filePath = patData.url
+                    )
 
                 }
 

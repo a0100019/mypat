@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
+import com.a0100019.mypat.presentation.ui.image.etc.LottieCache
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
@@ -37,10 +38,7 @@ fun WorldItemImage(
 
         val imageSize = surfaceWidthDp * sizeFloat // 이미지 크기를 Surface 너비의 비율로 설정
 
-        // `assets` 폴더에서 Lottie 파일 로드
-        val composition by rememberLottieComposition(
-            LottieCompositionSpec.Asset(itemUrl)
-        )
+        val composition by rememberLottieComposition(LottieCache.get(itemUrl))
 
         // LottieAnimation을 클릭 가능한 Modifier로 감쌉니다.
         LottieAnimation(

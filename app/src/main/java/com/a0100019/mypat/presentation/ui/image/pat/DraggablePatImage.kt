@@ -29,6 +29,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
+import com.a0100019.mypat.presentation.ui.image.etc.LottieCache
 import com.a0100019.mypat.presentation.ui.image.etc.patEffectIndexToUrl
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -50,10 +51,7 @@ fun DraggablePatImage(
     newFloat: (Float, Float) -> Unit,
 ) {
 
-    // `assets` 폴더에서 Lottie 파일 로드
-    val composition by rememberLottieComposition(
-        LottieCompositionSpec.Asset(patUrl)
-    )
+    val composition by rememberLottieComposition(LottieCache.get(patUrl))
 
     val imageSize = surfaceWidthDp * sizeFloat // 이미지 크기를 Surface 너비의 비율로 설정
 
@@ -73,8 +71,8 @@ fun DraggablePatImage(
                 .size(imageSize)
                 .offset(x = xOffset, y = yOffset)
                 .clickable(
-//                    interactionSource = remember { MutableInteractionSource() },
-//                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
                     onClick = onClick
                 )
                 .pointerInput(Unit) {

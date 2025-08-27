@@ -189,7 +189,9 @@ fun CommunityScreen(
 
         BackGroundImage()
 
-        Box {
+        Box(
+            modifier = Modifier.padding(6.dp)
+        ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize(),
@@ -229,87 +231,86 @@ fun CommunityScreen(
 
                 when (situation) {
                     "world" -> Column(
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier
-                            .weight(1f)
-                            .padding(16.dp)
+                            .fillMaxSize()
+                            .padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        // 🔹 위쪽 두 Row: 남는 공간 꽉 채우기
+                        Column(
                             modifier = Modifier
-                                .padding(bottom = 24.dp)
+                                .weight(1f) // 남는 공간 전부 차지
+                                .fillMaxWidth(),
+                            verticalArrangement = Arrangement.SpaceEvenly // 위아래 균등 분배
                         ) {
-                            CommunityWorldCard(
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(12.dp),
                                 modifier = Modifier
-                                    .weight(1f),
-                                userData = allUserData1,
-                                worldDataList = allUserWorldDataList1,
-                                patDataList = patDataList,
-                                itemDataList = itemDataList,
-                                onClick = { onUserWorldClick(1) }
-                            )
-                            CommunityWorldCard(
-                                modifier = Modifier
-                                    .weight(1f),
-                                userData = allUserData2,
-                                worldDataList = allUserWorldDataList2,
-                                patDataList = patDataList,
-                                itemDataList = itemDataList,
-                                onClick = { onUserWorldClick(2) }
-                            )
+                                    .fillMaxWidth()
+                                    .padding(bottom = 12.dp)
+                            ) {
+                                CommunityWorldCard(
+                                    modifier = Modifier.weight(1f),
+                                    userData = allUserData1,
+                                    worldDataList = allUserWorldDataList1,
+                                    patDataList = patDataList,
+                                    itemDataList = itemDataList,
+                                    onClick = { onUserWorldClick(1) }
+                                )
+                                CommunityWorldCard(
+                                    modifier = Modifier.weight(1f),
+                                    userData = allUserData2,
+                                    worldDataList = allUserWorldDataList2,
+                                    patDataList = patDataList,
+                                    itemDataList = itemDataList,
+                                    onClick = { onUserWorldClick(2) }
+                                )
+                            }
+
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                CommunityWorldCard(
+                                    modifier = Modifier.weight(1f),
+                                    userData = allUserData3,
+                                    worldDataList = allUserWorldDataList3,
+                                    patDataList = patDataList,
+                                    itemDataList = itemDataList,
+                                    onClick = { onUserWorldClick(3) }
+                                )
+                                CommunityWorldCard(
+                                    modifier = Modifier.weight(1f),
+                                    userData = allUserData4,
+                                    worldDataList = allUserWorldDataList4,
+                                    patDataList = patDataList,
+                                    itemDataList = itemDataList,
+                                    onClick = { onUserWorldClick(4) }
+                                )
+                            }
                         }
 
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(12.dp),
-                            modifier = Modifier
-                                .padding(bottom = 36.dp)
-                        ) {
-                            CommunityWorldCard(
-                                modifier = Modifier
-                                    .weight(1f),
-                                userData = allUserData3,
-                                worldDataList = allUserWorldDataList3,
-                                patDataList = patDataList,
-                                itemDataList = itemDataList,
-                                onClick = { onUserWorldClick(3) }
-                            )
-                            CommunityWorldCard(
-                                modifier = Modifier
-                                    .weight(1f),
-                                userData = allUserData4,
-                                worldDataList = allUserWorldDataList4,
-                                patDataList = patDataList,
-                                itemDataList = itemDataList,
-                                onClick = { onUserWorldClick(4) }
-                            )
-                        }
-
+                        // 🔹 맨 아래 Row: 항상 고정
                         Row(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             modifier = Modifier
                                 .fillMaxWidth()
+                                .padding(top = 16.dp, bottom = 50.dp)
                         ) {
-
-                            Text(
-                                "         "
-                            )
+                            Text("         ")
 
                             Text(
                                 text = "마음에 드는 마을에 좋아요를 눌러주세요!\n오늘의 첫 좋아요를 누르면 500달빛을 획득합니다",
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier
-                                    .padding(bottom = 24.dp)
+                                textAlign = TextAlign.Center
                             )
 
                             MainButton(
                                 onClick = onPageUpClick,
-                                text = "   다음   ",
-                                modifier = Modifier
-                                    .padding(bottom = 24.dp)
+                                text = "   다음   "
                             )
                         }
                     }
+
 
                     "chat" -> Column(
                         modifier = Modifier
@@ -582,8 +583,8 @@ fun CommunityScreen(
                     }
                 }
             }
-
         }
+
     }
 }
 

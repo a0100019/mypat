@@ -24,6 +24,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
+import com.a0100019.mypat.presentation.ui.image.etc.LottieCache
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
@@ -51,10 +52,8 @@ fun DraggableItemImage(
 
     if(itemUrl.takeLast(4) == "json") {
 
-        // `assets` 폴더에서 Lottie 파일 로드
-        val composition by rememberLottieComposition(
-            LottieCompositionSpec.Asset(itemUrl)
-        )
+        val composition by rememberLottieComposition(LottieCache.get(itemUrl))
+
 
         // LottieAnimation을 클릭 가능한 Modifier로 감쌉니다.
         Box(

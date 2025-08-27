@@ -3,6 +3,7 @@ package com.a0100019.mypat.presentation.main.management
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
@@ -51,11 +52,10 @@ class MainActivity : ComponentActivity() {
                         contentAlignment = Alignment.Center
                     ) {
 
-                        JustImage(
-                            filePath = "area/loading.jpg",
+                        Box(
                             modifier = Modifier
-                                .fillMaxSize(),
-                            contentScale = ContentScale.FillBounds
+                                .fillMaxSize()
+                                .background(Color.Black)
                         )
 
                         when {

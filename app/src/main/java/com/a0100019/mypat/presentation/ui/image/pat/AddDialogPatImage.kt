@@ -7,6 +7,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.a0100019.mypat.data.room.pat.Pat
+import com.a0100019.mypat.presentation.ui.image.etc.LottieCache
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
@@ -16,10 +17,7 @@ fun AddDialogPatImage(
     patData: Pat,
     onAddPatImageClick: (String) -> Unit
 ) {
-    // `assets` 폴더에서 Lottie 파일 로드
-    val composition by rememberLottieComposition(
-        LottieCompositionSpec.Asset(patData.url)
-    )
+    val composition by rememberLottieComposition(LottieCache.get(patData.url))
 
     LottieAnimation(
         composition = composition,

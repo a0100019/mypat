@@ -9,6 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
+import com.a0100019.mypat.presentation.ui.image.etc.LottieCache
 import com.a0100019.mypat.presentation.ui.image.etc.PatEffectImage
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -26,10 +27,7 @@ fun PatImage(
     sizeFloat: Float,
     onClick: () -> Unit = {} // 클릭 이벤트 콜백 추가
 ) {
-    // `assets` 폴더에서 Lottie 파일 로드
-    val composition by rememberLottieComposition(
-        LottieCompositionSpec.Asset(patUrl)
-    )
+    val composition by rememberLottieComposition(LottieCache.get(patUrl))
 
     val imageSize = surfaceWidthDp * sizeFloat // 이미지 크기를 Surface 너비의 비율로 설정
 

@@ -19,13 +19,10 @@ fun PatEffectImage(
     yFloat: Float,
     sizeFloat: Float,
 ) {
-
     val imageUrl = patEffectIndexToUrl(effect)
 
-    // `assets` 폴더에서 Lottie 파일 로드
-    val composition by rememberLottieComposition(
-        LottieCompositionSpec.Asset(imageUrl)
-    )
+    val composition by rememberLottieComposition(LottieCache.get(imageUrl))
+
 
     val imageSize = surfaceWidthDp * sizeFloat // 이미지 크기를 Surface 너비의 비율로 설정
 

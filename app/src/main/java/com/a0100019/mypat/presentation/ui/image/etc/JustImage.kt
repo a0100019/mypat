@@ -35,16 +35,17 @@ fun JustImage(
     filePath: String,
     @SuppressLint("ModifierParameter") modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Fit,
-    repetition: Boolean = false
+    repetition: Boolean = false, // 한바퀴 후 역재생 할 것인지
+    isPlaying: Boolean = true
 ) {
     if (filePath.endsWith(".json")) {
-        val composition by rememberLottieComposition(LottieCompositionSpec.Asset(filePath))
+        val composition by rememberLottieComposition(LottieCache.get(filePath))
 
         if (repetition) {
 
             val progress by animateLottieCompositionAsState(
                 composition = composition,
-                isPlaying = true,
+                isPlaying = isPlaying,
                 restartOnPlay = false,
                 reverseOnRepeat = true,
                 iterations = Int.MAX_VALUE
@@ -61,7 +62,8 @@ fun JustImage(
                 composition = composition,
                 iterations = Int.MAX_VALUE,
                 modifier = modifier,
-                contentScale = contentScale
+                contentScale = contentScale,
+                isPlaying = isPlaying
             )
         }
     } else {
@@ -88,6 +90,16 @@ fun JustImage(
 //            Box(contentAlignment = Alignment.Center) {
 //                Text("?")
 //            }
+        }
+    }
+}
+
+object LottieCache {
+    private val cache = mutableMapOf<String, LottieCompositionSpec>()
+
+    fun get(patUrl: String): LottieCompositionSpec {
+        return cache.getOrPut(patUrl) {
+            LottieCompositionSpec.Asset(patUrl)
         }
     }
 }

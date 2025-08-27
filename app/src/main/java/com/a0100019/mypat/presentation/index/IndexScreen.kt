@@ -65,7 +65,6 @@ import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
-import com.a0100019.mypat.presentation.ui.image.pat.DialogPatImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -156,7 +155,7 @@ fun IndexScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(12.dp)
+                .padding(6.dp)
         ) {
             Box(
                 modifier = Modifier
@@ -310,7 +309,10 @@ fun IndexScreen(
                                             ),
                                         contentAlignment = Alignment.Center
                                     ) {
-                                        DialogPatImage(pat.url)
+                                        JustImage(
+                                            filePath = pat.url,
+//                                            isPlaying = false
+                                            )
                                         if (pat.date == "0") {
                                             Box(
                                                 modifier = Modifier
@@ -425,7 +427,6 @@ fun IndexScreen(
                                     ) {
                                         JustImage(
                                             filePath = item.url,
-                                            contentScale = ContentScale.Fit
                                         )
                                         if (item.date == "0") {
                                             Box(

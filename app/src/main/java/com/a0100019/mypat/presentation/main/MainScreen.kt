@@ -210,7 +210,7 @@ fun MainScreen(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-                    .padding(12.dp)
+                    .padding(6.dp)
             ) {
                 Row(
                     modifier = Modifier
@@ -352,7 +352,7 @@ fun MainScreen(
             Column(
                 modifier = Modifier
                     .weight(0.3f)
-                    .padding(24.dp)
+                    .padding(12.dp)
                 ,
                 verticalArrangement = Arrangement.Bottom
             ) {

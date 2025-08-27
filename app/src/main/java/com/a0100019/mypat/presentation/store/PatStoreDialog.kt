@@ -37,7 +37,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
-import com.a0100019.mypat.presentation.ui.image.pat.DialogPatImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
 @Composable
@@ -115,8 +114,8 @@ fun PatStoreDialog(
                                     modifier = Modifier,
                                     horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
-                                    DialogPatImage(
-                                        patUrl = patData!![index].url,
+                                    JustImage(
+                                        filePath = patData!![index].url,
                                         modifier = Modifier.size(45.dp)
                                     )
                                 }
@@ -174,8 +173,8 @@ fun PatStoreDialog(
                                 Column(
                                     horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
-                                    DialogPatImage(
-                                        patUrl = pat.url,
+                                    JustImage(
+                                        filePath = pat.url,
                                         modifier = Modifier.size(50.dp)
                                     )
                                 }

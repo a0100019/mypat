@@ -33,10 +33,7 @@ fun AddDialogMapImage(
 
     if(areaData.url.takeLast(4) == "json") {
 
-        // `assets` 폴더에서 Lottie 파일 로드
-        val composition by rememberLottieComposition(
-            LottieCompositionSpec.Asset(areaData.url)
-        )
+        val composition by rememberLottieComposition(LottieCache.get(areaData.url))
 
         // LottieAnimation을 클릭 가능한 Modifier로 감쌉니다.
         LottieAnimation(
