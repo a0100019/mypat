@@ -590,6 +590,7 @@ fun IndexScreen(
                     Surface(
                         modifier = Modifier
                             .weight(1f)
+                            .padding(top = 6.dp)
                         ,
                         color = Color.Transparent, // ✅ 배경 투명
                     ) {
@@ -650,7 +651,7 @@ fun IndexScreenPreview() {
     MypatTheme {
         IndexScreen(
             allPatDataList = listOf(Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json")),
-            allItemDataList = listOf(Item(url = "item/table.png")),
+            allItemDataList = listOf(Item(url = "item/airplane.json")),
             allAreaDataList = listOf(Area(url = "area/forest.jpg")),
             onTypeChangeClick = {},
             typeChange = "pat",

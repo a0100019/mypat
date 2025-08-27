@@ -419,7 +419,7 @@ fun MainScreenPreview() {
             onThirdGameNavigateClick = {},
             mapUrl = "area/forest.jpg",
             patDataList = listOf(Pat(url = "pat/cat.json")),
-            itemDataList = listOf(Item(url = "item/table.png")),
+            itemDataList = listOf(Item(url = "item/airplane.json")),
             dialogPatId = "0",
             dialogPatIdChange = {},
             userFlowDataList = flowOf(listOf(User(id = "money", value = "1000"), User(id = "cash", value = "100"))),

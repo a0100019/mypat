@@ -379,7 +379,7 @@ fun WorldScreenPreview() {
         WorldScreen(
             mapUrl = "area/beach.jpg",
             patDataList = listOf(Pat(url = "pat/cat.json")),
-            itemDataList = listOf(Item(url = "item/table.png")),
+            itemDataList = listOf(Item(url = "item/airplane.json")),
             dialogPatId = "0",
             dialogItemId = "0",
             dialogPatIdChange = {},

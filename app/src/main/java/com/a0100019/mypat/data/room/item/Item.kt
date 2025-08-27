@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "item_table")
 data class Item(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    var date: String = "0",
+    var date: String = "１",
     val name: String = "",
     val url: String,
     var x: Float = 0.5f,

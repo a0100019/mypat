@@ -454,9 +454,9 @@ fun InformationScreenPreview() {
         InformationScreen(
             areaUrl = "area/beach.jpg",
             patDataList = listOf(Pat(url = "pat/cat.json")),
-            itemDataList = listOf(Item(url = "item/table.png")),
+            itemDataList = listOf(Item(url = "item/airplane.json")),
             allPatDataList = listOf(Pat(url = "pat/cat.json")),
-            allItemDataList = listOf(Item(url = "item/table.png")),
+            allItemDataList = listOf(Item(url = "item/airplane.json")),
             allAreaDataList = listOf(Area(url = "area/forest.png")),
             userDataList = listOf(User(id = "firstGame"))
         )

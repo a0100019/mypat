@@ -256,7 +256,7 @@ fun WorldAddDialogPreview() {
         WorldAddDialog(
             onClose = {},
             allPatDataList = listOf(Pat(url = "pat/cat.json", name = "고양이"), Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json")),
-            allItemDataList = listOf(Item(url = "item/table.png", name = "책상")),
+            allItemDataList = listOf(Item(url = "item/airplane.json", name = "책상")),
             addDialogChange = "pat",
             onAddDialogChangeClick = {},
             allAreaDataList = listOf(Area()),

@@ -183,7 +183,7 @@ fun WorldViewScreenPreview() {
         WorldViewScreen(
             mapUrl = "area/beach.jpg",
             patDataList = listOf(Pat(id = 1, url = "pat/cat.json")),
-            itemDataList = listOf(Item(url = "item/table.png")),
+            itemDataList = listOf(Item(url = "item/airplane.json")),
             dialogPatId = "0",
             dialogPatIdChange = { },
             onFirstGameNavigateClick = { },
