@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -24,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -45,6 +47,7 @@ fun WorldAddDialog(
     allPatDataList: List<Pat>,
     allItemDataList: List<Item>,
     allAreaDataList: List<Area>,
+    allShadowDataList: List<Item> = emptyList(),
     mapWorldData: World,
     onSelectMapImageClick: (String) -> Unit,
     onAddDialogChangeClick: () -> Unit,
@@ -177,6 +180,44 @@ fun WorldAddDialog(
                                             }
                                         )
                                         Text(allItemDataList[index].name)
+                                        Text(text = selectedOrder)
+                                    }
+
+                                }
+                                // 🔹 Text를 한 줄 전체(span = 4) 차지하도록
+                                item(span = { GridItemSpan(maxLineSpan) }) {
+                                    Text(
+                                        text = "그림자는 자연스러움을 위한 아이템으로 공간을 차지하지 않습니다. 자유롭게 사용하세요",
+                                        modifier = Modifier.fillMaxWidth(),
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
+                                items(allShadowDataList.size) { index ->
+                                    val isSelected = worldDataList.any {
+                                        it.value == allShadowDataList[index].id.toString() && it.type == "item"
+                                    }
+
+                                    val selectedOrder = worldDataList.indexOfFirst {
+                                        it.value == allShadowDataList[index].id.toString() && it.type == "item"
+                                    }.takeIf { it >= 0 }?.plus(1)?.toString() ?: ""
+
+                                    Column(
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        modifier = Modifier
+                                            .border(
+                                                width = 2.dp,
+                                                color = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
+                                                shape = RoundedCornerShape(8.dp)
+                                            )
+                                            .padding(4.dp)
+                                    ) {
+                                        AddDialogItemImage(
+                                            itemData = allShadowDataList[index],
+                                            onAddItemImageClick = { id ->
+//                                                onAddItemClick(id)
+                                            }
+                                        )
+                                        Text(allShadowDataList[index].name)
                                         Text(text = selectedOrder)
                                     }
 

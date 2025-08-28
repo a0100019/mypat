@@ -70,6 +70,7 @@ fun WorldScreen(
         itemDataList = worldState.itemDataList,
         worldDataList = worldState.worldDataList,
         userDataList = worldState.userDataList,
+        shadowDataList = worldState.shadowDataList,
 
         dialogItemId = worldState.dialogItemId,
         dialogPatId = worldState.dialogPatId,
@@ -109,6 +110,7 @@ fun WorldScreen(
     worldDataList : List<World>,
     userDataList: List<User>,
     allAreaDataList: List<Area>,
+    shadowDataList: List<Item> = emptyList(),
 
     dialogPatId : String,
     dialogItemId : String,
@@ -149,6 +151,7 @@ fun WorldScreen(
             onAddItemClick = onAddItemClick,
             onAddPatClick = onAddPatClick,
             userDataList = userDataList,
+            allShadowDataList = shadowDataList,
         )
     }
 

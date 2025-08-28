@@ -30,7 +30,7 @@ interface PatDao {
     @Query("SELECT * FROM pat_table ORDER BY id DESC")
     suspend fun getAllPatData(): List<Pat>
 
-    @Query("SELECT * FROM pat_table WHERE date != '0' ORDER BY id DESC")
+    @Query("SELECT * FROM pat_table WHERE date != '0' ORDER BY id")
     suspend fun getAllOpenPatData(): List<Pat>
 
     @Query("SELECT * FROM pat_table WHERE date == '0' ORDER BY id DESC")

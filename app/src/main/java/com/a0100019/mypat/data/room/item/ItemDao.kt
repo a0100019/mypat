@@ -31,8 +31,11 @@ interface ItemDao {
     @Query("SELECT * FROM item_table ORDER BY id DESC")
     suspend fun getAllItemData(): List<Item>
 
-    @Query("SELECT * FROM item_table WHERE date != '0' ORDER BY id DESC")
+    @Query("SELECT * FROM item_table WHERE date != '0' ORDER BY id LIMIT -1 OFFSET 20")
     suspend fun getAllOpenItemData(): List<Item>
+
+    @Query("SELECT * FROM item_table WHERE date != '0' ORDER BY id LIMIT 20")
+    suspend fun getAllShadowData(): List<Item>
 
     @Query("SELECT * FROM item_table WHERE date == '0' ORDER BY id DESC")
     suspend fun getAllCloseItemData(): List<Item>

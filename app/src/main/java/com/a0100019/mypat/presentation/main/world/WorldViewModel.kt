@@ -77,6 +77,7 @@ class WorldViewModel @Inject constructor(
                 // 모든 오픈 된 데이터 가져오기
                 val allPatDataList = patDao.getAllOpenPatData()
                 val allItemDataList = itemDao.getAllOpenItemData()
+                val allShadowDataList = itemDao.getAllShadowData()
                 val allAreaDataList = areaDao.getAllOpenAreaData()
 
                 val userFlowDataList = userDao.getAllUserDataFlow()
@@ -93,7 +94,8 @@ class WorldViewModel @Inject constructor(
                             allAreaDataList = allAreaDataList,
                             patFlowWorldDataList = patFlowWorldDataList,
                             worldDataList = worldDataList,
-                            userDataList = userDataList
+                            userDataList = userDataList,
+                            shadowDataList = allShadowDataList
                         )
                     }
                 }
@@ -443,6 +445,7 @@ data class WorldState(
     val patFlowWorldDataList: Flow<List<Pat>> = flowOf(emptyList()),
     val worldDataList: List<World> = emptyList(),
     val userDataList: List<User> = emptyList(),
+    val shadowDataList: List<Item> = emptyList(),
 
     val areaData: World = World(),
     val dialogPatId: String = "0",
