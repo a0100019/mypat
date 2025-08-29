@@ -121,7 +121,8 @@ fun MainScreen(
         loveItemData3 = mainState.loveItemData3,
         loveAmount = mainState.loveAmount,
         cashAmount = mainState.cashAmount,
-        timer = mainState.timer
+        timer = mainState.timer,
+        itemDataWithShadowList = mainState.itemDataWithShadowList
 
     )
 
@@ -165,7 +166,8 @@ fun MainScreen(
     loveItemData3: Item,
     loveAmount: Int,
     cashAmount: Int = 0,
-    timer: String
+    timer: String,
+    itemDataWithShadowList: List<Item> = emptyList(),
 
     ) {
 
@@ -336,7 +338,7 @@ fun MainScreen(
                 WorldViewScreen(
                     mapUrl = mapUrl,
                     patDataList = patDataList,
-                    itemDataList = itemDataList,
+                    itemDataList = itemDataWithShadowList,
                     dialogPatId = dialogPatId,
                     dialogPatIdChange = dialogPatIdChange,
                     onFirstGameNavigateClick = onFirstGameNavigateClick,

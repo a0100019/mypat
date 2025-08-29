@@ -71,6 +71,7 @@ fun WorldScreen(
         worldDataList = worldState.worldDataList,
         userDataList = worldState.userDataList,
         shadowDataList = worldState.shadowDataList,
+        itemDataWithShadowList = worldState.itemDataWithShadowList,
 
         dialogItemId = worldState.dialogItemId,
         dialogPatId = worldState.dialogPatId,
@@ -94,6 +95,7 @@ fun WorldScreen(
         onAddItemClick = worldViewModel::onAddItemClick,
         onSelectMapImageClick = worldViewModel::onSelectMapImageClick,
         onAddDialogChangeClick = worldViewModel::onAddDialogChangeClick,
+        onAddShadowClick = worldViewModel::onAddShadowClick,
         onPatEffectChangeClick = worldViewModel::onPatEffectChangeClick
     )
 
@@ -111,6 +113,7 @@ fun WorldScreen(
     userDataList: List<User>,
     allAreaDataList: List<Area>,
     shadowDataList: List<Item> = emptyList(),
+    itemDataWithShadowList: List<Item> = emptyList(),
 
     dialogPatId : String,
     dialogItemId : String,
@@ -133,7 +136,8 @@ fun WorldScreen(
     onSelectMapImageClick: (String) -> Unit,
     onAddPatClick: (String) -> Unit,
     onAddItemClick: (String) -> Unit,
-    onPatEffectChangeClick: (Int) -> Unit = {}
+    onPatEffectChangeClick: (Int) -> Unit = {},
+    onAddShadowClick: (String) -> Unit = {}
 ) {
 
     // 다이얼로그 표시
@@ -152,6 +156,7 @@ fun WorldScreen(
             onAddPatClick = onAddPatClick,
             userDataList = userDataList,
             allShadowDataList = shadowDataList,
+            onAddShadowClick = onAddShadowClick
         )
     }
 
@@ -282,7 +287,7 @@ fun WorldScreen(
                                             }
 
                                     } else {
-                                        itemDataList.find { it.id.toString() == worldData.value }
+                                        itemDataWithShadowList.find { it.id.toString() == worldData.value }
                                             ?.let { itemData ->
 
                                                 DraggableItemImage(

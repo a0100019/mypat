@@ -27,13 +27,13 @@ interface AreaDao {
     @Query("UPDATE area_table SET date = :date WHERE id = :id")
     suspend fun updateAreaData(id: Int, date: String)
 
-    @Query("SELECT * FROM area_table ORDER BY id DESC")
+    @Query("SELECT * FROM area_table ORDER BY id")
     suspend fun getAllAreaData(): List<Area>
 
-    @Query("SELECT * FROM area_table WHERE date != '0' ORDER BY id DESC")
+    @Query("SELECT * FROM area_table WHERE date != '0' ORDER BY id")
     suspend fun getAllOpenAreaData(): List<Area>
 
-    @Query("SELECT * FROM area_table WHERE date == '0' ORDER BY id DESC")
+    @Query("SELECT * FROM area_table WHERE date == '0' ORDER BY id")
     suspend fun getAllCloseAreaData(): List<Area>
 
     @Query("SELECT * FROM area_table WHERE id = :id")

@@ -55,7 +55,8 @@ fun WorldAddDialog(
     worldDataList: List<World>,
     onAddPatClick: (String) -> Unit,
     onAddItemClick: (String) -> Unit,
-    userDataList: List<User> = emptyList()
+    userDataList: List<User> = emptyList(),
+    onAddShadowClick: (String) -> Unit = {},
 ) {
 
     Dialog(
@@ -187,7 +188,7 @@ fun WorldAddDialog(
                                 // 🔹 Text를 한 줄 전체(span = 4) 차지하도록
                                 item(span = { GridItemSpan(maxLineSpan) }) {
                                     Text(
-                                        text = "그림자는 자연스러움을 위한 아이템으로 공간을 차지하지 않습니다. 자유롭게 사용하세요",
+                                        text = "그림자는 자연스러운 배치를 위한 아이템으로 공간을 차지하지 않습니다. 자유롭게 사용하세요",
                                         modifier = Modifier.fillMaxWidth(),
                                         textAlign = TextAlign.Center
                                     )
@@ -214,7 +215,7 @@ fun WorldAddDialog(
                                         AddDialogItemImage(
                                             itemData = allShadowDataList[index],
                                             onAddItemImageClick = { id ->
-//                                                onAddItemClick(id)
+                                                onAddShadowClick(id)
                                             }
                                         )
                                         Text(allShadowDataList[index].name)

@@ -61,8 +61,8 @@ fun DraggableItemImage(
                 .size(imageSize)
                 .offset(x = xOffset, y = yOffset)
                 .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null,
+//                    interactionSource = remember { MutableInteractionSource() },
+//                    indication = null,
                     onClick = onClick
                 )
                 .pointerInput(Unit) {

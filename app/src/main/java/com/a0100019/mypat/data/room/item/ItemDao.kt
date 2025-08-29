@@ -28,16 +28,22 @@ interface ItemDao {
     @Query("UPDATE item_table SET date = :date, x = :x, y = :y, sizeFloat = :size WHERE id = :id")
     suspend fun updateItemData(id: Int, date: String, x: Float, y: Float, size: Float)
 
-    @Query("SELECT * FROM item_table ORDER BY id DESC")
+    @Query("SELECT * FROM item_table ORDER BY id LIMIT -1 OFFSET 20")
     suspend fun getAllItemData(): List<Item>
+
+    @Query("SELECT * FROM item_table ORDER BY id")
+    suspend fun getAllItemDataWithShadow(): List<Item>
 
     @Query("SELECT * FROM item_table WHERE date != '0' ORDER BY id LIMIT -1 OFFSET 20")
     suspend fun getAllOpenItemData(): List<Item>
 
+    @Query("SELECT * FROM item_table WHERE date != '0' ORDER BY id")
+    suspend fun getAllOpenItemWithShadowData(): List<Item>
+
     @Query("SELECT * FROM item_table WHERE date != '0' ORDER BY id LIMIT 20")
     suspend fun getAllShadowData(): List<Item>
 
-    @Query("SELECT * FROM item_table WHERE date == '0' ORDER BY id DESC")
+    @Query("SELECT * FROM item_table WHERE date == '0' ORDER BY id")
     suspend fun getAllCloseItemData(): List<Item>
 
     @Query("SELECT * FROM item_table WHERE id = :id")

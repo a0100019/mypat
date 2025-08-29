@@ -102,6 +102,7 @@ class MainViewModel @Inject constructor(
                 val allPatDataList = patDao.getAllOpenPatData()
                 val allItemDataList = itemDao.getAllOpenItemData()
                 val allMapDataList = areaDao.getAllOpenAreaData()
+                val allItemDataWithShadowList = itemDao.getAllItemDataWithShadow()
 
                 val userFlowDataList = userDao.getAllUserDataFlow()
                 val userDataList = userDao.getAllUserData()
@@ -170,6 +171,7 @@ class MainViewModel @Inject constructor(
                             allAreaDataList = allMapDataList,
                             patFlowWorldDataList = patFlowWorldDataList,
                             userDataList = userDataList,
+                            itemDataWithShadowList = allItemDataWithShadowList
                         )
                     }
                 }
@@ -433,6 +435,7 @@ data class MainState(
     val userDataList: List<User> = emptyList(),
     val letterDataList: List<Letter> = emptyList(),
     val letterImages: List<String> = emptyList(),
+    val itemDataWithShadowList: List<Item> = emptyList(),
 
     val mapData: World = World(),
     val dialogPatId: String = "0",

@@ -27,13 +27,13 @@ interface PatDao {
     @Query("UPDATE pat_table SET date = :date, love = :love, x = :x, y = :y, sizeFloat = :size, gameCount = :gameCount, effect = :effect WHERE id = :id")
     suspend fun updatePatData(id: Int, date: String, love: Int, x: Float, y: Float, size: Float, gameCount: Int, effect: Int)
 
-    @Query("SELECT * FROM pat_table ORDER BY id DESC")
+    @Query("SELECT * FROM pat_table ORDER BY id")
     suspend fun getAllPatData(): List<Pat>
 
     @Query("SELECT * FROM pat_table WHERE date != '0' ORDER BY id")
     suspend fun getAllOpenPatData(): List<Pat>
 
-    @Query("SELECT * FROM pat_table WHERE date == '0' ORDER BY id DESC")
+    @Query("SELECT * FROM pat_table WHERE date == '0' ORDER BY id")
     suspend fun getAllClosePatData(): List<Pat>
 
     //flow 아닐 때 suspend함수 필수!!!

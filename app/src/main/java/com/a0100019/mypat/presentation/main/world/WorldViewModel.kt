@@ -79,6 +79,7 @@ class WorldViewModel @Inject constructor(
                 val allItemDataList = itemDao.getAllOpenItemData()
                 val allShadowDataList = itemDao.getAllShadowData()
                 val allAreaDataList = areaDao.getAllOpenAreaData()
+                val allItemDataWithShadowList = itemDao.getAllOpenItemWithShadowData()
 
                 val userFlowDataList = userDao.getAllUserDataFlow()
                 val userDataList = userDao.getAllUserData()
@@ -95,7 +96,8 @@ class WorldViewModel @Inject constructor(
                             patFlowWorldDataList = patFlowWorldDataList,
                             worldDataList = worldDataList,
                             userDataList = userDataList,
-                            shadowDataList = allShadowDataList
+                            shadowDataList = allShadowDataList,
+                            itemDataWithShadowList = allItemDataWithShadowList
                         )
                     }
                 }
@@ -184,29 +186,51 @@ class WorldViewModel @Inject constructor(
     }
 
     fun worldDataDelete(id: String, type: String) = intent {
+        if(id.toInt()<=20 && type == "item"){
+            shadowWorldDataDelete(id)
+        } else {
+            val currentList = state.worldDataList.toMutableList()
+            Log.e("e", "targetIndex${id}}")
+            val targetIndex = currentList.indexOfFirst { it.value == id && it.type == type }
+            Log.e("e", "targetIndex${targetIndex}}")
+            if (targetIndex == -1) return@intent // 못 찾았으면 종료
+
+            // targetIndex에 있는 데이터 삭제
+            currentList.removeAt(targetIndex)
+
+            val newUserDataList = state.userDataList.toMutableList()
+            if (type == "pat") {
+                newUserDataList.find { it.id == "pat" }!!.value3 =
+                    ((newUserDataList.find { it.id == "pat" }!!.value3).toInt() - 1).toString()
+            } else {
+                newUserDataList.find { it.id == "item" }!!.value3 =
+                    ((newUserDataList.find { it.id == "item" }!!.value3).toInt() - 1).toString()
+            }
+
+
+            reduce {
+                state.copy(
+                    worldDataList = currentList.toList(),
+                    userDataList = newUserDataList
+                )
+            }
+        }
+
+    }
+
+    private fun shadowWorldDataDelete(id: String) = intent {
         val currentList = state.worldDataList.toMutableList()
         Log.e("e", "targetIndex${id}}")
-        val targetIndex = currentList.indexOfFirst { it.value == id && it.type == type }
+        val targetIndex = currentList.indexOfFirst { it.value == id && it.type == "item" }
         Log.e("e", "targetIndex${targetIndex}}")
         if (targetIndex == -1) return@intent // 못 찾았으면 종료
 
         // targetIndex에 있는 데이터 삭제
         currentList.removeAt(targetIndex)
 
-        val newUserDataList = state.userDataList.toMutableList()
-        if(type == "pat"){
-            newUserDataList.find { it.id == "pat" }!!.value3 =
-                ((newUserDataList.find { it.id == "pat" }!!.value3).toInt() - 1).toString()
-        } else {
-            newUserDataList.find { it.id == "item" }!!.value3 =
-                ((newUserDataList.find { it.id == "item" }!!.value3).toInt() - 1).toString()
-        }
-
-
         reduce {
             state.copy(
                 worldDataList = currentList.toList(),
-                userDataList =  newUserDataList
             )
         }
 
@@ -300,6 +324,36 @@ class WorldViewModel @Inject constructor(
 
             } else {
                 postSideEffect(WorldSideEffect.Toast("공간이 부족합니다!"))
+            }
+
+        }
+
+    }
+
+    fun onAddShadowClick(itemId: String) = intent {
+
+        // 1. patWorldDataList에서 patId와 일치하는 value 값을 찾는다
+        val matchingIndex = state.worldDataList.indexOfFirst { it.value == itemId  && it.type == "item" }
+
+        if (matchingIndex != -1) {
+            // 1.1 일치하는 데이터가 있는 경우 ( 펫이 월드에 나와 있는 경우 펫 제거)
+            shadowWorldDataDelete(itemId)
+        } else {
+            // 일치하는 데이터가 없어서 추가
+            val updatedList = state.worldDataList.toMutableList()
+
+            val newWorld = World(
+                value = itemId,
+                type = "item"
+            )
+
+            updatedList.add(newWorld) // 맨 끝에 추가
+
+            // 상태 업데이트
+            reduce {
+                state.copy(
+                    worldDataList = updatedList,
+                )
             }
 
         }
@@ -446,6 +500,7 @@ data class WorldState(
     val worldDataList: List<World> = emptyList(),
     val userDataList: List<User> = emptyList(),
     val shadowDataList: List<Item> = emptyList(),
+    val itemDataWithShadowList: List<Item> = emptyList(),
 
     val areaData: World = World(),
     val dialogPatId: String = "0",

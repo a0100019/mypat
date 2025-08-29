@@ -67,7 +67,7 @@ class CommunityViewModel @Inject constructor(
     private fun loadData() = intent {
         val userDataList = userDao.getAllUserData()
         val patDataList = patDao.getAllPatData()
-        val itemDataList = itemDao.getAllItemData()
+        val itemDataList = itemDao.getAllItemDataWithShadow()
         val allUserDataList = allUserDao.getAllUserDataNoBan()
         val allUserRankDataList = allUserDao.getAllUserDataNoBan()
         val allAreaCount = areaDao.getAllAreaData().size.toString()
