@@ -25,7 +25,6 @@ fun getItemInitialData(): List<Item> {
         //20
         Item( name = "비행기", url = "item/airplane.json", minFloat = 0.1f, sizeFloat = 0.1f),
         Item( name = "로봇 머리", url = "item/ai_robot.json", minFloat = 0.1f, sizeFloat = 0.1f),
-        Item( name = "가을 나무", url = "item/autumn.png", minFloat = 0.1f, sizeFloat = 0.1f),
         Item( name = "박쥐", url = "item/bat.json", minFloat = 0.1f, sizeFloat = 0.1f), //1
         Item( name = "무서운 해골", url = "item/bloody_skull.json", minFloat = 0.1f, sizeFloat = 0.1f),
         Item( name = "회전목마", url = "item/carousel.json", minFloat = 0.1f, sizeFloat = 0.1f),
@@ -72,8 +71,6 @@ fun getItemInitialData(): List<Item> {
         Item( name = "햄버거 기계", url = "item/burger_machine.json", minFloat = 0.1f, sizeFloat = 0.1f),
         Item(name = "신의 손", url = "pat/god_hand.json", minFloat = 0.12f, sizeFloat = 0.12f),
         Item(name = "새 떼", url = "pat/bird_flock.json", minFloat = 0.1f, sizeFloat = 0.1f),
-
-
         //new
         Item( name = "별점 5개", url = "item/five_stars.json", minFloat = 0.1f, sizeFloat = 0.1f),
         Item( name = "커플 곰", url = "item/couple_bear.json", minFloat = 0.1f, sizeFloat = 0.1f),
