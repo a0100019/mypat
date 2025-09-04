@@ -40,7 +40,7 @@ class MainActivity : ComponentActivity() {
 
             val aspectRatio = screenWidth.toFloat() / screenHeight.toFloat()
             val minRatio = 9f / 22f // 약 0.409
-            val maxRatio = 9f / 15f // 약 0.6
+            val maxRatio = 9f / 17f // 약 0.6
 
             MypatTheme {
                 Surface(

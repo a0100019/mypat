@@ -93,7 +93,7 @@ class SettingViewModel @Inject constructor(
     //room에서 데이터 가져옴
     private fun loadData() = intent {
         val userDataList = userDao.getAllUserData()
-        val itemDataList = itemDao.getAllItemData()
+        val itemDataList = itemDao.getAllItemDataWithShadow()
         val patDataList = patDao.getAllPatData()
         val worldDataList = worldDao.getAllWorldData()
         val letterDataList = letterDao.getAllLetterData()

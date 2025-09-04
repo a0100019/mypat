@@ -85,6 +85,12 @@ fun PatDialog(
                         .padding(16.dp)
                 ) {
 
+                    JustImage(
+                        filePath = patData.url,
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                    )
+
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth()
@@ -103,12 +109,6 @@ fun PatDialog(
                         Spacer(modifier = Modifier.width(6.dp))
                         patFlowData?.love?.let { LoveHorizontalLine(it) }
                     }
-
-                    JustImage(
-                        filePath = patData.url,
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                    )
 
                 }
 

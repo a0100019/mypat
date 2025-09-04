@@ -638,7 +638,7 @@ class LoginViewModel @Inject constructor(
                 val db = Firebase.firestore
                 val userDataList = userDao.getAllUserData()
                 val userId = userDataList.find { it.id == "auth" }!!.value
-                val itemDataList = itemDao.getAllItemData()
+                val itemDataList = itemDao.getAllItemDataWithShadow()
                 val patDataList = patDao.getAllPatData()
                 val worldDataList = worldDao.getAllWorldData()
                 val letterDataList = letterDao.getAllLetterData()

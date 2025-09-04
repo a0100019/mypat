@@ -6,7 +6,7 @@ fun getAreaInitialData(): List<Area> {
 
         Area( name = "해변", date = "1", url = "area/beach.jpg"),
         Area( name = "숲", date = "1", url = "area/forest.jpg"),
-        Area( name = "숲", url = "area/forest.jpg")
+        Area( name = "숲", url = "area/kingdum.png")
 
     )
 }

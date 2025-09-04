@@ -92,6 +92,10 @@ fun FirstGameOverDialog(
                         .padding(16.dp)
                 ) {
 
+                    JustImage(
+                        filePath = patData.url
+                    )
+
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth()
@@ -114,10 +118,6 @@ fun FirstGameOverDialog(
                             plusValue = plusValue
                         )
                     }
-
-                    JustImage(
-                        filePath = patData.url
-                    )
 
                 }
 

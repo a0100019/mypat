@@ -25,12 +25,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.data.room.letter.Letter
 import com.a0100019.mypat.presentation.ui.component.MainButton
+import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import kotlin.random.Random
 
@@ -69,12 +71,17 @@ fun LetterViewDialog(
             }
             Box(
                 modifier = Modifier
-                    .background(color = Color.Green)
                     .fillMaxHeight(0.8f)
 //                    .fillMaxWidth(0.8f)
             ) {
-                
+
                 //편지 이미지
+                JustImage(
+                    filePath = "etc/letter.png",
+                    contentScale = ContentScale.FillBounds,
+                    modifier = Modifier
+                        .fillMaxSize()
+                )
 
                 Row {
                     Spacer(modifier = Modifier.weight(1f))
@@ -86,7 +93,7 @@ fun LetterViewDialog(
                             modifier = Modifier
                                 .verticalScroll(rememberScrollState())
                                 .weight(10f)
-                                .background(color = Color.Yellow),
+                                    ,
                             horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
 

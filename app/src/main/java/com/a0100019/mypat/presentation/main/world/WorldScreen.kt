@@ -183,7 +183,7 @@ fun WorldScreen(
             onDismiss = { dialogItemIdChange("0") },
             onSizeUp = onItemSizeUpClick,
             onSizeDown = onItemSizeDownClick,
-            itemData = itemDataList.find { it.id.toString() == dialogItemId }!!,
+            itemData = itemDataWithShadowList.find { it.id.toString() == dialogItemId }!!,
         )
     }
 

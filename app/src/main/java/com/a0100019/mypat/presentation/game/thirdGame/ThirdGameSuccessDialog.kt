@@ -88,6 +88,10 @@ fun ThirdGameSuccessDialog(
                         .padding(16.dp)
                 ) {
 
+                    JustImage(
+                        filePath = patData.url
+                    )
+
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth()
@@ -110,9 +114,7 @@ fun ThirdGameSuccessDialog(
                             plusValue = plusLove
                         )
                     }
-                    JustImage(
-                        filePath = patData.url
-                    )
+
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))

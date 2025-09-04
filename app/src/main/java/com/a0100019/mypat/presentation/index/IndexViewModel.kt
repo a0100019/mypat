@@ -79,7 +79,10 @@ class IndexViewModel @Inject constructor(
     fun onTypeChangeClick(type: String) = intent {
 
         reduce {
-            state.copy(typeChange = type)
+            state.copy(
+                typeChange = type,
+                page = 1
+            )
         }
     }
 
@@ -109,11 +112,31 @@ class IndexViewModel @Inject constructor(
         }
     }
 
+    fun onPageChangeClick(next: Boolean) = intent {
+
+        val lastPage = when(state.typeChange) {
+            "pat" -> state.allPatDataList.size/9 + 1
+            "item" -> state.allItemDataList.size/9 + 1
+            else -> state.allAreaDataList.size/9 + 1
+        }
+
+        if(next) {
+            if(lastPage > state.page){
+                reduce {
+                    state.copy(page = state.page + 1)
+                }
+            }
+        } else {
+            if(state.page > 1){
+                reduce {
+                    state.copy(page = state.page - 1)
+                }
+            }
+        }
+
+    }
+
 }
-
-
-
-
 
 @Immutable
 data class IndexState(
@@ -125,6 +148,7 @@ data class IndexState(
     val dialogPatIndex: Int = -1,
     val dialogItemIndex: Int = -1,
     val dialogAreaIndex: Int = -1,
+    val page: Int = 1
 )
 
 

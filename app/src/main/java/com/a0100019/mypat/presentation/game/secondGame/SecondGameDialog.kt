@@ -89,6 +89,10 @@ fun SecondGameDialog(
                         .padding(16.dp)
                 ) {
 
+                    JustImage(
+                        filePath = patData.url
+                    )
+
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth()
@@ -111,10 +115,6 @@ fun SecondGameDialog(
                             plusValue = plusLove
                         )
                     }
-
-                    JustImage(
-                        filePath = patData.url
-                    )
 
                 }
 

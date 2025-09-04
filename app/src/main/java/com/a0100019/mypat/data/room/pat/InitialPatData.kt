@@ -6,10 +6,10 @@ fun getPatInitialData(): List<Pat> {
         Pat(name = "강아지", url = "pat/dog.json", minFloat = 0.1f, sizeFloat = 0.1f, memo = "마을을 처음부터 끝까지 지켜준 강아지. 주인을 찾는 듯한 눈빛으로 마을을 지킨다."),
         Pat(name = "드래곤", url = "pat/dragon.json", minFloat = 0.1f, sizeFloat = 0.1f, memo = "전설의 동물. 불 대신 따뜻한 바람을 뿜어내며 친구들을 지켜준다."),
         Pat(name = "유령", url = "pat/ghost.json", minFloat = 0.1f, sizeFloat = 0.1f, memo = "사라졌다 나타났다 하는 장난꾸러기 유령. 사실은 외로워서 친구를 찾고 있다."),
-        Pat(name = "벌", url = "pat/bee.json", minFloat = 0.1f, sizeFloat = 0.1f, memo = "꿀을 모으느라 늘 분주하다. 하지만 마을 아이들에게는 달콤한 꿀을 나눠주는 친절한 벌."),
+        Pat(name = "벌", url = "pat/bee.json", minFloat = 0.05f, sizeFloat = 0.05f, memo = "꿀을 모으느라 늘 분주하다. 하지만 마을 아이들에게는 달콤한 꿀을 나눠주는 친절한 벌."),
         Pat(name = "코알라", url = "pat/koala.json", minFloat = 0.1f, sizeFloat = 0.1f, memo = "슬픈 코알라. 너무 슬픈 나머지 귀가 떨어진다."),
-        Pat(name = "박쥐", url = "pat/bat.json", minFloat = 0.1f, sizeFloat = 0.1f, memo = "어둠 속을 자유롭게 나는 박쥐. 별빛을 따라 다니며 길 잃은 이를 안내한다."),
-        Pat(name = "고슴도치", url = "pat/hedgehog.json", minFloat = 0.1f, sizeFloat = 0.1f, memo = "가시로 무서워 보이지만, 사실은 따뜻한 마음을 가진 고슴도치."),
+        Pat(name = "박쥐", url = "pat/bat_character.json", minFloat = 0.1f, sizeFloat = 0.1f, memo = "어둠 속을 자유롭게 나는 박쥐. 별빛을 따라 다니며 길 잃은 이를 안내한다."),
+        Pat(name = "고슴도치", url = "pat/hedgehog.json", minFloat = 0.05f, sizeFloat = 0.05f, memo = "가시로 무서워 보이지만, 사실은 따뜻한 마음을 가진 고슴도치."),
         Pat(name = "게이머 고양이", url = "pat/cat_game.json", minFloat = 0.1f, sizeFloat = 0.1f, memo = "밤새도록 게임을 즐기는 고양이. 승부욕이 강하지만 친구들과 놀 땐 언제나 양보한다."),
         Pat(name = "장난꾸러기 펭귄", url = "pat/party_penguin.json", minFloat = 0.1f, sizeFloat = 0.1f, memo = "장난기가 많은 펭귄. 위험한 장난을 좋아한다."),
         Pat(name = "크리스마스 고양이", url = "pat/xmas_cat.json", minFloat = 0.1f, sizeFloat = 0.1f, memo = "화환에서 쉬고 있는 고양이. 크리스마스가 아니어도 주변을 따뜻하게 만든다."),
@@ -28,7 +28,7 @@ fun getPatInitialData(): List<Pat> {
         Pat(name = "팝콘 판다", url = "pat/panda_popcorn.json", minFloat = 0.1f, sizeFloat = 0.1f, memo = "언제나 팝콘을 들고 다닌다. 영화를 좋아해 친구들을 모아 작은 극장을 열기도 한다."),
         Pat(name = "힙합 샌드위치", url = "pat/sandwitch.json", minFloat = 0.1f, sizeFloat = 0.1f, memo = "빵 사이에서 비트가 흐른다. 신나는 랩으로 모두를 춤추게 한다."),
         Pat(name = "명상 나무늘보", url = "pat/sloth.json", minFloat = 0.1f, sizeFloat = 0.1f, memo = "느릿느릿하지만 늘 마음이 평온하다. 마을에 분위기를 평안하게 만들지만 어떤 종교를 믿고 있는지 아무도 모른다고 한다."),
-        Pat(name = "둘기", url = "pat/pigeon.json", minFloat = 0.1f, sizeFloat = 0.1f, memo = "마을을 오가며 편지를 전한다. 언제나 소식을 전해주는 든든한 친구."),
+        Pat(name = "둘기", url = "pat/pigeon.json", minFloat = 0.07f, sizeFloat = 0.07f, memo = "마을을 오가며 편지를 전한다. 언제나 소식을 전해주는 든든한 친구."),
         Pat(name = "북극곰", url = "pat/polar_bear.json", minFloat = 0.1f, sizeFloat = 0.1f, memo = "차가운 눈밭에서도 따뜻한 마음을 나누는 곰. 포옹을 좋아한다."),
         Pat(name = "스 노우맨", url = "pat/snowman.json", minFloat = 0.1f, sizeFloat = 0.1f, memo = "겨울이 오면 나타나는 눈사람. 겉 모습은 하얗지만 속은 검을지도 모른다."),
         Pat(name = "미친 팽귄", url = "pat/spinning_penguin.json", minFloat = 0.1f, sizeFloat = 0.1f, memo = "빙글빙글 도는 걸 멈추지 않는 펭귄. 모두를 웃게 만드는 장난꾸러기."),
@@ -39,8 +39,6 @@ fun getPatInitialData(): List<Pat> {
         Pat(name = "악마 외계인", url = "pat/angry_alien.json", minFloat = 0.1f, sizeFloat = 0.1f, memo = "화가 난 듯 보이지만 사실은 외로워서 그렇다. 친구가 생기면 누구보다 따뜻하다."),
         Pat(name = "뱀", url = "pat/snake.json", minFloat = 0.1f, sizeFloat = 0.1f, memo = "무서운 얼굴로 마을을 지키는 존재. 슬기로운 지혜도 가지고 있어 위기에서 도움을 준다."),
         Pat(name = "마법 소녀", url = "pat/witch.json", minFloat = 0.1f, sizeFloat = 0.1f, memo = "작은 빗자루를 타고 하늘을 날아다닌다. 아직 미숙하지만 따뜻한 마음으로 마법을 부리며 인간은 아니라고 한다."),
-        Pat(name = "신의 손", url = "pat/god_hand.json", minFloat = 0.1f, sizeFloat = 0.1f, memo = "하늘에서 내려온 듯한 거대한 손. 마을이 위험할 때 마법 가루로 은밀히 도움을 준다."),
-        Pat(name = "새 떼", url = "pat/bird_flock.json", minFloat = 0.1f, sizeFloat = 0.1f, memo = "하늘 위를 자유롭게 나는 새 무리. 서로 사이가 좋아 항상 같이 다닌다."),
 
         )
 }

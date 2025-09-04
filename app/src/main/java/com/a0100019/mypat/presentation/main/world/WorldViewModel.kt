@@ -140,7 +140,7 @@ class WorldViewModel @Inject constructor(
     }
 
     fun onWorldSelectClick() = intent {
-        state.itemDataList.forEach { item ->
+        state.itemDataWithShadowList.forEach { item ->
             //화면 밖으로 옮길때
             if(
                 (item.x + item.sizeFloat/2 < 0) ||
@@ -332,7 +332,6 @@ class WorldViewModel @Inject constructor(
 
     fun onAddShadowClick(itemId: String) = intent {
 
-        // 1. patWorldDataList에서 patId와 일치하는 value 값을 찾는다
         val matchingIndex = state.worldDataList.indexOfFirst { it.value == itemId  && it.type == "item" }
 
         if (matchingIndex != -1) {
@@ -361,15 +360,15 @@ class WorldViewModel @Inject constructor(
     }
 
     fun onItemDrag(itemId: String, newX: Float, newY: Float) = intent {
-        val targetItem = state.itemDataList.find { it.id.toString() == itemId }
+        val targetItem = state.itemDataWithShadowList.find { it.id.toString() == itemId }
         if (targetItem != null) {
             val updatedItem = targetItem.copy(x = newX, y = newY)
-            val updatedItemDataList = state.itemDataList.toMutableList().apply {
+            val updatedItemDataList = state.itemDataWithShadowList.toMutableList().apply {
                 set(indexOf(targetItem), updatedItem)
             }
 
             reduce {
-                state.copy(itemDataList = updatedItemDataList)
+                state.copy(itemDataWithShadowList = updatedItemDataList)
             }
         }
     }
@@ -406,17 +405,17 @@ class WorldViewModel @Inject constructor(
     }
 
     fun onItemSizeUpClick() = intent {
-        val targetItem = state.itemDataList.find { it.id.toString() == state.dialogItemId }!!
+        val targetItem = state.itemDataWithShadowList.find { it.id.toString() == state.dialogItemId }!!
         val maxSize = targetItem.minFloat * 2 // 최대 크기 계산
         val updatedSize = (targetItem.sizeFloat + 0.025f).coerceAtMost(maxSize) // 크기를 제한
 
         val updatedItem = targetItem.copy(sizeFloat = updatedSize)
-        val updatedItemDataList = state.itemDataList.toMutableList().apply {
+        val updatedItemDataList = state.itemDataWithShadowList.toMutableList().apply {
             set(indexOf(targetItem), updatedItem)
         }
 
         reduce {
-            state.copy(itemDataList = updatedItemDataList)
+            state.copy(itemDataWithShadowList = updatedItemDataList)
         }
 
     }
@@ -437,17 +436,17 @@ class WorldViewModel @Inject constructor(
     }
 
     fun onItemSizeDownClick() =  intent {
-        val targetItem = state.itemDataList.find { it.id.toString() == state.dialogItemId }!!
+        val targetItem = state.itemDataWithShadowList.find { it.id.toString() == state.dialogItemId }!!
         val minSize = targetItem.minFloat // 최소 크기
         val updatedSize = (targetItem.sizeFloat - 0.025f).coerceAtLeast(minSize) // 크기를 제한
 
         val updatedItem = targetItem.copy(sizeFloat = updatedSize)
-        val updatedItemDataList = state.itemDataList.toMutableList().apply {
+        val updatedItemDataList = state.itemDataWithShadowList.toMutableList().apply {
             set(indexOf(targetItem), updatedItem)
         }
 
         reduce {
-            state.copy(itemDataList = updatedItemDataList)
+            state.copy(itemDataWithShadowList = updatedItemDataList)
         }
     }
 
