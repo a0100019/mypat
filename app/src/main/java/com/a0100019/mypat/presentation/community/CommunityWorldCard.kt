@@ -136,6 +136,7 @@ fun CommunityWorldCard(
                                         xFloat = parts[3].toFloat(),
                                         yFloat = parts[4].toFloat(),
                                         sizeFloat = parts[1].toFloat(),
+                                        effect = parts[5].toInt()
                                     )
                                 }
 
@@ -199,7 +200,7 @@ fun CommunityWorldCardPreview() {
                 openPat = "20",
                 totalDate = "134",
             ),
-            worldDataList = listOf("1@0.2@pat@0.25@0.69", "2@0.2@pat@0.25@0.569", "1@0.2@pat@0.125@0.69", "1@0.2@item@0.25@0.69", "2@0.2@item@0.125@0.769", "1@0.2@item@0.225@0.169", "1@0.2@pat@0.25@0.669", "2@0.2@pat@0.25@0.369", "2@0.3@pat@0.325@0.69", "1@0.2@pat@0.725@0.769", "1@0.2@item@0.425@0.669",
+            worldDataList = listOf("1@0.2@pat@0.25@0.69@1", "2@0.2@pat@0.25@0.569@1", "1@0.2@pat@0.125@0.69@1", "1@0.2@item@0.25@0.69@1", "2@0.2@item@0.125@0.769@1", "1@0.2@item@0.225@0.169@2", "1@0.2@pat@0.25@0.669@1", "2@0.2@pat@0.25@0.369@1", "2@0.3@pat@0.325@0.69@1", "1@0.2@pat@0.725@0.769@1", "1@0.2@item@0.425@0.669@1",
             ),
             patDataList = listOf(Pat(id = 1, url = "pat/cat.json"))
         )

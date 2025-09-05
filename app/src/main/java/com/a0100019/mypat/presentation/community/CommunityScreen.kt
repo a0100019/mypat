@@ -297,7 +297,7 @@ fun CommunityScreen(
                                 .fillMaxWidth()
                                 .padding(top = 16.dp, bottom = 50.dp)
                         ) {
-                            Text("         ")
+                            Text("     ")
 
                             Text(
                                 text = "마음에 드는 마을에 좋아요를 눌러주세요!\n오늘의 첫 좋아요를 누르면 500달빛을 획득합니다",
@@ -306,7 +306,7 @@ fun CommunityScreen(
 
                             MainButton(
                                 onClick = onPageUpClick,
-                                text = "   다음   "
+                                text = " 다음 "
                             )
                         }
                     }

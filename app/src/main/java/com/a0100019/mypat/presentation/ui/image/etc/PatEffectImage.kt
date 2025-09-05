@@ -7,7 +7,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
 
 @Composable
@@ -42,11 +41,11 @@ fun PatEffectImage(
 
 fun patEffectIndexToUrl(index: Int): String {
     return when(index) {
-        1 -> "patEffect/leaf.json"
-        2 -> "etc/egg.json"
-        3 -> "etc/egg.json"
-        4 -> "etc/egg.json"
-        5 -> "etc/egg.json"
+        1 -> "patEffect/starfall.json"
+        2 -> "patEffect/effect_snow.json"
+        3 -> "patEffect/lightning_effect.json"
+        4 -> "patEffect/aurora.json"
+        5 -> "patEffect/laugh_effect.json"
         else -> ""
     }
 }

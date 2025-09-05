@@ -31,6 +31,16 @@ fun PatImage(
 
     val imageSize = surfaceWidthDp * sizeFloat // 이미지 크기를 Surface 너비의 비율로 설정
 
+    PatEffectImage(
+        surfaceWidthDp = surfaceWidthDp,
+        surfaceHeightDp = surfaceHeightDp,
+        effect = effect,
+        xFloat = xFloat,
+        yFloat = yFloat,
+        sizeFloat = sizeFloat,
+    )
+
+
     // LottieAnimation을 클릭 가능한 Modifier로 감쌉니다.
     LottieAnimation(
         composition = composition,
@@ -48,13 +58,5 @@ fun PatImage(
             )
     )
 
-    PatEffectImage(
-        surfaceWidthDp = surfaceWidthDp,
-        surfaceHeightDp = surfaceHeightDp,
-        effect = effect,
-        xFloat = xFloat,
-        yFloat = yFloat,
-        sizeFloat = sizeFloat,
-    )
 
 }
