@@ -6,6 +6,7 @@ import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -25,7 +27,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -203,11 +207,25 @@ fun FirstGameScreen(
                 val surfaceHeightDp = with(density) { surfaceHeight.toDp() }
 
                 JustImage(
-                    filePath = "etc/icySurface_white_bg.jpg",
+                    filePath = "etc/icySurface.jpg",
                     modifier = Modifier
-                        .fillMaxSize(),
-                    contentScale = ContentScale.FillBounds
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(16.dp)) // 모서리 둥글게
+                        .border(
+                            width = 4.dp,
+                            color = MaterialTheme.colorScheme.onErrorContainer, // 테두리 색상
+                            shape = RoundedCornerShape(16.dp)         // clip과 동일한 모양
+                        )
+                        .shadow(
+                            elevation = 8.dp,               // 그림자 크기
+                            shape = RoundedCornerShape(16.dp),
+                            clip = false                    // 그림자가 잘리지 않도록
+                        )
+                    ,
+                    contentScale = ContentScale.Crop // FillBounds 대신 Crop이나 Fit 추천
                 )
+
+
                 JustImage(
                     filePath = "etc/target.png",
                     modifier = Modifier

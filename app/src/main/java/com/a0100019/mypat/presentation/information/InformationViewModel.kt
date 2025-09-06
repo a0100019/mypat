@@ -74,6 +74,7 @@ class InformationViewModel @Inject constructor(
         val allPatDataList = patDao.getAllPatData()
         val allItemDataList = itemDao.getAllItemDataWithShadow()
         val allUserDataList = allUserDao.getAllUserDataNoBan()
+        val worldDataList = worldDao.getAllWorldData()
 
         if(allUserDataList.size > 5) {
 
@@ -125,7 +126,8 @@ class InformationViewModel @Inject constructor(
                 userData = userDataList,
                 allAreaDataList = allAreaDataList,
                 allPatDataList = allPatDataList,
-                allItemDataList = allItemDataList
+                allItemDataList = allItemDataList,
+                worldDataList = worldDataList
             )
         }
 
@@ -144,6 +146,7 @@ data class InformationState(
     val allPatDataList: List<Pat> = emptyList(),
     val allItemDataList: List<Item> = emptyList(),
     val allAreaDataList: List<Area> = emptyList(),
+    val worldDataList: List<World> = emptyList(),
 
     val gameRankList: List<String> = listOf("-", "-", "-", "-", "-"),
 

@@ -300,7 +300,7 @@ fun CommunityScreen(
                             Text("     ")
 
                             Text(
-                                text = "마음에 드는 마을에 좋아요를 눌러주세요!\n오늘의 첫 좋아요를 누르면 500달빛을 획득합니다",
+                                text = "마음에 드는 마을에 좋아요를 눌러주세요!\n오늘의 첫 좋아요를 누르면 1000달빛을 획득합니다",
                                 textAlign = TextAlign.Center
                             )
 

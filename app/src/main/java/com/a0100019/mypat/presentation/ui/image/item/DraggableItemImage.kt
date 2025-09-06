@@ -3,6 +3,7 @@ package com.a0100019.mypat.presentation.ui.image.item
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -10,6 +11,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,6 +27,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.a0100019.mypat.presentation.ui.image.etc.LottieCache
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -40,6 +44,7 @@ fun DraggableItemImage(
     yFloat: Float,
     sizeFloat: Float,
     onClick: () -> Unit,
+    border: Boolean = true,
     newFloat: (Float, Float) -> Unit,
     ) {
 
@@ -61,9 +66,20 @@ fun DraggableItemImage(
                 .size(imageSize)
                 .offset(x = xOffset, y = yOffset)
                 .clickable(
-//                    interactionSource = remember { MutableInteractionSource() },
-//                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
                     onClick = onClick
+                )
+                .then(
+                    if (border) {
+                        Modifier.border(
+                            width = 2.dp,
+                            color = MaterialTheme.colorScheme.onErrorContainer,
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                    } else {
+                        Modifier // 테두리 없음
+                    }
                 )
                 .pointerInput(Unit) {
                     detectDragGestures { change, dragAmount ->
@@ -113,9 +129,20 @@ fun DraggableItemImage(
                     .size(imageSize)
                     .offset(x = xOffset, y = yOffset)
                     .clickable(
-//                        interactionSource = remember { MutableInteractionSource() },
-//                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
                         onClick = onClick
+                    )
+                    .then(
+                        if (border) {
+                            Modifier.border(
+                                width = 2.dp,
+                                color = MaterialTheme.colorScheme.onErrorContainer,
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                        } else {
+                            Modifier // 테두리 없음
+                        }
                     )
                     .pointerInput(Unit) {
                         detectDragGestures { change, dragAmount ->

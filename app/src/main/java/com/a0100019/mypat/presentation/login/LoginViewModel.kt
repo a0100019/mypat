@@ -521,7 +521,7 @@ class LoginViewModel @Inject constructor(
                                 if (match) shouldDelete = true
                                 match
                             }
-                            else -> false
+                            else -> true
                         }
 
                         if (shouldInsert) {

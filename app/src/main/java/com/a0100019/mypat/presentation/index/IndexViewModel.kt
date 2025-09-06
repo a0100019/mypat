@@ -115,9 +115,9 @@ class IndexViewModel @Inject constructor(
     fun onPageChangeClick(next: Boolean) = intent {
 
         val lastPage = when(state.typeChange) {
-            "pat" -> state.allPatDataList.size/9 + 1
-            "item" -> state.allItemDataList.size/9 + 1
-            else -> state.allAreaDataList.size/9 + 1
+            "pat" -> (state.allPatDataList.size-1)/9 + 1
+            "item" -> (state.allItemDataList.size-1)/9 + 1
+            else -> (state.allAreaDataList.size-1)/9 + 1
         }
 
         if(next) {

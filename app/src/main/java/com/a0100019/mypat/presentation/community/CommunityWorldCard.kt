@@ -40,7 +40,7 @@ import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.image.item.WorldItemImage
-import com.a0100019.mypat.presentation.ui.image.pat.PatInformationImage
+import com.a0100019.mypat.presentation.ui.image.pat.PatImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
 @Composable
@@ -129,14 +129,15 @@ fun CommunityWorldCard(
                             if (parts[2] == "pat") {
                                 // pat일 때 처리
                                 patDataList.find { it.id.toString() == parts[0] }?.let { patData ->
-                                    PatInformationImage(
+                                    PatImage(
                                         patUrl = patData.url,
                                         surfaceWidthDp = surfaceWidthDp,
                                         surfaceHeightDp = surfaceHeightDp,
                                         xFloat = parts[3].toFloat(),
                                         yFloat = parts[4].toFloat(),
                                         sizeFloat = parts[1].toFloat(),
-                                        effect = parts[5].toInt()
+                                        effect = parts[5].toInt(),
+                                        onClick = {  }
                                     )
                                 }
 

@@ -218,7 +218,8 @@ fun LovePatDialog(
                     xFloat = loveItemData1.x,
                     yFloat = loveItemData1.y,
                     sizeFloat = 0.2f,
-                    onClick = { }
+                    border = false,
+                    onClick = { },
                 ) { newXFloat, newYFloat ->
                     onItemDrag(loveItemData1.id.toString(), newXFloat, newYFloat)
                 }
@@ -230,6 +231,7 @@ fun LovePatDialog(
                     xFloat = loveItemData2.x,
                     yFloat = loveItemData2.y,
                     sizeFloat = 0.2f,
+                    border = false,
                     onClick = { }
                 ) { newXFloat, newYFloat ->
                     onItemDrag(loveItemData2.id.toString(), newXFloat, newYFloat)
@@ -242,6 +244,7 @@ fun LovePatDialog(
                     xFloat = loveItemData3.x,
                     yFloat = loveItemData3.y,
                     sizeFloat = 0.2f,
+                    border = false,
                     onClick = { }
                 ) { newXFloat, newYFloat ->
                     onItemDrag(loveItemData3.id.toString(), newXFloat, newYFloat)
@@ -259,9 +262,9 @@ fun LovePatDialogPreview() {
         LovePatDialog(
             lovePatData = Pat(url = "pat/cat.json"),
             onItemDrag = { id, newX, newY -> },
-            loveItemData1 = Item(id = 1, name = "쓰다듬기", url = "etc/hand.png", x = 0.2f, y = 0.7f, sizeFloat = 0.2f),
-            loveItemData2 = Item(id = 2, name = "장난감", url = "etc/hand.png", x = 0.5f, y = 0.7f, sizeFloat = 0.2f),
-            loveItemData3 = Item(id = 3, name = "비행기", url = "etc/hand.png", x = 0.8f, y = 0.7f, sizeFloat = 0.2f),
+            loveItemData1 = Item(id = 1, name = "쓰다듬기", url = "etc/toy_car.png", x = 0.2f, y = 0.7f, sizeFloat = 0.2f),
+            loveItemData2 = Item(id = 2, name = "장난감", url = "etc/toy_lego.png", x = 0.5f, y = 0.7f, sizeFloat = 0.2f),
+            loveItemData3 = Item(id = 3, name = "비행기", url = "etc/toy_bear.png", x = 0.8f, y = 0.7f, sizeFloat = 0.2f),
             onLovePatNextClick = {},
             onLovePatStopClick = {},
             loveAmount = 100,

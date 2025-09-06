@@ -4,6 +4,8 @@ import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -12,13 +14,17 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,9 +38,10 @@ import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.area.Area
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
+import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.image.item.WorldItemImage
-import com.a0100019.mypat.presentation.ui.image.pat.PatInformationImage
+import com.a0100019.mypat.presentation.ui.image.pat.PatImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -64,7 +71,8 @@ fun InformationScreen(
         allItemDataList = informationState.allItemDataList,
         allAreaDataList = informationState.allAreaDataList,
         userDataList = informationState.userData,
-        gameRankList = informationState.gameRankList
+        gameRankList = informationState.gameRankList,
+        worldDataList = informationState.worldDataList
 
         )
 }
@@ -79,6 +87,7 @@ fun InformationScreen(
     allPatDataList: List<Pat>,
     allItemDataList: List<Item>,
     allAreaDataList: List<Area>,
+    worldDataList : List<World> = emptyList(),
     userDataList: List<User>,
     gameRankList: List<String> = listOf("-", "-", "-", "-", "-")
 
@@ -87,7 +96,6 @@ fun InformationScreen(
     Surface (
         modifier = Modifier
             .fillMaxSize()
-            .padding(6.dp)
         ,
         shape = RoundedCornerShape(16.dp),
         color = Color(0xFFFFF8E7),
@@ -142,40 +150,67 @@ fun InformationScreen(
                 color = Color(0xFFFFF8E7),
                 border = BorderStroke(2.dp, MaterialTheme.colorScheme.primaryContainer),
             ) {
-                Box(modifier = Modifier.fillMaxSize()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.White), // Optional: Set background color
+                    contentAlignment = Alignment.Center // Center content
+                ) {
                     JustImage(
                         filePath = areaUrl,
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.FillBounds
                     )
 
-                    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+                    BoxWithConstraints(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
                         val density = LocalDensity.current
-                        val surfaceWidthDp = with(density) { constraints.maxWidth.toDp() }
-                        val surfaceHeightDp = with(density) { constraints.maxHeight.toDp() }
 
-                        itemDataList.forEach {
-                            WorldItemImage(
-                                itemUrl = it.url,
-                                surfaceWidthDp = surfaceWidthDp,
-                                surfaceHeightDp = surfaceHeightDp,
-                                xFloat = it.x,
-                                yFloat = it.y,
-                                sizeFloat = it.sizeFloat
-                            )
+                        // Surface 크기 가져오기 (px → dp 변환)
+                        val surfaceWidth = constraints.maxWidth
+                        val surfaceHeight = constraints.maxHeight
+
+                        val surfaceWidthDp = with(density) { surfaceWidth.toDp() }
+                        val surfaceHeightDp = with(density) { surfaceHeight.toDp() }
+
+                        worldDataList.forEachIndexed { index, worldData ->
+                            key("${worldData.id}_${worldData.type}") {
+                                if (worldData.type == "pat") {
+                                    patDataList.find { it.id.toString() == worldData.value }?.let { patData ->
+
+                                        PatImage(
+                                            patUrl = patData.url,
+                                            surfaceWidthDp = surfaceWidthDp,
+                                            surfaceHeightDp = surfaceHeightDp,
+                                            xFloat = patData.x,
+                                            yFloat = patData.y,
+                                            sizeFloat = patData.sizeFloat,
+                                            effect = patData.effect,
+                                            onClick = {  }
+                                        )
+
+                                    }
+
+                                } else {
+                                    itemDataList.find { it.id.toString() == worldData.value }?.let { itemData ->
+                                        WorldItemImage(
+                                            itemUrl = itemData.url,
+                                            surfaceWidthDp = surfaceWidthDp,
+                                            surfaceHeightDp = surfaceHeightDp,
+                                            xFloat = itemData.x,
+                                            yFloat = itemData.y,
+                                            sizeFloat = itemData.sizeFloat
+                                        )
+
+                                    }
+
+                                }
+                            }
                         }
 
-                        patDataList.forEach {
-                            PatInformationImage(
-                                patUrl = it.url,
-                                surfaceWidthDp = surfaceWidthDp,
-                                surfaceHeightDp = surfaceHeightDp,
-                                xFloat = it.x,
-                                yFloat = it.y,
-                                sizeFloat = it.sizeFloat
-                            )
-                        }
                     }
+
                 }
             }
 

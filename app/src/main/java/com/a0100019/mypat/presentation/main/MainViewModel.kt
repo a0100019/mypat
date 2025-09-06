@@ -208,6 +208,10 @@ class MainViewModel @Inject constructor(
                 )
             }
         } else {
+
+            val newWorldData = state.worldDataList.find { it.value == patId.toString() && it.type == "pat" }
+            worldDao.update(newWorldData!!.copy(situation = ""))
+
             reduce {
                 state.copy(
                     lovePatData = state.patDataList.find { it.id == patId }!!,
@@ -442,9 +446,9 @@ data class MainState(
     val showLetterData: Letter = Letter(),
     val situation: String = "",
     val lovePatData: Pat = Pat(url = ""),
-    val loveItemData1: Item = Item(id = 1, name = "쓰다듬기", url = "etc/hand.png", x = 0.1f, y = 0.8f, sizeFloat = 0.2f),
-    val loveItemData2: Item = Item(id = 2, name = "장난감", url = "etc/arrow.png", x = 0.4f, y = 0.8f, sizeFloat = 0.2f),
-    val loveItemData3: Item = Item(id = 3, name = "비행기", url = "etc/lock.png", x = 0.7f, y = 0.8f, sizeFloat = 0.2f),
+    val loveItemData1: Item = Item(id = 1, name = "쓰다듬기", url = "etc/toy_car.png", x = 0.1f, y = 0.8f, sizeFloat = 0.2f),
+    val loveItemData2: Item = Item(id = 2, name = "장난감", url = "etc/toy_lego.png", x = 0.4f, y = 0.8f, sizeFloat = 0.2f),
+    val loveItemData3: Item = Item(id = 3, name = "비행기", url = "etc/toy_bear.png", x = 0.7f, y = 0.8f, sizeFloat = 0.2f),
     val loveAmount: Int = 1000,
     val cashAmount: Int = 100,
     val timer: String = "10:00"

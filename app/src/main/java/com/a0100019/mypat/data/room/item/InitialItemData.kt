@@ -1,7 +1,5 @@
 package com.a0100019.mypat.data.room.item
 
-import com.a0100019.mypat.data.room.pat.Pat
-
 fun getItemInitialData(): List<Item> {
     return listOf(
         Item( name = "그림자1", date = "1", url = "item/shadow.json", minFloat = 0.1f, sizeFloat = 0.1f),
@@ -66,7 +64,6 @@ fun getItemInitialData(): List<Item> {
         Item(name = "악마 외계인", url = "item/angry_alien.json", minFloat = 0.1f, sizeFloat = 0.1f),
         Item( name = "대한민국 깃발", url = "item/korea_flag.json", minFloat = 0.1f, sizeFloat = 0.1f),
         Item( name = "깜짝 호박", url = "item/surprise_pumpkin.json", minFloat = 0.1f, sizeFloat = 0.1f),
-        Item( name = "우체통", url = "item/mailbox.png", minFloat = 0.1f, sizeFloat = 0.1f),
         //30
         Item( name = "메리 크리스마스", url = "item/merry_christmas_text.json", minFloat = 0.15f, sizeFloat = 0.15f),
         Item( name = "겨울 장식 1", url = "item/winter_decoration_1.json", minFloat = 0.1f, sizeFloat = 0.1f),
@@ -98,9 +95,8 @@ fun getItemInitialData(): List<Item> {
         Item( name = "퍼센트 카운트", url = "item/percent_count.json", minFloat = 0.1f, sizeFloat = 0.1f),
         Item( name = "군함", url = "item/military_ship.json", minFloat = 0.1f, sizeFloat = 0.1f),
         Item( name = "바다 거북", url = "item/sea_turtle.json", minFloat = 0.1f, sizeFloat = 0.1f),
-        Item( name = "벚꽃 잎", url = "item/leaf.json", minFloat = 0.1f, sizeFloat = 0.1f),
         Item( name = "미니 해적선", url = "item/mobile_pirates.json", minFloat = 0.1f, sizeFloat = 0.1f),
-        Item( name = "하트 효과", url = "etc/like_heart.json", minFloat = 0.1f, sizeFloat = 0.1f),
+        Item( name = "하트 효과", url = "etc/heart_effect.json", minFloat = 0.1f, sizeFloat = 0.1f),
         Item( name = "별자리", url = "item/constellation.json", minFloat = 0.1f, sizeFloat = 0.1f),
         //20
         Item( name = "오리", url = "item/duck_preening.json", minFloat = 0.1f, sizeFloat = 0.1f),

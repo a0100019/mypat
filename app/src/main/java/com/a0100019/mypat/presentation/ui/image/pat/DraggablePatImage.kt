@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -48,6 +49,7 @@ fun DraggablePatImage(
     sizeFloat: Float,
     onClick: () -> Unit,
     effect: Int = 0,
+    border: Boolean = true,
     newFloat: (Float, Float) -> Unit,
 ) {
 
@@ -71,9 +73,20 @@ fun DraggablePatImage(
                 .size(imageSize)
                 .offset(x = xOffset, y = yOffset)
                 .clickable(
-//                    interactionSource = remember { MutableInteractionSource() },
-//                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
                     onClick = onClick
+                )
+                .then(
+                    if (border) {
+                        Modifier.border(
+                            width = 2.dp,
+                            color = MaterialTheme.colorScheme.onErrorContainer,
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                    } else {
+                        Modifier // 테두리 없음
+                    }
                 )
                 .pointerInput(Unit) {
                     detectDragGestures { change, dragAmount ->
@@ -92,14 +105,16 @@ fun DraggablePatImage(
             contentAlignment = Alignment.Center
         ) {
 
-            LottieAnimation(
-                composition = composition,
-                progress = lottieAnimationState.progress
-            )
             JustImage(
                 filePath = patEffectIndexToUrl(effect),
                 modifier = Modifier.fillMaxSize()
             )
+
+            LottieAnimation(
+                composition = composition,
+                progress = lottieAnimationState.progress
+            )
+
 //            if(worldIndex != ""){
 //                Text(
 //                    text = (worldIndex.toInt() + 1).toString(),

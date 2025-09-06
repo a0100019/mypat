@@ -43,8 +43,8 @@ fun patEffectIndexToUrl(index: Int): String {
     return when(index) {
         1 -> "patEffect/starfall.json"
         2 -> "patEffect/effect_snow.json"
-        3 -> "patEffect/lightning_effect.json"
-        4 -> "patEffect/aurora.json"
+        3 -> "patEffect/aurora.json"
+        4 -> "patEffect/lightning_effect.json"
         5 -> "patEffect/laugh_effect.json"
         else -> ""
     }

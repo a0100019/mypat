@@ -696,7 +696,7 @@ class CommunityViewModel @Inject constructor(
 
                                     userDao.update(
                                         id = "money",
-                                        value2 = (state.userDataList.find { it.id == "money" }!!.value2.toInt() + 500).toString()
+                                        value2 = (state.userDataList.find { it.id == "money" }!!.value2.toInt() + 1000).toString()
                                     )
 
                                 }
@@ -709,7 +709,7 @@ class CommunityViewModel @Inject constructor(
 
 
                     viewModelScope.launch {
-                        postSideEffect(CommunitySideEffect.Toast("좋아요를 눌렀습니다 +500달빛"))
+                        postSideEffect(CommunitySideEffect.Toast("좋아요를 눌렀습니다 +1000달빛"))
                     }
                 }
             }
