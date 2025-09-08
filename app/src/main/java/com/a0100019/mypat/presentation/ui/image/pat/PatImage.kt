@@ -40,7 +40,6 @@ fun PatImage(
         sizeFloat = sizeFloat,
     )
 
-
     // LottieAnimation을 클릭 가능한 Modifier로 감쌉니다.
     LottieAnimation(
         composition = composition,
@@ -57,6 +56,5 @@ fun PatImage(
                 onClick = onClick
             )
     )
-
 
 }

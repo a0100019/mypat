@@ -246,23 +246,27 @@ fun MainScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
 
-                        Text(
-                            text = "💰",
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.primary
+                        JustImage(
+                            filePath = "etc/sun.png",
+                            modifier = Modifier
+                                .size(20.dp)
+                                .padding(end = 3.dp)
                         )
+
                         Text(
                             text = users.find { it.id == "money" }?.value ?: "0",
                             style = MaterialTheme.typography.bodyLarge,
                         )
 
-                        Spacer(modifier = Modifier.size(12.dp))
+                        Spacer(modifier = Modifier.size(16.dp))
 
-                        Text(
-                            text = "💸",
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.secondary
+                        JustImage(
+                            filePath = "etc/moon.png",
+                            modifier = Modifier
+                                .size(20.dp)
+                                .padding(end = 3.dp)
                         )
+
                         Text(
                             text = users.find { it.id == "money" }?.value2 ?: "0",
                             style = MaterialTheme.typography.bodyLarge,

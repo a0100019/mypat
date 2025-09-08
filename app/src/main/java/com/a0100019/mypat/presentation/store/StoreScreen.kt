@@ -61,7 +61,6 @@ fun StoreScreen(
     storeViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
             is StoreSideEffect.Toast -> Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
-
         }
     }
 
@@ -278,16 +277,33 @@ fun StoreScreen(
 
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxWidth(0.9f)
                     .padding(12.dp),
-                horizontalArrangement = Arrangement.SpaceAround
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "money : ${userData.find { it.id == "money" }?.value}",
-                    style = MaterialTheme.typography.titleMedium
+                JustImage(
+                    filePath = "etc/sun.png",
+                    modifier = Modifier
+                        .size(20.dp)
+                        .padding(end = 6.dp)
                 )
                 Text(
-                    text = "cash : ${userData.find { it.id == "money" }?.value2}",
+                    text = "(햇살) : ${userData.find { it.id == "money" }?.value}",
+                    style = MaterialTheme.typography.titleMedium
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                JustImage(
+                    filePath = "etc/moon.png",
+                    modifier = Modifier
+                        .size(20.dp)
+                        .padding(end = 6.dp)
+                )
+
+                Text(
+                    text = "(달빛) : ${userData.find { it.id == "money" }?.value2}",
                     style = MaterialTheme.typography.titleMedium
                 )
             }
@@ -387,11 +403,21 @@ fun StoreScreen(
                                     modifier = Modifier
                                         .padding(bottom = 10.dp),
                                 )
-                                Text(
-                                    text = "$patPrice 햇살",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    modifier = Modifier,
-                                )
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "$patPrice",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        modifier = Modifier,
+                                    )
+                                    JustImage(
+                                        filePath = "etc/sun.png",
+                                        modifier = Modifier
+                                            .size(20.dp)
+                                            .padding(start = 3.dp)
+                                    )
+                                }
                             }
                         }
 
@@ -484,11 +510,21 @@ fun StoreScreen(
                                     modifier = Modifier
                                         .padding(bottom = 10.dp),
                                 )
-                                Text(
-                                    text = "$itemPrice 달빛",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    modifier = Modifier,
-                                )
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "$itemPrice",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        modifier = Modifier,
+                                    )
+                                    JustImage(
+                                        filePath = "etc/moon.png",
+                                        modifier = Modifier
+                                            .size(20.dp)
+                                            .padding(start = 3.dp)
+                                    )
+                                }
                             }
                         }
 
@@ -581,11 +617,22 @@ fun StoreScreen(
                                     modifier = Modifier
                                         .padding(bottom = 10.dp),
                                 )
-                                Text(
-                                    text = if (userData.find { it.id == "pat" }?.value2 != userData.find { it.id == "pat" }?.value) "$patSpacePrice 달빛" else "- 달빛",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    modifier = Modifier,
-                                )
+
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = if (userData.find { it.id == "pat" }?.value2 != userData.find { it.id == "pat" }?.value) "$patSpacePrice" else "-",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        modifier = Modifier,
+                                    )
+                                    JustImage(
+                                        filePath = "etc/moon.png",
+                                        modifier = Modifier
+                                            .size(20.dp)
+                                            .padding(start = 3.dp)
+                                    )
+                                }
                             }
                         }
 
@@ -678,11 +725,22 @@ fun StoreScreen(
                                     modifier = Modifier
                                         .padding(bottom = 10.dp),
                                 )
-                                Text(
-                                    text = if (userData.find { it.id == "item" }?.value2 != userData.find { it.id == "item" }?.value) "$itemSpacePrice 달빛" else "- 달빛",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    modifier = Modifier,
-                                )
+
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = if (userData.find { it.id == "item" }?.value2 != userData.find { it.id == "item" }?.value) "$itemSpacePrice" else "-",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        modifier = Modifier,
+                                    )
+                                    JustImage(
+                                        filePath = "etc/moon.png",
+                                        modifier = Modifier
+                                            .size(20.dp)
+                                            .padding(start = 3.dp)
+                                    )
+                                }
                             }
                         }
 
@@ -769,12 +827,23 @@ fun StoreScreen(
                                     modifier = Modifier
                                         .padding(bottom = 10.dp),
                                 )
-                                Text(
-                                    text =
-                                    if (userData.find { it.id == "name" }?.value == "유저") "0 햇살" else "5 햇살",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    modifier = Modifier,
-                                )
+
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text =
+                                        if (userData.find { it.id == "name" }?.value == "이웃") "0" else "5",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        modifier = Modifier,
+                                    )
+                                    JustImage(
+                                        filePath = "etc/sun.png",
+                                        modifier = Modifier
+                                            .size(20.dp)
+                                            .padding(start = 3.dp)
+                                    )
+                                }
                             }
                         }
 
@@ -821,12 +890,33 @@ fun StoreScreen(
                                     modifier = Modifier
                                         .padding(bottom = 10.dp),
                                 )
-                                Text(
-                                    text = "햇살 1개 -> 달빛 3000개",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    modifier = Modifier
-                                        .padding(bottom = 10.dp),
-                                )
+
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "1",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        modifier = Modifier,
+                                    )
+                                    JustImage(
+                                        filePath = "etc/sun.png",
+                                        modifier = Modifier
+                                            .size(20.dp)
+                                            .padding(start = 3.dp, end = 3.dp)
+                                    )
+                                    Text(
+                                        text = "-> 3000",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        modifier = Modifier,
+                                    )
+                                    JustImage(
+                                        filePath = "etc/moon.png",
+                                        modifier = Modifier
+                                            .size(20.dp)
+                                            .padding(start = 3.dp)
+                                    )
+                                }
                             }
                         }
 
