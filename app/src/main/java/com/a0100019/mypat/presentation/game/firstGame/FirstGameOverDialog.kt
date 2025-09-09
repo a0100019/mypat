@@ -25,6 +25,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -164,9 +165,44 @@ fun FirstGameOverDialog(
 
                 Spacer(modifier = Modifier.size(16.dp))
 
-                Text(
-                    text = "애정도, 달빛 +$plusValue"
-                )
+                Row(
+                    modifier = Modifier
+                        .padding(10.dp)
+                    ,
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+
+                    Image(
+                        painter = painterResource(id = R.drawable.heart),
+                        contentDescription = "Sample Vector Image",
+                        modifier = Modifier
+                            .size(20.dp)
+                        ,
+                    )
+
+                    Text(
+                        text = ", ",
+                        style = MaterialTheme.typography.titleMedium,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                    )
+
+                    JustImage(
+                        filePath = "etc/moon.png",
+                        modifier = Modifier
+                            .size(20.dp)
+                    )
+
+                    Text(
+                        text = " +${plusValue}",
+                        style = MaterialTheme.typography.titleLarge,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                    )
+
+
+                }
 
                 Spacer(modifier = Modifier.height(24.dp))
 

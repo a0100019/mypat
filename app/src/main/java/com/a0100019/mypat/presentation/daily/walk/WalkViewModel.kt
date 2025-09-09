@@ -212,7 +212,8 @@ class WalkViewModel @Inject constructor(
 
             reduce {
                 state.copy(
-                    todayWalk = state.todayWalk - 10000
+                    todayWalk = state.todayWalk - 10000,
+                    walkState = "완료"
                 )
             }
 

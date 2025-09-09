@@ -3,10 +3,12 @@ package com.a0100019.mypat.presentation.main.mainDialog
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -102,6 +104,13 @@ fun LovePatDialog(
                         modifier = Modifier
                             .align(Alignment.Center)
                     )
+                    if(situation == "lovePatSuccess") {
+                        JustImage(
+                            filePath = "etc/heart_effect.json",
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                        )
+                    }
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Image(
                             painter = painterResource(id = R.drawable.heart),
@@ -194,15 +203,46 @@ fun LovePatDialog(
                                 .align(Alignment.Center) // ⭐ 중앙 정렬
                         )
 
-                        Text(
-                            text = "애정도 +${loveAmount}, 달빛 +${cashAmount}"
-                            ,
-                            style = MaterialTheme.typography.headlineSmall,
-                            textAlign = TextAlign.Center,
+                        Row(
                             modifier = Modifier
-                                .align(Alignment.BottomCenter)
                                 .padding(10.dp)
-                        )
+                            ,
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+
+                            Image(
+                                painter = painterResource(id = R.drawable.heart),
+                                contentDescription = "Sample Vector Image",
+                                modifier = Modifier
+                                    .size(20.dp)
+                                ,
+                            )
+
+                            Text(
+                                text = "+${loveAmount}",
+                                style = MaterialTheme.typography.titleMedium,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                            )
+
+                            Spacer(modifier = Modifier.size(30.dp))
+
+                            JustImage(
+                                filePath = "etc/moon.png",
+                                modifier = Modifier
+                                    .size(20.dp)
+                            )
+
+                            Text(
+                                text = "+${cashAmount}",
+                                style = MaterialTheme.typography.titleMedium,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                            )
+
+
+                        }
                     }
 
                 }
