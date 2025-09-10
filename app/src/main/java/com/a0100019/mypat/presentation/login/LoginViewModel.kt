@@ -95,7 +95,7 @@ class LoginViewModel @Inject constructor(
                 )
             }
 
-            newLetterGet()
+            newLetterAndLikeGet()
             newAllUserDataGetAndDataSave()
 
         }
@@ -170,15 +170,23 @@ class LoginViewModel @Inject constructor(
                     val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
                     userDao.update(id = "date", value3 = currentDate)
                     letterDao.updateDateByTitle(title = "시작의 편지", todayDate = currentDate)
-
                     val userRef = db.collection("users").document(it.uid)
-                    userRef.set(mapOf("online" to "1"), SetOptions.merge())
+                    userRef.set(
+                        mapOf(
+                            "online" to "1",
+                            "community" to mapOf(
+                                "like" to "0"
+                            )
+                        ),
+                        SetOptions.merge()
+                    )
                         .addOnSuccessListener {
-                            Log.d("login", "online 필드가 1로 설정됨 (set + merge)")
+                            Log.d("login", "online=1, community.like=0 저장 성공")
                         }
                         .addOnFailureListener { e ->
-                            Log.e("login", "online 필드 설정 실패", e)
+                            Log.e("login", "저장 실패", e)
                         }
+
 
                     Log.e("login", "신규 사용자입니다")
                     postSideEffect(LoginSideEffect.Toast("처음 오신 것을 환영합니다!"))
@@ -497,7 +505,7 @@ class LoginViewModel @Inject constructor(
         postSideEffect(LoginSideEffect.NavigateToMainScreen)
     }
 
-    private fun newLetterGet() = intent {
+    private fun newLetterAndLikeGet() = intent {
         val letterDocRef = Firebase.firestore
             .collection("code")
             .document("letter")
@@ -514,13 +522,16 @@ class LoginViewModel @Inject constructor(
                         var shouldDelete = false
 
                         val shouldInsert = when {
+                            //전체 편지
                             key.length == 8 -> true
+                            //개인 편지
                             key.length >= 9 -> {
                                 val subId = key.drop(8)
                                 val match = (tag == subId)
                                 if (match) shouldDelete = true
                                 match
                             }
+                            //준비된 전체 편지
                             else -> true
                         }
 
@@ -553,6 +564,35 @@ class LoginViewModel @Inject constructor(
             .addOnFailureListener { e ->
                 Log.e("Firestore", "letter 문서 가져오기 실패", e)
             }
+
+        val uid = userDao.getValueById("auth")
+
+        val userDocRef = Firebase.firestore
+            .collection("users")
+            .document(uid)
+
+        viewModelScope.launch {
+            try {
+                val snapshot = userDocRef.get().await()
+
+                // community map 가져오기
+                val communityMap = snapshot.get("community") as? Map<String, Any>
+
+                // like 값이 String으로 존재할 때만 업데이트
+                val likeValue = communityMap?.get("like") as? String
+
+                if (likeValue != null) {
+                    userDao.update(id = "community", value = likeValue)
+                    Log.d("Firestore", "community.like = $likeValue 로 업데이트 완료")
+                } else {
+                    Log.d("Firestore", "community.like 없음 → 업데이트 취소")
+                }
+
+            } catch (e: Exception) {
+                Log.e("Firestore", "community.like 가져오기 실패", e)
+            }
+        }
+
     }
 
     private fun newAllUserDataGetAndDataSave() = intent {
