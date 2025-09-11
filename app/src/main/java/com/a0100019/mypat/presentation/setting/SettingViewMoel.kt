@@ -788,7 +788,7 @@ class SettingViewModel @Inject constructor(
 
 
     }
-    z
+
 
 
     //입력 가능하게 하는 코드

@@ -92,7 +92,7 @@ fun SettingScreen(
         onLetterLinkClick = settingViewModel::onLetterLinkClick,
         onLetterCloseClick = settingViewModel::onLetterCloseClick,
         onRecommendationClick = settingViewModel::onRecommendationClick,
-        onRecommendationSubmitClick = settingViewModel::onRecommendationSubmitClick
+        onRecommendationSubmitClick = settingViewModel::onRecommendationSubmitClick,
         popBackStack = popBackStack
     )
 }

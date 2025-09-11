@@ -31,6 +31,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.pat.Pat
+import com.a0100019.mypat.presentation.ui.MusicPlayer
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.image.etc.LoveHorizontalLine
@@ -42,6 +43,11 @@ fun IndexPatDialog(
     patData: Pat,
     open: Boolean = true
 ) {
+
+    MusicPlayer(
+        music = patData.name
+    )
+
     Dialog(
         onDismissRequest = onClose,
         properties = DialogProperties(usePlatformDefaultWidth = false) // 풀스크린
