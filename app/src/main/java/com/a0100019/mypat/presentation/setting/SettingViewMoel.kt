@@ -126,7 +126,9 @@ class SettingViewModel @Inject constructor(
             state.copy(
                 settingSituation = "",
                 editText = "",
-                clickLetterData = Letter()
+                clickLetterData = Letter(),
+                recommending = "-1",
+                recommended = "-1"
             )
         }
     }
@@ -736,6 +738,59 @@ class SettingViewModel @Inject constructor(
 
     }
 
+    fun onRecommendationClick() = intent {
+
+        val recommendationDocRef = Firebase.firestore
+            .collection("code")
+            .document("recommendation")
+
+        val tag = userDao.getValue2ById("auth")
+
+        try {
+            val snapshot = recommendationDocRef.get().await()
+            val map = snapshot.data as? Map<String, String>
+
+            var recommending = "0"
+            var recommended = "0"
+
+            map?.let {
+                // tag == key 체크
+                if (it.containsKey(tag)) {
+                    recommending = it[tag] ?: "0"
+                }
+
+                // tag == value 체크
+                val matchedEntry = it.entries.find { entry -> entry.value == tag }
+                if (matchedEntry != null) {
+                    recommended = matchedEntry.key
+                }
+            }
+
+            Log.d("recommendation", "recommending=$recommending, recommended=$recommended")
+
+            reduce {
+                state.copy(
+                    recommending = recommending,
+                    recommended = recommended,
+                    settingSituation = "recommendation"
+                )
+            }
+
+        } catch (e: Exception) {
+            Log.e("recommendation", "가져오기 실패", e)
+            postSideEffect(SettingSideEffect.Toast("인터넷 오류"))
+        }
+
+    }
+
+    fun onRecommendationSubmitClick() = intent {
+
+
+
+    }
+    z
+
+
     //입력 가능하게 하는 코드
     @OptIn(OrbitExperimental::class)
     fun onEditTextChange(editText: String) = blockingIntent {
@@ -764,7 +819,9 @@ data class SettingState(
     val clickLetterData: Letter = Letter(),
     val letterDataList: List<Letter> = emptyList(),
     val sudokuDataList: List<Sudoku> = emptyList(),
-    val areaDataList: List<Area> = emptyList()
+    val areaDataList: List<Area> = emptyList(),
+    val recommending: String = "-1",
+    val recommended: String = "-1"
     )
 
 

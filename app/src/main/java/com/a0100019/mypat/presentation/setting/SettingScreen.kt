@@ -25,9 +25,11 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
@@ -75,6 +77,8 @@ fun SettingScreen(
         editText = settingState.editText,
         clickLetterData = settingState.clickLetterData,
         letterDataList = settingState.letterDataList,
+        recommending = settingState.recommending,
+        recommended = settingState.recommended,
 
         onClose = settingViewModel::onCloseClick,
         onSignOutClick = settingViewModel::dataSave,
@@ -87,6 +91,8 @@ fun SettingScreen(
         onLetterConfirmClick = settingViewModel::onLetterConfirmClick,
         onLetterLinkClick = settingViewModel::onLetterLinkClick,
         onLetterCloseClick = settingViewModel::onLetterCloseClick,
+        onRecommendationClick = settingViewModel::onRecommendationClick,
+        onRecommendationSubmitClick = settingViewModel::onRecommendationSubmitClick
         popBackStack = popBackStack
     )
 }
@@ -99,6 +105,8 @@ fun SettingScreen(
     editText: String,
     letterDataList: List<Letter>,
     clickLetterData: Letter,
+    recommending : String = "-1",
+    recommended : String = "-1",
 
     onSignOutClick: () -> Unit,
     onClose: () -> Unit,
@@ -112,6 +120,9 @@ fun SettingScreen(
     onLetterConfirmClick: () -> Unit = {},
     onLetterCloseClick: () -> Unit = {},
     popBackStack: () -> Unit = {},
+    onRecommendationClick: () -> Unit = {},
+    onRecommendationSubmitClick: () -> Unit = {},
+
 
 ) {
 
@@ -145,6 +156,16 @@ fun SettingScreen(
             onClose = onClose,
             onLetterClick = clickLetterDataChange,
             letterDataList = letterDataList
+        )
+
+        "recommendation" -> RecommendationDialog(
+            onClose = onClose,
+            onRecommendationTextChange = onEditTextChange,
+            recommending = recommending,
+            recommended = recommended,
+            recommendationText = editText,
+            userData = userData,
+            onRecommendationSubmitClick = onRecommendationSubmitClick
         )
     }
 
@@ -226,17 +247,29 @@ fun SettingScreen(
             )
 
             MainButton(
-                text = "계정삭제",
-                onClick = { onSituationChange("accountDelete") },
+                text = "추천인 확인",
+                onClick = onRecommendationClick,
                 modifier = Modifier.fillMaxWidth()
             )
 
-            MainButton(
-                text = "로그아웃",
-                onClick = onSignOutClick,
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-            )
+            ){
+                MainButton(
+                    text = "계정삭제",
+                    onClick = { onSituationChange("accountDelete") },
+                    modifier = Modifier.weight(1f)
+                )
+
+                Spacer(modifier = Modifier.size(12.dp))
+
+                MainButton(
+                    text = "로그아웃",
+                    onClick = onSignOutClick,
+                    modifier = Modifier.weight(1f)
+                )
+            }
 
             Spacer(modifier = Modifier.height(12.dp))
             Divider()
