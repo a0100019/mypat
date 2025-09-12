@@ -238,7 +238,7 @@ fun WorldScreen(
 
                     Box(
                         modifier = Modifier
-                            .fillMaxSize()
+                            .weight(1f)
                             .background(Color.White), // Optional: Set background color
                         contentAlignment = Alignment.Center // Center content
                     ) {
@@ -317,6 +317,7 @@ fun WorldScreen(
                     }
 
                 }
+
             }
 
             Column(
@@ -335,7 +336,7 @@ fun WorldScreen(
                             .fillMaxWidth(0.7f)
                             .padding(bottom = 10.dp),
                         onClick = onShowAddDialogClick,
-                        text = "수정 하기"
+                        text = "가방"
                     )
                 }
 

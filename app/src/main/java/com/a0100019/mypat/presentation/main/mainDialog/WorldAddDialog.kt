@@ -34,6 +34,7 @@ import com.a0100019.mypat.data.room.area.Area
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.world.World
+import com.a0100019.mypat.presentation.ui.component.AutoResizeSingleLineText
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.AddDialogMapImage
 import com.a0100019.mypat.presentation.ui.image.item.AddDialogItemImage
@@ -148,7 +149,9 @@ fun WorldAddDialog(
                                                 onAddPatClick(id)
                                             }
                                         )
-                                        Text(allPatDataList[index].name)
+                                        AutoResizeSingleLineText(
+                                            text = allPatDataList[index].name,
+                                        )
                                         Text(text = selectedOrder)
                                     }
 
@@ -180,7 +183,9 @@ fun WorldAddDialog(
                                                 onAddItemClick(id)
                                             }
                                         )
-                                        Text(allItemDataList[index].name)
+                                        AutoResizeSingleLineText(
+                                            text = allItemDataList[index].name,
+                                        )
                                         Text(text = selectedOrder)
                                     }
 
@@ -218,7 +223,9 @@ fun WorldAddDialog(
                                                 onAddShadowClick(id)
                                             }
                                         )
-                                        Text(allShadowDataList[index].name)
+                                        AutoResizeSingleLineText(
+                                            text = allShadowDataList[index].name,
+                                        )
                                         Text(text = selectedOrder)
                                     }
 
@@ -243,7 +250,9 @@ fun WorldAddDialog(
                                             areaData = allAreaDataList[index],
                                             onAddMapImageClick = onSelectMapImageClick
                                         )
-                                        Text(allAreaDataList[index].name)
+                                        AutoResizeSingleLineText(
+                                            text = allAreaDataList[index].name,
+                                        )
                                         if (isSelected) {
                                             Text("선택")
                                         } else {

@@ -66,7 +66,7 @@ fun DiaryWriteScreen(
             onDismissRequest = { showExitDialog = false },
             title = {
                 Text(
-                    text = "작성 중인 일기가 있어요",
+                    text = "작성 중인 메모가 있어요",
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()
                     )
@@ -142,7 +142,7 @@ fun DiaryWriteScreen(
                 .padding(16.dp)
         ) {
             Text(
-                text = "일기장",
+                text = "메모장",
                 style = MaterialTheme.typography.displayMedium,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)

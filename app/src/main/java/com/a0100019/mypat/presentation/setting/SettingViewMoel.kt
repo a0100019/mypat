@@ -784,9 +784,68 @@ class SettingViewModel @Inject constructor(
     }
 
     fun onRecommendationSubmitClick() = intent {
+        val myTag = userDao.getValue2ById("auth")
+        val forTag = state.editText.trim()
 
+        if (myTag == forTag) {
+            postSideEffect(SettingSideEffect.Toast("본인을 추천할 수 없습니다."))
+            return@intent
+        }
 
+        val tagDocRef  = Firebase.firestore.collection("tag").document("tag")
+        val recoDocRef = Firebase.firestore.collection("code").document("recommendation")
+        val letterDocRef = Firebase.firestore.collection("code").document("letter")
 
+        try {
+            // 1) forTag가 태그 문서의 "키"인지 확인
+            val tagSnapshot = tagDocRef.get().await()
+            val existsAsKey = (tagSnapshot.data as? Map<String, Any>)?.containsKey(forTag) == true
+            if (!existsAsKey) {
+                postSideEffect(SettingSideEffect.Toast("존재하지 않는 태그입니다."))
+                return@intent
+            }
+
+            // 🔒 서로 추천 금지 체크: recommendation에서 forTag: myTag 가 이미 존재하면 금지
+            val recoSnapshot = recoDocRef.get().await()
+            val recoMap = recoSnapshot.data as? Map<String, Any> ?: emptyMap()
+            val reciprocal = (recoMap[forTag] as? String) == myTag
+            if (reciprocal) {
+                postSideEffect(SettingSideEffect.Toast("서로 추천할 수 없습니다."))
+                return@intent
+            }
+
+            // 2) 추천 등록: recommendation 문서에 myTag: forTag
+            recoDocRef.update(myTag, forTag).await()
+            postSideEffect(SettingSideEffect.Toast("#$forTag 님을 추천하였습니다. +5햇살"))
+            reduce { state.copy(recommending = forTag) }
+
+            // 3) letter 문서에 맵 필드 추가 (키 = yyyyMMdd + forTag)
+            val today = java.time.LocalDate.now(java.time.ZoneId.of("Asia/Seoul"))
+                .format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd"))
+            val todayDate = java.time.LocalDate.now(java.time.ZoneId.of("Asia/Seoul"))
+                .format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+
+            val letterFieldKey = today + forTag // 예: 2025091244
+            val letterValue = mapOf(
+                "amount" to "10",
+                "date" to todayDate,
+                "link" to "0",
+                "message" to "안녕하세요 이웃님!\n\n#$myTag 님의 추천을 받았습니다. 하루마을을 위해 애써주셔서 진심으로 감사합니다. 이웃님의 정성과 마음이 헛되지 않도록, 하루마을은 앞으로도 꾸준히 성장하며 더 따뜻한 공간이 되겠습니다. 언제나 함께해주셔서 고맙습니다.",
+                "reward" to "money",
+                "state" to "open",
+                "title" to "추천인 보상"
+            )
+            letterDocRef.update(letterFieldKey, letterValue).await()
+
+            userDao.update(
+                id = "money",
+                value = (state.userDataList.find { it.id == "money" }!!.value.toInt() + 5).toString()
+            )
+
+        } catch (e: Exception) {
+            android.util.Log.e("recommendation", "처리 실패", e)
+            postSideEffect(SettingSideEffect.Toast("처리 중 오류가 발생했습니다."))
+        }
     }
 
 
