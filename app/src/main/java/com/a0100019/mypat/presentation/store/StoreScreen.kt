@@ -37,6 +37,7 @@ import com.a0100019.mypat.data.room.area.Area
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
+import com.a0100019.mypat.domain.AppBgmManager
 import com.a0100019.mypat.presentation.index.IndexItemDialog
 import com.a0100019.mypat.presentation.index.IndexAreaDialog
 import com.a0100019.mypat.presentation.index.IndexPatDialog
@@ -162,11 +163,14 @@ fun StoreScreen(
     }
 
     if (selectAreaData != null) {
+        AppBgmManager.pause()
         ItemSelectDialog(
             onCloseClick = onItemSelectCloseClick,
             onSelectClick = onItemSelectClick,
             itemData = "${selectAreaData.url}@${selectAreaData.name}"
         )
+    } else {
+        AppBgmManager.play()
     }
 
     // 다이얼로그 표시

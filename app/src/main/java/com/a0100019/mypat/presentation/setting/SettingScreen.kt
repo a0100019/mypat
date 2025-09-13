@@ -1,5 +1,6 @@
 package com.a0100019.mypat.presentation.setting
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
@@ -41,6 +42,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.letter.Letter
+import com.a0100019.mypat.domain.AppBgmManager
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
@@ -252,6 +254,26 @@ fun SettingScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
+            val context = LocalContext.current
+            val prefs = context.getSharedPreferences("bgm_prefs", Context.MODE_PRIVATE)
+            var bgmOn = prefs.getBoolean("bgmOn", true)
+
+            MainButton(
+                text = "bgm 켜기 / 끄기",
+                onClick = {
+                    if (bgmOn) {
+                        AppBgmManager.pause()
+                        prefs.edit().putBoolean("bgmOn", false).apply()
+                        bgmOn = prefs.getBoolean("bgmOn", true)
+                    } else {
+                        AppBgmManager.play()
+                        prefs.edit().putBoolean("bgmOn", true).apply()
+                        bgmOn = prefs.getBoolean("bgmOn", true)
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -273,7 +295,6 @@ fun SettingScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
             Divider()
-
 
             Box(
                 modifier = Modifier

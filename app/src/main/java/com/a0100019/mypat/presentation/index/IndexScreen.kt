@@ -63,6 +63,7 @@ import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.area.Area
 import com.a0100019.mypat.data.room.pat.Pat
+import com.a0100019.mypat.domain.AppBgmManager
 import com.a0100019.mypat.presentation.ui.component.AutoResizeSingleLineText
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
@@ -142,11 +143,14 @@ fun IndexScreen(
             itemData = allItemDataList.getOrNull(dialogItemIndex)!!
         )
     } else if(dialogAreaIndex != -1 && typeChange == "area") {
+        AppBgmManager.pause()
         IndexAreaDialog(
             onClose = onCloseDialog,
             open = allAreaDataList.getOrNull(dialogAreaIndex)!!.date != "0",
             areaData = allAreaDataList.getOrNull(dialogAreaIndex)!!
         )
+    } else {
+        AppBgmManager.play()
     }
 
     Surface(

@@ -166,7 +166,7 @@ fun LoginScreen(
     Box {
 
         JustImage(
-            filePath = "etc/loginScreen.png",
+            filePath = "etc/background3.png",
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.FillBounds
         )

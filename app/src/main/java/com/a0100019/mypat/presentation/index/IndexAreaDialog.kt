@@ -28,6 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.data.room.area.Area
+import com.a0100019.mypat.presentation.ui.MusicPlayer
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
@@ -38,6 +39,11 @@ fun IndexAreaDialog(
     areaData: Area,
     open: Boolean = true
 ) {
+
+    MusicPlayer(
+        music = areaData.url
+    )
+
     Dialog(onDismissRequest = onClose) {
         Box(
             modifier = Modifier
@@ -135,18 +141,16 @@ fun IndexAreaDialog(
     }
 }
 
-
-
-    @Preview(showBackground = true)
-    @Composable
-    fun IndexMapDialogPreview() {
-        MypatTheme {
-            IndexAreaDialog(
-                onClose = {},
-                areaData = Area(
-                    url = "area/forest.jpg",
-                    name = "숲",
-                    ),
-            )
-        }
+@Preview(showBackground = true)
+@Composable
+fun IndexMapDialogPreview() {
+    MypatTheme {
+        IndexAreaDialog(
+            onClose = {},
+            areaData = Area(
+                url = "area/forest.jpg",
+                name = "숲",
+                ),
+        )
     }
+}

@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.a0100019.mypat.presentation.ui.MusicPlayer
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
@@ -31,6 +32,7 @@ fun ItemSelectDialog(
     onSelectClick: () -> Unit,
     itemData: String,
 ) {
+
     Dialog(
         onDismissRequest = onCloseClick
     ) {
@@ -62,6 +64,13 @@ fun ItemSelectDialog(
                 )
 
                 val part = itemData.split("@")
+
+                MusicPlayer(
+                    music = part[0]
+                )
+                MusicPlayer(
+                    music = part[1]
+                )
 
                 Box {
                     JustImage(

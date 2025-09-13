@@ -36,35 +36,46 @@ fun JustImage(
     @SuppressLint("ModifierParameter") modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Fit,
     repetition: Boolean = false, // 한바퀴 후 역재생 할 것인지
-    isPlaying: Boolean = true
+    isPlaying: Boolean = true,
+    playOnce: Boolean = false    // 🔹 새로 추가: 딱 한 번만 재생
 ) {
     if (filePath.endsWith(".json")) {
         val composition by rememberLottieComposition(LottieCache.get(filePath))
 
-        if (repetition) {
-
-            val progress by animateLottieCompositionAsState(
-                composition = composition,
-                isPlaying = isPlaying,
-                restartOnPlay = false,
-                reverseOnRepeat = true,
-                iterations = Int.MAX_VALUE
-            )
-
-            LottieAnimation(
-                composition = composition,
-                progress = { progress },
-                modifier = modifier,
-                contentScale = contentScale
-            )
-        } else {
-            LottieAnimation(
-                composition = composition,
-                iterations = Int.MAX_VALUE,
-                modifier = modifier,
-                contentScale = contentScale,
-                isPlaying = isPlaying
-            )
+        when {
+            playOnce -> { // 🔹 한 번만 재생
+                LottieAnimation(
+                    composition = composition,
+                    iterations = 1,
+                    modifier = modifier,
+                    contentScale = contentScale,
+                    isPlaying = isPlaying
+                )
+            }
+            repetition -> { // 🔹 무한 반복 + 역재생
+                val progress by animateLottieCompositionAsState(
+                    composition = composition,
+                    isPlaying = isPlaying,
+                    restartOnPlay = false,
+                    reverseOnRepeat = true,
+                    iterations = Int.MAX_VALUE
+                )
+                LottieAnimation(
+                    composition = composition,
+                    progress = { progress },
+                    modifier = modifier,
+                    contentScale = contentScale
+                )
+            }
+            else -> { // 🔹 무한 반복
+                LottieAnimation(
+                    composition = composition,
+                    iterations = Int.MAX_VALUE,
+                    modifier = modifier,
+                    contentScale = contentScale,
+                    isPlaying = isPlaying
+                )
+            }
         }
     } else {
         val context = LocalContext.current
@@ -86,13 +97,10 @@ fun JustImage(
                 modifier = modifier,
                 contentScale = contentScale
             )
-        } else {
-//            Box(contentAlignment = Alignment.Center) {
-//                Text("?")
-//            }
         }
     }
 }
+
 
 object LottieCache {
     private val cache = mutableMapOf<String, LottieCompositionSpec>()

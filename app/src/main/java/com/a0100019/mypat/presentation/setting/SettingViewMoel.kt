@@ -36,6 +36,7 @@ import com.a0100019.mypat.data.room.walk.getWalkInitialData
 import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.data.room.world.WorldDao
 import com.a0100019.mypat.data.room.world.getWorldInitialData
+import com.a0100019.mypat.domain.AppBgmManager
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue

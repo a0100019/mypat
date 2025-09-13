@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.item.Item
+import com.a0100019.mypat.presentation.ui.MusicPlayer
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
@@ -40,6 +41,11 @@ fun IndexItemDialog(
     itemData: Item,
     open: Boolean = true
 ) {
+
+    MusicPlayer(
+        music = itemData.name
+    )
+
     Dialog(
         onDismissRequest = onClose
     ) {

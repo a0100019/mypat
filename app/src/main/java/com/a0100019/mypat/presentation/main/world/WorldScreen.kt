@@ -1,5 +1,6 @@
 package com.a0100019.mypat.presentation.main.world
 
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -33,6 +34,7 @@ import com.a0100019.mypat.data.room.area.Area
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.world.World
+import com.a0100019.mypat.domain.AppBgmManager
 import com.a0100019.mypat.presentation.main.mainDialog.ItemSettingDialog
 import com.a0100019.mypat.presentation.ui.image.item.DraggableItemImage
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
@@ -362,17 +364,25 @@ fun WorldScreen(
 
                     Spacer(modifier = Modifier.weight(0.2f))
 
+                    val context = LocalContext.current
+
                     Row(
-                        modifier = Modifier
-                            .weight(0.4f)
+                        modifier = Modifier.weight(0.4f)
                     ) {
                         MainButton(
-                            modifier = Modifier
-                                .fillMaxWidth(0.6f),
-                            onClick = onWorldSelectClick,
+                            modifier = Modifier.fillMaxWidth(0.6f),
+                            onClick = {
+                                //노래 변경
+                                AppBgmManager.changeTrack(context, mapUrl) // ✅ context 전달
+                                val prefs = context.getSharedPreferences("bgm_prefs", Context.MODE_PRIVATE)
+                                prefs.edit().putString("bgm", mapUrl).apply()
+
+                                onWorldSelectClick()
+                            },
                             text = "확인"
                         )
                     }
+
                 }
 
             }

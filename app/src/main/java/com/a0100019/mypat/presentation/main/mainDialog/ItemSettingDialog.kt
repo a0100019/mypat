@@ -71,12 +71,20 @@ fun ItemSettingDialog(
                     style = MaterialTheme.typography.headlineMedium
                     )
 
+                val sizeRatio = when (itemData.sizeFloat/itemData.minFloat) {
+                    in 0.9..1.1 -> "1"
+                    in 1.15..1.35 -> "1.25"
+                    in 1.4..1.6 -> "1.5"
+                    in 1.65..1.85 -> "1.75"
+                    in 1.9..2.1 -> "2"
+                    else -> "??"
+                }
                 Text(
-                    text = "현재 크기 : ${itemData.sizeFloat.toDouble()}",
-                    modifier = Modifier
-                        .padding(bottom = 12.dp)
+                    text = "현재 크기 ： ｘ$sizeRatio",
+                    style = MaterialTheme.typography.titleMedium
                 )
 
+                Spacer(modifier = Modifier.size(16.dp))
 
                 Row(
                     modifier = Modifier

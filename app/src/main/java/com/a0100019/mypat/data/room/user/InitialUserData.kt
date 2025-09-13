@@ -10,7 +10,7 @@ fun getUserInitialData(): List<User> {
         User(id = "item", value = "10", value2 = "3", value3 = "1"),
         User(id = "name", value = "유저"),
         User(id = "auth"), //uid, 테그, timeStemp
-        User(id = "etc"), // page, 커뮤니티업데이트날짜
+        User(id = "etc"), // page, 커뮤니티업데이트날짜, 음악 켜기끄기
         User(id = "firstGame"), //
         User(id = "secondGame"), //
         User(id = "thirdGame"), //1은 쉬움, 2는 보통, 3은 어려움 개수

@@ -1,5 +1,6 @@
 package com.a0100019.mypat.presentation.main.management
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -22,6 +23,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import com.a0100019.mypat.R
+import com.a0100019.mypat.domain.AppBgmManager
 import com.a0100019.mypat.presentation.daily.walk.RequestPermissionScreen
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
@@ -33,14 +36,29 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // 🔹 SharedPreferences에서 track 불러오기 (기본값 "aa")
+        val prefs = getSharedPreferences("bgm_prefs", Context.MODE_PRIVATE)
+        val bgm = prefs.getString("bgm", "area/forest.jpg")
+        val bgmOn = prefs.getBoolean("bgmOn", true)
+
+        // 🔹 앱 전역 배경음악 시작 (앱 켜질 때 딱 한 번만 실행)
+        AppBgmManager.init(
+            context = this,
+            name = bgm!!,
+            loop = true,
+            volume = 0.4f
+        )
+
+        if (!bgmOn) AppBgmManager.pause()
+
         setContent {
             val configuration = LocalConfiguration.current
             val screenWidth = configuration.screenWidthDp
             val screenHeight = configuration.screenHeightDp
 
             val aspectRatio = screenWidth.toFloat() / screenHeight.toFloat()
-            val minRatio = 9f / 22f // 약 0.409
-            val maxRatio = 9f / 17f // 약 0.6
+            val minRatio = 9f / 22f
+            val maxRatio = 9f / 17f
 
             MypatTheme {
                 Surface(
@@ -51,7 +69,6 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
-
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -60,45 +77,24 @@ class MainActivity : ComponentActivity() {
 
                         when {
                             aspectRatio < minRatio -> {
-                                // 세로가 너무 긴 경우 → 최소 비율(9:22)에 맞춰서 보여줌
                                 Box(
                                     modifier = Modifier
                                         .fillMaxHeight()
                                         .aspectRatio(minRatio)
-                                        .border(
-                                            width = 2.dp, // 테두리 두께
-                                            color = Color.Red // 테두리 색상
-                                        )
-                                        .shadow(
-                                            elevation = 8.dp, // 그림자 크기
-                                            shape = RectangleShape, // 직각 유지
-                                            clip = false
-                                        )
-                                ) {
-                                    MainNavHost()
-                                }
+                                        .border(2.dp, Color.Red)
+                                        .shadow(8.dp, RectangleShape, clip = false)
+                                ) { MainNavHost() }
                             }
                             aspectRatio > maxRatio -> {
-                                // 가로가 너무 넓은 경우 → 최대 비율(9:15)에 맞춰서 보여줌
                                 Box(
                                     modifier = Modifier
                                         .fillMaxHeight()
                                         .aspectRatio(maxRatio)
-                                        .border(
-                                            width = 1.dp, // 테두리 두께
-                                            color = Color.Black // 테두리 색상
-                                        )
-                                        .shadow(
-                                            elevation = 8.dp, // 그림자 크기
-                                            shape = RectangleShape, // 직각 유지
-                                            clip = false
-                                        )
-                                ) {
-                                    MainNavHost()
-                                }
+                                        .border(1.dp, Color.Black)
+                                        .shadow(8.dp, RectangleShape, clip = false)
+                                ) { MainNavHost() }
                             }
                             else -> {
-                                // 정상 범위 → 꽉 채워서 보여줌
                                 MainNavHost()
                             }
                         }
@@ -111,12 +107,21 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         hideSystemUI()
+
+        val prefs = getSharedPreferences("bgm_prefs", Context.MODE_PRIVATE)
+        val bgmOn = prefs.getBoolean("bgmOn", true)
+        if(bgmOn){ AppBgmManager.play() }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        AppBgmManager.pause()
     }
 
     private fun hideSystemUI() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         val controller = WindowInsetsControllerCompat(window, window.decorView)
-        controller.hide(WindowInsetsCompat.Type.systemBars()) // 상태바 + 내비게이션바 숨기기
+        controller.hide(WindowInsetsCompat.Type.systemBars())
         controller.systemBarsBehavior =
             WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
     }

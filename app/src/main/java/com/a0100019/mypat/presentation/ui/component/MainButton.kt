@@ -37,6 +37,8 @@ import androidx.compose.ui.unit.dp
 import com.a0100019.mypat.R
 import androidx.annotation.DrawableRes
 import androidx.compose.ui.unit.Dp
+import com.a0100019.mypat.presentation.ui.MusicPlayer
+import com.a0100019.mypat.presentation.ui.SfxPlayer
 
 @Composable
 fun MainButton(
@@ -56,6 +58,7 @@ fun MainButton(
         targetValue = if (isPressed) 0.95f else 1f,
         label = "scale"
     )
+    val context = androidx.compose.ui.platform.LocalContext.current
 
     Surface(
         shape = RoundedCornerShape(16.dp),
@@ -69,7 +72,10 @@ fun MainButton(
             .clickable(
                 interactionSource = interactionSource,
                 indication = null, // 👈 눌렀을 때 색 효과 완전히 제거
-                onClick = onClick
+                onClick = {
+                    onClick()
+                    SfxPlayer.play(context, R.raw.bubble)
+                }
             )
     ) {
         Column(

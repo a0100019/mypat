@@ -32,6 +32,7 @@ import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pat.Pat
+import com.a0100019.mypat.presentation.ui.MusicPlayer
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.image.etc.LoveHorizontalLine
@@ -52,6 +53,10 @@ fun LovePatDialog(
     cashAmount: Int = 0
     
 ) {
+
+    MusicPlayer(
+        music = lovePatData.name
+    )
 
     Dialog(
         onDismissRequest = {  }
@@ -104,13 +109,23 @@ fun LovePatDialog(
                         modifier = Modifier
                             .align(Alignment.Center)
                     )
+
                     if(situation == "lovePatSuccess") {
                         JustImage(
                             filePath = "etc/heart_effect.json",
                             modifier = Modifier
-                                .align(Alignment.Center)
+                                .align(Alignment.Center),
+                            playOnce = true
+                        )
+                        MusicPlayer(
+                            id = R.raw.slime8
+                        )
+                    } else if(situation == "lovePatFail") {
+                        MusicPlayer(
+                            id = R.raw.short7
                         )
                     }
+
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Image(
                             painter = painterResource(id = R.drawable.heart),
@@ -206,6 +221,7 @@ fun LovePatDialog(
                         Row(
                             modifier = Modifier
                                 .padding(10.dp)
+                                .align(Alignment.BottomCenter)
                             ,
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center
@@ -240,8 +256,7 @@ fun LovePatDialog(
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier
                             )
-
-
+                            
                         }
                     }
 
@@ -308,7 +323,7 @@ fun LovePatDialogPreview() {
             onLovePatNextClick = {},
             onLovePatStopClick = {},
             loveAmount = 100,
-            situation = "lovePatSuccess"
+            situation = "lovePatFail"
         )
     }
 }

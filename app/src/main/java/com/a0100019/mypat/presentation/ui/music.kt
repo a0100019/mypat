@@ -1,7 +1,9 @@
 package com.a0100019.mypat.presentation.ui
 
+import android.content.Context
 import android.media.MediaPlayer
 import android.util.Log
+import androidx.annotation.RawRes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -11,28 +13,33 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import com.a0100019.mypat.R
+import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 
 @Composable
 fun MusicPlayer(
-    id: Int = 0,         // 리소스 직접 입력
-    music: String = "", // 리소스 이름 입력
-    isLooping: Boolean = false // 반복 여부
+    id: Int = 0,
+    music: String = "",
+    isLooping: Boolean = false
 ) {
     val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
     var mediaPlayer: MediaPlayer? by remember { mutableStateOf(null) }
 
-    if(id != 0) {
-
-        LaunchedEffect(id, isLooping) { // 값이 바뀌면 다시 실행
+    if (id != 0) {
+        LaunchedEffect(id, isLooping) {
             mediaPlayer?.release()
-            mediaPlayer = MediaPlayer.create(context, id)
-            mediaPlayer?.isLooping = isLooping
-            mediaPlayer?.start()
+            mediaPlayer = MediaPlayer.create(context, id).apply {
+                this.isLooping = isLooping
+                start()
+            }
         }
-
     } else {
 
         val resId = when(music) {
+            //펫
             "고양이" -> R.raw.cry_cat
             "강아지" -> R.raw.cry_dog2
             "춤추는 말랑이" -> R.raw.slime9
@@ -70,16 +77,23 @@ fun MusicPlayer(
             "어둠 유령" -> R.raw.scary5
             "마법 소녀" -> R.raw.magic
 
+            //아이템
+
+            //맵
+            //MainActivity 랑 맞추기, 맵은 area/forest.png -> 이런식으로
+            "area/forest.jpg" -> R.raw.bgm_positive
+            "area/beach.jpg" -> R.raw.bgm_fun
+
             else -> null
         }
 
         LaunchedEffect(resId, isLooping) {
             mediaPlayer?.release()
-
             if (resId != null) {
-                mediaPlayer = MediaPlayer.create(context, resId)
-                mediaPlayer?.isLooping = isLooping
-                mediaPlayer?.start()
+                mediaPlayer = MediaPlayer.create(context, resId).apply {
+                    this.isLooping = isLooping
+                    start()
+                }
             } else {
                 mediaPlayer = null
                 Log.d("music", "해당하는 사운드 없음 → 소리 재생 안 함")
@@ -87,10 +101,34 @@ fun MusicPlayer(
         }
     }
 
-    DisposableEffect(Unit) {
+    // 🔹 앱이 백그라운드(ON_STOP) 되면 일시정지, 포그라운드(ON_START)면 재개(원하면 주석 처리)
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_STOP -> mediaPlayer?.pause()   // 홈 키로 나가면 멈춤
+                Lifecycle.Event.ON_DESTROY -> {
+                    mediaPlayer?.release()
+                    mediaPlayer = null
+                }
+                // 필요 시 복귀 시 자동 재생 원치 않으면 아래 ON_START는 빼세요
+                Lifecycle.Event.ON_START -> if (isLooping) mediaPlayer?.start()
+                else -> Unit
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
         onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
             mediaPlayer?.release()
+            mediaPlayer = null
         }
     }
+}
 
+
+object SfxPlayer {
+    fun play(context: Context, @RawRes resId: Int) {
+        val mp = MediaPlayer.create(context, resId)
+        mp.setOnCompletionListener { it.release() }
+        mp.start()
+    }
 }

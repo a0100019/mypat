@@ -1,6 +1,7 @@
 package com.a0100019.mypat.presentation.main
 
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
@@ -36,6 +37,7 @@ import com.a0100019.mypat.data.room.letter.Letter
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.world.World
+import com.a0100019.mypat.domain.AppBgmManager
 import com.a0100019.mypat.presentation.ui.MusicPlayer
 import com.a0100019.mypat.presentation.main.mainDialog.LovePatDialog
 import com.a0100019.mypat.presentation.main.management.ManagementViewModel
@@ -171,6 +173,16 @@ fun MainScreen(
 
     ) {
 
+    val context = LocalContext.current
+    val prefs = context.getSharedPreferences("bgm_prefs", Context.MODE_PRIVATE)
+    val bgm = prefs.getString("bgm", "area/forest.jpg")
+
+    if(bgm != mapUrl) {
+        //노래 변경
+        AppBgmManager.changeTrack(context, mapUrl) // ✅ context 전달
+        prefs.edit().putString("bgm", mapUrl).apply()
+    }
+
     when(situation) {
         "letter" -> LetterViewDialog(
             onClose = {},
@@ -202,6 +214,10 @@ fun MainScreen(
     ) {
 
         BackGroundImage()
+
+//        MusicPlayer(
+//            id = R.raw.bgm_positive
+//        )
 
         Column (
             modifier = Modifier
