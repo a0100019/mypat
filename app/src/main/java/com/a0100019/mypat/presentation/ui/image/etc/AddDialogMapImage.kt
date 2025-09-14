@@ -5,7 +5,9 @@ import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.a0100019.mypat.data.room.area.Area
@@ -30,36 +33,31 @@ fun AddDialogMapImage(
     areaData: Area,
     onAddMapImageClick: (String) -> Unit
 ) {
-
-    if(areaData.url.takeLast(4) == "json") {
+    if (areaData.url.takeLast(4) == "json") {
 
         val composition by rememberLottieComposition(LottieCache.get(areaData.url))
 
-        // LottieAnimation을 클릭 가능한 Modifier로 감쌉니다.
         LottieAnimation(
             composition = composition,
             iterations = Int.MAX_VALUE,
             modifier = Modifier
-                .size(50.dp)
+                .fillMaxWidth() // 원하는 크기 비율로 조절
+                .aspectRatio(1f / 1.25f) // 🔹 1:1.25 비율 강제
                 .clickable {
                     onAddMapImageClick(areaData.id.toString())
                 }
         )
 
     } else {
-
         val context = LocalContext.current
-
-        // State to hold the bitmap
         var bitmap by remember { mutableStateOf<Bitmap?>(null) }
 
-        // Load the bitmap whenever filePath changes
         LaunchedEffect(areaData.url) {
             bitmap = try {
                 val inputStream = context.assets.open(areaData.url)
                 BitmapFactory.decodeStream(inputStream)
             } catch (e: Exception) {
-                null // Handle errors gracefully
+                null
             }
         }
 
@@ -68,22 +66,22 @@ fun AddDialogMapImage(
                 bitmap = bitmap!!.asImageBitmap(),
                 contentDescription = "Asset Image",
                 modifier = Modifier
-                    .size(50.dp)
+                    .fillMaxWidth()
+                    .aspectRatio(1f / 1.25f) // 🔹 동일하게 1:1.25 강제
                     .clickable {
                         onAddMapImageClick(areaData.id.toString())
-                    }
+                    },
+                contentScale = ContentScale.FillBounds // 이미지가 꽉 차도록
             )
         } else {
-            // Placeholder while loading or on error
             Box(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1f / 1.25f),
                 contentAlignment = Alignment.Center
             ) {
                 Text("Loading...")
             }
         }
-
     }
-
-
 }

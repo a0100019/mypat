@@ -267,9 +267,15 @@ fun WorldAddDialog(
                     }
                 }
 
-                Text(
-                    text = "숫자가 높을 수록 상단에 배치됩니다"
-                )
+                if(addDialogChange != "area"){
+                    Text(
+                        text = "숫자가 높을 수록 상단에 배치됩니다"
+                    )
+                } else {
+                    Text(
+                        text = "맵 변경을 완료하면 배경 음악이 변경됩니다"
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -308,7 +314,7 @@ fun WorldAddDialogPreview() {
             onClose = {},
             allPatDataList = listOf(Pat(url = "pat/cat.json", name = "고양이"), Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json")),
             allItemDataList = listOf(Item(url = "item/airplane.json", name = "책상")),
-            addDialogChange = "pat",
+            addDialogChange = "area",
             onAddDialogChangeClick = {},
             allAreaDataList = listOf(Area()),
             mapWorldData = World(id = 1),

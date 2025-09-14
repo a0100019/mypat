@@ -81,8 +81,43 @@ fun MusicPlayer(
 
             //맵
             //MainActivity 랑 맞추기, 맵은 area/forest.png -> 이런식으로
-            "area/forest.jpg" -> R.raw.bgm_positive
-            "area/beach.jpg" -> R.raw.bgm_fun
+            "area/normal.png" -> R.raw.bgm_positive2
+            "area/normal_sakura.png" -> R.raw.bgm_calm3
+            "area/normal_snow.png" -> R.raw.bgm_christmas
+            "area/fall.png" -> R.raw.bgm_positive5
+            "area/city_sun2.png" -> R.raw.bgm_dark
+            "area/war2.png" -> R.raw.bgm_awesome4
+            "area/christmas3.png" -> R.raw.bgm_christmas3
+            "area/cemetery.png" -> R.raw.bgm_nervous
+            "area/island_sky.png" -> R.raw.bgm_positive4
+            "area/christmas2.png" -> R.raw.bgm_christmas4
+
+            "area/universe.png" -> R.raw.bgm_fun4
+            "area/japan.png" -> R.raw.bgm_japan
+            "area/city_dark.png" -> R.raw.bgm_dark2
+            "area/china2.png" -> R.raw.bgm_china
+            "area/night_sky.png" -> R.raw.bgm_nervous3
+            "area/ice_hot.png" -> R.raw.bgm_awesome5
+            "area/house.png" -> R.raw.bgm_fun2
+            "area/neon.png" -> R.raw.bgm_fun6
+            "area/forest_beautiful.png" -> R.raw.bgm_calm
+            "area/winter3.png" -> R.raw.bgm_christmas2
+
+            "area/rain_train.png" -> R.raw.bgm_dark3
+            "area/hell.png" -> R.raw.bgm_awesome
+            "area/house_normal1.png" -> R.raw.bgm_positive
+            "area/kingdom.png" -> R.raw.bgm_positive3
+            "area/hospital_dark.png" -> R.raw.bgm_scary
+            "area/ice_heaven.png" -> R.raw.bgm_awesome3
+            "area/house_dark.png" -> R.raw.bgm_nervous2
+            "area/old_ice.png" -> R.raw.bgm_awesome2
+            "area/house_pink1.png" -> R.raw.bgm_positive6
+            "area/wall.png" -> R.raw.bgm_fun5
+
+            "area/sea_sun.png" -> R.raw.bgm_calm4
+            "area/earthquake.png" -> R.raw.bgm_fun3
+            "area/jelly.png" -> R.raw.bgm_fun
+            "area/forest_magic.png" -> R.raw.bgm_calm2
 
             else -> null
         }

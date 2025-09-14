@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -79,7 +80,7 @@ fun IndexAreaDialog(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .aspectRatio(1f)
+                        .aspectRatio(1f/1.25f)
                         .background(
                             color = if (open) {
                                 MaterialTheme.colorScheme.scrim
@@ -100,6 +101,8 @@ fun IndexAreaDialog(
                         filePath = areaData.url,
                         modifier = Modifier
                             .clip(shape = RoundedCornerShape(16.dp))
+                        ,
+                       contentScale = ContentScale.FillBounds
                         )
                     if(!open) {
                         Box(
@@ -148,7 +151,7 @@ fun IndexMapDialogPreview() {
         IndexAreaDialog(
             onClose = {},
             areaData = Area(
-                url = "area/forest.jpg",
+                url = "area/kingdom.png",
                 name = "숲",
                 ),
         )

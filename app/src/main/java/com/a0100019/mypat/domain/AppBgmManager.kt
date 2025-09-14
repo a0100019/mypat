@@ -13,11 +13,45 @@ object AppBgmManager {
 
     // 이름 -> 리소스 매핑만 여기서 관리하면 됨
     private val nameToRes: Map<String, Int> = mapOf(
-        "area/forest.jpg" to R.raw.bgm_positive,
-        "area/beach.jpg" to R.raw.bgm_fun,
-        // 필요하면 추가
-        // "카페" to R.raw.bgm_cafe,
-        // "해변" to R.raw.bgm_beach,
+
+        "area/normal.png" to R.raw.bgm_positive2,
+        "area/normal_sakura.png" to R.raw.bgm_calm3,
+        "area/normal_snow.png" to R.raw.bgm_christmas,
+        "area/fall.png" to R.raw.bgm_positive5,
+        "area/city_sun2.png" to R.raw.bgm_dark,
+        "area/war2.png" to R.raw.bgm_awesome4,
+        "area/christmas3.png" to R.raw.bgm_christmas3,
+        "area/cemetery.png" to R.raw.bgm_nervous,
+        "area/island_sky.png" to R.raw.bgm_positive4,
+        "area/christmas2.png" to R.raw.bgm_christmas4,
+
+        "area/universe.png" to R.raw.bgm_fun4,
+        "area/japan.png" to R.raw.bgm_japan,
+        "area/city_dark.png" to R.raw.bgm_dark2,
+        "area/china2.png" to R.raw.bgm_china,
+        "area/night_sky.png" to R.raw.bgm_nervous3,
+        "area/ice_hot.png" to R.raw.bgm_awesome5,
+        "area/house.png" to R.raw.bgm_fun2,
+        "area/neon.png" to R.raw.bgm_fun6,
+        "area/forest_beautiful.png" to R.raw.bgm_calm,
+        "area/winter3.png" to R.raw.bgm_christmas2,
+
+        "area/rain_train.png" to R.raw.bgm_dark3,
+        "area/hell.png" to R.raw.bgm_awesome,
+        "area/house_normal1.png" to R.raw.bgm_positive,
+        "area/kingdom.png" to R.raw.bgm_positive3,
+        "area/hospital_dark.png" to R.raw.bgm_scary,
+        "area/ice_heaven.png" to R.raw.bgm_awesome3,
+        "area/house_dark.png" to R.raw.bgm_nervous2,
+        "area/old_ice.png" to R.raw.bgm_awesome2,
+        "area/house_pink1.png" to R.raw.bgm_positive6,
+        "area/wall.png" to R.raw.bgm_fun5,
+
+        "area/sea_sun.png" to R.raw.bgm_calm4,
+        "area/earthquake.png" to R.raw.bgm_fun3,
+        "area/jelly.png" to R.raw.bgm_fun,
+        "area/forest_magic.png" to R.raw.bgm_calm2,
+
     )
 
     /** 이름으로 초기화 */

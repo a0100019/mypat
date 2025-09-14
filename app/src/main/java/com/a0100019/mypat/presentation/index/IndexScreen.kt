@@ -533,7 +533,7 @@ fun IndexScreen(
                                                 color = MaterialTheme.colorScheme.primaryContainer,
                                                 shape = RoundedCornerShape(16.dp)
                                             )
-                                            .aspectRatio(0.75f),
+                                            .aspectRatio(0.7f),
                                         shape = RoundedCornerShape(16.dp),
                                         colors = CardDefaults.cardColors(
                                             containerColor = MaterialTheme.colorScheme.scrim
@@ -549,6 +549,7 @@ fun IndexScreen(
                                             ) {
                                                 Box(
                                                     modifier = Modifier
+                                                        .aspectRatio(1f/1.25f)
                                                         .fillMaxWidth()
                                                         .background(
                                                             color = if (area.date != "0")
@@ -566,6 +567,7 @@ fun IndexScreen(
                                                 ) {
                                                     JustImage(
                                                         filePath = area.url,
+                                                        contentScale = ContentScale.FillBounds,
                                                         modifier = Modifier.clip(
                                                             RoundedCornerShape(
                                                                 16.dp
@@ -588,7 +590,6 @@ fun IndexScreen(
                                                 AutoResizeSingleLineText(
                                                     text = area.name,
                                                     modifier = Modifier
-                                                        .padding(top = 10.dp)
                                                         .fillMaxWidth()
                                                 )
                                             }
@@ -705,9 +706,9 @@ fun IndexScreenPreview() {
         IndexScreen(
             allPatDataList = listOf(Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json")),
             allItemDataList = listOf(Item(url = "item/airplane.json")),
-            allAreaDataList = listOf(Area(url = "area/forest.jpg")),
+            allAreaDataList = listOf(Area(url = "area/kingdom.png", name = "aa")),
             onTypeChangeClick = {},
-            typeChange = "pat",
+            typeChange = "area",
             dialogPatIndex = -1,
             onCloseDialog = {},
             onCardClick = {},
