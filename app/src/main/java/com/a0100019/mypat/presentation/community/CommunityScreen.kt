@@ -43,6 +43,7 @@ import com.a0100019.mypat.data.room.allUser.AllUser
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
+import com.a0100019.mypat.domain.AppBgmManager
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
@@ -147,6 +148,7 @@ fun CommunityScreen(
     ) {
 
     if(clickAllUserData.tag != "0") {
+        AppBgmManager.pause()
         CommunityUserDialog(
             onClose = { onUserWorldClick(0) },
             clickAllUserData = clickAllUserData,
@@ -162,6 +164,8 @@ fun CommunityScreen(
             allUserDataList = allUserDataList,
             allMapCount = allAreaCount
         )
+    } else {
+        AppBgmManager.play()
     }
 
     if(situation == "update") {
@@ -226,8 +230,6 @@ fun CommunityScreen(
                         modifier = Modifier.align(Alignment.CenterEnd)
                     )
                 }
-
-
 
                 when (situation) {
                     "world" -> Column(

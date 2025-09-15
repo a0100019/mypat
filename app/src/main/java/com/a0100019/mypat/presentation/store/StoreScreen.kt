@@ -237,7 +237,7 @@ fun StoreScreen(
                     "아이템을 뽑으시겠습니까?" -> onItemStoreClick()
                     "펫 공간을 늘리겠습니까?" -> onPatRoomUpClick()
                     "아이템 공간을 늘리겠습니까?" -> onItemRoomUpClick()
-                    "가능한 닉네임입니다 변경하겠습니까?" -> onNameChangeClick()
+                    "부적절한 닉네임일 경우 경고 없이 제제를 받을 수 있습니다. 변경하겠습니까?" -> onNameChangeClick()
                     "화폐를 변경하겠습니까?" -> onMoneyChangeClick()
                 }
                 onSimpleDialog("")
@@ -670,40 +670,6 @@ fun StoreScreen(
                     ) {
                         Box {
 
-                            //                        Row(
-                            //                            modifier = Modifier
-                            //                                .align(Alignment.CenterStart)
-                            //                        ) {
-                            //                            Spacer(modifier = Modifier.size(10.dp))
-                            //                            JustImage(
-                            //                                filePath = "pat/cat.json",
-                            //                                modifier = Modifier
-                            //                                    .size(50.dp)
-                            //                                    .rotate(10f)
-                            //                            )
-                            //                        }
-                            //
-                            //                        Row(
-                            //                            modifier = Modifier
-                            //                                .align(Alignment.CenterEnd)
-                            //                        ) {
-                            //                            JustImage(
-                            //                                filePath = "pat/cat.json",
-                            //                                modifier = Modifier
-                            //                                    .size(40.dp)
-                            //                                    .rotate(-10f)
-                            //                                    .align(Alignment.Bottom)
-                            //                            )
-                            //                            JustImage(
-                            //                                filePath = "pat/cat.json",
-                            //                                modifier = Modifier
-                            //                                    .size(30.dp)
-                            //                                    .rotate(10f)
-                            //                                    .align(Alignment.Top)
-                            //                            )
-                            //                            Spacer(modifier = Modifier.size(width = 10.dp, height = 50.dp))
-                            //                        }
-
                             Column(
                                 modifier = Modifier
                                     .padding(8.dp)
@@ -837,7 +803,7 @@ fun StoreScreen(
                                 ) {
                                     Text(
                                         text =
-                                        if (userData.find { it.id == "name" }?.value == "이웃") "0" else "5",
+                                        if (userData.find { it.id == "name" }?.value == "이웃") "0" else "3",
                                         style = MaterialTheme.typography.titleMedium,
                                         modifier = Modifier,
                                     )

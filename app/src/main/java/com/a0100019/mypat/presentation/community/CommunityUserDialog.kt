@@ -34,6 +34,7 @@ import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.data.room.allUser.AllUser
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pat.Pat
+import com.a0100019.mypat.presentation.ui.MusicPlayer
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.image.item.WorldItemImage
@@ -52,6 +53,10 @@ fun CommunityUserDialog(
     allUserDataList: List<AllUser> = emptyList(),
     allMapCount: String = "0"
 ) {
+
+    MusicPlayer(
+        music = clickAllUserData.area
+    )
 
     Dialog(
         onDismissRequest = onClose
@@ -76,7 +81,8 @@ fun CommunityUserDialog(
                 modifier = Modifier
                     .fillMaxSize()
                 ,
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
 
                 // 이름, 좋아요
@@ -112,7 +118,7 @@ fun CommunityUserDialog(
 
                 Surface(
                     modifier = Modifier
-                        .weight(1f)
+                        .fillMaxWidth()
                         .aspectRatio(1f / 1.25f)
                         .padding(start = 6.dp, end = 6.dp),
                     shape = RoundedCornerShape(16.dp),
@@ -177,7 +183,8 @@ fun CommunityUserDialog(
 
                 Column(
                     modifier = Modifier
-                        .weight(0.6f),
+                        .padding(start = 6.dp, end = 6.dp)
+                    ,
                     verticalArrangement = Arrangement.SpaceEvenly
                 ) {
                     Surface(
@@ -193,23 +200,25 @@ fun CommunityUserDialog(
                         tonalElevation = 2.dp,
                         color = MaterialTheme.colorScheme.scrim
                     ) {
+
                         Column(
                             modifier = Modifier
-                                .padding(horizontal = 16.dp, vertical = 12.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
+                                .padding(12.dp)
                         ) {
-                            Text(
-                                text = "도감",
-                                style = MaterialTheme.typography.titleLarge,
-                                modifier = Modifier
-                                    .padding(bottom = 6.dp)
-                            )
-
                             Row(
-                                horizontalArrangement = Arrangement.SpaceAround,
+                                horizontalArrangement = Arrangement.SpaceBetween,
                                 modifier = Modifier
                                     .fillMaxWidth()
+                                ,
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
+
+                                Text(
+                                    text = "도감",
+                                    style = MaterialTheme.typography.titleLarge,
+                                    modifier = Modifier
+                                )
+
                                 Row {
                                     Text(
                                         text = "펫",
@@ -250,39 +259,26 @@ fun CommunityUserDialog(
                                 }
                             }
 
-                        }
-                    }
-
-                    Surface(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .border(
-                                width = 2.dp,
-                                color = MaterialTheme.colorScheme.primaryContainer,
-                                shape = RoundedCornerShape(16.dp)
-                            )
-                        ,
-                        shape = RoundedCornerShape(16.dp),
-                        tonalElevation = 2.dp,
-                        color = MaterialTheme.colorScheme.scrim
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .padding(horizontal = 16.dp, vertical = 12.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(
-                                text = "게임",
-                                style = MaterialTheme.typography.titleLarge,
-                                modifier = Modifier
-                                    .padding(bottom = 6.dp)
+                            Divider(
+                                color = Color.LightGray,
+                                thickness = 1.dp,
+                                modifier = Modifier.padding(start = 2.dp, end = 2.dp, top = 2.dp, bottom = 2.dp)
                             )
 
                             Row(
-                                horizontalArrangement = Arrangement.SpaceAround,
+                                horizontalArrangement = Arrangement.SpaceBetween,
                                 modifier = Modifier
                                     .fillMaxWidth()
+                                ,
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
+
+                                Text(
+                                    text = "게임",
+                                    style = MaterialTheme.typography.titleLarge,
+                                    modifier = Modifier
+                                )
+
                                 Row {
                                     Text(
                                         text = "슈팅",
@@ -330,24 +326,20 @@ fun CommunityUserDialog(
                                 }
                             }
 
-                            Divider(
-                                color = Color.LightGray,
-                                thickness = 1.dp,
-                                modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 8.dp)
-                            )
-
-                            Text(
-                                text = "스도쿠",
-                                style = MaterialTheme.typography.titleMedium,
-                                modifier = Modifier
-                                    .padding(top = 8.dp, bottom = 6.dp)
-                            )
-
                             Row(
-                                horizontalArrangement = Arrangement.SpaceAround,
+                                horizontalArrangement = Arrangement.SpaceBetween,
                                 modifier = Modifier
                                     .fillMaxWidth()
+                                ,
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
+
+                                Text(
+                                    text = "스도쿠",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    modifier = Modifier
+                                )
+
                                 Row {
                                     Text(
                                         text = "쉬움",
@@ -419,7 +411,52 @@ fun CommunityUserDialog(
 
                             }
 
+                            Divider(
+                                color = Color.LightGray,
+                                thickness = 1.dp,
+                                modifier = Modifier.padding(start = 2.dp, end = 2.dp, top = 2.dp, bottom = 2.dp)
+                            )
+
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceAround,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                ,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+
+                                Row {
+                                    Text(
+                                        text = "마을 탄생일",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier
+                                            .padding(end = 6.dp)
+                                    )
+                                    Text(
+                                        text = clickAllUserData.firstDate,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier
+                                    )
+                                }
+
+                                Row {
+                                    Text(
+                                        text = "접속일",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier
+                                            .padding(end = 6.dp)
+                                    )
+                                    Text(
+                                        text = "${clickAllUserData.totalDate}일",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier
+                                    )
+                                }
+
+                            }
+
                         }
+
                     }
                 }
 
@@ -428,6 +465,7 @@ fun CommunityUserDialog(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
+                        .padding(start = 6.dp, end = 6.dp)
                 ) {
 
                     JustImage(
@@ -438,29 +476,6 @@ fun CommunityUserDialog(
                             }
                             .size(15.dp)
                     )
-
-//                    Row(
-//                        modifier = Modifier
-//                            .padding(8.dp)
-//                            .clip(RoundedCornerShape(12.dp))
-//                            .background(Color(0xFFF9F3EA))  // 부드러운 배경색
-//                            .clickable { onLikeClick() }
-//                            .padding(horizontal = 16.dp, vertical = 12.dp)
-//                        ,
-//                        verticalAlignment = Alignment.CenterVertically
-//                    ) {
-//                        JustImage(
-//                            filePath = "etc/arrow.png",
-//                            modifier = Modifier
-//                                .size(25.dp)
-//                        )
-//                        Spacer(modifier = Modifier.width(12.dp))  // 아이콘과 텍스트 사이 간격
-//                        Text(
-//                            text = "좋아요를 눌러주세요",
-//                            style = MaterialTheme.typography.titleMedium,
-//                            color = Color(0xFF333333)
-//                        )
-//                    }
 
                     MainButton(
                         text = "좋아요 누르기",

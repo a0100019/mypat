@@ -373,7 +373,7 @@ fun MainScreen(
 
             Column(
                 modifier = Modifier
-                    .weight(0.3f)
+                    .weight(0.25f)
                     .padding(12.dp)
                 ,
                 verticalArrangement = Arrangement.Bottom

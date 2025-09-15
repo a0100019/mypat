@@ -81,9 +81,9 @@ class StoreViewModel @Inject constructor(
                 val allOpenPatDataList = patDao.getAllOpenPatData()
                 val allOpenItemDataList = itemDao.getAllOpenItemData()
 
-                val patPrice = allOpenPatDataList.size * 2
-                val itemPrice = allOpenItemDataList.size * 200
-                val patSpacePrice = userDataList.find { it.id == "pat" }!!.value2.toInt() * 2000
+                val patPrice = 1 + allOpenPatDataList.size/2
+                val itemPrice = 500 + allOpenItemDataList.size/10 * 100
+                val patSpacePrice = userDataList.find { it.id == "pat" }!!.value2.toInt() * 3000
                 val itemSpacePrice = userDataList.find { it.id == "item" }!!.value2.toInt() * 1000
 
                 // UI 상태 업데이트 (Main Dispatcher에서 실행)
@@ -213,7 +213,7 @@ class StoreViewModel @Inject constructor(
             else -> {
                 reduce {
                     state.copy(
-                        simpleDialogState = "가능한 닉네임입니다 변경하겠습니까?"
+                        simpleDialogState = "부적절한 닉네임일 경우 경고 없이 제제를 받을 수 있습니다. 변경하겠습니까?"
                     )
                 }
             }
@@ -225,18 +225,25 @@ class StoreViewModel @Inject constructor(
 
         val moneyField = state.userData.find { it.id == "money" }
 
-        if(moneyField!!.value.toInt() >= 3) {
+        if(state.userData.find{it.id == "name"}!!.value != "이웃"){
+            if (moneyField!!.value.toInt() >= 3) {
 
-            moneyField.value = (moneyField.value.toInt() - 3).toString()
-            userDao.update(id = moneyField.id, value = moneyField.value)
+                moneyField.value = (moneyField.value.toInt() - 3).toString()
+                userDao.update(id = moneyField.id, value = moneyField.value)
 
+                userDao.update("name", value = state.newName)
+                postSideEffect(StoreSideEffect.Toast("닉네임이 변경되었습니다."))
+                loadData()
+                onDialogCloseClick()
+
+            } else {
+                postSideEffect(StoreSideEffect.Toast("돈이 부족합니다!"))
+            }
+        } else {
             userDao.update("name", value = state.newName)
             postSideEffect(StoreSideEffect.Toast("닉네임이 변경되었습니다."))
             loadData()
             onDialogCloseClick()
-
-        } else {
-            postSideEffect(StoreSideEffect.Toast("돈이 부족합니다!"))
         }
 
     }

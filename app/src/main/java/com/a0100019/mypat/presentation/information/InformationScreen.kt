@@ -77,8 +77,6 @@ fun InformationScreen(
         )
 }
 
-
-
 @Composable
 fun InformationScreen(
     areaUrl : String,
@@ -105,7 +103,7 @@ fun InformationScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(start = 24.dp, end = 24.dp, top = 16.dp, bottom = 16.dp),
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -143,9 +141,8 @@ fun InformationScreen(
             // 미니맵 뷰
             Surface(
                 modifier = Modifier
-                    .weight(1f)
                     .aspectRatio(1f / 1.25f)
-                    .padding(start = 6.dp, end = 6.dp),
+                ,
                 shape = RoundedCornerShape(16.dp),
                 color = Color(0xFFFFF8E7),
                 border = BorderStroke(2.dp, MaterialTheme.colorScheme.primaryContainer),
@@ -216,7 +213,7 @@ fun InformationScreen(
 
             Column(
                 modifier = Modifier
-                    .weight(0.6f),
+                ,
                 verticalArrangement = Arrangement.SpaceEvenly
             ) {
                 Surface(
@@ -289,27 +286,12 @@ fun InformationScreen(
                             }
                         }
 
-                    }
-                }
-
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .border(
-                            width = 2.dp,
-                            color = MaterialTheme.colorScheme.primaryContainer,
-                            shape = RoundedCornerShape(16.dp)
+                        Divider(
+                            color = Color.LightGray,
+                            thickness = 1.dp,
+                            modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 8.dp, bottom = 8.dp)
                         )
-                    ,
-                    shape = RoundedCornerShape(16.dp),
-                    tonalElevation = 2.dp,
-                    color = MaterialTheme.colorScheme.scrim
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp, vertical = 12.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
+                        
                         Text(
                             text = "게임",
                             style = MaterialTheme.typography.titleLarge,
@@ -441,6 +423,7 @@ fun InformationScreen(
 
                     }
                 }
+
             }
 
             Row(

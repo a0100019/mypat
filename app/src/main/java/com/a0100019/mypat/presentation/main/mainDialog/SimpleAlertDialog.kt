@@ -75,7 +75,8 @@ fun SimpleAlertDialog(
 
                 Text(
                     text = text,
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium,
+                    textAlign = TextAlign.Center
                 )
 
                 Spacer(modifier = Modifier.size(32.dp))

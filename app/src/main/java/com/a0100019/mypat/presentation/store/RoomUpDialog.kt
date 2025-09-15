@@ -64,7 +64,7 @@ fun RoomUpDialog(
                     )
 
                     Text(
-                        text = "최대 10칸",
+                        text = "최대 5칸",
                         style = MaterialTheme.typography.headlineMedium,
                         modifier = Modifier
                             .padding(32.dp)
