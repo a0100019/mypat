@@ -46,6 +46,12 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Surface
@@ -166,7 +172,7 @@ fun LoginScreen(
     Box {
 
         JustImage(
-            filePath = "etc/background3.png",
+            filePath = "etc/background.png",
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.FillBounds
         )
@@ -179,6 +185,13 @@ fun LoginScreen(
                 verticalArrangement = Arrangement.Bottom,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+
+
+                TextFlash(
+                    text = "하루마을에 오신 것을 환영합니다!",
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
 
                 Surface(
                     modifier = Modifier
@@ -279,11 +292,6 @@ fun LoginScreen(
                 }
 
                 Spacer(modifier = Modifier.size(20.dp))
-
-                Text(
-                    text = "하루마을에 오신 것을 환영합니다!",
-                )
-
             }
 
             "login" -> Column(
@@ -295,15 +303,33 @@ fun LoginScreen(
                 verticalArrangement = Arrangement.Bottom,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = "화면 터치해서 시작",
-                    style = MaterialTheme.typography.headlineLarge
-                )
+                TextFlash("화면 터치해서 시작")
                 Spacer(modifier = Modifier.size(70.dp))
 
             }
         }
     }
+}
+
+@Composable
+fun TextFlash(text: String) {
+    // 무한 반복 애니메이션
+    val infiniteTransition = rememberInfiniteTransition(label = "blink")
+    val alpha by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = 0f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 1000, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "alphaAnim"
+    )
+
+    Text(
+        text = text,
+        style = MaterialTheme.typography.headlineSmall,
+        modifier = Modifier.alpha(alpha) // 🔹 투명도 적용
+    )
 }
 
 @Preview(showBackground = true)

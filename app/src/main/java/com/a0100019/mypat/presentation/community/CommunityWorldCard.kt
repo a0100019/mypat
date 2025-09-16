@@ -67,7 +67,7 @@ fun CommunityWorldCard(
             }
             .clickable(
                 interactionSource = interactionSource,
-                indication = rememberRipple(bounded = true, color = Color.White),
+                indication = null,
                 onClick = onClick
             )
             .border(

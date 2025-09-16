@@ -301,7 +301,7 @@ fun SettingScreen(
                     .weight(1f)
             ) {
                 Text(
-                    text = "하루마을을 이용해주셔서 감사합니다\nㅡ제작자ㅡ",
+                    text = "하루마을을 이용해주셔서 감사합니다",
                     textAlign = TextAlign.Center,
                     modifier = Modifier.align(Alignment.Center)
                 )

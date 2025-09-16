@@ -195,7 +195,7 @@ fun KoreanScreen(
                                 }
                                 .clickable(
                                     interactionSource = interactionSource,
-                                    indication = rememberRipple(bounded = true, color = Color.White),
+                                    indication = null,
                                     onClick = { onKoreanClick(koreanData) }
                                 )
                                 .padding(horizontal = 16.dp, vertical = 8.dp)
@@ -299,7 +299,6 @@ fun KoreanScreen(
                                 )
                             }
                         }
-
 
                     }
 

@@ -164,7 +164,7 @@ fun DailyScreen(
                             }
                             .clickable(
                                 interactionSource = interactionSource,
-                                indication = rememberRipple(bounded = true, color = Color.White),
+                                indication = null,
                                 onClick = onWalkNavigateClick
                             )
                             .padding(top = 6.dp, bottom = 6.dp)
@@ -223,7 +223,7 @@ fun DailyScreen(
                             }
                             .clickable(
                                 interactionSource = interactionSource,
-                                indication = rememberRipple(bounded = true, color = Color.White),
+                                indication = null,
                                 onClick = onEnglishNavigateClick
                             )
                             .padding(top = 6.dp, bottom = 6.dp)
@@ -282,7 +282,7 @@ fun DailyScreen(
                             }
                             .clickable(
                                 interactionSource = interactionSource,
-                                indication = rememberRipple(bounded = true, color = Color.White),
+                                indication = null,
                                 onClick = onKoreanNavigateClick
                             )
                             .padding(top = 6.dp, bottom = 6.dp)
@@ -341,7 +341,7 @@ fun DailyScreen(
                             }
                             .clickable(
                                 interactionSource = interactionSource,
-                                indication = rememberRipple(bounded = true, color = Color.White),
+                                indication = null,
                                 onClick = onDiaryNavigateClick
                             )
                             .padding(top = 6.dp, bottom = 6.dp)

@@ -64,7 +64,7 @@ fun CommunityUserDialog(
         Box(
             modifier = Modifier
                 .width(340.dp)
-                .fillMaxHeight(0.9f)
+//                .fillMaxHeight(0.9f)
                 .shadow(12.dp, RoundedCornerShape(24.dp))
                 .border(
                     width = 2.dp,
@@ -79,7 +79,7 @@ fun CommunityUserDialog(
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
+//                    .fillMaxSize()
                 ,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceBetween
@@ -120,7 +120,7 @@ fun CommunityUserDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .aspectRatio(1f / 1.25f)
-                        .padding(start = 6.dp, end = 6.dp),
+                        .padding(start = 6.dp, end = 6.dp, top = 6.dp, bottom = 6.dp),
                     shape = RoundedCornerShape(16.dp),
                     color = Color(0xFFFFF8E7),
                     border = BorderStroke(2.dp, MaterialTheme.colorScheme.primaryContainer),
@@ -134,7 +134,8 @@ fun CommunityUserDialog(
                     )
 
                     BoxWithConstraints(
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier
+                            .fillMaxSize()
                     ) {
                         val density = LocalDensity.current
 
@@ -465,7 +466,7 @@ fun CommunityUserDialog(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 6.dp, end = 6.dp)
+                        .padding(start = 6.dp, end = 6.dp, top = 6.dp)
                 ) {
 
                     JustImage(

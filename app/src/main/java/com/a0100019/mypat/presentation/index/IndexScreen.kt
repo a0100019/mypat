@@ -256,6 +256,8 @@ fun IndexScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f)
+                        ,
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         pageList.chunked(3).forEach { rowItems ->
                             Row(modifier = Modifier.fillMaxWidth()) {
@@ -271,14 +273,11 @@ fun IndexScreen(
                                     Card(
                                         modifier = Modifier
                                             .weight(1f)
-                                            .padding(6.dp)
+                                            .padding(start = 8.dp, end = 8.dp, top = 4.dp, bottom = 4.dp)
                                             .graphicsLayer { scaleX = scale; scaleY = scale }
                                             .clickable(
                                                 interactionSource = interactionSource,
-                                                indication = rememberRipple(
-                                                    bounded = true,
-                                                    color = Color.White
-                                                ),
+                                                indication = null,
                                                 onClick = {
                                                     onCardClick(
                                                         start + rowItems.indexOf(pat) + (pageList.indexOf(
@@ -376,6 +375,8 @@ fun IndexScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f)
+                        ,
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         pageList.chunked(3).forEachIndexed { rowIdx, rowItems ->
                             Row(modifier = Modifier.fillMaxWidth()) {
@@ -392,14 +393,11 @@ fun IndexScreen(
                                     Card(
                                         modifier = Modifier
                                             .weight(1f)
-                                            .padding(6.dp)
+                                            .padding(start = 8.dp, end = 8.dp, top = 4.dp, bottom = 4.dp)
                                             .graphicsLayer { scaleX = scale; scaleY = scale }
                                             .clickable(
                                                 interactionSource = interactionSource,
-                                                indication = rememberRipple(
-                                                    bounded = true,
-                                                    color = Color.White
-                                                ),
+                                                indication = null,
                                                 onClick = { onCardClick(originalIndex) } // ✅ 역순 계산 없음
                                             )
                                             .border(
@@ -501,7 +499,8 @@ fun IndexScreen(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .weight(1f)
+                            .weight(1f),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         pageList.chunked(3).forEach { rowItems ->
                             Row(modifier = Modifier.fillMaxWidth()) {
@@ -518,14 +517,11 @@ fun IndexScreen(
                                     Card(
                                         modifier = Modifier
                                             .weight(1f)
-                                            .padding(6.dp)
+                                            .padding(start = 8.dp, end = 8.dp, top = 4.dp, bottom = 4.dp)
                                             .graphicsLayer { scaleX = scale; scaleY = scale }
                                             .clickable(
                                                 interactionSource = interactionSource,
-                                                indication = rememberRipple(
-                                                    bounded = true,
-                                                    color = Color.White
-                                                ),
+                                                indication = null,
                                                 onClick = { onCardClick(originalIndex) } // ✅ 역순 계산 없음
                                             )
                                             .border(
@@ -533,13 +529,17 @@ fun IndexScreen(
                                                 color = MaterialTheme.colorScheme.primaryContainer,
                                                 shape = RoundedCornerShape(16.dp)
                                             )
-                                            .aspectRatio(0.7f),
+                                            .aspectRatio(1f/1.35f)
+                                        ,
                                         shape = RoundedCornerShape(16.dp),
                                         colors = CardDefaults.cardColors(
                                             containerColor = MaterialTheme.colorScheme.scrim
                                         ),
                                     ) {
-                                        Box(Modifier.fillMaxSize()) {
+                                        Box(
+                                            Modifier
+//                                                .fillMaxSize()
+                                        ) {
                                             Column(
                                                 modifier = Modifier
                                                     .fillMaxSize()
@@ -549,7 +549,7 @@ fun IndexScreen(
                                             ) {
                                                 Box(
                                                     modifier = Modifier
-                                                        .aspectRatio(1f/1.25f)
+                                                        .aspectRatio(1f/1.2f)
                                                         .fillMaxWidth()
                                                         .background(
                                                             color = if (area.date != "0")
@@ -706,7 +706,7 @@ fun IndexScreenPreview() {
         IndexScreen(
             allPatDataList = listOf(Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json")),
             allItemDataList = listOf(Item(url = "item/airplane.json")),
-            allAreaDataList = listOf(Area(url = "area/kingdom.png", name = "aa")),
+            allAreaDataList = listOf(Area(url = "area/kingdom.png", name = "aa"),Area(url = "area/kingdom.png", name = "aa"),Area(url = "area/kingdom.png", name = "aa"),Area(url = "area/kingdom.png", name = "aa"),Area(url = "area/kingdom.png", name = "aa"),Area(url = "area/kingdom.png", name = "aa"),Area(url = "area/kingdom.png", name = "aa"),Area(url = "area/kingdom.png", name = "aa")),
             onTypeChangeClick = {},
             typeChange = "area",
             dialogPatIndex = -1,

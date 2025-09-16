@@ -193,10 +193,7 @@ fun EnglishScreen(
                                 }
                                 .clickable(
                                     interactionSource = interactionSource,
-                                    indication = rememberRipple(
-                                        bounded = true,
-                                        color = Color.White
-                                    ),
+                                    indication = null,
                                     onClick = { onEnglishClick(englishData) }
                                 )
                                 .padding(horizontal = 16.dp, vertical = 8.dp)

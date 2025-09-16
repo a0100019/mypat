@@ -112,7 +112,7 @@ fun CommunityScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CommunityScreen(
-    situation : String = "world",
+    situation : String = "chat",
     patDataList: List<Pat> = emptyList(),
     itemDataList: List<Item> = emptyList(),
     allUserDataList: List<AllUser> = emptyList(),
@@ -324,7 +324,7 @@ fun CommunityScreen(
                                 shape = RoundedCornerShape(16.dp)
                             )
                             .background(
-                                color = MaterialTheme.colorScheme.onSecondary,
+                                color = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.7f),
                                 shape = RoundedCornerShape(16.dp)
                             )
                     ) {

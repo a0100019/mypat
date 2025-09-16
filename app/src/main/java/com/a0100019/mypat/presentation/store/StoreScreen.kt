@@ -347,7 +347,7 @@ fun StoreScreen(
                             }
                             .clickable(
                                 interactionSource = interactionSource,
-                                indication = rememberRipple(bounded = true, color = Color.White),
+                                indication = null,
                                 onClick = { onSimpleDialog("펫을 뽑으시겠습니까?") }
                             )
                             .padding(top = 6.dp, bottom = 6.dp)
@@ -448,7 +448,7 @@ fun StoreScreen(
                             }
                             .clickable(
                                 interactionSource = interactionSource,
-                                indication = rememberRipple(bounded = true, color = Color.White),
+                                indication = null,
                                 onClick = { onSimpleDialog("아이템을 뽑으시겠습니까?") }
                             )
                             .padding(top = 6.dp, bottom = 6.dp)
@@ -555,7 +555,7 @@ fun StoreScreen(
                             }
                             .clickable(
                                 interactionSource = interactionSource,
-                                indication = rememberRipple(bounded = true, color = Color.White),
+                                indication = null,
                                 onClick = { onSimpleDialog("펫 공간을 늘리겠습니까?") }
                             )
                             .padding(top = 6.dp, bottom = 6.dp)
@@ -663,7 +663,7 @@ fun StoreScreen(
                             }
                             .clickable(
                                 interactionSource = interactionSource,
-                                indication = rememberRipple(bounded = true, color = Color.White),
+                                indication = null,
                                 onClick = { onSimpleDialog("아이템 공간을 늘리겠습니까?") }
                             )
                             .padding(top = 6.dp, bottom = 6.dp)
@@ -737,7 +737,7 @@ fun StoreScreen(
                             }
                             .clickable(
                                 interactionSource = interactionSource,
-                                indication = rememberRipple(bounded = true, color = Color.White),
+                                indication = null,
                                 onClick = { changeShowDialog("name") }
                             )
                             .padding(top = 6.dp, bottom = 6.dp)
@@ -840,7 +840,7 @@ fun StoreScreen(
                             }
                             .clickable(
                                 interactionSource = interactionSource,
-                                indication = rememberRipple(bounded = true, color = Color.White),
+                                indication = null,
                                 onClick = { onSimpleDialog("화폐를 변경하겠습니까?") }
                             )
                             .padding(top = 6.dp, bottom = 6.dp)
