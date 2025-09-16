@@ -32,9 +32,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
+import com.a0100019.mypat.presentation.ui.MusicPlayer
+import com.a0100019.mypat.presentation.ui.SfxPlayer
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
@@ -112,6 +115,12 @@ fun ThirdGameScreen(
     newGame: () -> Unit,
 ) {
 
+    val context = LocalContext.current
+
+    MusicPlayer(
+        id = R.raw.short11
+    )
+
     when(gameState) {
         "설정" -> ThirdGameStartDialog(
             patData = patData,
@@ -128,11 +137,19 @@ fun ThirdGameScreen(
             level = level
         )
         "newGame" -> SimpleAlertDialog(
-            onConfirm = newGame,
+            onConfirm = {
+                newGame()
+                },
             onDismiss = {
                 onStateChangeClick("")
             },
             text = "게임을 새로 시작하시겠습니까?"
+        )
+    }
+
+    when(gameState) {
+        "성공" -> MusicPlayer(
+            id = R.raw.hands3
         )
     }
 
@@ -317,6 +334,7 @@ fun ThirdGameScreen(
                                 } else {
                                     onNumberClick(index + 1)
                                 }
+                                SfxPlayer.play(context, R.raw.slime5)
                             },
                         textAlign = TextAlign.Center // 텍스트를 가운데 정렬
                     )

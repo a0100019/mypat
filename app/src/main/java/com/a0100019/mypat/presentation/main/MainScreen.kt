@@ -124,7 +124,8 @@ fun MainScreen(
         loveAmount = mainState.loveAmount,
         cashAmount = mainState.cashAmount,
         timer = mainState.timer,
-        itemDataWithShadowList = mainState.itemDataWithShadowList
+        itemDataWithShadowList = mainState.itemDataWithShadowList,
+        musicTrigger = mainState.musicTrigger
 
     )
 
@@ -170,7 +171,7 @@ fun MainScreen(
     cashAmount: Int = 0,
     timer: String,
     itemDataWithShadowList: List<Item> = emptyList(),
-
+    musicTrigger: Int = 0,
     ) {
 
     val context = LocalContext.current
@@ -204,7 +205,8 @@ fun MainScreen(
             onLovePatNextClick = onLovePatNextClick,
             onLovePatStopClick = onLovePatStopClick,
             loveAmount = loveAmount,
-            cashAmount = cashAmount
+            cashAmount = cashAmount,
+            musicTrigger = musicTrigger
         )
     }
 

@@ -138,7 +138,7 @@ fun LetterViewDialog(
                                     text = if (clickLetterData.state == "read") {
                                         " 확인 "
                                     } else {
-                                        " 확인 (${clickLetterData.reward} +${clickLetterData.amount}) "
+                                        " 확인 (${if(clickLetterData.reward == "money") "햇살" else "달빛"} +${clickLetterData.amount}) "
                                     }
 
                                 )

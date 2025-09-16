@@ -28,6 +28,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
+import com.a0100019.mypat.presentation.ui.MusicPlayer
+import com.a0100019.mypat.presentation.ui.SfxPlayer
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.component.XmlButton
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
@@ -91,6 +93,8 @@ fun SecondGameScreen(
 
 ) {
 
+    val context = LocalContext.current
+
     if (gameState == "성공" || gameState == "신기록") {
         SecondGameDialog(
             onClose = onGameReStartClick,
@@ -100,6 +104,18 @@ fun SecondGameScreen(
             time = time+plusTime,
             popBackStack = popBackStack,
             plusLove = plusLove
+        )
+    }
+
+    when(gameState) {
+        "성공" -> MusicPlayer(
+            id = R.raw.positive10
+        )
+        "신기록" -> MusicPlayer(
+            id = R.raw.congratulation
+        )
+        "진행" -> MusicPlayer(
+            id = R.raw.bell2
         )
     }
 
@@ -193,25 +209,37 @@ fun SecondGameScreen(
                         ) {
                             XmlButton(
                                 iconResId = R.drawable.arrow,
-                                onClick = { onMoveClick("up") }
+                                onClick = {
+                                    onMoveClick("up")
+                                    SfxPlayer.play(context, R.raw.bubble)
+                                }
                             )
                             Row {
                                 XmlButton(
                                     iconResId = R.drawable.arrow,
                                     rotationDegree = 270f,
-                                    onClick = { onMoveClick("left") }
+                                    onClick = {
+                                        onMoveClick("left")
+                                        SfxPlayer.play(context, R.raw.bubble)
+                                    }
                                 )
                                 Spacer(modifier = Modifier.size(50.dp))
                                 XmlButton(
                                     iconResId = R.drawable.arrow,
                                     rotationDegree = 90f,
-                                    onClick = { onMoveClick("right") }
+                                    onClick = {
+                                        onMoveClick("right")
+                                        SfxPlayer.play(context, R.raw.bubble)
+                                    }
                                 )
                             }
                             XmlButton(
                                 iconResId = R.drawable.arrow,
                                 rotationDegree = 180f,
-                                onClick = { onMoveClick("down") }
+                                onClick = {
+                                    onMoveClick("down")
+                                    SfxPlayer.play(context, R.raw.bubble)
+                                }
                             )
                         }
 
@@ -221,24 +249,36 @@ fun SecondGameScreen(
                             XmlButton(
                                 iconResId = R.drawable.double_arrow,
                                 rotationDegree = 270f,
-                                onClick = { onFastMoveClick("up") }
+                                onClick = {
+                                    onFastMoveClick("up")
+                                    SfxPlayer.play(context, R.raw.laser)
+                                }
                             )
                             Row {
                                 XmlButton(
                                     iconResId = R.drawable.double_arrow,
                                     rotationDegree = 180f,
-                                    onClick = { onFastMoveClick("left") }
+                                    onClick = {
+                                        onFastMoveClick("left")
+                                        SfxPlayer.play(context, R.raw.laser)
+                                    }
                                 )
                                 Spacer(modifier = Modifier.size(50.dp))
                                 XmlButton(
                                     iconResId = R.drawable.double_arrow,
-                                    onClick = { onFastMoveClick("right") }
+                                    onClick = {
+                                        onFastMoveClick("right")
+                                        SfxPlayer.play(context, R.raw.laser)
+                                    }
                                 )
                             }
                             XmlButton(
                                 iconResId = R.drawable.double_arrow,
                                 rotationDegree = 90f,
-                                onClick = { onFastMoveClick("down") }
+                                onClick = {
+                                    onFastMoveClick("down")
+                                    SfxPlayer.play(context, R.raw.laser)
+                                }
                             )
                         }
                     }

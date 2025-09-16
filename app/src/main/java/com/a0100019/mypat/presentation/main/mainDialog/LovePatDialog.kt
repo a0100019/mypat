@@ -50,13 +50,26 @@ fun LovePatDialog(
     onLovePatNextClick: () -> Unit,
     onLovePatStopClick: () -> Unit,
     situation: String,
-    cashAmount: Int = 0
+    cashAmount: Int = 0,
+    musicTrigger: Int = 0
     
 ) {
 
     MusicPlayer(
         music = lovePatData.name
     )
+
+    if(musicTrigger != 0) {
+        if (musicTrigger % 2 == 0) {
+            MusicPlayer(
+                id = R.raw.slime5
+            )
+        } else {
+            MusicPlayer(
+                id = R.raw.slime5
+            )
+        }
+    }
 
     Dialog(
         onDismissRequest = {  }

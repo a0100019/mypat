@@ -37,8 +37,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
+import com.a0100019.mypat.presentation.ui.MusicPlayer
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
@@ -149,6 +151,25 @@ fun FirstGameScreen(
             patData = patData,
             situation = situation,
             plusValue = plusValue
+        )
+    }
+
+    MusicPlayer(
+        id = R.raw.short11
+    )
+
+    when(situation) {
+        "종료" -> MusicPlayer(
+            id = R.raw.short6
+        )
+        "신기록" -> MusicPlayer(
+            id = R.raw.congratulation
+        )
+        "발사중" -> MusicPlayer(
+            id = R.raw.short3
+        )
+        "다음" -> MusicPlayer(
+            R.raw.positive8
         )
     }
 

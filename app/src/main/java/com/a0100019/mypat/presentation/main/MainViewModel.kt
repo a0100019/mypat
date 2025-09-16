@@ -276,11 +276,21 @@ class MainViewModel @Inject constructor(
                     if (newX > 0.4f) {
                         updatedItem =
                             updatedItem.copy(date = (targetItem.date.toInt() + 1).toString())
+                        reduce {
+                            state.copy(
+                                musicTrigger = state.musicTrigger + 1
+                            )
+                        }
                     }
                 } else {
                     if (newX < 0.4f) {
                         updatedItem =
                             updatedItem.copy(date = (targetItem.date.toInt() + 1).toString())
+                        reduce {
+                            state.copy(
+                                musicTrigger = state.musicTrigger + 1
+                            )
+                        }
                     }
                 }
             }
@@ -296,7 +306,10 @@ class MainViewModel @Inject constructor(
 
             if (updatedItem.date.toInt() > 6) {
                 reduce {
-                    state.copy(situation = "lovePatStop")
+                    state.copy(
+                        situation = "lovePatStop",
+                        musicTrigger = 0
+                    )
                 }
                 lovePatCheck(itemId)
             }
@@ -451,7 +464,8 @@ data class MainState(
     val loveItemData3: Item = Item(id = 3, name = "비행기", url = "etc/toy_bear.png", x = 0.7f, y = 0.8f, sizeFloat = 0.2f),
     val loveAmount: Int = 1000,
     val cashAmount: Int = 100,
-    val timer: String = "10:00"
+    val timer: String = "10:00",
+    val musicTrigger: Int = 0
 
     )
 

@@ -187,6 +187,7 @@ class LoginViewModel @Inject constructor(
                             Log.e("login", "저장 실패", e)
                         }
 
+                    newAllUserDataGetAndDataSave()
 
                     Log.e("login", "신규 사용자입니다")
                     postSideEffect(LoginSideEffect.Toast("처음 오신 것을 환영합니다!"))

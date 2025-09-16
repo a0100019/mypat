@@ -184,7 +184,7 @@ fun CommunityUserDialog(
 
                 Column(
                     modifier = Modifier
-                        .padding(start = 6.dp, end = 6.dp)
+                        .padding(start = 6.dp, end = 6.dp, top = 6.dp, bottom = 6.dp)
                     ,
                     verticalArrangement = Arrangement.SpaceEvenly
                 ) {
@@ -263,13 +263,14 @@ fun CommunityUserDialog(
                             Divider(
                                 color = Color.LightGray,
                                 thickness = 1.dp,
-                                modifier = Modifier.padding(start = 2.dp, end = 2.dp, top = 2.dp, bottom = 2.dp)
+                                modifier = Modifier.padding(start = 2.dp, end = 2.dp, top = 4.dp, bottom = 4.dp)
                             )
 
                             Row(
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 modifier = Modifier
                                     .fillMaxWidth()
+                                    .padding(bottom = 4.dp)
                                 ,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
@@ -415,7 +416,7 @@ fun CommunityUserDialog(
                             Divider(
                                 color = Color.LightGray,
                                 thickness = 1.dp,
-                                modifier = Modifier.padding(start = 2.dp, end = 2.dp, top = 2.dp, bottom = 2.dp)
+                                modifier = Modifier.padding(start = 2.dp, end = 2.dp, top = 4.dp, bottom = 4.dp)
                             )
 
                             Row(
