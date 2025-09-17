@@ -173,6 +173,10 @@ fun LoginScreen(
         }
     }
 
+    ExplanationDialog(
+        onClose = onNavigateToMainScreen
+    )
+
     Box {
 
         JustImage(

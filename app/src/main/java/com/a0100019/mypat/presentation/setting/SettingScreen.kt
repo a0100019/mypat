@@ -43,6 +43,7 @@ import androidx.compose.ui.text.style.TextAlign
 import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.letter.Letter
 import com.a0100019.mypat.domain.AppBgmManager
+import com.a0100019.mypat.presentation.login.ExplanationDialog
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
@@ -169,6 +170,10 @@ fun SettingScreen(
             userData = userData,
             onRecommendationSubmitClick = onRecommendationSubmitClick
         )
+
+        "explanation" -> ExplanationDialog(
+            onClose = onClose
+        )
     }
 
     if (clickLetterData.id != 0) {
@@ -258,21 +263,34 @@ fun SettingScreen(
             val prefs = context.getSharedPreferences("bgm_prefs", Context.MODE_PRIVATE)
             var bgmOn = prefs.getBoolean("bgmOn", true)
 
-            MainButton(
-                text = "bgm 켜기 / 끄기",
-                onClick = {
-                    if (bgmOn) {
-                        AppBgmManager.pause()
-                        prefs.edit().putBoolean("bgmOn", false).apply()
-                        bgmOn = prefs.getBoolean("bgmOn", true)
-                    } else {
-                        AppBgmManager.play()
-                        prefs.edit().putBoolean("bgmOn", true).apply()
-                        bgmOn = prefs.getBoolean("bgmOn", true)
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ){
+                MainButton(
+                    text = "bgm 켜기 / 끄기",
+                    onClick = {
+                        if (bgmOn) {
+                            AppBgmManager.pause()
+                            prefs.edit().putBoolean("bgmOn", false).apply()
+                            bgmOn = prefs.getBoolean("bgmOn", true)
+                        } else {
+                            AppBgmManager.play()
+                            prefs.edit().putBoolean("bgmOn", true).apply()
+                            bgmOn = prefs.getBoolean("bgmOn", true)
+                        }
+                    },
+                    modifier = Modifier.weight(1f)
+                )
+
+                Spacer(modifier = Modifier.size(12.dp))
+
+                MainButton(
+                    text = "설명서",
+                    onClick = { onSituationChange("explanation") },
+                    modifier = Modifier.weight(1f)
+                )
+            }
 
             Row(
                 modifier = Modifier

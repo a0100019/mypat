@@ -844,12 +844,10 @@ class SettingViewModel @Inject constructor(
             )
 
         } catch (e: Exception) {
-            android.util.Log.e("recommendation", "처리 실패", e)
+            Log.e("recommendation", "처리 실패", e)
             postSideEffect(SettingSideEffect.Toast("처리 중 오류가 발생했습니다."))
         }
     }
-
-
 
     //입력 가능하게 하는 코드
     @OptIn(OrbitExperimental::class)
