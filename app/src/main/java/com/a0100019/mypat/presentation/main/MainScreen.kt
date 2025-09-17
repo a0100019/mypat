@@ -386,7 +386,7 @@ fun MainScreen(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     MainButton(
-                        text = "일일 루틴",
+                        text = "하루 미션",
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 10.dp),

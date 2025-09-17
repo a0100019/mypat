@@ -150,23 +150,27 @@ fun LoginScreen(
     dialog: String = ""
 ) {
 
-//    MusicPlayer(
-//        R.raw.bmg1
-//    )
-
     // 상태를 remember로 관리해야 UI가 갱신됨
     var termsChecked by remember { mutableStateOf(false) }
     var privacyChecked by remember { mutableStateOf(false) }
 
-    if(dialog == "loginWarning") {
-        LoginWarningDialog(
-            onClose = { dialogChange("") },
-            onConfirmClick = { dialogChange("check") }
-        )
-    } else if(dialog == "terms") {
-        TermsDialog(
-            onClose = { dialogChange("") }
-        )
+    when (dialog) {
+        "loginWarning" -> {
+            LoginWarningDialog(
+                onClose = { dialogChange("") },
+                onConfirmClick = { dialogChange("check") }
+            )
+        }
+        "terms" -> {
+            TermsDialog(
+                onClose = { dialogChange("") }
+            )
+        }
+        "explanation" -> {
+            ExplanationDialog(
+                onClose = onNavigateToMainScreen
+            )
+        }
     }
 
     Box {

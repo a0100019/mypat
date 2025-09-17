@@ -125,7 +125,7 @@ fun DailyScreen(
             ) {
                 // 가운데 텍스트
                 Text(
-                    text = "Daily",
+                    text = "하루 미션",
                     style = MaterialTheme.typography.displaySmall
                 )
 
@@ -186,7 +186,7 @@ fun DailyScreen(
                                     ,
                                 )
                                 Text(
-                                    text = "매일 만보를 걸어 보상을 획득하세요!",
+                                    text = "매일 만보를 걸어 보상을 획득하세요",
                                     style = MaterialTheme.typography.titleMedium,
                                     modifier = Modifier
                                         .padding(bottom = 10.dp)
@@ -252,7 +252,7 @@ fun DailyScreen(
                                     ,
                                 )
                                 Text(
-                                    text = "기회는 무제한이니 걱정하지 마세요!",
+                                    text = "횟수에는 제한이 없습니다, 천천히 생각해봐요",
                                     style = MaterialTheme.typography.titleSmall,
                                     modifier = Modifier,
                                 )
@@ -311,7 +311,7 @@ fun DailyScreen(
                                     ,
                                 )
                                 Text(
-                                    text = "기회는 무제한이니 걱정하지 마세요!",
+                                    text = "횟수에는 제한이 없습니다, 천천히 생각해봐요",
                                     style = MaterialTheme.typography.titleSmall,
                                     modifier = Modifier,
                                 )
