@@ -330,8 +330,15 @@ fun InformationScreen(
                                     modifier = Modifier
                                         .padding(end = 6.dp)
                                 )
+
+                                val secondGameTime = userDataList.find { it.id == "secondGame" }?.value
+
                                 Text(
-                                    text = userDataList.find { it.id == "secondGame" }?.value + "초",
+                                    text = if(secondGameTime != "100000") {
+                                        secondGameTime
+                                    } else {
+                                        "-"
+                                    } + "초",
                                     style = MaterialTheme.typography.bodyMedium,
                                     modifier = Modifier
                                         .padding(end = 6.dp)

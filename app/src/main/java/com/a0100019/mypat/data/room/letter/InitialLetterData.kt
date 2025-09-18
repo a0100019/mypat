@@ -6,7 +6,7 @@ import com.a0100019.mypat.data.room.sudoku.Sudoku
 fun getLetterInitialData(): List<Letter> {
     return listOf(
         //state - waiting, open, read
-        Letter(state = "waiting", title = "시작의 편지", reward = "money", amount = "2",
+        Letter(state = "waiting", title = "시작의 편지", reward = "cash", amount = "1000",
             message = "안녕하세요, 소중한 이웃님!\n" +
                     "\n하루마을의 새로운 주민이 되신 걸 진심으로 환영해요.\n" +
                     "\n꾸준히 일일 미션을 수행하여 햇살을 모아 마을을 예쁘게 꾸며주세요. 이 미션들은 게임 속 즐거움뿐만 아니라, 현실에서도 지식과 습관을 쌓는 데 큰 도움이 된답니다.\n" +
@@ -18,7 +18,7 @@ fun getLetterInitialData(): List<Letter> {
             state = "waiting",
             title = "의 편지",
             reward = "cash",
-            amount = "2000",
+            amount = "3000",
             message = "안녕하세요!!\n" +
                     "\n제가 처음으로 애정도 1레벨이 되다니 너무 너무 기뻐요! 정말 감사해요 무엇보다 저를 아껴주신 덕분이라서 더 감격스러워요. 진심으로 감사드려요.\n" +
                     "\n이제부터는 1레벨을 달성한 기념으로 꾸미기 효과도 사용할 수 있답니다! 꾸미기 모드에 들어가서 저에게 효과를 입혀주시면, 마을이 훨씬 더 활기차고 특별한 공간으로 바뀔 거예요.\n" +

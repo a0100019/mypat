@@ -76,33 +76,33 @@ class InformationViewModel @Inject constructor(
         val allUserDataList = allUserDao.getAllUserDataNoBan()
         val worldDataList = worldDao.getAllWorldData()
 
-        if(allUserDataList.size > 5) {
+        if(allUserDataList.size > 4) {
 
             // 높은 점수가 1등이라고 가정할 때
             val firstGameRank = allUserDataList
-                .map { it.firstGame }        // 점수만 추출
+                .map { it.firstGame }       // 점수만 추출
                 .sortedDescending()          // 높은 점수 순으로 정렬
-                .indexOfFirst { it <= userDataList.find { it.id == "firstGame" }!!.value } + 1  // myScore보다 작거나 같은 첫 점수의 순위
+                .count { it.toInt() > userDataList.find { it.id == "firstGame" }!!.value.toInt() } + 1  // myScore보다 작거나 같은 첫 점수의 순위
 
             val secondGameRank = allUserDataList
                 .map { it.secondGame }        // 점수만 추출
                 .sortedDescending()          // 높은 점수 순으로 정렬
-                .indexOfFirst { it <= userDataList.find { it.id == "secondGame" }!!.value } + 1  // myScore보다 작거나 같은 첫 점수의 순위
+                .count { it.toDouble() < userDataList.find { it.id == "secondGame" }!!.value.toDouble() } + 1  // myScore보다 작거나 같은 첫 점수의 순위
 
             val thirdGameEasyRank = allUserDataList
                 .map { it.thirdGameEasy }        // 점수만 추출
                 .sortedDescending()          // 높은 점수 순으로 정렬
-                .indexOfFirst { it <= userDataList.find { it.id == "thirdGame" }!!.value } + 1  // myScore보다 작거나 같은 첫 점수의 순위
+                .count { it.toInt() > userDataList.find { it.id == "thirdGame" }!!.value.toInt() } + 1  // myScore보다 작거나 같은 첫 점수의 순위
 
             val thirdGameNormalRank = allUserDataList
                 .map { it.thirdGameNormal }        // 점수만 추출
                 .sortedDescending()          // 높은 점수 순으로 정렬
-                .indexOfFirst { it <= userDataList.find { it.id == "thirdGame" }!!.value2 } + 1  // myScore보다 작거나 같은 첫 점수의 순위
+                .count { it.toInt() > userDataList.find { it.id == "thirdGame" }!!.value2.toInt() } + 1  // myScore보다 작거나 같은 첫 점수의 순위
 
             val thirdGameHardRank = allUserDataList
                 .map { it.thirdGameHard }        // 점수만 추출
                 .sortedDescending()          // 높은 점수 순으로 정렬
-                .indexOfFirst { it <= userDataList.find { it.id == "thirdGame" }!!.value3 } + 1  // myScore보다 작거나 같은 첫 점수의 순위
+                .count { it.toInt() > userDataList.find { it.id == "thirdGame" }!!.value3.toInt() } + 1  // myScore보다 작거나 같은 첫 점수의 순위
 
             reduce {
                 state.copy(

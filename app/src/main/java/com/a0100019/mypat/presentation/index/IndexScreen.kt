@@ -1,5 +1,6 @@
 package com.a0100019.mypat.presentation.index
 
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
@@ -106,6 +107,10 @@ fun IndexScreen(
     page: Int = 1
 ) {
 
+    val context = LocalContext.current
+    val prefs = context.getSharedPreferences("bgm_prefs", Context.MODE_PRIVATE)
+    val bgmOn = prefs.getBoolean("bgmOn", true)
+
     // 다이얼로그 표시
     if (dialogPatIndex != -1 && typeChange == "pat") {
         IndexPatDialog(
@@ -127,7 +132,9 @@ fun IndexScreen(
             areaData = allAreaDataList.getOrNull(dialogAreaIndex)!!
         )
     } else {
-        AppBgmManager.play()
+        if (bgmOn) {
+            AppBgmManager.play()
+        }
     }
 
     Surface(

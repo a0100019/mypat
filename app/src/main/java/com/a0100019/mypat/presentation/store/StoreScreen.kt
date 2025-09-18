@@ -1,5 +1,6 @@
 package com.a0100019.mypat.presentation.store
 
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
@@ -33,6 +34,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.area.Area
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pat.Pat
@@ -42,6 +44,8 @@ import com.a0100019.mypat.presentation.index.IndexItemDialog
 import com.a0100019.mypat.presentation.index.IndexAreaDialog
 import com.a0100019.mypat.presentation.index.IndexPatDialog
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
+import com.a0100019.mypat.presentation.ui.MusicPlayer
+import com.a0100019.mypat.presentation.ui.SfxPlayer
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
@@ -147,6 +151,10 @@ fun StoreScreen(
 
 ) {
 
+    val context = LocalContext.current
+    val prefs = context.getSharedPreferences("bgm_prefs", Context.MODE_PRIVATE)
+    val bgmOn = prefs.getBoolean("bgmOn", true)
+
     if (selectPatData != null) {
         PatSelectDialog(
             onSelectClick = onPatSelectClick,
@@ -170,7 +178,9 @@ fun StoreScreen(
             itemData = "${selectAreaData.url}@${selectAreaData.name}"
         )
     } else {
-        AppBgmManager.play()
+        if (bgmOn) {
+            AppBgmManager.play()
+        }
     }
 
     // 다이얼로그 표시
@@ -237,8 +247,14 @@ fun StoreScreen(
                     "아이템을 뽑으시겠습니까?" -> onItemStoreClick()
                     "펫 공간을 늘리겠습니까?" -> onPatRoomUpClick()
                     "아이템 공간을 늘리겠습니까?" -> onItemRoomUpClick()
-                    "부적절한 닉네임일 경우 경고 없이 제제를 받을 수 있습니다. 변경하겠습니까?" -> onNameChangeClick()
-                    "화폐를 변경하겠습니까?" -> onMoneyChangeClick()
+                    "부적절한 닉네임일 경우 경고 없이 제제를 받을 수 있습니다. 변경하겠습니까?" -> {
+                        onNameChangeClick()
+                        SfxPlayer.play(context, R.raw.positive11)
+                    }
+                    "화폐를 변경하겠습니까?" -> {
+                        onMoneyChangeClick()
+                        SfxPlayer.play(context, R.raw.counter2)
+                    }
                 }
                 onSimpleDialog("")
             },
@@ -454,40 +470,6 @@ fun StoreScreen(
                             .padding(top = 6.dp, bottom = 6.dp)
                     ) {
                         Box {
-
-                            //                        Row(
-                            //                            modifier = Modifier
-                            //                                .align(Alignment.CenterStart)
-                            //                        ) {
-                            //                            Spacer(modifier = Modifier.size(10.dp))
-                            //                            JustImage(
-                            //                                filePath = "pat/cat.json",
-                            //                                modifier = Modifier
-                            //                                    .size(50.dp)
-                            //                                    .rotate(10f)
-                            //                            )
-                            //                        }
-                            //
-                            //                        Row(
-                            //                            modifier = Modifier
-                            //                                .align(Alignment.CenterEnd)
-                            //                        ) {
-                            //                            JustImage(
-                            //                                filePath = "pat/cat.json",
-                            //                                modifier = Modifier
-                            //                                    .size(40.dp)
-                            //                                    .rotate(-10f)
-                            //                                    .align(Alignment.Bottom)
-                            //                            )
-                            //                            JustImage(
-                            //                                filePath = "pat/cat.json",
-                            //                                modifier = Modifier
-                            //                                    .size(30.dp)
-                            //                                    .rotate(10f)
-                            //                                    .align(Alignment.Top)
-                            //                            )
-                            //                            Spacer(modifier = Modifier.size(width = 10.dp, height = 50.dp))
-                            //                        }
 
                             Column(
                                 modifier = Modifier

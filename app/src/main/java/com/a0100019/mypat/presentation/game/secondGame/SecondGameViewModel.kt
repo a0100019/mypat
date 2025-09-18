@@ -224,7 +224,7 @@ class SecondGameViewModel @Inject constructor(
             stopTimer()
 
             val time = state.time + state.plusTime
-            var plusLove = 15
+            var plusLove = 20
 
             if(state.plusTime < 30) {
 

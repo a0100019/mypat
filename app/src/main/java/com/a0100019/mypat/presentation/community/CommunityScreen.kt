@@ -1,5 +1,6 @@
 package com.a0100019.mypat.presentation.community
 
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -147,6 +148,10 @@ fun CommunityScreen(
 
     ) {
 
+    val context = LocalContext.current
+    val prefs = context.getSharedPreferences("bgm_prefs", Context.MODE_PRIVATE)
+    val bgmOn = prefs.getBoolean("bgmOn", true)
+
     if(clickAllUserData.tag != "0") {
         AppBgmManager.pause()
         CommunityUserDialog(
@@ -165,7 +170,9 @@ fun CommunityScreen(
             allMapCount = allAreaCount
         )
     } else {
-        AppBgmManager.play()
+        if (bgmOn) {
+            AppBgmManager.play()
+        }
     }
 
     if(situation == "update") {
@@ -365,23 +372,30 @@ fun CommunityScreen(
                                             horizontalAlignment = if (isMine) Alignment.End else Alignment.Start
                                         ) {
                                             Row {
-                                                Text(
-                                                    text = message.name,
-                                                    style = MaterialTheme.typography.labelSmall,
-                                                    modifier = Modifier.padding(
-                                                        start = 4.dp,
-                                                        bottom = 2.dp
+                                                Row(
+                                                    modifier = Modifier
+                                                        .clickable {
+                                                            onUserRankClick(message.tag.toInt())
+                                                        }
+                                                ) {
+                                                    Text(
+                                                        text = message.name,
+                                                        style = MaterialTheme.typography.labelSmall,
+                                                        modifier = Modifier.padding(
+                                                            start = 4.dp,
+                                                            bottom = 2.dp
+                                                        )
                                                     )
-                                                )
 
-                                                Text(
-                                                    text = "#" + message.tag,
-                                                    style = MaterialTheme.typography.labelSmall,
-                                                    modifier = Modifier.padding(
-                                                        start = 4.dp,
-                                                        bottom = 2.dp
+                                                    Text(
+                                                        text = "#" + message.tag,
+                                                        style = MaterialTheme.typography.labelSmall,
+                                                        modifier = Modifier.padding(
+                                                            start = 4.dp,
+                                                            bottom = 2.dp
+                                                        )
                                                     )
-                                                )
+                                                }
 
                                                 // 시간 포맷
                                                 val time = remember(message.timestamp) {
@@ -502,6 +516,16 @@ fun CommunityScreen(
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(10.dp) // 카드 간 간격
                     ) {
+
+                        item {
+                            Text(
+                                text = "순위는 하루에 한 번 업데이트 됩니다.",
+                                textAlign = TextAlign.Center,
+                                style = MaterialTheme.typography.labelMedium,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+
                         itemsIndexed(allUserRankDataList) { index, user ->
                             Row(
                                 modifier = Modifier
@@ -520,7 +544,7 @@ fun CommunityScreen(
                                 CommunityRankingCard(
                                     userData = user,
                                     situation = situation,
-                                    onClick = { onUserRankClick(index) },
+                                    onClick = { onUserRankClick(user.tag.toInt()) },
                                     modifier = Modifier
                                         .weight(0.9f)
                                 )

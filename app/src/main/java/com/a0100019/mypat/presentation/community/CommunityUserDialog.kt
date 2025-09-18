@@ -297,7 +297,7 @@ fun CommunityUserDialog(
                                     val firstGameRank = allUserDataList
                                         .map { it.firstGame }        // 점수만 추출
                                         .sortedDescending()          // 높은 점수 순으로 정렬
-                                        .indexOfFirst { it <= clickAllUserData.firstGame } + 1  // myScore보다 작거나 같은 첫 점수의 순위
+                                        .count { it.toInt() > clickAllUserData.firstGame.toInt() } + 1  // myScore보다 작거나 같은 첫 점수의 순위
                                     Text(
                                         text = firstGameRank.toString() + "등",
                                         style = MaterialTheme.typography.bodyMedium
@@ -311,8 +311,15 @@ fun CommunityUserDialog(
                                         modifier = Modifier
                                             .padding(end = 6.dp)
                                     )
+
+                                    val secondGameTime = clickAllUserData.secondGame
+
                                     Text(
-                                        text = clickAllUserData.secondGame + "점",
+                                        text = if(secondGameTime != "100000") {
+                                            secondGameTime
+                                        } else {
+                                            "-"
+                                        } + "점",
                                         style = MaterialTheme.typography.bodyMedium,
                                         modifier = Modifier
                                             .padding(end = 6.dp)
@@ -320,7 +327,7 @@ fun CommunityUserDialog(
                                     val secondGameRank = allUserDataList
                                         .map { it.secondGame }        // 점수만 추출
                                         .sortedDescending()          // 높은 점수 순으로 정렬
-                                        .indexOfFirst { it <= clickAllUserData.secondGame } + 1  // myScore보다 작거나 같은 첫 점수의 순위
+                                        .count { it.toDouble() < clickAllUserData.secondGame.toDouble() } + 1  // myScore보다 작거나 같은 첫 점수의 순위
                                     Text(
                                         text = secondGameRank.toString() + "등",
                                         style = MaterialTheme.typography.bodyMedium
@@ -358,7 +365,7 @@ fun CommunityUserDialog(
                                     val thirdGameEasyRank = allUserDataList
                                         .map { it.thirdGameEasy }        // 점수만 추출
                                         .sortedDescending()          // 높은 점수 순으로 정렬
-                                        .indexOfFirst { it <= clickAllUserData.thirdGameEasy } + 1  // myScore보다 작거나 같은 첫 점수의 순위
+                                        .count { it.toInt() > clickAllUserData.thirdGameEasy.toInt() } + 1  // myScore보다 작거나 같은 첫 점수의 순위
                                     Text(
                                         text = thirdGameEasyRank.toString() + "등",
                                         style = MaterialTheme.typography.bodyMedium
@@ -381,7 +388,7 @@ fun CommunityUserDialog(
                                     val thirdGameNormalRank = allUserDataList
                                         .map { it.thirdGameNormal }        // 점수만 추출
                                         .sortedDescending()          // 높은 점수 순으로 정렬
-                                        .indexOfFirst { it <= clickAllUserData.thirdGameNormal } + 1  // myScore보다 작거나 같은 첫 점수의 순위
+                                        .count { it.toInt() > clickAllUserData.thirdGameNormal.toInt() } + 1  // myScore보다 작거나 같은 첫 점수의 순위
                                     Text(
                                         text = thirdGameNormalRank.toString() + "등",
                                         style = MaterialTheme.typography.bodyMedium
@@ -404,7 +411,7 @@ fun CommunityUserDialog(
                                     val thirdGameHardRank = allUserDataList
                                         .map { it.thirdGameHard }        // 점수만 추출
                                         .sortedDescending()          // 높은 점수 순으로 정렬
-                                        .indexOfFirst { it <= clickAllUserData.thirdGameHard } + 1  // myScore보다 작거나 같은 첫 점수의 순위
+                                        .count { it.toInt() > clickAllUserData.thirdGameHard.toInt() } + 1  // myScore보다 작거나 같은 첫 점수의 순위
                                     Text(
                                         text = thirdGameHardRank.toString() + "등",
                                         style = MaterialTheme.typography.bodyMedium

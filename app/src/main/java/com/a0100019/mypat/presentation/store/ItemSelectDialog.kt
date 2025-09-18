@@ -18,10 +18,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.a0100019.mypat.R
 import com.a0100019.mypat.presentation.ui.MusicPlayer
+import com.a0100019.mypat.presentation.ui.SfxPlayer
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
@@ -32,6 +35,8 @@ fun ItemSelectDialog(
     onSelectClick: () -> Unit,
     itemData: String,
 ) {
+
+    val context = LocalContext.current
 
     Dialog(
         onDismissRequest = onCloseClick
@@ -99,7 +104,10 @@ fun ItemSelectDialog(
 
                     MainButton(
                         text = " 선택 ",
-                        onClick = onSelectClick,
+                        onClick = {
+                            onSelectClick()
+                            SfxPlayer.play(context, R.raw.positive11)
+                                  },
                         modifier = Modifier
                             .padding(top = 16.dp)
                     )

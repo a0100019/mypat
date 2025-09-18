@@ -69,9 +69,11 @@ class CommunityViewModel @Inject constructor(
         val patDataList = patDao.getAllPatData()
         val itemDataList = itemDao.getAllItemDataWithShadow()
         var allUserDataList = allUserDao.getAllUserDataNoBan()
-        allUserDataList = allUserDataList.filter { it.totalDate != "1" }
+        allUserDataList = allUserDataList.filter { it.totalDate != "1" && it.totalDate != "0" }
 
-        val allUserRankDataList = allUserDao.getAllUserDataNoBan()
+        var allUserRankDataList = allUserDao.getAllUserDataNoBan()
+        allUserRankDataList = allUserRankDataList.filter { it.totalDate != "1" && it.totalDate != "0" }
+
         val allAreaCount = areaDao.getAllAreaData().size.toString()
 
         val page = userDataList.find { it.id == "etc" }!!.value.toInt()
@@ -337,7 +339,7 @@ class CommunityViewModel @Inject constructor(
         reduce {
             val sortedList = when (newSituation) {
                 "firstGame" -> state.allUserRankDataList.sortedByDescending { it.firstGame.toInt() }
-                "secondGame" -> state.allUserRankDataList.sortedBy { it.secondGame.toInt() }
+                "secondGame" -> state.allUserRankDataList.sortedBy { it.secondGame.toDouble() }
                 "thirdGameEasy" -> state.allUserRankDataList.sortedByDescending { it.thirdGameEasy.toInt() }
                 "thirdGameNormal" -> state.allUserRankDataList.sortedByDescending { it.thirdGameNormal.toInt() }
                 "thirdGameHard" -> state.allUserRankDataList.sortedByDescending { it.thirdGameHard.toInt() }
@@ -374,9 +376,9 @@ class CommunityViewModel @Inject constructor(
         }
     }
 
-    fun onUserRankClick(userIndex: Int) = intent {
-        val selectedUser = state.allUserDataList.get(index = userIndex)
-        val selectedUserWorldDataList: List<String> = selectedUser.worldData
+    fun onUserRankClick(userTag: Int) = intent {
+        val selectedUser = state.allUserDataList.find { it.tag == userTag.toString() }
+        val selectedUserWorldDataList: List<String> = selectedUser!!.worldData
             .split("/")
             .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
 

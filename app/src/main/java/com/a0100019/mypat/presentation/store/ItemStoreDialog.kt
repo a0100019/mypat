@@ -24,11 +24,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.item.Item
+import com.a0100019.mypat.presentation.ui.MusicPlayer
+import com.a0100019.mypat.presentation.ui.SfxPlayer
 import com.a0100019.mypat.presentation.ui.component.TextAutoResizeSingleLine
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
@@ -40,6 +44,12 @@ fun ItemStoreDialog(
     itemData: List<String>?,
     onItemClick: (String) -> Unit,
 ) {
+
+    val context = LocalContext.current
+
+    MusicPlayer(
+        id = R.raw.japan
+    )
 
     Dialog(
         onDismissRequest = onClose
@@ -111,6 +121,7 @@ fun ItemStoreDialog(
                                         .size(50.dp)
                                         .clickable {
                                             onItemClick(item)
+                                            SfxPlayer.play(context, R.raw.slime5)
                                         }
                                 )
                                 TextAutoResizeSingleLine(

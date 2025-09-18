@@ -99,7 +99,7 @@ fun CommunityRankingCard(
             // 점수 표시
             val scoreText = when (situation) {
                 "firstGame" -> "${userData.firstGame} 점"
-                "secondGame" -> "${userData.secondGame} 초"
+                "secondGame" -> "${if(userData.secondGame != "100000") userData.secondGame else "-"} 초"
                 "thirdGameEasy" -> "${userData.thirdGameEasy} 개"
                 "thirdGameNormal" -> "${userData.thirdGameNormal} 개"
                 "thirdGameHard" -> "${userData.thirdGameHard} 개"

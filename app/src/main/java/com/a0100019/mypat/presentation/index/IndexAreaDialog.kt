@@ -29,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.data.room.area.Area
+import com.a0100019.mypat.domain.AppBgmManager
 import com.a0100019.mypat.presentation.ui.MusicPlayer
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
@@ -40,6 +41,8 @@ fun IndexAreaDialog(
     areaData: Area,
     open: Boolean = true
 ) {
+
+    AppBgmManager.pause()
 
     MusicPlayer(
         music = areaData.url
