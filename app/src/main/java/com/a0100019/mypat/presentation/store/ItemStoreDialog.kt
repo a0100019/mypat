@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.data.room.item.Item
+import com.a0100019.mypat.presentation.ui.component.TextAutoResizeSingleLine
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
@@ -112,9 +113,8 @@ fun ItemStoreDialog(
                                             onItemClick(item)
                                         }
                                 )
-                                Text(
-                                    text = part[3],
-                                    style = MaterialTheme.typography.bodyMedium
+                                TextAutoResizeSingleLine(
+                                    text = part[3]
                                 )
                             }
                         }

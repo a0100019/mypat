@@ -6,8 +6,8 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "area_table")
 data class Area(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    var date: String = "1",
+    var date: String = "0",
     val name: String = "",
-    val url: String = "area/forest.jpg",
+    val url: String = "area/normal.png",
 
     )

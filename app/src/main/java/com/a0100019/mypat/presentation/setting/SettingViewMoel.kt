@@ -246,40 +246,44 @@ class SettingViewModel @Inject constructor(
 
         )
 
-        //월드 데이터
-        val worldMap = worldDataList.drop(1)
-            .mapIndexed { index, data ->
-
-                if(data.type == "pat") {
-                    val patData = patDataList.find { it.id == data.value.toInt() }
-                    // index는 0부터 시작하니까 +1 해서 문자열로 만듦
-                    index.toString() to mapOf(
-                        "id" to data.value,
-                        "size" to patData!!.sizeFloat.toString(),
-                        "type" to data.type,
-                        "x" to patData.x.toString(),
-                        "y" to patData.y.toString(),
-                        "effect" to patData.effect.toString()
-                    )
-                } else {
-                    val itemData = itemDataList.find { it.id == data.value.toInt() }
-                    // index는 0부터 시작하니까 +1 해서 문자열로 만듦
-                    index.toString() to mapOf(
-                        "id" to data.value,
-                        "size" to itemData!!.sizeFloat.toString(),
-                        "type" to data.type,
-                        "x" to itemData.x.toString(),
-                        "y" to itemData.y.toString(),
-                        "effect" to "0"
-                    )
+            // 🔹 월드 데이터 만들기
+            val worldMap = worldDataList.drop(1)
+                .mapIndexed { index, data ->
+                    if (data.type == "pat") {
+                        val patData = patDataList.find { it.id == data.value.toInt() }
+                        index.toString() to mapOf(
+                            "id" to data.value,
+                            "size" to patData!!.sizeFloat.toString(),
+                            "type" to data.type,
+                            "x" to patData.x.toString(),
+                            "y" to patData.y.toString(),
+                            "effect" to patData.effect.toString()
+                        )
+                    } else {
+                        val itemData = itemDataList.find { it.id == data.value.toInt() }
+                        index.toString() to mapOf(
+                            "id" to data.value,
+                            "size" to itemData!!.sizeFloat.toString(),
+                            "type" to data.type,
+                            "x" to itemData.x.toString(),
+                            "y" to itemData.y.toString(),
+                            "effect" to "0"
+                        )
+                    }
                 }
+                .toMap()
 
-            }
-            .toMap()
+            val userDocRef = Firebase.firestore.collection("users").document(userId)
 
-        val finalData = userData + mapOf("world" to worldMap)
-        val userDocRef = Firebase.firestore.collection("users").document(userId)
-        batch.set(userDocRef, finalData, SetOptions.merge()) // 필드 기준 병합 저장
+            // 1) 문서 보장 (없으면 생성)
+            batch.set(userDocRef, emptyMap<String, Any>(), SetOptions.merge())
+
+            // 2) 기존 world 필드 제거
+            batch.update(userDocRef, mapOf("world" to FieldValue.delete()))
+
+            // 3) userData + 새 world 필드 병합 저장
+            val finalData = userData + mapOf("world" to worldMap)
+            batch.set(userDocRef, finalData, SetOptions.merge())
 
         //펫 데이터 저장
         val patCollectionRef = db.collection("users")

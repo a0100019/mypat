@@ -4,7 +4,7 @@ package com.a0100019.mypat.data.room.area
 fun getAreaInitialData(): List<Area> {
     return listOf(
 
-        Area( name = "들판", url = "area/normal.png"),
+        Area( name = "들판", url = "area/normal.png", date = "기본 맵"),
         Area( name = "벚꽃 들판", url = "area/normal_sakura.png"),
         Area( name = "겨울 들판", url = "area/normal_snow.png"),
         Area( name = "가을 들판", url = "area/fall.png"),

@@ -101,6 +101,7 @@ fun IndexAreaDialog(
                         filePath = areaData.url,
                         modifier = Modifier
                             .clip(shape = RoundedCornerShape(16.dp))
+                            .matchParentSize()
                         ,
                        contentScale = ContentScale.FillBounds
                         )

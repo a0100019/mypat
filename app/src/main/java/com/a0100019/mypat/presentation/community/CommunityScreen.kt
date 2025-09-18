@@ -329,6 +329,7 @@ fun CommunityScreen(
                             )
                     ) {
 
+                    if(chatMessages.isNotEmpty()){
                         LazyColumn(
                             modifier = Modifier
                                 .weight(1f)
@@ -337,97 +338,116 @@ fun CommunityScreen(
                             reverseLayout = true,
                             verticalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
-                            itemsIndexed(chatMessages.reversed()) { index, message ->
-                                val isMine =
-                                    message.tag == userDataList.find { it.id == "auth" }!!.value2
-                                val alignment = if (isMine) Arrangement.End else Arrangement.Start
-                                val bubbleColor =
-                                    if (isMine) MaterialTheme.colorScheme.scrim else Color(
-                                        0xFFAEDFF7
-                                    )
-                                val bubbleBorderColor =
-                                    if (isMine) MaterialTheme.colorScheme.primaryContainer else Color(
-                                        0xFF4A90E2
-                                    )
+                                itemsIndexed(chatMessages.reversed()) { index, message ->
+                                    val isMine =
+                                        message.tag == userDataList.find { it.id == "auth" }!!.value2
+                                    val alignment =
+                                        if (isMine) Arrangement.End else Arrangement.Start
+                                    val bubbleColor =
+                                        if (isMine) MaterialTheme.colorScheme.scrim else Color(
+                                            0xFFAEDFF7
+                                        )
+                                    val bubbleBorderColor =
+                                        if (isMine) MaterialTheme.colorScheme.primaryContainer else Color(
+                                            0xFF4A90E2
+                                        )
 
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(bottom = 6.dp),
-                                    horizontalArrangement = alignment
-                                ) {
-                                    Column(
+                                    Row(
                                         modifier = Modifier
-                                            .widthIn(max = 280.dp)
-                                            .padding(horizontal = 8.dp),
-                                        horizontalAlignment = if (isMine) Alignment.End else Alignment.Start
+                                            .fillMaxWidth()
+                                            .padding(bottom = 6.dp),
+                                        horizontalArrangement = alignment
                                     ) {
-                                        Row {
-                                            Text(
-                                                text = message.name,
-                                                style = MaterialTheme.typography.labelSmall,
-                                                modifier = Modifier.padding(
-                                                    start = 4.dp,
-                                                    bottom = 2.dp
-                                                )
-                                            )
-
-                                            Text(
-                                                text = "#" + message.tag,
-                                                style = MaterialTheme.typography.labelSmall,
-                                                modifier = Modifier.padding(
-                                                    start = 4.dp,
-                                                    bottom = 2.dp
-                                                )
-                                            )
-
-                                            // 시간 포맷
-                                            val time = remember(message.timestamp) {
-                                                SimpleDateFormat(
-                                                    "HH:mm",
-                                                    Locale.getDefault()
-                                                ).format(
-                                                    Date(message.timestamp)
-                                                )
-                                            }
-
-                                            Text(
-                                                text = time,
-                                                style = MaterialTheme.typography.labelSmall,
-                                                modifier = Modifier.padding(
-                                                    start = 4.dp,
-                                                    bottom = 2.dp
-                                                )
-                                            )
-
-                                            if (!isMine) {
-                                                JustImage(
-                                                    filePath = "etc/ban.png",
-                                                    modifier = Modifier
-                                                        .size(10.dp)
-                                                        .clickable {
-                                                            alertStateChange(index.toString())
-                                                        }
-                                                )
-                                            }
-
-                                        }
-                                        Box(
+                                        Column(
                                             modifier = Modifier
-                                                .background(bubbleColor, RoundedCornerShape(8.dp))
-                                                .border(
-                                                    width = 2.dp,
-                                                    color = bubbleBorderColor,
-                                                    shape = RoundedCornerShape(8.dp)
-                                                )
-                                                .padding(8.dp)
+                                                .widthIn(max = 280.dp)
+                                                .padding(horizontal = 8.dp),
+                                            horizontalAlignment = if (isMine) Alignment.End else Alignment.Start
                                         ) {
-                                            Text(text = message.message)
+                                            Row {
+                                                Text(
+                                                    text = message.name,
+                                                    style = MaterialTheme.typography.labelSmall,
+                                                    modifier = Modifier.padding(
+                                                        start = 4.dp,
+                                                        bottom = 2.dp
+                                                    )
+                                                )
+
+                                                Text(
+                                                    text = "#" + message.tag,
+                                                    style = MaterialTheme.typography.labelSmall,
+                                                    modifier = Modifier.padding(
+                                                        start = 4.dp,
+                                                        bottom = 2.dp
+                                                    )
+                                                )
+
+                                                // 시간 포맷
+                                                val time = remember(message.timestamp) {
+                                                    SimpleDateFormat(
+                                                        "HH:mm",
+                                                        Locale.getDefault()
+                                                    ).format(
+                                                        Date(message.timestamp)
+                                                    )
+                                                }
+
+                                                Text(
+                                                    text = time,
+                                                    style = MaterialTheme.typography.labelSmall,
+                                                    modifier = Modifier.padding(
+                                                        start = 4.dp,
+                                                        bottom = 2.dp
+                                                    )
+                                                )
+
+                                                if (!isMine) {
+                                                    JustImage(
+                                                        filePath = "etc/ban.png",
+                                                        modifier = Modifier
+                                                            .size(10.dp)
+                                                            .clickable {
+                                                                alertStateChange(index.toString())
+                                                            }
+                                                    )
+                                                }
+
+                                            }
+                                            Box(
+                                                modifier = Modifier
+                                                    .background(
+                                                        bubbleColor,
+                                                        RoundedCornerShape(8.dp)
+                                                    )
+                                                    .border(
+                                                        width = 2.dp,
+                                                        color = bubbleBorderColor,
+                                                        shape = RoundedCornerShape(8.dp)
+                                                    )
+                                                    .padding(8.dp)
+                                            ) {
+                                                Text(text = message.message)
+                                            }
                                         }
                                     }
                                 }
                             }
+                        } else {
+                        Box(
+                            modifier = Modifier
+                                .weight(1f), // 화면 전체 채우기
+                            contentAlignment = Alignment.Center // 가로+세로 가운데 정렬
+                        ) {
+                            Text(
+                                text = "오늘의 첫 대화를 시작해보세요",
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .fillMaxWidth(1f)
+                            )
                         }
+
+                    }
 
                         // 입력창 + 전송버튼
                         Row(
@@ -596,7 +616,8 @@ fun CommunityScreenPreview() {
     MypatTheme {
         CommunityScreen(
             userDataList = listOf(User(id = "auth")),
-            chatMessages = listOf(ChatMessage(10202020, "a", "a", tag = "0", ban = "0"), ChatMessage(10202020, "a11", "a11", tag = "1", ban = "0"))
+            chatMessages = emptyList()
+//            chatMessages = listOf(ChatMessage(10202020, "a", "a", tag = "0", ban = "0"), ChatMessage(10202020, "a11", "a11", tag = "1", ban = "0"))
         )
     }
 }

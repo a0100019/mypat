@@ -263,15 +263,17 @@ fun ExplanationDialog(
 
             Spacer(modifier = Modifier.size(6.dp))
 
-            Text(
-                text = "설명서를 아래로 드래그하세요",
-                modifier = Modifier
-                    .background(
-                        color = Color.LightGray,
-                        shape = RoundedCornerShape(12.dp) // ⬅️ 둥글게 처리
-                    )
-                    .padding(horizontal = 12.dp, vertical = 6.dp) // ⬅️ 내부 여백
-            )
+            if(page == 2){
+                Text(
+                    text = "설명서를 아래로 드래그하세요",
+                    modifier = Modifier
+                        .background(
+                            color = Color.LightGray,
+                            shape = RoundedCornerShape(12.dp) // ⬅️ 둥글게 처리
+                        )
+                        .padding(horizontal = 12.dp, vertical = 6.dp) // ⬅️ 내부 여백
+                )
+            }
 
         }
     }

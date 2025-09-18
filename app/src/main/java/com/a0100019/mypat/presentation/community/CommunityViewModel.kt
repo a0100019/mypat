@@ -68,7 +68,9 @@ class CommunityViewModel @Inject constructor(
         val userDataList = userDao.getAllUserData()
         val patDataList = patDao.getAllPatData()
         val itemDataList = itemDao.getAllItemDataWithShadow()
-        val allUserDataList = allUserDao.getAllUserDataNoBan()
+        var allUserDataList = allUserDao.getAllUserDataNoBan()
+        allUserDataList = allUserDataList.filter { it.totalDate != "1" }
+
         val allUserRankDataList = allUserDao.getAllUserDataNoBan()
         val allAreaCount = areaDao.getAllAreaData().size.toString()
 
@@ -563,21 +565,105 @@ class CommunityViewModel @Inject constructor(
 
     fun onLikeClick() = intent {
 
-        val db = Firebase.firestore
-        val myUid = state.userDataList.find { it.id == "auth" }!!.value
-        val today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")) // "20250516"
-        val docRef = db.collection("users").document(myUid).collection("community").document(today)
-        val tag = state.clickAllUserData.tag
+        if(state.userDataList.find { it.id == "date" }!!.value2 != "1"){
+            val db = Firebase.firestore
+            val myUid = state.userDataList.find { it.id == "auth" }!!.value
+            val today =
+                LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")) // "20250516"
+            val docRef =
+                db.collection("users").document(myUid).collection("community").document(today)
+            val tag = state.clickAllUserData.tag
 
-        docRef.get()
-            .addOnSuccessListener { documentSnapshot ->
-                if (documentSnapshot.exists()) {
-                    val likeList = documentSnapshot.get("like") as? List<String> ?: emptyList()
+            docRef.get()
+                .addOnSuccessListener { documentSnapshot ->
+                    if (documentSnapshot.exists()) {
+                        val likeList = documentSnapshot.get("like") as? List<String> ?: emptyList()
 
-                    //오늘 좋아요를 누르지 않은 사람
-                    if (!likeList.contains(tag)) {
-                        //FieldValue.arrayUnion(...): Firestore에서 배열에 중복 없이 값 추가할 때 사용.
-                        docRef.update("like", FieldValue.arrayUnion(tag))
+                        //오늘 좋아요를 누르지 않은 사람
+                        if (!likeList.contains(tag)) {
+                            //FieldValue.arrayUnion(...): Firestore에서 배열에 중복 없이 값 추가할 때 사용.
+                            docRef.update("like", FieldValue.arrayUnion(tag))
+
+                            Firebase.firestore.collection("users")
+                                .whereEqualTo("tag", tag)
+                                .get()
+                                .addOnSuccessListener { querySnapshot ->
+                                    val document = querySnapshot.documents.firstOrNull()
+
+                                    if (document != null) {
+                                        val community = document.get("community") as? Map<*, *>
+                                        val likeValueStr = community?.get("like")?.toString()
+
+                                        // 숫자로 변환 시도
+                                        val likeValue = likeValueStr?.toIntOrNull()
+
+                                        if (likeValue != null) {
+                                            val newLikeValue = likeValue + 1
+                                            val updatedCommunity = community.toMutableMap()
+                                            updatedCommunity["like"] = newLikeValue.toString()
+
+                                            document.reference.update("community", updatedCommunity)
+                                                .addOnSuccessListener {
+                                                    Log.d(
+                                                        "TAG",
+                                                        "like 값이 $likeValue → $newLikeValue 으로 업데이트됨"
+                                                    )
+                                                    viewModelScope.launch {
+                                                        allUserDao.updateLikeByTag(
+                                                            tag = tag,
+                                                            newLike = newLikeValue.toString()
+                                                        )
+                                                        reduce {
+                                                            state.copy(
+                                                                clickAllUserData = state.clickAllUserData.copy(
+                                                                    like = (state.clickAllUserData.like.toInt() + 1).toString()
+                                                                )
+                                                            )
+                                                        }
+                                                    }
+                                                }
+                                                .addOnFailureListener { e ->
+                                                    Log.e("TAG", "업데이트 실패: ${e.message}")
+                                                }
+                                        } else {
+                                            Log.w("TAG", "like 필드가 숫자가 아닙니다: $likeValueStr")
+                                        }
+                                    } else {
+                                        Log.w("TAG", "해당 태그를 가진 문서를 찾을 수 없습니다.")
+                                        viewModelScope.launch {
+                                            allUserDao.updateLikeByTag(
+                                                tag = tag,
+                                                newLike = (state.clickAllUserData.like.toInt() + 1).toString()
+                                            )
+                                            reduce {
+                                                state.copy(
+                                                    clickAllUserData = state.clickAllUserData.copy(
+                                                        like = (state.clickAllUserData.like.toInt() + 1).toString()
+                                                    )
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                                .addOnFailureListener { e ->
+                                    Log.e("TAG", "문서 가져오기 실패: ${e.message}")
+                                }
+
+                            viewModelScope.launch {
+                                postSideEffect(CommunitySideEffect.Toast("좋아요를 눌렀습니다"))
+                            }
+                        } else {
+                            // 이미 존재할 때 Toast 띄우기
+                            viewModelScope.launch {
+                                postSideEffect(CommunitySideEffect.Toast("이미 좋아요를 눌렀습니다"))
+                            }
+                        }
+                    } else {
+                        //오늘 첫 좋아요
+                        val newData = hashMapOf(
+                            "like" to listOf(tag)
+                        )
+                        docRef.set(newData)
 
                         Firebase.firestore.collection("users")
                             .whereEqualTo("tag", tag)
@@ -599,9 +685,17 @@ class CommunityViewModel @Inject constructor(
 
                                         document.reference.update("community", updatedCommunity)
                                             .addOnSuccessListener {
-                                                Log.d("TAG", "like 값이 $likeValue → $newLikeValue 으로 업데이트됨")
+
+                                                Log.d(
+                                                    "TAG",
+                                                    "like 값이 $likeValue → $newLikeValue 으로 업데이트됨"
+                                                )
                                                 viewModelScope.launch {
-                                                    allUserDao.updateLikeByTag(tag = tag, newLike = newLikeValue.toString())
+                                                    allUserDao.updateLikeByTag(
+                                                        tag = tag,
+                                                        newLike = newLikeValue.toString()
+                                                    )
+
                                                     reduce {
                                                         state.copy(
                                                             clickAllUserData = state.clickAllUserData.copy(
@@ -609,7 +703,13 @@ class CommunityViewModel @Inject constructor(
                                                             )
                                                         )
                                                     }
+
+                                                    userDao.update(
+                                                        id = "money",
+                                                        value2 = (state.userDataList.find { it.id == "money" }!!.value2.toInt() + 1000).toString()
+                                                    )
                                                 }
+
                                             }
                                             .addOnFailureListener { e ->
                                                 Log.e("TAG", "업데이트 실패: ${e.message}")
@@ -620,7 +720,10 @@ class CommunityViewModel @Inject constructor(
                                 } else {
                                     Log.w("TAG", "해당 태그를 가진 문서를 찾을 수 없습니다.")
                                     viewModelScope.launch {
-                                        allUserDao.updateLikeByTag(tag = tag, newLike = (state.clickAllUserData.like.toInt() + 1).toString() )
+                                        allUserDao.updateLikeByTag(
+                                            tag = tag,
+                                            newLike = (state.clickAllUserData.like.toInt() + 1).toString()
+                                        )
                                         reduce {
                                             state.copy(
                                                 clickAllUserData = state.clickAllUserData.copy(
@@ -628,100 +731,37 @@ class CommunityViewModel @Inject constructor(
                                                 )
                                             )
                                         }
+
+                                        userDao.update(
+                                            id = "money",
+                                            value2 = (state.userDataList.find { it.id == "money" }!!.value2.toInt() + 1000).toString()
+                                        )
+
                                     }
+
                                 }
                             }
                             .addOnFailureListener { e ->
                                 Log.e("TAG", "문서 가져오기 실패: ${e.message}")
                             }
 
+
                         viewModelScope.launch {
-                            postSideEffect(CommunitySideEffect.Toast("좋아요를 눌렀습니다"))
-                        }
-                    } else {
-                        // 이미 존재할 때 Toast 띄우기
-                        viewModelScope.launch {
-                            postSideEffect(CommunitySideEffect.Toast("이미 좋아요를 눌렀습니다"))
+                            postSideEffect(CommunitySideEffect.Toast("좋아요를 눌렀습니다 +1000달빛"))
                         }
                     }
-                } else {
-                    //오늘 첫 좋아요
-                    val newData = hashMapOf(
-                        "like" to listOf(tag)
-                    )
-                    docRef.set(newData)
-
-                    Firebase.firestore.collection("users")
-                        .whereEqualTo("tag", tag)
-                        .get()
-                        .addOnSuccessListener { querySnapshot ->
-                            val document = querySnapshot.documents.firstOrNull()
-
-                            if (document != null) {
-                                val community = document.get("community") as? Map<*, *>
-                                val likeValueStr = community?.get("like")?.toString()
-
-                                // 숫자로 변환 시도
-                                val likeValue = likeValueStr?.toIntOrNull()
-
-                                if (likeValue != null) {
-                                    val newLikeValue = likeValue + 1
-                                    val updatedCommunity = community.toMutableMap()
-                                    updatedCommunity["like"] = newLikeValue.toString()
-
-                                    document.reference.update("community", updatedCommunity)
-                                        .addOnSuccessListener {
-                                            Log.d("TAG", "like 값이 $likeValue → $newLikeValue 으로 업데이트됨")
-                                            viewModelScope.launch {
-                                                allUserDao.updateLikeByTag(tag = tag, newLike = newLikeValue.toString())
-                                            }
-                                        }
-                                        .addOnFailureListener { e ->
-                                            Log.e("TAG", "업데이트 실패: ${e.message}")
-                                        }
-                                } else {
-                                    Log.w("TAG", "like 필드가 숫자가 아닙니다: $likeValueStr")
-                                }
-                            } else {
-                                Log.w("TAG", "해당 태그를 가진 문서를 찾을 수 없습니다.")
-                                viewModelScope.launch {
-                                    allUserDao.updateLikeByTag(tag = tag, newLike = (state.clickAllUserData.like.toInt() + 1).toString() )
-                                    reduce {
-                                        state.copy(
-                                            clickAllUserData = state.clickAllUserData.copy(
-                                                like = (state.clickAllUserData.like.toInt() + 1).toString()
-                                            )
-                                        )
-                                    }
-
-                                    userDao.update(
-                                        id = "money",
-                                        value2 = (state.userDataList.find { it.id == "money" }!!.value2.toInt() + 1000).toString()
-                                    )
-
-                                }
-
-                            }
-                        }
-                        .addOnFailureListener { e ->
-                            Log.e("TAG", "문서 가져오기 실패: ${e.message}")
-                        }
-
-
+                }
+                .addOnFailureListener { e ->
+                    Log.e("Firebase", "Error accessing community document", e)
                     viewModelScope.launch {
-                        postSideEffect(CommunitySideEffect.Toast("좋아요를 눌렀습니다 +1000달빛"))
+                        postSideEffect(CommunitySideEffect.Toast("인터넷 오류"))
                     }
                 }
-            }
-            .addOnFailureListener { e ->
-                Log.e("Firebase", "Error accessing community document", e)
-                viewModelScope.launch {
-                    postSideEffect(CommunitySideEffect.Toast("인터넷 오류"))
-                }
-            }
 
-        loadData()
-
+            loadData()
+        } else {
+            postSideEffect(CommunitySideEffect.Toast("좋아요는 내일부터 누를 수 있습니다"))
+        }
     }
 
 }

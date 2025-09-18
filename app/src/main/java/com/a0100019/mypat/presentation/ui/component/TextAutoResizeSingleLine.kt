@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.sp
 
 
 @Composable
-fun AutoResizeSingleLineText(
+fun TextAutoResizeSingleLine(
     text: String,
     modifier: Modifier = Modifier,
     maxTextStyle: TextStyle = MaterialTheme.typography.bodyMedium.copy(

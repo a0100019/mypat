@@ -4,7 +4,7 @@ import com.a0100019.mypat.data.room.item.Item
 
 fun getPatInitialData(): List<Pat> {
     return listOf(
-        Pat(name = "고양이", url = "pat/cat.json", memo = "마을을 처음부터 끝까지 지켜준 고양이. 사람 곁에 앉아 졸고 있는 시간이 가장 행복하다.", date = "기본 펫"),
+        Pat(name = "고양이", url = "pat/cat.json", memo = "마을을 처음부터 끝까지 지켜준 고양이. 사람 곁에 앉아 졸고 있는 시간이 가장 행복하다.", date = "기본 펫", x = 0.35f, y = 0.75f),
         Pat(name = "강아지", url = "pat/dog.json", minFloat = 0.1f, sizeFloat = 0.1f, memo = "꼬리를 흔들며 앉아 있는 강아지. 주인을 찾는 듯한 눈빛으로 마을을 지킨다."),
         Pat(name = "춤추는 말랑이", url = "pat/dancing_monster.json", minFloat = 0.1f, sizeFloat = 0.1f,
             memo = "음악이 들리면 멈출 수 없는 춤을 추는 말랑이. 주변을 즐겁게 만든다."),

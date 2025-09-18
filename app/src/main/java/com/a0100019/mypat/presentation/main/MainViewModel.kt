@@ -133,32 +133,45 @@ class MainViewModel @Inject constructor(
                     }
                 }
 
-                ////지난 시간만큼 love
-                val storedTime = userDataList.find { it.id == "auth" }!!.value3.toLong()
+                //로그아웃 후 첫 로그인이 아닐 경우
+                if(userDataList.find { it.id == "auth" }!!.value3 != "0"){
+                    ////지난 시간만큼 love
+                    val storedTime = userDataList.find { it.id == "auth" }!!.value3.toLong()
 
-                val now = System.currentTimeMillis()
-                val timeGap = now - storedTime
-                val loveCount = (timeGap / (10 * 60 * 1000)).toInt()  // 10분 단위 몇 번 지났는지
-                val patLoveList = worldDataList.filter { it.type == "pat" && it.situation != "love" }
+                    val now = System.currentTimeMillis()
+                    val timeGap = now - storedTime
+                    val loveCount = (timeGap / (10 * 60 * 1000)).toInt()  // 10분 단위 몇 번 지났는지
+                    val patLoveList =
+                        worldDataList.filter { it.type == "pat" && it.situation != "love" }
 
-                // 선택 가능한 최대 개수만큼 랜덤으로 고름
-                val selectedList = patLoveList.shuffled().take(loveCount)
+                    // 선택 가능한 최대 개수만큼 랜덤으로 고름
+                    val selectedList = patLoveList.shuffled().take(loveCount)
 
-                // Room 업데이트 (각각 개별적으로)
-                selectedList.forEach { pat ->
-                    worldDao.updateSituationById(pat.id, "love")
+                    // Room 업데이트 (각각 개별적으로)
+                    selectedList.forEach { pat ->
+                        worldDao.updateSituationById(pat.id, "love")
+                    }
+
+                    // 상태 업데이트는 딱 한 번만
+                    val updatedWorldList = worldDataList.map { item ->
+                        if (selectedList.any { it.id == item.id }) {
+                            item.copy(situation = "love")
+                        } else item
+                    }
+                    reduce { state.copy(worldDataList = updatedWorldList) }
+
+                    val timestamp = System.currentTimeMillis() + 1
+                    userDao.update(id = "auth", value3 = timestamp.toString())
+
+                } else {
+
+                    //로그아웃 후 첫 로그인
+                    reduce { state.copy(worldDataList = worldDataList) }
+
+                    val timestamp = System.currentTimeMillis() + 1
+                    userDao.update(id = "auth", value3 = timestamp.toString())
+
                 }
-
-                // 상태 업데이트는 딱 한 번만
-                val updatedWorldList = worldDataList.map { item ->
-                    if (selectedList.any { it.id == item.id }) {
-                        item.copy(situation = "love")
-                    } else item
-                }
-                reduce { state.copy(worldDataList = updatedWorldList) }
-
-                val timestamp = System.currentTimeMillis() + 1
-                userDao.update(id = "auth", value3 = timestamp.toString())
 
                 // UI 상태 업데이트 (Main Dispatcher에서 실행)
                 withContext(Dispatchers.Main) {
