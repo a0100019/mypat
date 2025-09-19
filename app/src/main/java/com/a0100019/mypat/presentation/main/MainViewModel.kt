@@ -211,6 +211,7 @@ class MainViewModel @Inject constructor(
                 )
             }
         }
+        loadData()
     }
 
     fun onLovePatChange(patId: Int) = intent {

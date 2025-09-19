@@ -15,7 +15,6 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
 
-
 @Composable
 fun PatImage(
     patUrl: String,
@@ -25,7 +24,7 @@ fun PatImage(
     xFloat: Float,
     yFloat: Float,
     sizeFloat: Float,
-    onClick: () -> Unit = {} // 클릭 이벤트 콜백 추가
+    onClick: (() -> Unit)? = null // 👉 null 가능하게 바꿈
 ) {
     val composition by rememberLottieComposition(LottieCache.get(patUrl))
 
@@ -40,21 +39,26 @@ fun PatImage(
         sizeFloat = sizeFloat,
     )
 
-    // LottieAnimation을 클릭 가능한 Modifier로 감쌉니다.
+    val modifier = Modifier
+        .size(imageSize)
+        .offset(
+            x = (surfaceWidthDp * xFloat),
+            y = (surfaceHeightDp * yFloat)
+        )
+        .let {
+            if (onClick != null) {
+                it.clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = onClick
+                )
+            } else it
+        }
+
+    // LottieAnimation을 Modifier와 함께 적용
     LottieAnimation(
         composition = composition,
         iterations = Int.MAX_VALUE,
-        modifier = Modifier
-            .size(imageSize)
-            .offset(
-                x = (surfaceWidthDp * xFloat),
-                y = (surfaceHeightDp * yFloat)
-            )
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = onClick
-            )
+        modifier = modifier
     )
-
 }

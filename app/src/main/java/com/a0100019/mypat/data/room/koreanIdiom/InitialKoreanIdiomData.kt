@@ -7,7 +7,7 @@ fun getKoreanIdiomInitialData(): List<KoreanIdiom> {
         KoreanIdiom(
             idiom = "一喜一悲",
             korean = "일희일비",
-            meaning = "몇 명씩 무리를 지어 다니거나 함께 일을 하는 모양",
+            meaning = "기쁨과 슬픔이 번갈아 일어난다",
             korean1 = "한 일",
             korean2 = "기쁠 희",
             korean3 = "한 일",

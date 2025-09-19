@@ -80,11 +80,9 @@ fun SettingTalkDialog(
                     label = { Text("내용") },
                     placeholder = { Text(
                         textAlign = TextAlign.Center,
-                        text = "안녕하세요, 소중한 이웃님!\n" +
-                                "하루마을이 더욱 발전할 수 있도록, 발견한 버그나 바라는 점을 적어주세요.\n" +
+                        text = "하루마을이 더욱 발전할 수 있도록, 발견한 버그나 바라는 점을 적어주세요. 중요한 버그를 발견하면 보상을 받을 수도 있어요.\n" +
                                 "또한 대나무 숲에 작성한 내용은 오직 개발자만 확인할 수 있으니 말 못할 고민이 있을 땐 언제든 편하게 적어주세요. 하루마을과 관련 없는 내용도 괜찮아요!\n" +
                                 "답변이 필요한 내용이라면 편지로 답변을 보내드릴게요") },
-
                     shape = RoundedCornerShape(8.dp), // 테두리를 둥글게
                     modifier = Modifier
                         .fillMaxWidth()

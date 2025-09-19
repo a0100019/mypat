@@ -7,6 +7,14 @@ import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiom
 fun getEnglishInitialData(): List<English> {
     return listOf(
         English(
+            word = "smile",
+            meaning = "미소짓다",
+        ),
+        English(
+            word = "water",
+            meaning = "물",
+        ),
+        English(
             word = "world",
             meaning = "세계",
         ),
@@ -15,16 +23,8 @@ fun getEnglishInitialData(): List<English> {
             meaning = "포도",
         ),
         English(
-            word = "smile",
-            meaning = "미소짓다",
-        ),
-        English(
             word = "dream",
             meaning = "꿈",
-        ),
-        English(
-            word = "water",
-            meaning = "물",
         ),
         English(
             word = "music",

@@ -137,7 +137,7 @@ fun CommunityWorldCard(
                                         yFloat = parts[4].toFloat(),
                                         sizeFloat = parts[1].toFloat(),
                                         effect = parts[5].toInt(),
-                                        onClick = {  }
+                                        onClick = null
                                     )
                                 }
 
