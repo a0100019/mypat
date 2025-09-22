@@ -122,16 +122,15 @@ class DiaryViewModel @Inject constructor(
                     id = "money",
                     value = (state.userDataList.find { it.id == "money" }!!.value.toInt() + 1).toString()
                 )
-                postSideEffect(DiarySideEffect.Toast("보상 획득!"))
+                postSideEffect(DiarySideEffect.Toast("보상을 획득했습니다"))
             }
 
             diaryDao.update(state.writeDiaryData)
             reduce {
                 state.copy(
-                    clickDiaryData = null,
+                    writeFinish = true
                 )
             }
-            loadData()
 
         } else {
 
@@ -144,6 +143,17 @@ class DiaryViewModel @Inject constructor(
             }
 
         }
+    }
+
+    fun onLastFinishClick() = intent {
+        reduce {
+            state.copy(
+                clickDiaryData = null,
+                writeFinish = false,
+                dialogState = ""
+            )
+        }
+        loadData()
     }
 
     @OptIn(OrbitExperimental::class)
@@ -252,7 +262,8 @@ data class DiaryState(
     val searchText: String = "",
     val dialogState: String = "",
     val emotionFilter: String = "emotion/allEmotion.png",
-    val firstWrite: Boolean = true
+    val firstWrite: Boolean = true,
+    val writeFinish: Boolean = false,
 )
 
 //상태와 관련없는 것

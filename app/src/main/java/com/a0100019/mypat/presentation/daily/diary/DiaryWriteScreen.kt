@@ -105,7 +105,9 @@ fun DiaryWriteScreen(
         onDiaryFinishClick = diaryViewModel::onDiaryFinishClick,
         popBackStack = popBackStack,
         emotionChangeClick = diaryViewModel::emotionChangeClick,
-        onDialogStateChange = diaryViewModel::onDialogStateChange
+        onDialogStateChange = diaryViewModel::onDialogStateChange,
+        onLastFinishClick = diaryViewModel::onLastFinishClick,
+        writeFinish = diaryState.writeFinish
     )
 }
 
@@ -121,11 +123,22 @@ fun DiaryWriteScreen(
     popBackStack: () -> Unit,
     emotionChangeClick: (String) -> Unit,
     onDialogStateChange: (String) -> Unit,
+    writeFinish: Boolean = false,
+    onLastFinishClick: () -> Unit = {},
 ) {
     if (dialogState == "emotion") {
         DiaryEmotionDialog(
             onClose = { onDialogStateChange("") },
             onEmotionClick = emotionChangeClick
+        )
+    }
+
+    if(writeFinish) {
+        DiaryFinishDialog(
+            onClose = {
+                onLastFinishClick()
+                if (writePossible) popBackStack()
+            }
         )
     }
 
@@ -202,7 +215,6 @@ fun DiaryWriteScreen(
                     MainButton(
                         onClick = {
                             onDiaryFinishClick()
-                            if (writePossible) popBackStack()
                         },
                         text = "작성 완료"
                     )
