@@ -137,17 +137,24 @@ fun SecondGameScreen(
                 modifier = Modifier
                     .padding(top = 32.dp, bottom = 8.dp)
             )
-            Text(
-                text = "+ " + String.format("%.0f", plusTime) + "초",
-                style = MaterialTheme.typography.headlineMedium,
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .padding(bottom = 16.dp)
-            )
+            ) {
+                Text(
+                    text = "+ " + String.format("%.0f", plusTime) + "초",
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier
+                        .padding(end = 16.dp)
+                )
 
-            Text(
-                text = "${(round + 1)} / 10",
-                style = MaterialTheme.typography.titleMedium
-            )
+                Text(
+                    text = "${(round + 1)} / 10",
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
 
             Column(
                 modifier = Modifier
@@ -201,7 +208,7 @@ fun SecondGameScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(bottom = 32.dp),
+                            .padding(bottom = 16.dp),
                         horizontalArrangement = Arrangement.SpaceAround
                     ) {
                         Column(

@@ -41,7 +41,7 @@ import com.a0100019.mypat.R
 @Composable
 fun XmlButton(
     @DrawableRes iconResId: Int? = null,
-    imageSize: Dp = 40.dp,
+    imageSize: Dp = 35.dp,
     onClick: () -> Unit = {},
     @SuppressLint("ModifierParameter") modifier: Modifier = Modifier,
     rotationDegree: Float = 0f
