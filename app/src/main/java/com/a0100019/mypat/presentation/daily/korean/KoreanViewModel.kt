@@ -205,6 +205,7 @@ class KoreanViewModel @Inject constructor(
                     )
                 }
 
+                loadData()
 
             } else {
 

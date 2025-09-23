@@ -213,7 +213,8 @@ class WalkViewModel @Inject constructor(
             reduce {
                 state.copy(
                     todayWalk = state.todayWalk - 10000,
-                    walkState = "완료"
+                    walkState = "완료",
+                    lastWalkCount = state.todayWalk - 10000,
                 )
             }
 
@@ -269,7 +270,8 @@ data class WalkState(
     val calendarMonth: String = "2025-07",
     val sensor: Boolean = false,
     val firstSystemWalk: Int = 0,
-    val firstSaveWalk: Int = 0
+    val firstSaveWalk: Int = 0,
+    val lastWalkCount: Int = 0,
 
     )
 

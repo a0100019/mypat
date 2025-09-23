@@ -101,6 +101,7 @@ fun WalkScreen(
         successRate = walkState.successRate,
         maxContinuous = walkState.maxContinuous,
         sensor =  walkState.sensor,
+        lastWalkCount = walkState.lastWalkCount,
 
         onTodayWalkSubmitClick = walkViewModel::onTodayWalkSubmitClick,
         onCalendarMonthChangeClick = walkViewModel::onCalendarMonthChangeClick,
@@ -124,6 +125,7 @@ fun WalkScreen(
     successRate: Int = 0,
     maxContinuous: Int = 0,
     sensor: Boolean = false,
+    lastWalkCount: Int = 0,
 
     onCalendarMonthChangeClick: (String)-> Unit = {},
     onTodayWalkSubmitClick: ()-> Unit = {},
@@ -167,11 +169,19 @@ fun WalkScreen(
                             style = MaterialTheme.typography.headlineMedium
                         )
                         Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            text = todayWalk.toString(),
-                            style = MaterialTheme.typography.displaySmall,
-                            fontWeight = FontWeight.Bold
-                        )
+                        if(lastWalkCount == 0){
+                            Text(
+                                text = todayWalk.toString(),
+                                style = MaterialTheme.typography.displaySmall,
+                                fontWeight = FontWeight.Bold
+                            )
+                        } else {
+                            Text(
+                                text = lastWalkCount.toString(),
+                                style = MaterialTheme.typography.displaySmall,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
                     } else {
                         Text(
                             text = "로딩중...",

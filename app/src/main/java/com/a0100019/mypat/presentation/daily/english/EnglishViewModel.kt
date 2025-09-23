@@ -189,6 +189,8 @@ class EnglishViewModel @Inject constructor(
                         )
                     }
 
+                    loadData()
+
                 } else {
 
                     val answerEnglish = state.clickEnglishData!!.word

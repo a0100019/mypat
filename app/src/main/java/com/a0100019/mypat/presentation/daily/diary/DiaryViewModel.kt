@@ -48,21 +48,31 @@ class DiaryViewModel @Inject constructor(
     fun loadData() = intent {
         // 1. suspend로 바로 가져오는 유저 정보
         val userDataList = userDao.getAllUserData()
+        val allDiaryData = diaryDao.getAllDiaryData()
 
-        // 2. Flow인 일기 데이터는 collect로 가져와야 실시간 반영됨
-        viewModelScope.launch {
-            diaryDao.getAllFlowDiaryData().collect { diaryList ->
-                reduce {
-                    state.copy(
-                        userDataList = userDataList,
-                        diaryDataList = diaryList,
-                        diaryFilterDataList = diaryList,
-                        dialogState = "",
-                        clickDiaryData = null
-                    )
-                }
-            }
+        reduce {
+            state.copy(
+                userDataList = userDataList,
+                diaryDataList = allDiaryData,
+                diaryFilterDataList = allDiaryData,
+                dialogState = "",
+                clickDiaryData = null
+            )
         }
+
+//        // 2. Flow인 일기 데이터는 collect로 가져와야 실시간 반영됨
+//        viewModelScope.launch {
+//            diaryDao.getAllFlowDiaryData().collect { diaryList ->
+//                reduce {
+//                    state.copy(
+//                        diaryDataList = diaryList,
+//                        diaryFilterDataList = diaryList,
+//                        dialogState = "",
+//                        clickDiaryData = null
+//                    )
+//                }
+//            }
+//        }
     }
 
 
@@ -86,7 +96,10 @@ class DiaryViewModel @Inject constructor(
             postSideEffect(DiarySideEffect.NavigateToDiaryWriteScreen)
         } else {
             reduce {
-                state.copy(clickDiaryData = diaryData)
+                state.copy(
+                    clickDiaryData = diaryData,
+                    firstWrite = false
+                )
             }
         }
 
