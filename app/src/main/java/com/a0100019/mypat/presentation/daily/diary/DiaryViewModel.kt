@@ -1,5 +1,6 @@
 package com.a0100019.mypat.presentation.daily.diary
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.a0100019.mypat.data.room.diary.Diary
@@ -118,6 +119,7 @@ class DiaryViewModel @Inject constructor(
 
             //보상
             if(state.firstWrite){
+                Log.e("DiaryViewModel", state.userDataList.find { it.id == "money" }!!.value)
                 userDao.update(
                     id = "money",
                     value = (state.userDataList.find { it.id == "money" }!!.value.toInt() + 1).toString()
