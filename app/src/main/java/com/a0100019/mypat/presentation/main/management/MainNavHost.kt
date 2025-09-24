@@ -33,7 +33,7 @@ fun MainNavHost() {
     val navController = rememberNavController()
 
     //뷰모델 공유하고 싶으면 이렇게 하기
-    val diaryViewModel: DiaryViewModel = hiltViewModel()
+    // val diaryViewModel: DiaryViewModel = hiltViewModel()
 
     NavHost(
         navController = navController,
@@ -149,7 +149,6 @@ fun MainNavHost() {
 
         composable(route = MainRoute.DiaryScreen.name) {
             DiaryScreen(
-                diaryViewModel = diaryViewModel, // ViewModel을 전달
                 onDiaryClick = {
                     navController.navigate(route = MainRoute.DiaryWriteScreen.name)
                 },
@@ -160,7 +159,6 @@ fun MainNavHost() {
         composable(route = MainRoute.DiaryWriteScreen.name) {
             // 같은 ViewModel 사용
             DiaryWriteScreen(
-                diaryViewModel = diaryViewModel,
                 //()가 있는 함수는 {} 안에 해야함
                 popBackStack = { navController.popBackStack() }
             )

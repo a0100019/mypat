@@ -46,10 +46,10 @@ import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
 
 @Composable
 fun DiaryWriteScreen(
-    diaryViewModel: DiaryViewModel = hiltViewModel(),
+    diaryWriteViewModel: DiaryWriteViewModel = hiltViewModel(),
     popBackStack: () -> Unit
 ) {
-    val diaryState: DiaryState = diaryViewModel.collectAsState().value
+    val diaryWriteState: DiaryWriteState = diaryWriteViewModel.collectAsState().value
     val context = LocalContext.current
 
     // 뒤로가기 다이얼로그 상태
@@ -97,17 +97,16 @@ fun DiaryWriteScreen(
 
     // 아래는 실제 일기 UI
     DiaryWriteScreen(
-        writeDiaryData = diaryState.writeDiaryData,
-        writePossible = diaryState.writePossible,
-        isError = diaryState.isError,
-        dialogState = diaryState.dialogState,
-        onContentsTextChange = diaryViewModel::onContentsTextChange,
-        onDiaryFinishClick = diaryViewModel::onDiaryFinishClick,
+        writeDiaryData = diaryWriteState.writeDiaryData,
+        writePossible = diaryWriteState.writePossible,
+        isError = diaryWriteState.isError,
+        dialogState = diaryWriteState.dialogState,
+        writeFinish = diaryWriteState.writeFinish,
+        onContentsTextChange = diaryWriteViewModel::onContentsTextChange,
+        onDiaryFinishClick = diaryWriteViewModel::onDiaryFinishClick,
         popBackStack = popBackStack,
-        emotionChangeClick = diaryViewModel::emotionChangeClick,
-        onDialogStateChange = diaryViewModel::onDialogStateChange,
-        onLastFinishClick = diaryViewModel::onLastFinishClick,
-        writeFinish = diaryState.writeFinish
+        emotionChangeClick = diaryWriteViewModel::emotionChangeClick,
+        onDialogStateChange = diaryWriteViewModel::onDialogStateChange,
     )
 }
 
@@ -136,8 +135,7 @@ fun DiaryWriteScreen(
     if(writeFinish) {
         DiaryFinishDialog(
             onClose = {
-                onLastFinishClick()
-                if (writePossible) popBackStack()
+                popBackStack()
             }
         )
     }

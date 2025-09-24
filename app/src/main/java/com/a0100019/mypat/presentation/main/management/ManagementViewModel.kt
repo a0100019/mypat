@@ -62,38 +62,50 @@ class ManagementViewModel @Inject constructor(
         val lastData = userDao.getValueById("date")
         val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
 
-        if (lastData != currentDate) {
+        if(lastData != "0"){
+            if (lastData != currentDate) {
 
-            val userData = userDao.getAllUserData()
+                val userData = userDao.getAllUserData()
 
-            userDao.update(id = "date", value = currentDate)
-            userDao.update(id = "date", value2 = ( userData.find { it.id == "date" }!!.value2.toInt() + 1 ).toString())
+                userDao.update(id = "date", value = currentDate)
+                userDao.update(
+                    id = "date",
+                    value2 = (userData.find { it.id == "date" }!!.value2.toInt() + 1).toString()
+                )
 
-            //출석 일수 확인해서 편지 전송
-            when(userData.find { it.id == "date" }!!.value2.toInt() + 1) {
-                7 -> letterDao.updateDateByTitle(title = "7일 출석 감사 편지", todayDate = currentDate)
-                30 -> letterDao.updateDateByTitle(title = "30일 출석 감사 편지", todayDate = currentDate)
-                100 -> letterDao.updateDateByTitle(title = "100일 출석 감사 편지", todayDate = currentDate)
+                //출석 일수 확인해서 편지 전송
+                when (userData.find { it.id == "date" }!!.value2.toInt() + 1) {
+                    7 -> letterDao.updateDateByTitle(title = "7일 출석 감사 편지", todayDate = currentDate)
+                    30 -> letterDao.updateDateByTitle(
+                        title = "30일 출석 감사 편지",
+                        todayDate = currentDate
+                    )
+
+                    100 -> letterDao.updateDateByTitle(
+                        title = "100일 출석 감사 편지",
+                        todayDate = currentDate
+                    )
+                }
+
+                val closeKoreanIdiomData = koreanIdiomDao.getCloseKoreanIdiom()
+                if (closeKoreanIdiomData != null) {
+                    closeKoreanIdiomData.date = currentDate
+                    closeKoreanIdiomData.state = "대기"
+                    koreanIdiomDao.update(closeKoreanIdiomData)
+                }
+
+                val closeEnglishData = englishDao.getCloseEnglish()
+                if (closeEnglishData != null) {
+                    closeEnglishData.date = currentDate
+                    closeEnglishData.state = "대기"
+                    englishDao.update(closeEnglishData)
+                }
+
+                diaryDao.insert(Diary(date = currentDate))
+
+                walkDao.insert(Walk(date = currentDate))
+
             }
-
-            val closeKoreanIdiomData = koreanIdiomDao.getCloseKoreanIdiom()
-            if (closeKoreanIdiomData != null) {
-                closeKoreanIdiomData.date = currentDate
-                closeKoreanIdiomData.state = "대기"
-                koreanIdiomDao.update(closeKoreanIdiomData)
-            }
-
-            val closeEnglishData = englishDao.getCloseEnglish()
-            if (closeEnglishData != null) {
-                closeEnglishData.date = currentDate
-                closeEnglishData.state = "대기"
-                englishDao.update(closeEnglishData)
-            }
-
-            diaryDao.insert(Diary(date = currentDate))
-
-            walkDao.insert(Walk(date = currentDate))
-
         }
     }
 

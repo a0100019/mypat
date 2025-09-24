@@ -318,10 +318,7 @@ fun DiaryScreen(
                                 }
                                 .clickable(
                                     interactionSource = interactionSource,
-                                    indication = rememberRipple(
-                                        bounded = true,
-                                        color = Color.White
-                                    ),
+                                    indication = null,
                                     onClick = { onDiaryClick(diaryData) }
                                 )
                                 .padding(horizontal = 16.dp, vertical = 8.dp)

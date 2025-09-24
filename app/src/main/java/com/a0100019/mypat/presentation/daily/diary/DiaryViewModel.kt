@@ -53,52 +53,35 @@ class DiaryViewModel @Inject constructor(
         reduce {
             state.copy(
                 userDataList = userDataList,
-                diaryDataList = allDiaryData,
-                diaryFilterDataList = allDiaryData,
-                dialogState = "",
-                clickDiaryData = null
             )
         }
 
 //        // 2. Flow인 일기 데이터는 collect로 가져와야 실시간 반영됨
-//        viewModelScope.launch {
-//            diaryDao.getAllFlowDiaryData().collect { diaryList ->
-//                reduce {
-//                    state.copy(
-//                        diaryDataList = diaryList,
-//                        diaryFilterDataList = diaryList,
-//                        dialogState = "",
-//                        clickDiaryData = null
-//                    )
-//                }
-//            }
-//        }
+        viewModelScope.launch {
+            diaryDao.getAllFlowDiaryData().collect { diaryList ->
+                reduce {
+                    state.copy(
+                        diaryDataList = diaryList,
+                        diaryFilterDataList = diaryList,
+                        dialogState = "",
+                        clickDiaryData = null
+                    )
+                }
+            }
+        }
     }
 
 
     fun onDiaryClick(diaryData : Diary) = intent {
 
-        reduce {
-            state.copy(
-                writePossible = false,
-                isError = false
-            )
-        }
-
         if(diaryData.state == "대기") {
-            val writeDiaryData = Diary(id = diaryData.id, date = diaryData.date, state = "완료", contents = "", emotion = "emotion/smile.png")
-            reduce {
-                state.copy(
-                    writeDiaryData = writeDiaryData,
-                    firstWrite = true
-                )
-            }
+            userDao.update(id = "etc2", value = diaryData.date)
             postSideEffect(DiarySideEffect.NavigateToDiaryWriteScreen)
         } else {
+            userDao.update(id = "etc2", value = diaryData.date)
             reduce {
                 state.copy(
                     clickDiaryData = diaryData,
-                    firstWrite = false
                 )
             }
         }
@@ -106,14 +89,9 @@ class DiaryViewModel @Inject constructor(
     }
 
     fun onDiaryChangeClick() = intent {
-        reduce {
-            state.copy(
-                writeDiaryData = state.clickDiaryData!!,
-                writePossible = true,
-                firstWrite = false
-            )
-        }
+
         postSideEffect(DiarySideEffect.NavigateToDiaryWriteScreen)
+
     }
 
     fun onCloseClick() = intent {
@@ -122,76 +100,6 @@ class DiaryViewModel @Inject constructor(
                 clickDiaryData = null,
                 dialogState = "",
             )
-        }
-    }
-
-    fun onDiaryFinishClick() = intent {
-        println("내용 길이: ${state.writeDiaryData.contents.length}")
-
-        if(state.writeDiaryData.contents.length > 9){
-
-            //보상
-            if(state.firstWrite){
-                Log.e("DiaryViewModel", state.userDataList.find { it.id == "money" }!!.value)
-                userDao.update(
-                    id = "money",
-                    value = (state.userDataList.find { it.id == "money" }!!.value.toInt() + 1).toString()
-                )
-                postSideEffect(DiarySideEffect.Toast("보상을 획득했습니다"))
-            }
-
-            diaryDao.update(state.writeDiaryData)
-            reduce {
-                state.copy(
-                    writeFinish = true
-                )
-            }
-
-        } else {
-
-//            postSideEffect(DiarySideEffect.Toast("10자 이상 작성해주세요"))
-
-            reduce {
-                state.copy(
-                    isError = true
-                )
-            }
-
-        }
-    }
-
-    fun onLastFinishClick() = intent {
-        reduce {
-            state.copy(
-                clickDiaryData = null,
-                writeFinish = false,
-                dialogState = ""
-            )
-        }
-        loadData()
-    }
-
-    @OptIn(OrbitExperimental::class)
-    fun onContentsTextChange(contentsText: String) = blockingIntent {
-
-        reduce {
-            state.copy(writeDiaryData = state.writeDiaryData.copy(contents = contentsText))
-        }
-
-        if (contentsText.length > 9) {
-            reduce {
-                state.copy(
-                    writePossible = true,
-                    isError = false
-                )
-            }
-        } else {
-            reduce {
-                state.copy(
-                    writePossible = false,
-                    isError = false
-                )
-            }
         }
     }
 
@@ -229,16 +137,6 @@ class DiaryViewModel @Inject constructor(
         }
     }
 
-    fun emotionChangeClick(emotion: String) = intent {
-        val newWriteDiaryData = state.writeDiaryData
-        newWriteDiaryData.emotion = emotion
-        reduce {
-            state.copy(
-                writeDiaryData = newWriteDiaryData,
-                dialogState = ""
-            )
-        }
-    }
 
     fun onEmotionFilterClick(emotion: String) = intent {
         var newDiaryDataList = state.diaryDataList.filter { it.contents.contains(state.searchText) }
