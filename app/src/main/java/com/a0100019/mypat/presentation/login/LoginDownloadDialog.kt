@@ -1,14 +1,12 @@
-package com.a0100019.mypat.presentation.daily.diary
+package com.a0100019.mypat.presentation.login
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -23,7 +21,7 @@ import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
 @Composable
-fun DiaryFinishDialog(
+fun LoginDownloadDialog(
     onClose: () -> Unit,
 ) {
 
@@ -47,19 +45,19 @@ fun DiaryFinishDialog(
 
             Column(
                 modifier = Modifier
-                        ,
+                ,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
                 Text(
-                    text = "하루 메모 작성을 완료했습니다!",
+                    text = "하루마을 데이터 다운로드 완료!",
                     style = MaterialTheme.typography.bodyLarge
                 )
 
                 Spacer( modifier = Modifier.size(30.dp))
 
                 MainButton(
-                    text = "  닫기  ",
+                    text = "  시작하기  ",
                     onClick = onClose,
                     modifier = Modifier
                 )
@@ -71,9 +69,9 @@ fun DiaryFinishDialog(
 
 @Preview(showBackground = true)
 @Composable
-fun DiaryFinishDialogPreview() {
+fun LoginDownloadDialogPreview() {
     MypatTheme {
-        DiaryFinishDialog(
+        LoginDownloadDialog(
             onClose = {},
         )
     }

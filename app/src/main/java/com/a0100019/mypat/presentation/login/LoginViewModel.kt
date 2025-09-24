@@ -102,6 +102,10 @@ class LoginViewModel @Inject constructor(
 
     }
 
+    fun reLoading() = intent {
+        loadData()
+    }
+
     fun onGoogleLoginClick(idToken: String) = intent {
         Log.e("login", "idToken = $idToken")
 

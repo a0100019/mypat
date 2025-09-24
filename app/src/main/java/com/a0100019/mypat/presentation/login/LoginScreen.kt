@@ -109,6 +109,7 @@ fun LoginScreen(
 
         onNavigateToMainScreen = loginViewModel::onNavigateToMainScreen,
         dialogChange = loginViewModel::dialogChange,
+        reLoading = loginViewModel::reLoading,
 
         googleLoginClick = {
             if (!isInternetAvailable(context)) {
@@ -145,6 +146,7 @@ fun LoginScreen(
     googleLoginClick: () -> Unit,
     onNavigateToMainScreen: () -> Unit,
     dialogChange: (String) -> Unit = {},
+    reLoading: () -> Unit = {},
 
     loginState: String,
     dialog: String = ""
@@ -311,6 +313,11 @@ fun LoginScreen(
                 Spacer(modifier = Modifier.size(70.dp))
 
             }
+            
+            "" -> LoginDownloadDialog(
+                onClose = reLoading
+            )
+            
         }
     }
 }
@@ -331,7 +338,7 @@ fun TextFlash(text: String) {
 
     Text(
         text = text,
-        style = MaterialTheme.typography.headlineSmall,
+        style = MaterialTheme.typography.headlineMedium,
         modifier = Modifier.alpha(alpha) // 🔹 투명도 적용
     )
 }
