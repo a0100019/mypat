@@ -192,7 +192,6 @@ fun LoginScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-
                 TextFlash(
                     text = "하루마을에 오신 것을 환영합니다!",
                 )

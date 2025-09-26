@@ -76,6 +76,14 @@ class CommunityViewModel @Inject constructor(
 
         val allAreaCount = areaDao.getAllAreaData().size.toString()
 
+        if(allUserDataList.isEmpty()) {
+            reduce {
+                state.copy(
+                    situation = "update"
+                )
+            }
+        }
+
         val page = userDataList.find { it.id == "etc" }!!.value.toInt()
         val allUserData1 = allUserDataList[4*page]
         val allUserData2 = allUserDataList[4*page + 1]
