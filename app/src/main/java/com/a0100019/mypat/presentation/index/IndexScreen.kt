@@ -86,8 +86,6 @@ fun IndexScreen(
     )
 }
 
-
-
 @Composable
 fun IndexScreen(
     allPatDataList: List<Pat>,
@@ -241,7 +239,8 @@ fun IndexScreen(
                             .fillMaxWidth()
                             .weight(1f)
                         ,
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
                     ) {
                         pageList.chunked(3).forEach { rowItems ->
                             Row(modifier = Modifier.fillMaxWidth()) {
@@ -360,7 +359,8 @@ fun IndexScreen(
                             .fillMaxWidth()
                             .weight(1f)
                         ,
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
                     ) {
                         pageList.chunked(3).forEachIndexed { rowIdx, rowItems ->
                             Row(modifier = Modifier.fillMaxWidth()) {
@@ -484,7 +484,8 @@ fun IndexScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
                     ) {
                         pageList.chunked(3).forEach { rowItems ->
                             Row(modifier = Modifier.fillMaxWidth()) {
