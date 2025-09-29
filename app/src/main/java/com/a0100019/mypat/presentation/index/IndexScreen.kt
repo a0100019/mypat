@@ -334,7 +334,6 @@ fun IndexScreen(
                                     }
                                 }
 
-
                                 // 마지막 줄에서 3칸 미만이면 빈 칸 채우기
                                 if (rowItems.size < 3) {
                                     repeat(3 - rowItems.size) {
