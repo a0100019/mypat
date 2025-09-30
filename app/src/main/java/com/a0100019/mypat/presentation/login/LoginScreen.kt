@@ -60,6 +60,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import com.a0100019.mypat.presentation.setting.TermsDialog
 import com.a0100019.mypat.presentation.ui.MusicPlayer
 
@@ -335,10 +338,17 @@ fun TextFlash(text: String) {
         label = "alphaAnim"
     )
 
+    val isPreview = LocalInspectionMode.current // 프리뷰 감지
+
+    val customFont = FontFamily(Font(R.font.outline))
+    val safeFont = if (isPreview) FontFamily.SansSerif else customFont
+
     Text(
         text = text,
-        style = MaterialTheme.typography.headlineMedium,
-        modifier = Modifier.alpha(alpha) // 🔹 투명도 적용
+        style = MaterialTheme.typography.headlineMedium.copy(
+            fontFamily = safeFont // ✅ 프리뷰 모드에서는 SansSerif
+        ),
+        modifier = Modifier.alpha(alpha)
     )
 }
 
