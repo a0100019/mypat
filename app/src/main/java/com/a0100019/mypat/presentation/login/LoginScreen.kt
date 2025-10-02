@@ -53,6 +53,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
@@ -63,6 +64,8 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import com.a0100019.mypat.presentation.setting.TermsDialog
 import com.a0100019.mypat.presentation.ui.MusicPlayer
 
@@ -186,6 +189,22 @@ fun LoginScreen(
             contentScale = ContentScale.FillBounds
         )
 
+        val isPreview = LocalInspectionMode.current // 프리뷰 감지
+
+        val customFont = FontFamily(Font(R.font.outline))
+        val safeFont = if (isPreview) FontFamily.SansSerif else customFont
+
+        Text(
+            text = "하루마을",
+            fontSize = 70.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF009688),
+            fontFamily = safeFont,
+            modifier = Modifier
+                .align(Alignment.Center)
+                .padding(bottom = 100.dp)
+        )
+
         when (loginState) {
             "unLogin" -> Column(
                 modifier = Modifier
@@ -305,9 +324,12 @@ fun LoginScreen(
             "login" -> Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .clickable {
-                        onNavigateToMainScreen()
-                    },
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onClick = onNavigateToMainScreen
+                    )
+                        ,
                 verticalArrangement = Arrangement.Bottom,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -345,10 +367,11 @@ fun TextFlash(text: String) {
 
     Text(
         text = text,
-        style = MaterialTheme.typography.headlineMedium.copy(
+        style = MaterialTheme.typography.headlineSmall.copy(
             fontFamily = safeFont // ✅ 프리뷰 모드에서는 SansSerif
         ),
-        modifier = Modifier.alpha(alpha)
+        modifier = Modifier.alpha(alpha),
+        color = Color(0xFF2196F3)
     )
 }
 
