@@ -77,7 +77,7 @@ fun LetterViewDialog(
 
                 //편지 이미지
                 JustImage(
-                    filePath = "etc/letter.png",
+                    filePath = "etc/letter.webp",
                     contentScale = ContentScale.FillBounds,
                     modifier = Modifier
                         .fillMaxSize()

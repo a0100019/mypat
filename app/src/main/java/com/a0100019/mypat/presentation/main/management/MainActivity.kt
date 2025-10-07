@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
 
         // 🔹 SharedPreferences에서 track 불러오기 (기본값 "aa")
         val prefs = getSharedPreferences("bgm_prefs", Context.MODE_PRIVATE)
-        val bgm = prefs.getString("bgm", "area/normal.png")
+        val bgm = prefs.getString("bgm", "area/normal.webp")
         val bgmOn = prefs.getBoolean("bgmOn", true)
 
         // 🔹 앱 전역 배경음악 시작 (앱 켜질 때 딱 한 번만 실행)

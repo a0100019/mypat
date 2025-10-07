@@ -505,7 +505,11 @@ class LoginViewModel @Inject constructor(
                         return@intent
                     }
 
-                    onNavigateToMainScreen()
+                    reduce {
+                        state.copy(
+                            dialog = "explanation"
+                        )
+                    }
 
                 }
 

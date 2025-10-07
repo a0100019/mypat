@@ -62,9 +62,20 @@ class ManagementViewModel @Inject constructor(
         val lastData = userDao.getValueById("date")
         val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
 
-        if(lastData != "0"){
-            if (lastData != currentDate) {
+        if (lastData != currentDate) {
 
+            val allEnglishDataTest = englishDao.getAllEnglishData()
+            var lastDate = allEnglishDataTest
+                .filter { it.date != "0" }
+                .maxByOrNull { it.id }
+                ?.date ?: "0"
+
+            val totalDate = userDao.getValue2ById("date")
+            if(totalDate >= "100") {
+                lastDate = walkDao.getLatestWalkData().date
+            }
+
+            if(lastDate != currentDate){
                 val userData = userDao.getAllUserData()
 
                 userDao.update(id = "date", value = currentDate)
@@ -104,9 +115,10 @@ class ManagementViewModel @Inject constructor(
                 diaryDao.insert(Diary(date = currentDate))
 
                 walkDao.insert(Walk(date = currentDate))
-
             }
+
         }
+
     }
 
 }

@@ -184,21 +184,20 @@ fun LoginScreen(
     Box {
 
         JustImage(
-            filePath = "etc/background.png",
+            filePath = "etc/background.webp",
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.FillBounds
         )
 
         val isPreview = LocalInspectionMode.current // 프리뷰 감지
 
-        val customFont = FontFamily(Font(R.font.outline))
+        val customFont = FontFamily(Font(R.font.fish))
         val safeFont = if (isPreview) FontFamily.SansSerif else customFont
 
         Text(
             text = "하루마을",
             fontSize = 70.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF009688),
+            color = Color(0xFF5ABDB8),
             fontFamily = safeFont,
             modifier = Modifier
                 .align(Alignment.Center)
@@ -367,7 +366,7 @@ fun TextFlash(text: String) {
 
     Text(
         text = text,
-        style = MaterialTheme.typography.headlineSmall.copy(
+        style = MaterialTheme.typography.titleMedium.copy(
             fontFamily = safeFont // ✅ 프리뷰 모드에서는 SansSerif
         ),
         modifier = Modifier.alpha(alpha),

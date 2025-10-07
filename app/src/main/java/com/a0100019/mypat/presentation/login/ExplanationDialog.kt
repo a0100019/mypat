@@ -68,7 +68,7 @@ fun ExplanationDialog(
 
                 //편지 이미지
                 JustImage(
-                    filePath = "etc/letter.png",
+                    filePath = "etc/letter.webp",
                     contentScale = ContentScale.FillBounds,
                     modifier = Modifier
                         .fillMaxSize()
@@ -180,8 +180,8 @@ fun ExplanationDialog(
                                 Spacer(modifier = Modifier.size(36.dp))
 
                                 Text(
-                                    text = "2.  펫과 놀아주세요! 10분마다 펫 머리 위에 아래와 같이 생긴 말풍선이 생기면 클릭하여 놀아주세요 애정도와 달빛을 얻을 수 있습니다. " +
-                                            "또한 펫을 클릭하면 여러 게임을 플레이 할 수 있으며 이웃들과 경쟁하여 높은 순위를 차지해 보세요",
+                                    text = "2.  펫과 놀아주세요! 펫을 클릭하면 여러 게임을 플레이 할 수 있으며 이웃들과 경쟁하여 높은 순위를 차지해 보세요. " +
+                                            "또한 10분마다 펫 머리 위에 말풍선이 생기면 클릭하여 놀아주세요 애정도와 달빛을 얻을 수 있습니다",
                                     style = MaterialTheme.typography.bodyLarge,
                                     textAlign = TextAlign.Center,
                                     modifier = Modifier.padding(bottom = 10.dp),

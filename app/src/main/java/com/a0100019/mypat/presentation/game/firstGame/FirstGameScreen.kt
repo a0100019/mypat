@@ -261,7 +261,7 @@ fun FirstGameScreen(
                 )
                 if (situation == "회전" || situation == "준비") {
                     JustImage(
-                        filePath = "etc/arrow.png",
+                        filePath = "etc/arrow.webp",
                         modifier = Modifier
                             .size(snowballSize)
                             .offset(x = animatedX, y = animatedY)

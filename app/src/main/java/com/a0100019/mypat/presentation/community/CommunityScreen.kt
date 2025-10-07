@@ -217,13 +217,13 @@ fun CommunityScreen(
                 ) {
                     Text(
                         text = when (situation) {
-                            "world" -> "마을 구경하기"
+                            "world" -> "이웃 마을"
                             "chat" -> "통신"
-                            "firstGame" -> "게임1"
-                            "secondGame" -> "게임2"
-                            "thirdGameEasy" -> "게임3 - 쉬움"
-                            "thirdGameNormal" -> "게임3 - 보통"
-                            "thirdGameHard" -> "게임3 - 어려움"
+                            "firstGame" -> "컬링"
+                            "secondGame" -> "펫러쉬"
+                            "thirdGameEasy" -> "스도쿠 - 쉬움"
+                            "thirdGameNormal" -> "스도쿠 - 보통"
+                            "thirdGameHard" -> "스도쿠 - 어려움"
                             else -> "로딩중.."
                         },
                         style = MaterialTheme.typography.displayMedium,
@@ -598,9 +598,9 @@ fun CommunityScreen(
 
                 val buttons = listOf(
                     "마을" to "world",
-                    "게임1" to "firstGame",
-                    "게임2" to "secondGame",
-                    "게임3" to "thirdGameEasy", // 대표 키만 지정
+                    "컬링" to "firstGame",
+                    "펫러쉬" to "secondGame",
+                    "스도쿠" to "thirdGameEasy", // 대표 키만 지정
                     "통신" to "chat"
                 )
 

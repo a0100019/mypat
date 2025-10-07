@@ -8,6 +8,6 @@ data class Area(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     var date: String = "0",
     val name: String = "",
-    val url: String = "area/normal.png",
+    val url: String = "area/normal.webp",
 
     )

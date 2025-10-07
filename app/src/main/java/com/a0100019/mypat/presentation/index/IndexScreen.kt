@@ -691,7 +691,7 @@ fun IndexScreenPreview() {
         IndexScreen(
             allPatDataList = listOf(Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json"), Pat(url = "pat/cat.json")),
             allItemDataList = listOf(Item(url = "item/airplane.json")),
-            allAreaDataList = listOf(Area(url = "area/kingdom.png", name = "aa"),Area(url = "area/kingdom.png", name = "aa"),Area(url = "area/kingdom.png", name = "aa"),Area(url = "area/kingdom.png", name = "aa"),Area(url = "area/kingdom.png", name = "aa"),Area(url = "area/kingdom.png", name = "aa"),Area(url = "area/kingdom.png", name = "aa"),Area(url = "area/kingdom.png", name = "aa")),
+            allAreaDataList = listOf(Area(url = "area/kingdom.webp", name = "aa"),Area(url = "area/kingdom.webp", name = "aa"),Area(url = "area/kingdom.webp", name = "aa"),Area(url = "area/kingdom.webp", name = "aa"),Area(url = "area/kingdom.webp", name = "aa"),Area(url = "area/kingdom.webp", name = "aa"),Area(url = "area/kingdom.webp", name = "aa"),Area(url = "area/kingdom.webp", name = "aa")),
             onTypeChangeClick = {},
             typeChange = "area",
             dialogPatIndex = -1,

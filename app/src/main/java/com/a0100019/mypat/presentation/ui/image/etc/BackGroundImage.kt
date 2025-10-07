@@ -32,7 +32,7 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun BackGroundImage(
-    filePath: String = "etc/background4.png",
+    filePath: String = "etc/background.webp",
     @SuppressLint("ModifierParameter") modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.FillBounds,
     repetition: Boolean = false

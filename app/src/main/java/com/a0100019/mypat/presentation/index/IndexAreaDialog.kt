@@ -155,7 +155,7 @@ fun IndexMapDialogPreview() {
         IndexAreaDialog(
             onClose = {},
             areaData = Area(
-                url = "area/kingdom.png",
+                url = "area/kingdom.webp",
                 name = "숲",
                 ),
         )
