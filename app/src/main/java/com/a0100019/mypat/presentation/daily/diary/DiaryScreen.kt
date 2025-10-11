@@ -160,7 +160,7 @@ fun DiaryScreen(
             ) {
 
                 Text(
-                    text = "메모장",
+                    text = "일기장",
                     style = MaterialTheme.typography.displayMedium, // Large font size
                     modifier = Modifier
                 )
@@ -289,7 +289,7 @@ fun DiaryScreen(
                                     }
 
                                     Text(
-                                        text = "눌러서 하루 메모를 작성해주세요",
+                                        text = "눌러서 일기를 작성해주세요",
                                         style = MaterialTheme.typography.titleMedium,
                                         color = MaterialTheme.colorScheme.primary,
                                         modifier = Modifier

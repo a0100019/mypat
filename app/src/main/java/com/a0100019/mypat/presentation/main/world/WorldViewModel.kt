@@ -66,14 +66,6 @@ class WorldViewModel @Inject constructor(
                 //월드 데이터 가져오기
                 val worldDataList = worldDao.getAllWorldData().drop(1)
 
-                // 펫 flow 월드 데이터 리스트 가져오기
-                val patFlowWorldDataList = worldDao.getFlowWorldDataListByType(type = "pat")
-                    .map { list ->
-                        list.map { patWorldData ->
-                            patDao.getPatDataById(patWorldData.value)
-                        }
-                    }
-
                 // 모든 오픈 된 데이터 가져오기
                 val allPatDataList = patDao.getAllOpenPatData()
                 val allItemDataList = itemDao.getAllOpenItemData()
@@ -81,7 +73,6 @@ class WorldViewModel @Inject constructor(
                 val allAreaDataList = areaDao.getAllOpenAreaData()
                 val allItemDataWithShadowList = itemDao.getAllOpenItemWithShadowData()
 
-                val userFlowDataList = userDao.getAllUserDataFlow()
                 val userDataList = userDao.getAllUserData()
 
                 // UI 상태 업데이트 (Main Dispatcher에서 실행)
@@ -90,10 +81,8 @@ class WorldViewModel @Inject constructor(
                         state.copy(
                             areaData = areaData,
                             patDataList = allPatDataList,
-                            userFlowDataList = userFlowDataList,
                             itemDataList = allItemDataList,
                             allAreaDataList = allAreaDataList,
-                            patFlowWorldDataList = patFlowWorldDataList,
                             worldDataList = worldDataList,
                             userDataList = userDataList,
                             shadowDataList = allShadowDataList,
@@ -206,7 +195,6 @@ class WorldViewModel @Inject constructor(
                 newUserDataList.find { it.id == "item" }!!.value3 =
                     ((newUserDataList.find { it.id == "item" }!!.value3).toInt() - 1).toString()
             }
-
 
             reduce {
                 state.copy(
@@ -491,11 +479,9 @@ class WorldViewModel @Inject constructor(
 @Immutable
 data class WorldState(
 
-    val userFlowDataList: Flow<List<User>> = flowOf(emptyList()),
     val patDataList: List<Pat> = emptyList(),
     val itemDataList: List<Item> = emptyList(),
     val allAreaDataList: List<Area> = emptyList(),
-    val patFlowWorldDataList: Flow<List<Pat>> = flowOf(emptyList()),
     val worldDataList: List<World> = emptyList(),
     val userDataList: List<User> = emptyList(),
     val shadowDataList: List<Item> = emptyList(),

@@ -153,7 +153,7 @@ fun DiaryWriteScreen(
                 .padding(16.dp)
         ) {
             Text(
-                text = "메모장",
+                text = "일기장",
                 style = MaterialTheme.typography.displayMedium,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)

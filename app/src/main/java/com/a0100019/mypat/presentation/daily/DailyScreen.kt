@@ -356,7 +356,7 @@ fun DailyScreen(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Text(
-                                    text = "하루 메모",
+                                    text = "일기",
                                     style = MaterialTheme.typography.headlineMedium,
                                     modifier = Modifier
                                         .padding(bottom = 10.dp)

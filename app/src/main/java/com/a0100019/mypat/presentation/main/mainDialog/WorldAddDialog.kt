@@ -269,7 +269,7 @@ fun WorldAddDialog(
 
                 if(addDialogChange != "area"){
                     Text(
-                        text = "숫자가 높을 수록 상단에 배치됩니다"
+                        text = "숫자가 높을 수록 앞에 배치됩니다"
                     )
                 } else {
                     Text(

@@ -262,14 +262,16 @@ fun WorldScreen(
                             val surfaceWidthDp = with(density) { surfaceWidth.toDp() }
                             val surfaceHeightDp = with(density) { surfaceHeight.toDp() }
 
-                            worldDataList.forEachIndexed { index, worldData ->
-                                key("${worldData.id}_${worldData.type}") {
+                            worldDataList.forEach { worldData ->
+                                val stableKey = "${worldData.type}:${worldData.id}" // id가 전역 고유면 id만 써도 됨
+
+                                key(stableKey) {
                                     if (worldData.type == "pat") {
                                         patDataList.find { it.id.toString() == worldData.value }
                                             ?.let { patData ->
 
                                                 DraggablePatImage(
-                                                    worldIndex = index.toString(),
+                                                    instanceKey = worldData.id, // ✅ 안정 키
                                                     patUrl = patData.url,
                                                     surfaceWidthDp = surfaceWidthDp,
                                                     surfaceHeightDp = surfaceHeightDp,
@@ -278,13 +280,10 @@ fun WorldScreen(
                                                     sizeFloat = patData.sizeFloat,
                                                     effect = patData.effect,
                                                     onClick = { dialogPatIdChange(patData.id.toString()) }
-                                                ) { newXFloat, newYFloat ->
-                                                    onPatDrag(
-                                                        patData.id.toString(),
-                                                        newXFloat,
-                                                        newYFloat
-                                                    )
+                                                ) { newX, newY ->
+                                                    onPatDrag(patData.id.toString(), newX, newY)
                                                 }
+
 
                                             }
 
@@ -293,7 +292,7 @@ fun WorldScreen(
                                             ?.let { itemData ->
 
                                                 DraggableItemImage(
-                                                    worldIndex = index.toString(),
+                                                    instanceKey = worldData.id, // ✅ 안정 키
                                                     itemUrl = itemData.url,
                                                     surfaceWidthDp = surfaceWidthDp,
                                                     surfaceHeightDp = surfaceHeightDp,
@@ -301,12 +300,8 @@ fun WorldScreen(
                                                     yFloat = itemData.y,
                                                     sizeFloat = itemData.sizeFloat,
                                                     onClick = { dialogItemIdChange(itemData.id.toString()) }
-                                                ) { newXFloat, newYFloat ->
-                                                    onItemDrag(
-                                                        itemData.id.toString(),
-                                                        newXFloat,
-                                                        newYFloat
-                                                    )
+                                                ) { newX, newY ->
+                                                    onItemDrag(itemData.id.toString(), newX, newY) // 드래그 종료 시에만 반영
                                                 }
 
                                             }

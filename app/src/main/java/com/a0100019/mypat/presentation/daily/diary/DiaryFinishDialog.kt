@@ -52,7 +52,7 @@ fun DiaryFinishDialog(
             ) {
 
                 Text(
-                    text = "하루 메모 작성을 완료했습니다!",
+                    text = "일기 작성을 완료했습니다!",
                     style = MaterialTheme.typography.bodyLarge
                 )
 

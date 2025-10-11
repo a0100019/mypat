@@ -206,9 +206,9 @@ class SettingViewModel @Inject constructor(
             ),
 
             "date" to mapOf(
-                "firstDate" to userDataList.find { it.id == "date"}!!.value,
+                "firstDate" to userDataList.find { it.id == "date"}!!.value3,
                 "totalDate" to userDataList.find { it.id == "date"}!!.value2,
-                "lastDate" to userDataList.find { it.id == "date"}!!.value3
+                "lastDate" to userDataList.find { it.id == "date"}!!.value
             ),
 
             "game" to mapOf(
