@@ -286,39 +286,36 @@ class MainViewModel @Inject constructor(
             var updatedItem = targetItem.copy(x = newX, y = newY)
 
             if (newY < 0.5f) {
-                if (targetItem.date.toInt() % 2 == 0) {
-                    if (newX > 0.4f) {
-                        updatedItem =
-                            updatedItem.copy(date = (targetItem.date.toInt() + 1).toString())
-                        reduce {
-                            state.copy(
-                                musicTrigger = state.musicTrigger + 1
-                            )
-                        }
+//                if (targetItem.date.toInt() % 2 == 0) {
+//                    if (newX > 0.4f) {
+//                        updatedItem =
+//                            updatedItem.copy(date = (targetItem.date.toInt() + 1).toString())
+//                        reduce {
+//                            state.copy(
+//                                musicTrigger = state.musicTrigger + 1
+//                            )
+//                        }
+//                    }
+//                } else {
+//                    if (newX < 0.4f) {
+//                        updatedItem =
+//                            updatedItem.copy(date = (targetItem.date.toInt() + 1).toString())
+//                        reduce {
+//                            state.copy(
+//                                musicTrigger = state.musicTrigger + 1
+//                            )
+//                        }
+//                    }
+//                }
+                reduce {
+                    when (itemId) {
+                        "1" -> state.copy(loveItemData1 = updatedItem)
+                        "2" -> state.copy(loveItemData2 = updatedItem)
+                        else -> state.copy(loveItemData3 = updatedItem)
                     }
-                } else {
-                    if (newX < 0.4f) {
-                        updatedItem =
-                            updatedItem.copy(date = (targetItem.date.toInt() + 1).toString())
-                        reduce {
-                            state.copy(
-                                musicTrigger = state.musicTrigger + 1
-                            )
-                        }
-                    }
-                }
-            }
 
-            reduce {
-                when (itemId) {
-                    "1" -> state.copy(loveItemData1 = updatedItem)
-                    "2" -> state.copy(loveItemData2 = updatedItem)
-                    else -> state.copy(loveItemData3 = updatedItem)
                 }
 
-            }
-
-            if (updatedItem.date.toInt() > 6) {
                 reduce {
                     state.copy(
                         situation = "lovePatStop",
@@ -326,7 +323,14 @@ class MainViewModel @Inject constructor(
                     )
                 }
                 lovePatCheck(itemId)
+
             }
+
+
+
+//            if (updatedItem.date.toInt() > 6) {
+//
+//            }
         }
     }
 

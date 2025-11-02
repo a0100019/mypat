@@ -241,7 +241,7 @@ fun CommunityUserDialog(
                                             .padding(end = 6.dp)
                                     )
                                     Text(
-                                        text = "${clickAllUserData.openItem}/${itemDataList.size}",
+                                        text = "${clickAllUserData.openItem.toInt() - 20}/${itemDataList.size - 20}",
                                         style = MaterialTheme.typography.bodyMedium
                                     )
                                 }

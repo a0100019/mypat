@@ -267,7 +267,7 @@ fun InformationScreen(
                                         .padding(end = 6.dp)
                                 )
                                 Text(
-                                    text = "${allItemDataList.count { it.date != "0" }}/${allItemDataList.size}",
+                                    text = "${allItemDataList.count { it.date != "0" }-20}/${allItemDataList.size - 20}",
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                             }

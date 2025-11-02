@@ -59,17 +59,17 @@ fun LovePatDialog(
         music = lovePatData.name
     )
 
-    if(musicTrigger != 0) {
-        if (musicTrigger % 2 == 0) {
-            MusicPlayer(
-                id = R.raw.slime5
-            )
-        } else {
-            MusicPlayer(
-                id = R.raw.slime5
-            )
-        }
-    }
+//    if(musicTrigger != 0) {
+//        if (musicTrigger % 2 == 0) {
+//            MusicPlayer(
+//                id = R.raw.slime5
+//            )
+//        } else {
+//            MusicPlayer(
+//                id = R.raw.slime5
+//            )
+//        }
+//    }
 
     Dialog(
         onDismissRequest = {  }
@@ -163,7 +163,7 @@ fun LovePatDialog(
 
                 if(situation == "lovePatOnGoing"){
                     Text(
-                        text = "장난감을 펫에게 흔들어주세요\n펫을 기쁘게 하면 한번 더 흔들 수 있습니다",
+                        text = "장난감을 펫에게 전달해 주세요\n펫이 원하는 장난감을 찾아주세요",
                         style = MaterialTheme.typography.bodyMedium,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
@@ -191,7 +191,7 @@ fun LovePatDialog(
 
                         MainButton(
                             onClick = onLovePatNextClick,
-                            text = "한번 더 흔들기",
+                            text = "한번 더",
                             modifier = Modifier
                                 .fillMaxWidth(0.5f)
                                 .align(Alignment.Center) // ⭐ 중앙 정렬

@@ -407,18 +407,14 @@ fun MainScreen(
                         onClick = onStoreNavigateClick
                     )
 
-
-
                     MainButton(
                         text = "도감",
                         modifier = Modifier
                             .fillMaxWidth(0.66f),
                         onClick = onIndexNavigateClick
                     )
-
-
+                    
                 }
-
 
             }
 

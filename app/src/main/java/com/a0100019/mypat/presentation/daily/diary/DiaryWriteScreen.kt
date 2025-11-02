@@ -66,7 +66,7 @@ fun DiaryWriteScreen(
             onDismissRequest = { showExitDialog = false },
             title = {
                 Text(
-                    text = "작성 중인 메모가 있어요",
+                    text = "작성 중인 일기가 있어요",
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()
                     )
