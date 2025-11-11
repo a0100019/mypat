@@ -1,0 +1,28 @@
+import java.util.*
+import java.io.*
+
+fun main() {
+    val br = BufferedReader(InputStreamReader(System.`in`))
+    val n = br.readLine().toInt()
+
+    val list = mutableListOf<List<Int>>()
+
+    repeat(n) {
+        val st = StringTokenizer(br.readLine())
+        val num = st.nextToken().toInt()
+        val strike = st.nextToken().toInt()
+        val ball = st.nextToken().toInt()
+        list.add(listOf(num, strike, ball))
+    }
+
+    nextToken()	다음 토큰(조각)을 꺼냅니다.
+    hasMoreTokens()	다음 토큰이 더 남아있는지 확인합니다.
+    countTokens()	남은 토큰의 개수를 반환합니다.
+
+    StringTokenizer는 문자열을 공백(또는 지정한 구분자) 기준으로 잘라서 하나씩 꺼내 쓸 수 있게 해주는 클래스예요.
+}
+
+
+    val sb = StringBuilder()
+    for (x in arr) sb.append(x).append('\n')
+    print(sb.toString())        // 한 번에 출력

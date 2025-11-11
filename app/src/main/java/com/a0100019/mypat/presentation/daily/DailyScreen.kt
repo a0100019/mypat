@@ -165,7 +165,7 @@ fun DailyScreen(
                             .clickable(
                                 interactionSource = interactionSource,
                                 indication = null,
-                                onClick = onWalkNavigateClick
+                                onClick = onKoreanNavigateClick
                             )
                             .padding(top = 6.dp, bottom = 6.dp)
                     ) {
@@ -179,21 +179,80 @@ fun DailyScreen(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Text(
-                                    text = "만보기",
+                                    text = "사자성어",
                                     style = MaterialTheme.typography.headlineMedium,
                                     modifier = Modifier
                                         .padding(bottom = 10.dp)
                                     ,
                                 )
                                 Text(
-                                    text = "매일 만보를 걸어 보상을 획득하세요",
+                                    text = "한자 카드를 조합하여 사자성어를 맞춰주세요",
                                     style = MaterialTheme.typography.titleMedium,
                                     modifier = Modifier
                                         .padding(bottom = 10.dp)
                                     ,
                                 )
                                 Text(
-                                    text = "하루가 지나면 보상을 획득할 수 없습니다",
+                                    text = "횟수에는 제한이 없습니다, 천천히 생각해봐요",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    modifier = Modifier,
+                                )
+                            }
+                        }
+
+                    }
+                }
+
+                item {
+                    //버튼 기본 설정
+                    val interactionSource = remember { MutableInteractionSource() }
+                    val isPressed by interactionSource.collectIsPressedAsState()
+                    val scale by animateFloatAsState(
+                        targetValue = if (isPressed) 0.95f else 1f,
+                        label = "scale"
+                    )
+
+                    Surface(
+                        shape = RoundedCornerShape(16.dp),
+                        color = MaterialTheme.colorScheme.scrim,
+                        border = BorderStroke(3.dp, MaterialTheme.colorScheme.primaryContainer),
+                        modifier = Modifier
+                            .graphicsLayer {
+                                scaleX = scale
+                                scaleY = scale
+                            }
+                            .clickable(
+                                interactionSource = interactionSource,
+                                indication = null,
+                                onClick = onDiaryNavigateClick
+                            )
+                            .padding(top = 6.dp, bottom = 6.dp)
+                    ) {
+                        Box {
+
+                            Column(
+                                modifier = Modifier
+                                    .padding(8.dp)
+                                    .fillMaxWidth(),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = "일기",
+                                    style = MaterialTheme.typography.headlineMedium,
+                                    modifier = Modifier
+                                        .padding(bottom = 10.dp)
+                                    ,
+                                )
+                                Text(
+                                    text = "오늘 하루를 정리하세요",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    modifier = Modifier
+                                        .padding(bottom = 10.dp)
+                                    ,
+                                )
+                                Text(
+                                    text = "길게 적지 않아도 돼요. 꾸준함이 중요합니다",
                                     style = MaterialTheme.typography.titleSmall,
                                     modifier = Modifier,
                                 )
@@ -283,7 +342,7 @@ fun DailyScreen(
                             .clickable(
                                 interactionSource = interactionSource,
                                 indication = null,
-                                onClick = onKoreanNavigateClick
+                                onClick = onWalkNavigateClick
                             )
                             .padding(top = 6.dp, bottom = 6.dp)
                     ) {
@@ -297,80 +356,21 @@ fun DailyScreen(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Text(
-                                    text = "사자성어",
+                                    text = "만보기",
                                     style = MaterialTheme.typography.headlineMedium,
                                     modifier = Modifier
                                         .padding(bottom = 10.dp)
                                     ,
                                 )
                                 Text(
-                                    text = "한자 카드를 조합하여 사자성어를 맞춰주세요",
+                                    text = "매일 만보를 걸어 보상을 획득하세요",
                                     style = MaterialTheme.typography.titleMedium,
                                     modifier = Modifier
                                         .padding(bottom = 10.dp)
                                     ,
                                 )
                                 Text(
-                                    text = "횟수에는 제한이 없습니다, 천천히 생각해봐요",
-                                    style = MaterialTheme.typography.titleSmall,
-                                    modifier = Modifier,
-                                )
-                            }
-                        }
-
-                    }
-                }
-
-                item {
-                    //버튼 기본 설정
-                    val interactionSource = remember { MutableInteractionSource() }
-                    val isPressed by interactionSource.collectIsPressedAsState()
-                    val scale by animateFloatAsState(
-                        targetValue = if (isPressed) 0.95f else 1f,
-                        label = "scale"
-                    )
-
-                    Surface(
-                        shape = RoundedCornerShape(16.dp),
-                        color = MaterialTheme.colorScheme.scrim,
-                        border = BorderStroke(3.dp, MaterialTheme.colorScheme.primaryContainer),
-                        modifier = Modifier
-                            .graphicsLayer {
-                                scaleX = scale
-                                scaleY = scale
-                            }
-                            .clickable(
-                                interactionSource = interactionSource,
-                                indication = null,
-                                onClick = onDiaryNavigateClick
-                            )
-                            .padding(top = 6.dp, bottom = 6.dp)
-                    ) {
-                        Box {
-
-                            Column(
-                                modifier = Modifier
-                                    .padding(8.dp)
-                                    .fillMaxWidth(),
-                                verticalArrangement = Arrangement.Center,
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Text(
-                                    text = "일기",
-                                    style = MaterialTheme.typography.headlineMedium,
-                                    modifier = Modifier
-                                        .padding(bottom = 10.dp)
-                                    ,
-                                )
-                                Text(
-                                    text = "오늘 하루를 정리하세요",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    modifier = Modifier
-                                        .padding(bottom = 10.dp)
-                                    ,
-                                )
-                                Text(
-                                    text = "길게 적지 않아도 돼요. 꾸준함이 중요합니다",
+                                    text = "하루가 지나면 보상을 획득할 수 없습니다",
                                     style = MaterialTheme.typography.titleSmall,
                                     modifier = Modifier,
                                 )

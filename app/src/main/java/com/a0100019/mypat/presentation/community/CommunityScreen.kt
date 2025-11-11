@@ -359,6 +359,31 @@ fun CommunityScreen(
                                             0xFF4A90E2
                                         )
 
+                                    val prevDate = chatMessages.reversed().getOrNull(index - 1)
+                                    val currentDate = SimpleDateFormat("yyyyMMdd", Locale.getDefault())
+                                        .format(Date(message.timestamp))
+                                    val previousDate = prevDate?.let {
+                                        SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date(it.timestamp))
+                                    }
+
+                                    // 📅 날짜 구분선 (이전 메시지와 날짜 다를 때만)
+                                    if (currentDate != previousDate) {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(vertical = 8.dp),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = SimpleDateFormat("MM월 dd일 E요일", Locale.KOREA)
+                                                    .format(Date(message.timestamp)),
+                                                style = MaterialTheme.typography.labelSmall,
+                                                color = Color.Gray,
+                                                textAlign = TextAlign.Center
+                                            )
+                                        }
+                                    }
+
                                     Row(
                                         modifier = Modifier
                                             .fillMaxWidth()
@@ -400,7 +425,7 @@ fun CommunityScreen(
                                                 // 시간 포맷
                                                 val time = remember(message.timestamp) {
                                                     SimpleDateFormat(
-                                                        "HH:mm",
+                                                        "MM/dd HH:mm",   // ← 변경된 부분
                                                         Locale.getDefault()
                                                     ).format(
                                                         Date(message.timestamp)
@@ -454,7 +479,7 @@ fun CommunityScreen(
                             contentAlignment = Alignment.Center // 가로+세로 가운데 정렬
                         ) {
                             Text(
-                                text = "오늘의 첫 대화를 시작해보세요",
+                                text = "올해 첫 대화를 시작해보세요",
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier
                                     .fillMaxWidth(1f)

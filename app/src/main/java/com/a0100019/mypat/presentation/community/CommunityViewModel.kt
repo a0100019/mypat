@@ -220,51 +220,53 @@ class CommunityViewModel @Inject constructor(
     }
 
     private fun loadChatMessages() {
-        val todayDocId = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date())
-
         Firebase.firestore.collection("chat")
-            .document(todayDocId)
             .addSnapshotListener { snapshot, error ->
-                Log.d("CommunityViewModel", "채팅 스냅샷 수신됨")
+                Log.d("CommunityViewModel", "전체 채팅 스냅샷 수신됨")
 
                 if (error != null) {
                     Log.e("CommunityViewModel", "채팅 데이터 에러: ${error.message}")
                     return@addSnapshotListener
                 }
 
-                if (snapshot != null && snapshot.exists()) {
-                    val messages = snapshot.data?.mapNotNull { (key, value) ->
-                        val timestamp = key.toLongOrNull()
-                        if (timestamp == null) {
-                            Log.e("CommunityViewModel", "timestamp 변환 실패: $key")
-                            return@mapNotNull null
-                        }
+                if (snapshot != null && !snapshot.isEmpty) {
+                    val allMessages = mutableListOf<ChatMessage>()
 
-                        val map = value as? Map<*, *>
-                        val message = map?.get("message") as? String
-                        val name = map?.get("name") as? String
-                        val tag = map?.get("tag") as? String
-                        val ban = map?.get("ban") as? String
+                    for (doc in snapshot.documents) {
+                        // 🔸 문서 ID가 "yyyy"로 시작하는 경우만 필터링
+                        if (!doc.id.matches(Regex("^\\d{8}$"))) continue
 
-                        if (message != null && name != null && tag != null && ban == "0") {
-                            ChatMessage(timestamp, message, name, tag, ban)
-                        } else {
-                            null
+                        val data = doc.data ?: continue
+                        val messages = data.mapNotNull { (key, value) ->
+                            val timestamp = key.toLongOrNull() ?: return@mapNotNull null
+                            val map = value as? Map<*, *> ?: return@mapNotNull null
+                            val message = map["message"] as? String
+                            val name = map["name"] as? String
+                            val tag = map["tag"] as? String
+                            val ban = map["ban"] as? String
+
+                            if (message != null && name != null && tag != null && ban == "0") {
+                                ChatMessage(timestamp, message, name, tag, ban)
+                            } else null
                         }
-                    }?.sortedBy { it.timestamp } ?: emptyList()
+                        allMessages.addAll(messages)
+                    }
+
+                    val sorted = allMessages.sortedBy { it.timestamp }
 
                     viewModelScope.launch {
                         intent {
                             reduce {
-                                state.copy(chatMessages = messages)
+                                state.copy(chatMessages = sorted)
                             }
                         }
                     }
                 } else {
-                    Log.w("CommunityViewModel", "스냅샷은 존재하지 않음")
+                    Log.w("CommunityViewModel", "chat 컬렉션에 문서가 없음")
                 }
             }
     }
+
 
     fun opPageUpClick() = intent {
 
