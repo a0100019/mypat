@@ -82,6 +82,8 @@ fun DiaryScreen(
         dialogState = diaryState.dialogState,
         searchText = diaryState.searchText,
         emotionFilter = diaryState.emotionFilter,
+        today = diaryState.today,
+        calendarMonth = diaryState.calendarMonth,
 
         onDiaryClick = diaryViewModel::onDiaryClick,
         onCloseClick = diaryViewModel::onCloseClick,
@@ -91,7 +93,10 @@ fun DiaryScreen(
         onDialogStateChange = diaryViewModel::onDialogStateChange,
         onEmotionFilterClick = diaryViewModel::onEmotionFilterClick,
         onSearchClearClick = diaryViewModel::onSearchClearClick,
+        onCalendarMonthChangeClick = diaryViewModel::onCalendarMonthChangeClick,
+        onDiaryDateClick = diaryViewModel::onDiaryDateClick,
         popBackStack = popBackStack
+
     )
 }
 
@@ -103,6 +108,8 @@ fun DiaryScreen(
     dialogState: String,
     searchText: String,
     emotionFilter: String,
+    today: String = "2025-07-15",
+    calendarMonth: String = "2025-07",
 
     onSearchTextChange: (String) -> Unit,
     onSearchClick: () -> Unit,
@@ -113,6 +120,8 @@ fun DiaryScreen(
     onEmotionFilterClick: (String) -> Unit,
     onSearchClearClick: () -> Unit,
     popBackStack: () -> Unit = {},
+    onCalendarMonthChangeClick: (String)-> Unit = {},
+    onDiaryDateClick: (String) -> Unit = {}
 ) {
 
     if(clickDiaryData != null) {
@@ -136,7 +145,12 @@ fun DiaryScreen(
             removeEmotion = true
         )
         "달력" -> DiaryCalendarDialog(
-            onClose = {  }
+            onClose = onCloseClick,
+            onCalendarMonthChangeClick = onCalendarMonthChangeClick,
+            today = today,
+            calendarMonth = calendarMonth,
+            diaryDataList = diaryDataList,
+            onDiaryDateClick = onDiaryDateClick
         )
     }
 

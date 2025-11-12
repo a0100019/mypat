@@ -253,6 +253,8 @@ class WalkViewModel @Inject constructor(
 
     }
 
+
+
 }
 
 @Immutable

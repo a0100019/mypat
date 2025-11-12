@@ -45,22 +45,47 @@ class DiaryWriteViewModel @Inject constructor(
         val userDataList = userDao.getAllUserData()
         val userDataEtc2Value = userDao.getValueById("etc2")
         val allDiaryData = diaryDao.getAllDiaryData()
-        val clickDiaryData = allDiaryData.find { it.date == userDataEtc2Value }
 
-        if(clickDiaryData!!.state == "대기") {
-            reduce {
-                state.copy(
-                    firstWrite = true,
-                    writeDiaryData = Diary(id = clickDiaryData.id, date = clickDiaryData.date, state = "완료", contents = "", emotion = "emotion/smile.png")
-                )
+
+        if(!userDataEtc2Value.startsWith("0")){
+            //앞에 0 뺌, 0있으면 하루 미션 아닌 일기
+            val clickDiaryData = allDiaryData.find { it.date == userDataEtc2Value.drop(1) }
+            if (clickDiaryData!!.state == "대기") {
+                reduce {
+                    state.copy(
+                        firstWrite = true,
+                        writeDiaryData = Diary(
+                            id = clickDiaryData.id,
+                            date = clickDiaryData.date,
+                            state = "완료",
+                            contents = "",
+                            emotion = "emotion/smile.png"
+                        )
+                    )
+                }
+            } else {
+                reduce {
+                    state.copy(
+                        firstWrite = false,
+                        writeDiaryData = clickDiaryData
+                    )
+                }
             }
         } else {
-            reduce {
-                state.copy(
-                    firstWrite = false,
-                    writeDiaryData = clickDiaryData
-                )
-            }
+            //하루미션 아닌 일기
+            파이어베이스 하루미션 아닌 일기 모음 추가해야할듯
+//            reduce {
+//                state.copy(
+//                    firstWrite = true,
+//                    writeDiaryData = Diary(
+//                        id = clickDiaryData.id,
+//                        date = clickDiaryData.date,
+//                        state = "완료",
+//                        contents = "",
+//                        emotion = "emotion/smile.png"
+//                    )
+//                )
+//            }
         }
 
         reduce {

@@ -146,7 +146,6 @@ fun WalkScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-
             Box(
                 contentAlignment = Alignment.Center, // ✅ 내부 내용물 중앙 정렬
                 modifier = Modifier
@@ -420,8 +419,6 @@ fun WalkScreen(
     }
 
 }
-
-
 
 @Preview(showBackground = true)
 @Composable

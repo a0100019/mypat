@@ -233,8 +233,6 @@ class CommunityViewModel @Inject constructor(
                     val allMessages = mutableListOf<ChatMessage>()
 
                     for (doc in snapshot.documents) {
-                        // 🔸 문서 ID가 "yyyy"로 시작하는 경우만 필터링
-                        if (!doc.id.matches(Regex("^\\d{8}$"))) continue
 
                         val data = doc.data ?: continue
                         val messages = data.mapNotNull { (key, value) ->
