@@ -359,15 +359,15 @@ fun CommunityScreen(
                                             0xFF4A90E2
                                         )
 
-                                    val prevDate = chatMessages.reversed().getOrNull(index - 1)
-                                    val currentDate = SimpleDateFormat("yyyyMMdd", Locale.getDefault())
-                                        .format(Date(message.timestamp))
-                                    val previousDate = prevDate?.let {
-                                        SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date(it.timestamp))
-                                    }
+                                    val dateFormat = SimpleDateFormat("yyyyMMdd", Locale.getDefault())
+                                    val today = dateFormat.format(Date()) // 오늘 날짜 (ex: "20251113")
 
-                                    // 📅 날짜 구분선 (이전 메시지와 날짜 다를 때만)
-                                    if (currentDate != previousDate) {
+                                    val prevDate = chatMessages.reversed().getOrNull(index - 1)
+                                    val currentDate = dateFormat.format(Date(message.timestamp))
+                                    val previousDate = prevDate?.let { dateFormat.format(Date(it.timestamp)) }
+
+// 📅 날짜 구분선 (이전 메시지와 날짜 다르고, 오늘이 아닐 때만)
+                                    if (currentDate != previousDate && currentDate != today) {
                                         Box(
                                             modifier = Modifier
                                                 .fillMaxWidth()
@@ -383,6 +383,7 @@ fun CommunityScreen(
                                             )
                                         }
                                     }
+
 
                                     Row(
                                         modifier = Modifier

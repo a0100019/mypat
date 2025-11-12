@@ -135,6 +135,9 @@ fun DiaryScreen(
             onEmotionClick = onEmotionFilterClick,
             removeEmotion = true
         )
+        "달력" -> DiaryCalendarDialog(
+            onClose = {  }
+        )
     }
 
     Surface(
@@ -176,9 +179,18 @@ fun DiaryScreen(
             Row(
                 modifier = Modifier
                     .align(Alignment.End)
-                    .padding(end = 24.dp),
+                    .padding(end = 24.dp, start = 24.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+
+                MainButton(
+                    onClick = {
+                        onDialogStateChange("달력")
+                    },
+                    text = " 달력 보기 "
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
 
                 Button(
                     onClick = {
