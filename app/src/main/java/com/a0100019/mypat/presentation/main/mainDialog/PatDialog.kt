@@ -129,19 +129,21 @@ fun PatDialog(
                 )
 
                 MainButton(
+                    text = "1to50",
+                    onClick = onSecondGameNavigateClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 6.dp)
+                )
+
+                MainButton(
                     text = "컬링",
                     onClick = onFirstGameNavigateClick,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 6.dp)
                 )
-                MainButton(
-                    text = "펫러쉬",
-                    onClick = onSecondGameNavigateClick,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 6.dp)
-                )
+
                 MainButton(
                     text = "스도쿠",
                     onClick = onThirdGameNavigateClick,

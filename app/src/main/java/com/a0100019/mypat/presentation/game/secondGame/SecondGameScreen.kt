@@ -3,6 +3,7 @@ package com.a0100019.mypat.presentation.game.secondGame
 import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,7 +11,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,9 +29,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.presentation.ui.MusicPlayer
-import com.a0100019.mypat.presentation.ui.SfxPlayer
-import com.a0100019.mypat.presentation.ui.component.MainButton
-import com.a0100019.mypat.presentation.ui.component.XmlButton
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
@@ -61,14 +58,14 @@ fun SecondGameScreen(
         patData = secondGameState.patData,
         userData = secondGameState.userData,
         plusLove = secondGameState.plusLove,
-        onGameStartClick = secondGameViewModel::onGameStartClick,
         onGameReStartClick = secondGameViewModel::onGameReStartClick,
         popBackStack = popBackStack,
-        round = secondGameState.round,
+        targetNumber = secondGameState.targetNumber,
         plusTime = secondGameState.plusTime,
-        mapList = secondGameState.mapList,
-        onMoveClick = secondGameViewModel::onMoveClick,
-        onFastMoveClick = secondGameViewModel::onFastMoveClick
+        firstNumberList = secondGameState.firstNumberList,
+        secondNumberList = secondGameState.secondNumberList,
+        stateList = secondGameState.stateList,
+        onIndexClick = secondGameViewModel::onIndexClick
     )
 }
 
@@ -80,16 +77,17 @@ fun SecondGameScreen(
     patData : Pat,
     plusLove : Int,
     plusTime : Double = 0.0,
-    round : Int = 1,
+    targetNumber : Int = 1,
 
     userData : List<User>,
-    mapList : List<String> = emptyList(),
+    firstNumberList : List<Int> = emptyList(),
+    secondNumberList : List<Int> = emptyList(),
+    stateList : List<String> = emptyList(),
 
-    onGameStartClick : () -> Unit,
     onGameReStartClick: () -> Unit,
     popBackStack: () -> Unit,
-    onMoveClick: (String) -> Unit = {},
-    onFastMoveClick: (String) -> Unit = {}
+    onIndexClick: (Int) -> Unit = {}
+
 
 ) {
 
@@ -138,159 +136,75 @@ fun SecondGameScreen(
                     .padding(top = 32.dp, bottom = 8.dp)
             )
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
+            Text(
+                text = "+ " + String.format("%.0f", plusTime) + "초",
+                style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier
                     .padding(bottom = 16.dp)
-            ) {
-                Text(
-                    text = "+ " + String.format("%.0f", plusTime) + "초",
-                    style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier
-                        .padding(end = 16.dp)
-                )
+            )
 
-                Text(
-                    text = "${(round + 1)} / 10",
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
+            Text(
+                text = "타겟 숫자 : $targetNumber",
+                style = MaterialTheme.typography.headlineMedium
+            )
+
 
             Column(
                 modifier = Modifier
-                    .weight(1f),
+                    .weight(1f)
+                    .padding(start = 6.dp, end = 6.dp),
                 verticalArrangement = Arrangement.Center
             ) {
-                mapList[round].chunked(5).forEachIndexed { rowIndex, rowItems -> // 행 인덱스
+                (0..24).chunked(5).forEachIndexed { rowIndex, rowItems ->
                     Row {
-                        rowItems.forEachIndexed { columnIndex, item -> // 열 인덱스
+                        rowItems.forEachIndexed { columnIndex, item ->
 
-                            val actualIndex = rowIndex * 5 + columnIndex // 실제 인덱스 계산
+                            val actualIndex = rowIndex * 5 + columnIndex // 실제 인덱스
 
                             Box(
                                 modifier = Modifier
                                     .weight(1f)
-                                    .aspectRatio(1f) // 정사각형 유지
+                                    .aspectRatio(1f)
                                     .padding(4.dp)
                                     .background(
-                                        when (item) {
-                                            '0' -> Color.LightGray
-                                            '1' -> MaterialTheme.colorScheme.onErrorContainer
-                                            '2' -> Color(0xFF40FF40)
-                                            else -> Color(0xFFF66C6C)
-                                        }, shape = RoundedCornerShape(8.dp)
-                                    ),
+                                        when (stateList[actualIndex]) {
+                                            "0" -> MaterialTheme.colorScheme.onErrorContainer
+                                            "1" -> MaterialTheme.colorScheme.error
+                                            "2" -> Color.LightGray
+                                            else -> Color.LightGray
+                                        },
+                                        shape = RoundedCornerShape(8.dp)
+                                    )
+                                    .clickable {
+                                        onIndexClick(actualIndex)
+                                    }
+                                ,
                                 contentAlignment = Alignment.Center
                             ) {
-                                if (item == '1') {
-                                    JustImage(
-                                        filePath = patData.url
-                                    )
-                                }
+                                Text(
+                                    text = when (stateList[actualIndex]) {
+                                        "0" -> firstNumberList[actualIndex].toString()
+                                        "1" -> secondNumberList[actualIndex].toString()
+                                        else -> ""
+                                    }
+                                    ,
+                                    style = MaterialTheme.typography.headlineSmall,
+                                    modifier = Modifier
+                                )
                             }
                         }
                     }
                 }
-            }
-
-            when (gameState) {
-                "시작" -> {
-                    MainButton(
-                        onClick = onGameStartClick,
-                        text = "\n게임 시작\n",
-                        modifier = Modifier
-                            .fillMaxWidth(0.5f)
-                            .padding(bottom = 32.dp)
-                    )
-                }
-
-                else ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 16.dp),
-                        horizontalArrangement = Arrangement.SpaceAround
-                    ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            XmlButton(
-                                iconResId = R.drawable.arrow,
-                                onClick = {
-                                    onMoveClick("up")
-                                    SfxPlayer.play(context, R.raw.bubble)
-                                }
-                            )
-                            Row {
-                                XmlButton(
-                                    iconResId = R.drawable.arrow,
-                                    rotationDegree = 270f,
-                                    onClick = {
-                                        onMoveClick("left")
-                                        SfxPlayer.play(context, R.raw.bubble)
-                                    }
-                                )
-                                Spacer(modifier = Modifier.size(50.dp))
-                                XmlButton(
-                                    iconResId = R.drawable.arrow,
-                                    rotationDegree = 90f,
-                                    onClick = {
-                                        onMoveClick("right")
-                                        SfxPlayer.play(context, R.raw.bubble)
-                                    }
-                                )
-                            }
-                            XmlButton(
-                                iconResId = R.drawable.arrow,
-                                rotationDegree = 180f,
-                                onClick = {
-                                    onMoveClick("down")
-                                    SfxPlayer.play(context, R.raw.bubble)
-                                }
-                            )
-                        }
-
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            XmlButton(
-                                iconResId = R.drawable.double_arrow,
-                                rotationDegree = 270f,
-                                onClick = {
-                                    onFastMoveClick("up")
-                                    SfxPlayer.play(context, R.raw.laser)
-                                }
-                            )
-                            Row {
-                                XmlButton(
-                                    iconResId = R.drawable.double_arrow,
-                                    rotationDegree = 180f,
-                                    onClick = {
-                                        onFastMoveClick("left")
-                                        SfxPlayer.play(context, R.raw.laser)
-                                    }
-                                )
-                                Spacer(modifier = Modifier.size(50.dp))
-                                XmlButton(
-                                    iconResId = R.drawable.double_arrow,
-                                    onClick = {
-                                        onFastMoveClick("right")
-                                        SfxPlayer.play(context, R.raw.laser)
-                                    }
-                                )
-                            }
-                            XmlButton(
-                                iconResId = R.drawable.double_arrow,
-                                rotationDegree = 90f,
-                                onClick = {
-                                    onFastMoveClick("down")
-                                    SfxPlayer.play(context, R.raw.laser)
-                                }
-                            )
-                        }
-                    }
 
             }
+
+            Spacer(modifier = Modifier.size(100.dp))
+
+            Text(
+                text = "1부터 순서대로 누르세요!",
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier.padding(bottom = 6.dp)
+            )
 
         }
     }
@@ -302,15 +216,16 @@ fun SecondGameScreenPreview() {
     MypatTheme {
         SecondGameScreen(
             time = 10.4,
-            onGameStartClick = {},
             gameState = "진행",
             patData = Pat(url = ""),
             onGameReStartClick = {},
             userData = listOf(),
-            round = 0,
             popBackStack = {},
             plusLove = 100,
-            mapList = listOf("1300003030030300303000032")
+            stateList = List(25) { "0" },
+            firstNumberList = (1..25).shuffled().toList(),
+            secondNumberList = (26..50).toList(),
+
         )
     }
 }

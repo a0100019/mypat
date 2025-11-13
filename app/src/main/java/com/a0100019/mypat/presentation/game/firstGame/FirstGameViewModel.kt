@@ -208,6 +208,8 @@ class FirstGameViewModel @Inject constructor(
                     plusValue += (i / 10) + 1
                 }
 
+                plusValue *= 5
+
                 //애정도, cash 추가
                 val updatePatData = state.patData
                 updatePatData.love = state.patData.love + plusValue
@@ -268,7 +270,7 @@ class FirstGameViewModel @Inject constructor(
                 reduce {
                     state.copy(rotationAngle = state.rotationAngle + 2f)
                 }
-                delay((10-state.level/10).toLong()) // 회전속도
+                delay((10-state.level*2/10).toLong()) // 회전속도
             }
         }
 
@@ -287,7 +289,7 @@ class FirstGameViewModel @Inject constructor(
 
             if(state.shotPower < state.maxPower) {
                 reduce {
-                    state.copy(shotPower = state.shotPower + 10)
+                    state.copy(shotPower = state.shotPower + 20)
                 }
             } else {
                 reduce {

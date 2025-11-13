@@ -23,7 +23,7 @@ fun getItemInitialData(): List<Item> {
         Item( name = "큰 그림자9", date = "1", url = "item/shadow_big.json", minFloat = 0.1f, sizeFloat = 0.1f),
         Item( name = "큰 그림자10", date = "1", url = "item/shadow_big.json", minFloat = 0.1f, sizeFloat = 0.1f),
         //20
-        Item( name = "축구공", date = "기본 아이템", url = "item/soccer_boll.json", minFloat = 0.1f, sizeFloat = 0.1f, x = 0.65f, y = 0.75f),
+        Item( name = "축구공", date = "기본 아이템", url = "item/soccer_boll.json", minFloat = 0.1f, sizeFloat = 0.15f, x = 0.65f, y = 0.75f),
         Item( name = "크리스탈", url = "item/crystal.json", minFloat = 0.1f, sizeFloat = 0.1f),
         Item( name = "주사위", url = "item/dice_roll.json", minFloat = 0.1f, sizeFloat = 0.1f),
         Item( name = "마법 유리병", url = "item/magic_bottle.json", minFloat = 0.1f, sizeFloat = 0.1f),

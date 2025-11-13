@@ -252,7 +252,7 @@ fun DailyScreen(
                                     ,
                                 )
                                 Text(
-                                    text = "아주 쉬우니 걱정하지 마세요",
+                                    text = "매우 쉬우니 걱정하지 마세요",
                                     style = MaterialTheme.typography.titleSmall,
                                     modifier = Modifier,
                                 )

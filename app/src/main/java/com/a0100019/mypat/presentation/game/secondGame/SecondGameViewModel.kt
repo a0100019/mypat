@@ -52,14 +52,12 @@ class SecondGameViewModel @Inject constructor(
             state.copy(
                 userData = userDataList,
                 patData = patData,
-                mapList = listOf(
-                    "1300003030030300303000032", "2030200000331330000020302", "2000203330031300303020002", "2300000030333320003013000",
-                    "2020202020201020202020202", "0202020202021202020202020", "2313203030030300000032323", "2303003000031300003003032",
-                    "0323030003203023000303130", "0330230000000030000310030"
-                ).shuffled(),
+                firstNumberList = state.firstNumberList.shuffled(),
+                secondNumberList = state.secondNumberList.shuffled(),
+                stateList = MutableList(25) { "0" },
                 time = 0.00,
                 plusTime = 0.00,
-                round = 0,
+                targetNumber = 1,
                 plusLove = 0,
                 gameState = "시작"
 
@@ -67,7 +65,7 @@ class SecondGameViewModel @Inject constructor(
         }
     }
 
-    fun onGameStartClick() = intent {
+    private fun onGameStart() = intent {
 
         startTimer()
 
@@ -83,195 +81,79 @@ class SecondGameViewModel @Inject constructor(
         loadData()
     }
 
-    fun onMoveClick(direction: String, repeatCount: Int = 0, moveCount: Int = 0) = intent {
-        var nowMapList = state.mapList[state.round]
+    fun onIndexClick(clickIndex: Int) = intent {
 
-        //현재 나의 위치
-        val index = nowMapList.indexOf('1')
+        val firstNumberList = state.firstNumberList
+        val secondNumberList = state.secondNumberList
+        val stateList = state.stateList
+        var targetNumber = state.targetNumber
 
-        if(direction == "left") {
+        if(stateList[clickIndex] == "0") {
 
-            if(index%5 != 0) {
-                if(nowMapList[index-1] == '3') {
-                    reduce {
-                        state.copy(
-                            plusTime = state.plusTime + 5
-                        )
-                    }
+            if(firstNumberList[clickIndex] == targetNumber) {
+
+                if(targetNumber == 1) {
+                    onGameStart()
                 }
-                nowMapList = nowMapList.substring(0, index-1) + "10" + nowMapList.substring(index+1)
+
+                stateList[clickIndex] = "1"
+                targetNumber += 1
             }
 
-        } else if(direction == "right") {
+        } else if(stateList[clickIndex] == "1") {
 
-            if(index%5 != 4) {
-                if(nowMapList[index+1] == '3') {
-                    reduce {
-                        state.copy(
-                            plusTime = state.plusTime + 5
-                        )
-                    }
-                }
-                nowMapList = nowMapList.substring(0, index) + "01" + nowMapList.substring(index+2)
-            }
-        } else if(direction == "up") {
-
-            if(index/5 != 0) {
-                if(nowMapList[index-5] == '3') {
-                    reduce {
-                        state.copy(
-                            plusTime = state.plusTime + 5
-                        )
-                    }
-                }
-                nowMapList = nowMapList.replace('1', '0')
-                nowMapList = nowMapList.substring(0, index-5) + "1" + nowMapList.substring(index-4)
-            }
-
-        } else if(direction == "down") {
-
-            if(index/5 != 4) {
-                if(nowMapList[index+5] == '3') {
-                    reduce {
-                        state.copy(
-                            plusTime = state.plusTime + 5
-                        )
-                    }
-                }
-                nowMapList = nowMapList.replace('1', '0')
-                nowMapList = nowMapList.substring(0, index+5) + "1" + nowMapList.substring(index+6)
+            if(secondNumberList[clickIndex] == targetNumber) {
+                stateList[clickIndex] = "2"
+                targetNumber += 1
             }
 
         }
 
-        val updateMapList = state.mapList.toMutableList().apply {
-            this[state.round] = nowMapList
+        if(targetNumber == 51) {
+            gameOver()
         }
 
         reduce {
             state.copy(
-                mapList = updateMapList
+                stateList = stateList,
+                targetNumber = targetNumber
             )
-        }
-
-        if(repeatCount == moveCount) {
-            //모든 목표를 다 먹었을 때 다음 라운드로 가는 코드
-            if ('2' !in nowMapList) {
-                nextRound()
-            }
-        }
-
-    }
-
-    fun onFastMoveClick(direction: String) = intent {
-
-        val oldMapList = state.mapList[state.round]
-
-        //현재 나의 위치
-        val index = oldMapList.indexOf('1')
-
-        if(direction == "left") {
-
-            val moveCount = index%5
-
-            repeat(moveCount) {
-                onMoveClick("left", it+1, moveCount)
-            }
-
-        } else if(direction == "right") {
-
-            val moveCount = 4 - index%5
-
-            repeat(moveCount) {
-                onMoveClick("right", it+1, moveCount)
-            }
-
-        } else if(direction == "up") {
-
-            val moveCount = index/5
-
-            repeat(moveCount) {
-                onMoveClick("up", it+1, moveCount)
-            }
-
-        } else if(direction == "down") {
-
-            val moveCount = 4 - index/5
-
-            repeat(moveCount) {
-                onMoveClick("down", it+1, moveCount)
-            }
-
         }
 
     }
 
     @SuppressLint("DefaultLocale")
-    private fun nextRound() = intent {
+    private fun gameOver() = intent {
 
-        val oldRound = state.round
+        stopTimer()
 
-        if(oldRound != 9) {
+        val time = state.time + state.plusTime
+        val plusLove = 100
 
-            reduce {
-                state.copy(
-                    round = oldRound + 1,
-                )
-            }
+        val updatePatData = state.patData
+        updatePatData.love = state.patData.love + plusLove
+        updatePatData.gameCount = state.patData.gameCount + 1
 
-        } else {
+        patDao.update(updatePatData)
 
-            stopTimer()
+        userDao.update(
+            id = "money",
+            value2 = (state.userData.find { it.id == "money" }!!.value2.toInt() + plusLove).toString()
+        )
 
-            val time = state.time + state.plusTime
-            var plusLove = 20
+        var gameState = "성공"
+        val oldTime = state.userData.find {it.id == "secondGame"}?.value?.toDouble()
 
-            if(state.plusTime < 30) {
+        if(time < oldTime!!) {
+            gameState = "신기록"
+            userDao.update(id = "secondGame", value = String.format("%.3f", time), value3 = state.patData.id.toString())
+        }
 
-                val updatePatData = state.patData
-                updatePatData.love = state.patData.love + 20
-                updatePatData.gameCount = state.patData.gameCount + 1
-
-                patDao.update(updatePatData)
-
-                userDao.update(
-                    id = "money",
-                    value2 = (state.userData.find { it.id == "money" }!!.value2.toInt() + 20).toString()
-                )
-
-            } else {
-                //막누르면 애정도 +5
-
-                val updatePatData = state.patData
-                updatePatData.love = state.patData.love + 5
-                updatePatData.gameCount = state.patData.gameCount + 1
-
-                patDao.update(updatePatData)
-
-                userDao.update(
-                    id = "money",
-                    value2 = (state.userData.find { it.id == "money" }!!.value2.toInt() + 5).toString()
-                )
-
-                plusLove = 5
-
-            }
-
-            var gameState = "성공"
-            val oldTime = state.userData.find {it.id == "secondGame"}?.value?.toDouble()
-
-            if(time < oldTime!!) {
-                gameState = "신기록"
-                userDao.update(id = "secondGame", value = String.format("%.3f", time), value3 = state.patData.id.toString())
-            }
-
-            reduce {
-                state.copy(
-                    gameState = gameState,
-                    plusLove = plusLove
-                )
-            }
-
+        reduce {
+            state.copy(
+                gameState = gameState,
+                plusLove = plusLove
+            )
         }
 
     }
@@ -306,11 +188,14 @@ data class SecondGameState(
 
     val time : Double = 0.00,
     val plusTime : Double = 0.00,
-    val round : Int = 0,
+    val targetNumber : Int = 1,
     val gameState : String = "시작",
     val plusLove : Int = 0,
 
-    val mapList : List<String> = List(25) {""}
+    val firstNumberList: List<Int> = (1..25).shuffled(),
+    val secondNumberList: List<Int> = (26..50).shuffled(),
+    val stateList: MutableList<String> = MutableList(25) { "0" }
+
 
 )
 

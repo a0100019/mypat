@@ -36,6 +36,7 @@ import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 @Composable
 fun CommunityRankingCard(
     userData: AllUser = AllUser(),
+    rank: Int = 1,
     situation: String = "firstGame",
     onClick: () -> Unit = {},
     @SuppressLint("ModifierParameter") modifier: Modifier = Modifier,
@@ -62,13 +63,22 @@ fun CommunityRankingCard(
             )
             .border(
                 width = 2.dp,
-                color = MaterialTheme.colorScheme.primaryContainer,
-                shape = RoundedCornerShape(16.dp)
+                color = when(rank) {
+                    1 -> MaterialTheme.colorScheme.onTertiary
+                    2 -> MaterialTheme.colorScheme.onErrorContainer
+                    3 -> MaterialTheme.colorScheme.onErrorContainer
+                    else -> MaterialTheme.colorScheme.primaryContainer
+                },shape = RoundedCornerShape(16.dp)
             )
                 ,
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.scrim
+            containerColor = when(rank) {
+                1 -> MaterialTheme.colorScheme.tertiary
+                2 -> MaterialTheme.colorScheme.errorContainer
+                3 -> MaterialTheme.colorScheme.errorContainer
+                else -> MaterialTheme.colorScheme.scrim
+            }
         ),
 //        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
@@ -85,6 +95,7 @@ fun CommunityRankingCard(
                 style = MaterialTheme.typography.titleMedium.copy(
                     fontWeight = FontWeight.Bold
                 ),
+                color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
                     .padding(end = 3.dp)
             )

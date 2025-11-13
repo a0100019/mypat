@@ -278,9 +278,9 @@ class ThirdGameViewModel @Inject constructor(
                     sudokuDao.update(id = "state", value = "0" )
 
                     val plusLove = when(state.level) {
-                        1 -> 60
-                        2 -> 150
-                        else -> 500
+                        1 -> 300
+                        2 -> 750
+                        else -> 2500
                     }
                     val updatePatData = state.patData
                     updatePatData.love = state.patData.love + plusLove

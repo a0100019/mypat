@@ -306,7 +306,7 @@ fun InformationScreen(
                         ) {
                             Row {
                                 Text(
-                                    text = "슈팅",
+                                    text = "컬링",
                                     style = MaterialTheme.typography.bodyMedium,
                                     modifier = Modifier
                                         .padding(end = 6.dp)
@@ -325,7 +325,7 @@ fun InformationScreen(
 
                             Row {
                                 Text(
-                                    text = "블록",
+                                    text = "1to50",
                                     style = MaterialTheme.typography.bodyMedium,
                                     modifier = Modifier
                                         .padding(end = 6.dp)

@@ -220,7 +220,7 @@ fun CommunityScreen(
                             "world" -> "이웃 마을"
                             "chat" -> "통신"
                             "firstGame" -> "컬링"
-                            "secondGame" -> "펫러쉬"
+                            "secondGame" -> "1to50"
                             "thirdGameEasy" -> "스도쿠 - 쉬움"
                             "thirdGameNormal" -> "스도쿠 - 보통"
                             "thirdGameHard" -> "스도쿠 - 어려움"
@@ -569,6 +569,7 @@ fun CommunityScreen(
 
                                 CommunityRankingCard(
                                     userData = user,
+                                    rank = index + 1,
                                     situation = situation,
                                     onClick = { onUserRankClick(user.tag.toInt()) },
                                     modifier = Modifier
@@ -625,7 +626,7 @@ fun CommunityScreen(
                 val buttons = listOf(
                     "마을" to "world",
                     "컬링" to "firstGame",
-                    "펫러쉬" to "secondGame",
+                    "1to50" to "secondGame",
                     "스도쿠" to "thirdGameEasy", // 대표 키만 지정
                     "통신" to "chat"
                 )
