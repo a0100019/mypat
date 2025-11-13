@@ -15,23 +15,25 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.a0100019.mypat.data.room.diary.Diary
+import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
 @Composable
 fun DiaryCalendarView(
-    today: String,
-    calendarMonth: String, // 예: "2025-04"
+    today: String,              // "yyyy-MM-dd"
+    calendarMonth: String,      // 예: "2025-04"
     diaryList: List<Diary>,
     onDiaryDateClick: (String) -> Unit = {}
 ) {
-    val formatter = DateTimeFormatter.ofPattern("yyyy-MM")
-    val yearMonth = YearMonth.parse(calendarMonth, formatter)
+    val ymFormatter = DateTimeFormatter.ofPattern("yyyy-MM")
+    val yearMonth = YearMonth.parse(calendarMonth, ymFormatter)
 
     val year = yearMonth.year
     val month = yearMonth.monthValue
@@ -40,16 +42,21 @@ fun DiaryCalendarView(
     val daysInMonth = yearMonth.lengthOfMonth()
     val startDayOfWeek = firstDayOfMonth.dayOfWeek.value % 7 // Sunday = 0
 
-    // 걸은 날짜 리스트 (LocalDate 형태로 변환)
-    val walkedDates = diaryList.map { LocalDate.parse(it.date) }.toSet()
+    // 🔹 Diary.date -> LocalDate 로 매핑해 둔 Map (날짜 기준으로 Diary 바로 찾기 위함)
+    val diaryMap: Map<LocalDate, Diary> = diaryList.associateBy { LocalDate.parse(it.date) }
 
+    // 캘린더에 쓸 날짜 그리드 (LocalDate?)
     val dates = mutableListOf<LocalDate?>()
     repeat(startDayOfWeek) { dates.add(null) }
-    repeat(daysInMonth) { dates.add(firstDayOfMonth.plusDays(it.toLong())) }
+    repeat(daysInMonth) { offset ->
+        dates.add(firstDayOfMonth.plusDays(offset.toLong()))
+    }
 
-    // 마지막 주도 7칸 맞추기 위해 빈 칸 추가
+    // 마지막 주 7칸 맞추기
     val totalCells = ((dates.size + 6) / 7) * 7
     repeat(totalCells - dates.size) { dates.add(null) }
+
+    val todayDate = LocalDate.parse(today)
 
     Column(
         modifier = Modifier
@@ -62,8 +69,8 @@ fun DiaryCalendarView(
         ) {
             listOf("일", "월", "화", "수", "목", "금", "토").forEachIndexed { index, day ->
                 val textColor = when (index) {
-                    0 -> Color(0xFFFF8A80) // 파스텔 빨강 (일)
-                    6 -> Color(0xFF64B5F6) // 파스텔 파랑 (토)
+                    0 -> Color(0xFFFF8A80) // 일요일
+                    6 -> Color(0xFF64B5F6) // 토요일
                     else -> Color.Unspecified
                 }
 
@@ -78,67 +85,69 @@ fun DiaryCalendarView(
             }
         }
 
-        val todayDate = LocalDate.parse(today) // ← 오늘 날짜
-
         // 날짜 셀
         dates.chunked(7).forEach { week ->
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
-                ,
+                    .weight(1f),
                 verticalAlignment = Alignment.CenterVertically
-
             ) {
+                // 날짜 셀 내부
                 week.forEachIndexed { index, date ->
-                    val isWalked = date != null && date in walkedDates
+                    val diary: Diary? = date?.let { diaryMap[it] }
                     val isToday = date != null && date == todayDate
-
-                    val textColor = when (index) {
-                        0 -> Color(0xFFFF8A80) // 일요일
-                        6 -> Color(0xFF64B5F6) // 토요일
-                        else -> Color.Unspecified
-                    }
 
                     Box(
                         modifier = Modifier
                             .weight(1f)
-//                            .aspectRatio(1.2f)
-                            .padding(2.dp)
-                        ,
+                            .padding(2.dp),
                         contentAlignment = Alignment.Center
                     ) {
 
-                        // 동그란 배경 레이어
+                        // 오늘 표시
                         if (isToday) {
                             Box(
                                 modifier = Modifier
                                     .size(32.dp)
-                                    .background(Color(0xFFE1BEE7), shape = CircleShape) // 연보라 배경
+                                    .background(Color(0xFFE1BEE7), CircleShape)
                             )
                         }
 
-                        if (isWalked) {
-                            Box(
-                                modifier = Modifier
-                                    .size(26.dp)
-                                    .background(Color(0xFFB2EBF2), shape = CircleShape) // 연보라 배경
-                            )
+                        // 🔥 Diary.emotion 값에 따라 색 변경 (함수 X, 즉석 when 문)
+                        if (diary != null) {
+
+                            if(diary.state == "대기") {
+                                Box(
+                                    modifier = Modifier
+                                        .size(26.dp)
+                                        .background(Color(0xFFB2EBF2), shape = CircleShape)
+                                )
+                            } else {
+                                JustImage(
+                                    filePath = diary.emotion,
+                                    modifier = Modifier
+                                        .size(26.dp)
+//                                        .alpha(0.9f)
+                                )
+                            }
                         }
 
                         // 날짜 텍스트
                         Text(
                             text = date?.dayOfMonth?.toString() ?: "",
-                            color = textColor,
                             modifier = Modifier
-                                .clickable {
-                                    onDiaryDateClick(date.toString())
+                                .alpha(0.4f)
+                                .clickable(enabled = date != null) {
+                                if (date != null) {
+                                    onDiaryDateClick(date.toString()) // "yyyy-MM-dd"
                                 }
+                            }
                         )
                     }
                 }
+
             }
         }
-
     }
 }

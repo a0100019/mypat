@@ -346,8 +346,18 @@ class LoginViewModel @Inject constructor(
                                     )
                                 }
 
-                                val walk = dailyDoc.getString("walk") ?: ""
-                                walkDao.insert(Walk(id = dailyDoc.id.toInt(), date = date, success = walk))
+                                val walk = dailyDoc.getString("walk")
+
+                                if (!walk.isNullOrBlank()) {
+                                    walkDao.insert(
+                                        Walk(
+                                            id = dailyDoc.id.toInt(),
+                                            date = date,
+                                            success = walk
+                                        )
+                                    )
+                                }
+
                             }
 
                             // 'items' 문서 안의 Map 필드들을 가져오기
@@ -897,16 +907,14 @@ class LoginViewModel @Inject constructor(
                     .document(userId)
                     .collection("daily")
 
-                for (id in 1..userDataList.find { it.id == "date" }!!.value2.toInt()) {
-                    val docRef = dailyCollectionRef.document(id.toString())
+                diaryDataList.forEach { diary ->
+                    val docRef = dailyCollectionRef.document(diary.id.toString())
 
-                    // diary는 항상 존재
-                    val diary = diaryDataList.find { it.id == id }!!
-                    val walk = walkDataList.find { it.id == id }!!.success
+                    val walk = walkDataList.find { it.id == diary.id }?.success
 
                     // state 구성 (둘 중 하나라도 null이면 제외)
-                    val englishState = englishDataList.find { it.id == id }?.state
-                    val idiomState = koreanIdiomDataList.find { it.id == id }?.state
+                    val englishState = englishDataList.find { it.id == diary.id }?.state
+                    val idiomState = koreanIdiomDataList.find { it.id == diary.id }?.state
 
                     val data = mutableMapOf<String, Any>(
                         "date" to diary.date,
@@ -914,9 +922,12 @@ class LoginViewModel @Inject constructor(
                             "emotion" to diary.emotion,
                             "state" to diary.state,
                             "contents" to diary.contents
-                        ),
-                        "walk" to walk
+                        )
                     )
+
+                    if(walk != null) {
+                        data["walk"] = walk
+                    }
 
                     if (englishState != null && idiomState != null) {
                         data["state"] = mapOf(

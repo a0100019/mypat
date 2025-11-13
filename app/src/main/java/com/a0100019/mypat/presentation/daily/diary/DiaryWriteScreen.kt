@@ -167,7 +167,7 @@ fun DiaryWriteScreen(
                 onValueChange = onContentsTextChange,
                 label = { Text("내용") },
                 isError = isError,
-                placeholder = { Text("내용을 10자 이상 입력하세요") },
+                placeholder = { Text("내용을 입력하세요") },
                 shape = RoundedCornerShape(8.dp),
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Default),
                 modifier = Modifier

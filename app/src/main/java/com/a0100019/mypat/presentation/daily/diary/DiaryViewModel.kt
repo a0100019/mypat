@@ -109,6 +109,14 @@ class DiaryViewModel @Inject constructor(
         }
     }
 
+    fun onCalendarDiaryCloseClick() = intent {
+        reduce {
+            state.copy(
+                clickDiaryData = null,
+            )
+        }
+    }
+
     //검색
     fun onSearchClick() = intent {
         val newDiaryDataList = state.diaryDataList.filter { it.contents.contains(state.searchText) }

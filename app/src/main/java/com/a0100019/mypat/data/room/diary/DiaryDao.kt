@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import androidx.room.Upsert
 import com.a0100019.mypat.data.room.item.Item
 import kotlinx.coroutines.flow.Flow
 
@@ -23,13 +24,13 @@ interface DiaryDao {
     @Query("UPDATE sqlite_sequence SET seq = 0 WHERE name = 'diary_table'")
     suspend fun resetDiaryPrimaryKey()
 
-    @Update
+    @Upsert
     suspend fun update(diary: Diary)
 
     @Query("SELECT * FROM diary_table ORDER BY id DESC")
     suspend fun getAllDiaryData(): List<Diary>
 
-    @Query("SELECT * FROM diary_table ORDER BY id DESC")
+    @Query("SELECT * FROM diary_table ORDER BY date DESC")
     fun getAllFlowDiaryData(): Flow<List<Diary>>
 
     @Query("SELECT * FROM diary_table ORDER BY id DESC LIMIT 1")

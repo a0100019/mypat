@@ -95,6 +95,7 @@ fun DiaryScreen(
         onSearchClearClick = diaryViewModel::onSearchClearClick,
         onCalendarMonthChangeClick = diaryViewModel::onCalendarMonthChangeClick,
         onDiaryDateClick = diaryViewModel::onDiaryDateClick,
+        onCalendarDiaryCloseClick = diaryViewModel::onCalendarDiaryCloseClick,
         popBackStack = popBackStack
 
     )
@@ -121,12 +122,19 @@ fun DiaryScreen(
     onSearchClearClick: () -> Unit,
     popBackStack: () -> Unit = {},
     onCalendarMonthChangeClick: (String)-> Unit = {},
+    onCalendarDiaryCloseClick: () -> Unit = {},
     onDiaryDateClick: (String) -> Unit = {}
 ) {
 
-    if(clickDiaryData != null) {
+    if(clickDiaryData != null && dialogState == "") {
         DiaryReadDialog(
             onClose = onCloseClick,
+            diaryData = clickDiaryData,
+            onDiaryChangeClick = onDiaryChangeClick
+        )
+    } else if(clickDiaryData != null && dialogState == "달력") {
+        DiaryReadDialog(
+            onClose = onCalendarDiaryCloseClick,
             diaryData = clickDiaryData,
             onDiaryChangeClick = onDiaryChangeClick
         )

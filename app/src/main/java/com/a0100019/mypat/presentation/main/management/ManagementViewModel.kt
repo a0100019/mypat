@@ -112,7 +112,22 @@ class ManagementViewModel @Inject constructor(
                     englishDao.update(closeEnglishData)
                 }
 
-                diaryDao.insert(Diary(date = currentDate))
+                val allDiaries = diaryDao.getAllDiaryData()
+
+                // id < 10000 인 것들 중에서만 최대값 찾기
+                val maxUnder10000 = allDiaries
+                    .filter { it.id < 10000 }
+                    .maxOfOrNull { it.id } ?: 0
+
+                val newId = maxUnder10000 + 1   // 아무것도 없으면 1부터 시작
+
+                diaryDao.insert(
+                    Diary(
+                        id = newId,
+                        date = currentDate,            // "2025-11-12" 같은 형식
+                        // emotion, state, contents 는 디폴트 쓰면 생략 가능
+                    )
+                )
 
                 walkDao.insert(Walk(date = currentDate))
             }

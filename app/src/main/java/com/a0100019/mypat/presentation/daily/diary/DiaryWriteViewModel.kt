@@ -41,15 +41,15 @@ class DiaryWriteViewModel @Inject constructor(
     }
 
     fun loadData() = intent {
+
         // 1. suspend로 바로 가져오는 유저 정보
         val userDataList = userDao.getAllUserData()
         val userDataEtc2Value = userDao.getValueById("etc2")
         val allDiaryData = diaryDao.getAllDiaryData()
 
-
         if(!userDataEtc2Value.startsWith("0")){
-            //앞에 0 뺌, 0있으면 하루 미션 아닌 일기
-            val clickDiaryData = allDiaryData.find { it.date == userDataEtc2Value.drop(1) }
+            //0있으면 하루 미션 아닌 일기
+            val clickDiaryData = allDiaryData.find { it.date == userDataEtc2Value }
             if (clickDiaryData!!.state == "대기") {
                 reduce {
                     state.copy(
@@ -73,19 +73,23 @@ class DiaryWriteViewModel @Inject constructor(
             }
         } else {
             //하루미션 아닌 일기
-            파이어베이스 하루미션 아닌 일기 모음 추가해야할듯
-//            reduce {
-//                state.copy(
-//                    firstWrite = true,
-//                    writeDiaryData = Diary(
-//                        id = clickDiaryData.id,
-//                        date = clickDiaryData.date,
-//                        state = "완료",
-//                        contents = "",
-//                        emotion = "emotion/smile.png"
-//                    )
-//                )
-//            }
+
+            val lastId = allDiaryData.maxOfOrNull { it.id } ?: 0   // 리스트 비어도 안전
+
+            val newId = if (lastId < 10000) 10000 else lastId + 1
+
+            reduce {
+                state.copy(
+                    firstWrite = true,
+                    writeDiaryData = Diary(
+                        id = newId,
+                        date = userDataEtc2Value.drop(1),
+                        state = "완료",
+                        contents = "",
+                        emotion = "emotion/smile.png"
+                    )
+                )
+            }
         }
 
         reduce {
@@ -109,10 +113,10 @@ class DiaryWriteViewModel @Inject constructor(
     fun onDiaryFinishClick() = intent {
         println("내용 길이: ${state.writeDiaryData.contents.length}")
 
-        if(state.writeDiaryData.contents.length > 9){
+        if(state.writeDiaryData.contents.length > 1){
 
             //보상
-            if(state.firstWrite){
+            if(state.firstWrite && state.writeDiaryData.id < 10000){
                 Log.e("DiaryViewModel", state.userDataList.find { it.id == "money" }!!.value)
                 userDao.update(
                     id = "money",
