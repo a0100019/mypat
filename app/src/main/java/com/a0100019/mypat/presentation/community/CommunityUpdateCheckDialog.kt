@@ -68,7 +68,7 @@ fun CommunityUpdateCheckDialog(
                 Spacer(modifier = Modifier.size(30.dp))
 
                 Text(
-                    text = "커뮤니티 기능을 이용하기 위해서 인터넷 연결이 필요합니다. 인터넷을 연결한 후 확인 버튼을 눌러주세요",
+                    text = "인터넷 연결을 확인 중입니다. 새로 고침 버튼을 눌러주세요",
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier
@@ -79,7 +79,7 @@ fun CommunityUpdateCheckDialog(
 
                 Row (
                     modifier = Modifier
-                        .fillMaxWidth(0.5f)
+                        .fillMaxWidth(0.8f)
                 ){
                     MainButton(
                         text = "  취소  ",
@@ -90,7 +90,7 @@ fun CommunityUpdateCheckDialog(
                     Spacer(modifier = Modifier.weight(1f))
 
                     MainButton(
-                        text = "  확인  ",
+                        text = "  새로 고침  ",
                         onClick = onConfirmClick,
                         modifier = Modifier
                     )

@@ -5,7 +5,7 @@ fun getUserInitialData(): List<User> {
         //value = 최대 사용 개수, value2 = 오픈된 사용 개수, value3 = 사용한 수
         User(id = "date", value = "2001-01-01", value2 = "0", value3 = "2001-01-01"), // 오늘 날짜, 접속일, 첫 접속 날짜
         User(id = "selectPat"),
-        User(id = "money", value = "0", value2 = "0"),
+        User(id = "money", value = "0", value2 = "500"),
         User(id = "pat", value = "5", value2 = "1", value3 = "1"), // 1-최종 개수, 2-오픈 개수, 3-사용 개수
         User(id = "item", value = "10", value2 = "1", value3 = "1"),
         User(id = "name", value = "이웃"),
