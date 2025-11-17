@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -26,9 +27,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.data.room.letter.Letter
 import com.a0100019.mypat.presentation.ui.component.MainButton
@@ -37,8 +40,12 @@ import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
 @Composable
 fun TutorialDialog(
-    onClose: () -> Unit = {},
-    state: String = "하루미션"
+    state: String = "미션",
+    onStoreClick: () -> Unit = {},
+    onDailyClick: () -> Unit = {},
+    onPatClick: () -> Unit = {},
+    onDesignClick: () -> Unit = {},
+    onCommunityClick: () -> Unit = {}
 ) {
 
     Dialog(
@@ -89,8 +96,8 @@ fun TutorialDialog(
                         when(state){
                             "미션" -> {
                                 Text(
-                                    text = "하루마을의 에너지원은 바로 관리인의 성실함입니다. 하루마을에는 현재 총 4가지의 간단한 하루 미션이 있습니다. " +
-                                            "하루 미션 버튼을 눌러 원하는 미션들을 완료하고 주된 화폐인 햇살을 얻어주세요\n\n목표 : 하루 미션 한 개 완료하기",
+                                    text = "하루마을의 에너지원은 바로 관리인의 성실함입니다. " +
+                                            "하루 미션 버튼을 눌러 원하는 미션을 완료하고 주된 화폐인 햇살을 얻어주세요\n\n목표 : 하루 미션 한 개 완료하기",
                                     style = MaterialTheme.typography.bodyMedium,
                                     textAlign = TextAlign.Center,
                                     modifier = Modifier.padding(bottom = 16.dp),
@@ -98,37 +105,10 @@ fun TutorialDialog(
                                 )
 
                                 MainButton(
-                                    onClick = {},
+                                    onClick = {
+                                        onDailyClick()
+                                    },
                                     text = "     하루 미션     "
-                                )
-                            }
-                            "상점" -> {
-                                Text(
-                                    text = "상점에서 햇살로 펫을 뽑고 달빛으로 그 외 다양한 아이템을 살 수 있습니다. 햇살은 하루 미션으로 얻을 수 있고, 달빛은 주로 미니 게임을 통해 얻을 수 있으며 " +
-                                            "햇살은 달빛으로 교환할 수 있습니다\n\n목표 : 상점 이용하기",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier.padding(bottom = 16.dp),
-                                    color = Color.Black
-                                )
-
-                                MainButton(
-                                    onClick = {},
-                                    text = "     상점     "
-                                )
-                            }
-                            "꾸미기" -> {
-                                Text(
-                                    text = "꾸미기 모드에서 원하는 펫과 아이템을 배치하고 맵을 바꿀 수 있습니다. 펫을 클릭하여 크기를 조정할 수 있으며 레벨에 따라 효과를 적용할 수 있습니다. 나만의 멋진 마을을 만들어보세요!\n\n목표 : 꾸미기 완료하기",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier.padding(bottom = 16.dp),
-                                    color = Color.Black
-                                )
-
-                                MainButton(
-                                    onClick = {},
-                                    text = "    꾸미기 모드    "
                                 )
                             }
                             "커뮤니티" -> {
@@ -145,11 +125,47 @@ fun TutorialDialog(
                                 )
 
                                 MainButton(
-                                    onClick = {},
+                                    onClick = {
+                                        onCommunityClick()
+                                    },
                                     text = "     커뮤니티     "
                                 )
 
                             }
+                            "상점" -> {
+                                Text(
+                                    text = "상점에서 햇살로 펫을 뽑고 달빛으로 그 외 다양한 아이템을 살 수 있습니다. 햇살은 하루 미션으로 얻을 수 있고, 달빛은 주로 미니 게임을 통해 얻을 수 있으며 " +
+                                            "햇살은 달빛으로 교환할 수 있습니다\n\n목표 : 상점 이용하기",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.padding(bottom = 16.dp),
+                                    color = Color.Black
+                                )
+
+                                MainButton(
+                                    onClick = {
+                                        onStoreClick()
+                                    },
+                                    text = "     상점     "
+                                )
+                            }
+                            "꾸미기" -> {
+                                Text(
+                                    text = "꾸미기 모드에서 원하는 펫과 아이템을 배치하고 맵을 바꿀 수 있습니다. 펫을 클릭하여 크기를 조정할 수 있으며 레벨에 따라 효과를 적용할 수 있습니다. 나만의 멋진 마을을 만들어보세요!\n\n목표 : 꾸미기 완료하기",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.padding(bottom = 16.dp),
+                                    color = Color.Black
+                                )
+
+                                MainButton(
+                                    onClick = {
+                                        onDesignClick()
+                                    },
+                                    text = "    꾸미기 모드    "
+                                )
+                            }
+
                             "펫" -> {
                                 Text(
                                     text = "펫과 놀아주세요! 10분마다 펫 머리 위에 아래와 같은 말풍선이 생기면 클릭하여 놀아주세요 애정도를 많이 얻을 수 있습니다 "
@@ -178,7 +194,12 @@ fun TutorialDialog(
 
                                 JustImage(
                                     filePath = "pat/cat.json",
-                                    modifier = Modifier.size(50.dp),
+                                    modifier = Modifier
+                                        .size(50.dp)
+                                        .clickable {
+                                            onPatClick()
+                                        }
+                                    ,
                                     repetition = true
                                 )
 
@@ -211,8 +232,7 @@ fun TutorialDialog(
 fun TutorialDialogPreview() {
     MypatTheme {
         TutorialDialog(
-            onClose = {},
-            state = "펫"
+            state = "미션"
         )
     }
 }

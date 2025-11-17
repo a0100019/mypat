@@ -94,6 +94,13 @@ fun DailyScreen(
     popBackStack: () -> Unit = {}
 ) {
 
+    val context = LocalContext.current
+    val tutorialPrefs = context.getSharedPreferences("tutorial_prefs", Context.MODE_PRIVATE)
+    val tutorial = tutorialPrefs.getString("tutorial", "미션")
+    if(tutorial == "미션") {
+        tutorialPrefs.edit().putString("tutorial", "커뮤니티").apply()
+    }
+
     if(situation == "walkPermissionRequest") {
         RequestPermissionScreen()
     } else if (situation in listOf("walkPermissionSetting", "walkPermissionSettingNo")) {

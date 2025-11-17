@@ -24,7 +24,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -40,6 +42,7 @@ import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.domain.AppBgmManager
 import com.a0100019.mypat.presentation.ui.MusicPlayer
 import com.a0100019.mypat.presentation.main.mainDialog.LovePatDialog
+import com.a0100019.mypat.presentation.main.mainDialog.TutorialDialog
 import com.a0100019.mypat.presentation.main.management.ManagementViewModel
 import com.a0100019.mypat.presentation.setting.LetterViewDialog
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
@@ -184,6 +187,28 @@ fun MainScreen(
         prefs.edit().putString("bgm", mapUrl).apply()
     }
 
+    val tutorialPrefs = context.getSharedPreferences("tutorial_prefs", Context.MODE_PRIVATE)
+    val tutorial = tutorialPrefs.getString("tutorial", "미션")
+    var tutorialText by remember { mutableStateOf("진행") }
+
+    if(tutorialText == "진행"){
+        when (tutorial) {
+            "미션" -> TutorialDialog(
+                state = "미션",
+                onDailyClick = onDailyNavigateClick
+            )
+
+            "커뮤니티" -> TutorialDialog(
+                state = "커뮤니티",
+                onCommunityClick = onCommunityNavigateClick
+            )
+
+            "펫" -> TutorialDialog(
+                state = "펫",
+                onPatClick = on
+            )
+        }
+    }
     when(situation) {
         "letter" -> LetterViewDialog(
             onClose = {},

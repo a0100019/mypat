@@ -54,6 +54,7 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.offset
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
@@ -203,6 +204,25 @@ fun LoginScreen(
                 .align(Alignment.Center)
                 .padding(bottom = 100.dp)
         )
+
+        Box {
+            // 밑면(그림자층)
+            Text(
+                text = "하루마을",
+                fontSize = 48.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = Color(0xFF6AB0FF),
+                modifier = Modifier.offset(3.dp, 3.dp)
+            )
+
+            // 윗면(실제 메인 글자)
+            Text(
+                text = "하루마을",
+                fontSize = 48.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = Color.White
+            )
+        }
 
         when (loginState) {
             "unLogin" -> Column(
