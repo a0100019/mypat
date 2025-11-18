@@ -166,7 +166,7 @@ fun CommunityWorldCard(
             ) {
                 Text(
                     text = userData.name,
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center
                 )
                 Text(

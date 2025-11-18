@@ -195,20 +195,47 @@ fun MainScreen(
         when (tutorial) {
             "미션" -> TutorialDialog(
                 state = "미션",
-                onDailyClick = onDailyNavigateClick
+                onDailyClick = {
+                    onDailyNavigateClick()
+                    tutorialPrefs.edit().putString("tutorial", "커뮤니티").apply()
+                }
             )
 
             "커뮤니티" -> TutorialDialog(
                 state = "커뮤니티",
-                onCommunityClick = onCommunityNavigateClick
+                onCommunityClick = {
+                    onCommunityNavigateClick()
+                    tutorialPrefs.edit().putString("tutorial", "상점").apply()
+                }
+            )
+
+            "상점" -> TutorialDialog(
+                state = "상점",
+                onStoreClick = {
+                    onStoreNavigateClick()
+                    tutorialPrefs.edit().putString("tutorial", "꾸미기").apply()
+                }
+            )
+
+            "꾸미기" -> TutorialDialog(
+                state = "꾸미기",
+                onDesignClick = {
+                    onWorldNavigateClick()
+                    tutorialPrefs.edit().putString("tutorial", "펫").apply()
+                }
             )
 
             "펫" -> TutorialDialog(
                 state = "펫",
-                onPatClick = on
+                onPatClick = {
+                    dialogPatIdChange("1")
+                    tutorialPrefs.edit().putString("tutorial", "완료").apply()
+                    tutorialText = "완료"
+                }
             )
         }
     }
+
     when(situation) {
         "letter" -> LetterViewDialog(
             onClose = {},

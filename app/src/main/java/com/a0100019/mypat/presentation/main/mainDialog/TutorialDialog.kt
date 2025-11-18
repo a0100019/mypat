@@ -2,6 +2,7 @@ package com.a0100019.mypat.presentation.main.mainDialog
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,6 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -87,17 +89,24 @@ fun TutorialDialog(
                             style = MaterialTheme.typography.titleLarge,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(10.dp),
+                                .padding(6.dp),
                             color = Color.Black
                         )
 
-                        Spacer(modifier = Modifier.size(12.dp))
-
                         when(state){
                             "미션" -> {
+
                                 Text(
-                                    text = "하루마을의 에너지원은 바로 관리인의 성실함입니다. " +
-                                            "하루 미션 버튼을 눌러 원하는 미션을 완료하고 주된 화폐인 햇살을 얻어주세요\n\n목표 : 하루 미션 한 개 완료하기",
+                                    text = "(1/5)",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = Color.Black
+                                )
+
+                                Spacer(modifier = Modifier.size(12.dp))
+
+                                Text(
+                                    text = "하루마을에 오신 것을 환영합니다!\n\n하루마을의 에너지원은 바로 관리인의 성실함입니다. " +
+                                            "하루 미션 버튼을 눌러 원하는 미션을 완료하고 햇살을 얻어주세요\n\n목표 : 하루 미션 한 개 완료하기",
                                     style = MaterialTheme.typography.bodyMedium,
                                     textAlign = TextAlign.Center,
                                     modifier = Modifier.padding(bottom = 16.dp),
@@ -114,7 +123,15 @@ fun TutorialDialog(
                             "커뮤니티" -> {
 
                                 Text(
-                                    text = "커뮤니티 기능을 이용해보세요! 다른 사람들의 마을을 구경하고 좋아요를 눌러보세요. 채팅으로 대화도 할 수 있습니다. 개성있는 나만의 마을도 꾸미고 미니 게임에서 높은 순위를 차지해서 하루마을 명예의 전당에 이름을 남겨보세요!\n" +
+                                    text = "(2/5)",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = Color.Black
+                                )
+
+                                Spacer(modifier = Modifier.size(12.dp))
+
+                                Text(
+                                    text = "커뮤니티 기능을 이용해보세요! 다른 사람들의 마을을 구경하고 대화를 할 수 있습니다. 미니 게임에서 높은 순위를 차지하여 이름을 남겨보세요!\n" +
                                             "\n" +
                                             "목표 : 커뮤니티 기능 둘러보기"
                                     ,
@@ -133,8 +150,17 @@ fun TutorialDialog(
 
                             }
                             "상점" -> {
+
                                 Text(
-                                    text = "상점에서 햇살로 펫을 뽑고 달빛으로 그 외 다양한 아이템을 살 수 있습니다. 햇살은 하루 미션으로 얻을 수 있고, 달빛은 주로 미니 게임을 통해 얻을 수 있으며 " +
+                                    text = "(3/5)",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = Color.Black
+                                )
+
+                                Spacer(modifier = Modifier.size(12.dp))
+
+                                Text(
+                                    text = "상점에서 펫과 아이템을 구매할 수 있습니다. 햇살은 하루 미션, 달빛은 주로 미니 게임을 통해 얻을 수 있으며 " +
                                             "햇살은 달빛으로 교환할 수 있습니다\n\n목표 : 상점 이용하기",
                                     style = MaterialTheme.typography.bodyMedium,
                                     textAlign = TextAlign.Center,
@@ -149,9 +175,19 @@ fun TutorialDialog(
                                     text = "     상점     "
                                 )
                             }
+
                             "꾸미기" -> {
+
                                 Text(
-                                    text = "꾸미기 모드에서 원하는 펫과 아이템을 배치하고 맵을 바꿀 수 있습니다. 펫을 클릭하여 크기를 조정할 수 있으며 레벨에 따라 효과를 적용할 수 있습니다. 나만의 멋진 마을을 만들어보세요!\n\n목표 : 꾸미기 완료하기",
+                                    text = "(4/5)",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = Color.Black
+                                )
+
+                                Spacer(modifier = Modifier.size(12.dp))
+
+                                Text(
+                                    text = "꾸미기 모드에서 펫과 아이템을 배치하고 맵을 바꿀 수 있습니다. 펫을 클릭하여 크기를 조정할 수 있으니 나만의 멋진 마을을 만들어보세요!\n\n목표 : 꾸미기 완료하기",
                                     style = MaterialTheme.typography.bodyMedium,
                                     textAlign = TextAlign.Center,
                                     modifier = Modifier.padding(bottom = 16.dp),
@@ -167,6 +203,15 @@ fun TutorialDialog(
                             }
 
                             "펫" -> {
+
+                                Text(
+                                    text = "(5/5)",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = Color.Black
+                                )
+
+                                Spacer(modifier = Modifier.size(12.dp))
+
                                 Text(
                                     text = "펫과 놀아주세요! 10분마다 펫 머리 위에 아래와 같은 말풍선이 생기면 클릭하여 놀아주세요 애정도를 많이 얻을 수 있습니다 "
                                             ,
@@ -184,11 +229,11 @@ fun TutorialDialog(
                                 )
 
                                 Text(
-                                    text = "또한 펫을 클릭하면 미니 게임을 통해 펫과 놀아줄 수 있고 애정도와 달빛을 얻을 수 있습니다. \n\n튜토리얼이 끝났습니다! 이제부터는 하루 마을의 주인이 되어 꾸준히 멋진 마을을 만들어가 보세요! 마지막으로 아래의 펫을 눌러주세요"
+                                    text = "또한 펫을 클릭하면 미니 게임을 통해 펫과 놀아줄 수 있고 달빛을 많이 얻을 수 있습니다. \n\n드디어 튜토리얼이 끝났습니다! 이제부터는 하루 마을의 주인이 되어 꾸준히 멋진 마을을 만들어주세요! 마지막으로 아래의 펫을 눌러주세요"
                                             ,
                                     style = MaterialTheme.typography.bodyMedium,
                                     textAlign = TextAlign.Center,
-                                    modifier = Modifier.padding(top = 10.dp),
+                                    modifier = Modifier.padding(top = 10.dp, bottom = 10.dp),
                                     color = Color.Black
                                 )
 
@@ -196,9 +241,13 @@ fun TutorialDialog(
                                     filePath = "pat/cat.json",
                                     modifier = Modifier
                                         .size(50.dp)
-                                        .clickable {
-                                            onPatClick()
-                                        }
+                                        .clickable(
+                                            interactionSource = remember { MutableInteractionSource() },
+                                            indication = null,
+                                            onClick = {
+                                                onPatClick()
+                                            }
+                                        )
                                     ,
                                     repetition = true
                                 )

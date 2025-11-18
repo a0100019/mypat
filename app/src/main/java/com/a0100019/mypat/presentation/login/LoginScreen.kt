@@ -54,6 +54,7 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.offset
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Surface
@@ -62,11 +63,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.fontscaling.MathUtils.lerp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.util.lerp
 import com.a0100019.mypat.presentation.setting.TermsDialog
 import com.a0100019.mypat.presentation.ui.MusicPlayer
 
@@ -195,34 +204,67 @@ fun LoginScreen(
         val customFont = FontFamily(Font(R.font.fish))
         val safeFont = if (isPreview) FontFamily.SansSerif else customFont
 
-        Text(
-            text = "하루마을",
-            fontSize = 70.sp,
-            color = Color(0xFF5ABDB8),
-            fontFamily = safeFont,
-            modifier = Modifier
-                .align(Alignment.Center)
-                .padding(bottom = 100.dp)
+        val glowProgress by rememberInfiniteTransition(label = "").animateFloat(
+            initialValue = 0.6f,
+            targetValue = 1.0f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(1600, easing = LinearEasing),
+                repeatMode = RepeatMode.Reverse
+            ),
+            label = ""
         )
 
-        Box {
-            // 밑면(그림자층)
+// 🌸 파스텔 퍼플 Glow 그라데이션 (라일락 핑크)
+        val glowBrush = Brush.verticalGradient(
+            colors = listOf(
+                Color.White.copy(alpha = glowProgress),                  // Top white glow
+                Color(0xFFEFD7FF).copy(alpha = glowProgress * 0.9f),     // Soft lavender pink
+                Color(0xFFD4C4FF).copy(alpha = glowProgress * 0.85f)     // Pastel lilac purple
+            )
+        )
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .padding(bottom = 100.dp),
+            contentAlignment = Alignment.Center
+        ) {
+
+            // ▼ 아래 그림자층 (보라빛 그림자)
             Text(
                 text = "하루마을",
-                fontSize = 48.sp,
-                fontWeight = FontWeight.ExtraBold,
-                color = Color(0xFF6AB0FF),
-                modifier = Modifier.offset(3.dp, 3.dp)
+                fontSize = 74.sp,
+                fontFamily = safeFont,
+                color = Color(0xFF9D84FF), // 부드러운 라벤더 그림자
+                modifier = Modifier.offset(5.dp, 5.dp)
             )
 
-            // 윗면(실제 메인 글자)
+            // ▼ 기본 텍스트 (흰색 바탕)
             Text(
                 text = "하루마을",
-                fontSize = 48.sp,
-                fontWeight = FontWeight.ExtraBold,
-                color = Color.White
+                fontSize = 70.sp,
+                fontFamily = safeFont,
+                color = Color.White.copy(alpha = 0.95f)
+            )
+
+            // ▼ 반짝이는 퍼플 Glow 레이어
+            Text(
+                text = "하루마을",
+                fontSize = 70.sp,
+                fontFamily = safeFont,
+                style = TextStyle(
+                    brush = glowBrush,
+                    shadow = Shadow(
+                        color = Color(0xAACBB2FF).copy(alpha = glowProgress), // 은은한 퍼플-Mint 광택
+                        offset = Offset(3f, 3f),
+                        blurRadius = 28f * glowProgress
+                    )
+                )
             )
         }
+
+
 
         when (loginState) {
             "unLogin" -> Column(
@@ -233,9 +275,9 @@ fun LoginScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-                TextFlash(
-                    text = "하루마을에 오신 것을 환영합니다!",
-                )
+//                TextFlash(
+//                    text = "하루마을에 오신 것을 환영합니다!",
+//                )
 
                 Spacer(modifier = Modifier.weight(1f))
 
