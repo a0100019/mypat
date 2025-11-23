@@ -1,5 +1,6 @@
 package com.a0100019.mypat.presentation.daily.walk
 
+import android.content.Intent
 import android.widget.Toast
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloat
@@ -133,6 +134,10 @@ fun WalkScreen(
     popBackStack: () -> Unit = {},
 
 ) {
+
+    val context = LocalContext.current
+    val intent = Intent(context, StepForegroundService::class.java)
+    context.startForegroundService(intent)
 
     Surface(
         modifier = Modifier

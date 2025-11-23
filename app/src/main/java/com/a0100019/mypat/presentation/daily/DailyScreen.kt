@@ -37,6 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.a0100019.mypat.presentation.daily.walk.RequestNotificationPermissionScreen
 import com.a0100019.mypat.presentation.daily.walk.RequestPermissionScreen
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
@@ -75,6 +76,7 @@ fun DailyScreen(
         onKoreanNavigateClick = onKoreanNavigateClick,
         onCloseClick = dailyViewModel::onCloseClick,
         onDialogPermissionCheckClick = dailyViewModel::onDialogPermissionCheckClick,
+        onDialogNotificationPermissionCheckClick = dailyViewModel::onDialogNotificationPermissionCheckClick,
         popBackStack = popBackStack,
 
         situation = dailyState.situation,
@@ -90,6 +92,7 @@ fun DailyScreen(
     onKoreanNavigateClick: () -> Unit,
     onCloseClick: () -> Unit = {},
     onDialogPermissionCheckClick: (Context) -> Unit = {},
+    onDialogNotificationPermissionCheckClick: (Context) -> Unit = {},
     situation: String,
     popBackStack: () -> Unit = {}
 ) {
@@ -108,6 +111,14 @@ fun DailyScreen(
             situation = situation,
             onCloseClick = onCloseClick,
             onCheckClick = onDialogPermissionCheckClick
+        )
+    } else if (situation == "notificationPermissionRequest") {
+        RequestNotificationPermissionScreen()
+    } else if (situation in listOf("notificationPermissionSetting", "notificationPermissionSettingNo")) {
+        NotificationPermissionDialog(
+            situation = situation,
+            onCloseClick = onCloseClick,
+            onCheckClick = onDialogNotificationPermissionCheckClick
         )
     }
 

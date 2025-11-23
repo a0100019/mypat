@@ -17,8 +17,8 @@ android {
         applicationId = "com.a0100019.mypat"
         minSdk = 26
         targetSdk = 35
-        versionCode = 10
-        versionName = "25.4"
+        versionCode = 11
+        versionName = "25.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -132,6 +132,9 @@ dependencies {
 
     //communityViewModel
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+
+    //삼성 헬스
+    implementation("androidx.health.connect:connect-client:1.1.0-alpha04")
 
 
 }

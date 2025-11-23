@@ -121,12 +121,10 @@ fun ExplanationDialog(
                                 ) {
 
                                     MainButton(
-                                        onClick = {
-                                            page++
-                                        },
+                                        onClick = onClose,
                                         modifier = Modifier
                                             .fillMaxWidth(),
-                                        text = " 확인 "
+                                        text = " 시작하기 "
                                     )
 
                                 }
@@ -134,7 +132,6 @@ fun ExplanationDialog(
                             }
                             Spacer(modifier = Modifier.weight(1f))
                         }
-
 
                     }
                 } else {

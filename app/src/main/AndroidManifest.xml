@@ -2,10 +2,18 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- 사용자 활동(걷기, 달리기 등)을 감지하기 위한 권한 -->
-    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>
+    <!-- 걸음수 측정(센서) -->
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+
+    <!-- 인터넷 -->
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!-- 포그라운드 서비스 권한 -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_HEALTH" />
+
+    <!-- Android 13 이상: 알림 표시 권한 필요 -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:name=".App"
@@ -25,12 +33,19 @@
             android:theme="@style/Theme.Mypat"
             android:screenOrientation="portrait">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity android:name=".presentation.loading.LoadingActivity"/>
+        <activity android:name=".presentation.loading.LoadingActivity" />
+
+        <!-- 🔥 Foreground Service 등록 추가 -->
+        <service
+            android:name=".presentation.daily.walk.StepForegroundService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="health" />
 
     </application>
 

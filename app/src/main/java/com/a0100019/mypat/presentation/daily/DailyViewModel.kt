@@ -2,6 +2,7 @@ package com.a0100019.mypat.presentation.daily
 
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
@@ -58,6 +59,7 @@ class DailyViewModel @Inject constructor(
         }
     }
 
+    @SuppressLint("NewApi")
     @RequiresApi(Build.VERSION_CODES.Q)
     fun walkPermissionCheck(context: Context) = intent {
         val hasPermission = ContextCompat.checkSelfPermission(
@@ -67,7 +69,7 @@ class DailyViewModel @Inject constructor(
 
         if (hasPermission) {
             // 권한 있을 때 처리
-            postSideEffect(DailySideEffect.NavigateToWalkScreen)
+            notificationPermissionCheck(context)
         } else {
             val activity = context as? Activity
             val isDeniedPermanently = activity?.let {
@@ -92,12 +94,75 @@ class DailyViewModel @Inject constructor(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    fun notificationPermissionCheck(context: Context) = intent {
+
+        val permission = Manifest.permission.POST_NOTIFICATIONS
+
+        val hasPermission = ContextCompat.checkSelfPermission(
+            context,
+            permission
+        ) == PackageManager.PERMISSION_GRANTED
+
+        if (hasPermission) {
+            // 권한 있음 → 정상 진행
+            postSideEffect(DailySideEffect.NavigateToWalkScreen)
+        } else {
+            val activity = context as? Activity
+            val isDeniedPermanently = activity?.let {
+                !ActivityCompat.shouldShowRequestPermissionRationale(it, permission)
+            } ?: false
+
+            if (isDeniedPermanently) {
+                // 🔥 완전 거절 → 설정 화면으로 유도
+                reduce {
+                    state.copy(
+                        situation = "notificationPermissionSetting"
+                    )
+                }
+            } else {
+                // 📌 단순 거절 → 다시 요청 가능
+                reduce {
+                    state.copy(
+                        situation = "notificationPermissionRequest"
+                    )
+                }
+            }
+        }
+    }
+
+
+    @SuppressLint("NewApi")
     @RequiresApi(Build.VERSION_CODES.Q)
     fun onDialogPermissionCheckClick(context: Context) = intent {
 
         val hasPermission = ContextCompat.checkSelfPermission(
             context,
             Manifest.permission.ACTIVITY_RECOGNITION
+        ) == PackageManager.PERMISSION_GRANTED
+
+        if (hasPermission) {
+            // 권한 있을 때 처리
+            notificationPermissionCheck(context)
+        } else {
+            reduce {
+                state.copy(
+                    situation = "walkPermissionSettingNo"
+                )
+            }
+        }
+
+    }
+
+    @SuppressLint("InlinedApi")
+    @RequiresApi(Build.VERSION_CODES.Q)
+    fun onDialogNotificationPermissionCheckClick(context: Context) = intent {
+
+        val permission = Manifest.permission.POST_NOTIFICATIONS
+
+        val hasPermission = ContextCompat.checkSelfPermission(
+            context,
+            permission
         ) == PackageManager.PERMISSION_GRANTED
 
         if (hasPermission) {
@@ -111,7 +176,7 @@ class DailyViewModel @Inject constructor(
         } else {
             reduce {
                 state.copy(
-                    situation = "walkPermissionSettingNo"
+                    situation = "notificationPermissionSettingNo"
                 )
             }
         }

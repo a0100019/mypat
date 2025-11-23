@@ -33,3 +33,29 @@ fun RequestPermissionScreen() {
         }
     }
 }
+
+
+@Composable
+fun RequestNotificationPermissionScreen() {
+    val context = LocalContext.current
+
+    // Android 13 이상만 알림 권한 필요
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return
+
+    val permissionLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestPermission()
+        ) { isGranted ->
+            if (!isGranted) {
+                Toast.makeText(context, "알림을 표시하려면 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+    LaunchedEffect(Unit) {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
+}

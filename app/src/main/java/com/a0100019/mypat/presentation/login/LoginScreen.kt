@@ -199,6 +199,83 @@ fun LoginScreen(
             contentScale = ContentScale.FillBounds
         )
 
+        JustImage(
+            filePath = "etc/sparkle.json",
+            modifier = Modifier
+                .padding(start = 30.dp, top = 30.dp)
+                .size(50.dp)
+            ,
+        )
+
+        JustImage(
+            filePath = "etc/sparkle_pink.json",
+            modifier = Modifier
+                .padding(start = 130.dp, top = 30.dp)
+                .size(140.dp)
+            ,
+        )
+
+        JustImage(
+            filePath = "etc/sparkle.json",
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(end = 20.dp, top = 80.dp)
+                .size(70.dp)
+            ,
+        )
+
+        JustImage(
+            filePath = "etc/sparkle_pink.json",
+            modifier = Modifier
+                .padding(start = 70.dp, top = 100.dp)
+                .size(80.dp)
+            ,
+        )
+
+        JustImage(
+            filePath = "etc/sparkle.json",
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(end = 70.dp, top = 130.dp)
+                .size(120.dp)
+            ,
+        )
+
+        JustImage(
+            filePath = "etc/sparkle_pink.json",
+            modifier = Modifier
+                .padding(start = 120.dp, top = 170.dp)
+                .size(60.dp)
+            ,
+        )
+
+        JustImage(
+            filePath = "etc/sparkle.json",
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(end = 140.dp, top = 220.dp)
+                .size(40.dp)
+            ,
+        )
+
+        JustImage(
+            filePath = "etc/sparkle_pink.json",
+            modifier = Modifier
+                .padding(start = 40.dp, top = 240.dp)
+                .size(80.dp)
+            ,
+        )
+
+        JustImage(
+            filePath = "etc/sparkle.json",
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(end = 40.dp, top = 260.dp)
+                .size(80.dp)
+            ,
+        )
+
+
         val isPreview = LocalInspectionMode.current // 프리뷰 감지
 
         val customFont = FontFamily(Font(R.font.fish))
@@ -214,14 +291,16 @@ fun LoginScreen(
             label = ""
         )
 
-// 🌸 파스텔 퍼플 Glow 그라데이션 (라일락 핑크)
+
+// 🌿 파스텔 민트 Glow (자연/숲/산 배경용)
         val glowBrush = Brush.verticalGradient(
             colors = listOf(
-                Color.White.copy(alpha = glowProgress),                  // Top white glow
-                Color(0xFFEFD7FF).copy(alpha = glowProgress * 0.9f),     // Soft lavender pink
-                Color(0xFFD4C4FF).copy(alpha = glowProgress * 0.85f)     // Pastel lilac purple
+                Color(0xFFDFFFEF).copy(alpha = glowProgress),       // 연한 민트화이트
+                Color(0xFFBFFFE3).copy(alpha = glowProgress * 0.9f), // 부드러운 파스텔 민트
+                Color(0xFF9FE8CC).copy(alpha = glowProgress * 0.85f) // 산과 어울리는 고급 민트초록
             )
         )
+
 
         Box(
             modifier = Modifier
@@ -231,24 +310,24 @@ fun LoginScreen(
             contentAlignment = Alignment.Center
         ) {
 
-            // ▼ 아래 그림자층 (보라빛 그림자)
+            // ▼ 아래 그림자층 (그린 계열 그림자)
             Text(
                 text = "하루마을",
                 fontSize = 74.sp,
                 fontFamily = safeFont,
-                color = Color(0xFF9D84FF), // 부드러운 라벤더 그림자
+                color = Color(0xFF7EC8A3),  // 은은한 그린 그림자
                 modifier = Modifier.offset(5.dp, 5.dp)
             )
 
-            // ▼ 기본 텍스트 (흰색 바탕)
+            // ▼ 기본 텍스트 (흰색)
             Text(
                 text = "하루마을",
                 fontSize = 70.sp,
                 fontFamily = safeFont,
-                color = Color.White.copy(alpha = 0.95f)
+                color = Color.White.copy(alpha = 0.98f)
             )
 
-            // ▼ 반짝이는 퍼플 Glow 레이어
+            // ▼ 민트 Glow
             Text(
                 text = "하루마을",
                 fontSize = 70.sp,
@@ -256,15 +335,13 @@ fun LoginScreen(
                 style = TextStyle(
                     brush = glowBrush,
                     shadow = Shadow(
-                        color = Color(0xAACBB2FF).copy(alpha = glowProgress), // 은은한 퍼플-Mint 광택
+                        color = Color(0xAA7AD4A4).copy(alpha = glowProgress),
                         offset = Offset(3f, 3f),
-                        blurRadius = 28f * glowProgress
+                        blurRadius = 24f * glowProgress
                     )
                 )
             )
         }
-
-
 
         when (loginState) {
             "unLogin" -> Column(
