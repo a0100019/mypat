@@ -57,18 +57,17 @@ class WalkViewModel @Inject constructor(
         //저장 걸음 수
         val saveSteps = prefs.getInt("saveSteps", 0)
 
+        //걸음 수 기록
+        val stepsRaw = prefs.getString("stepsRaw", "$today.1") ?: "$today.1"
+
         reduce {
             state.copy(
                 userDataList = userDataList,
                 walkDataList = walkDataList,
-                totalWalkCount = totalWalkCount,
-                totalSuccessCount = goalCount,
+                stepsRaw = stepsRaw,
                 saveSteps = saveSteps,
                 today = today,
                 calendarMonth = today.substring(0, 7),
-                walkState = walkState,
-                maxContinuous = maxStreak,
-                successRate = successRatio.toInt(),
             )
         }
     }
@@ -98,8 +97,6 @@ class WalkViewModel @Inject constructor(
             reduce {
                 state.copy(
                     saveSteps = state.saveSteps - 10000,
-                    walkState = "완료",
-                    lastWalkCount = state.saveSteps - 10000,
                 )
             }
 
@@ -148,17 +145,10 @@ data class WalkState(
     val walkDataList: List<Walk> = emptyList(),
 
     val saveSteps: Int = 0, // ✅ 걸음 수 저장 (초기값 0)
-    val totalWalkCount: String = "0",
-    val totalSuccessCount: Int = 0,
-    val maxContinuous: Int = 1,
-    val successRate: Int = 0,
-    val walkState: String = "미완료", //미완료, 대기, 완료
+    val stepsRaw: String = "",
     val today: String = "2025-07-05",
     val calendarMonth: String = "2025-07",
     val sensor: Boolean = false,
-    val firstSystemWalk: Int = 0,
-    val firstSaveWalk: Int = 0,
-    val lastWalkCount: Int = 0,
 
     )
 

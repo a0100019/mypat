@@ -1,5 +1,6 @@
 package com.a0100019.mypat.presentation.login
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -29,6 +30,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.firestore
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -58,7 +60,8 @@ class LoginViewModel @Inject constructor(
     private val worldDao: WorldDao,
     private val letterDao: LetterDao,
     private val areaDao: AreaDao,
-    private val allUserDao: AllUserDao
+    private val allUserDao: AllUserDao,
+    @ApplicationContext private val context: Context
 ) : ViewModel(), ContainerHost<LoginState, LoginSideEffect> {
 
     override val container: Container<LoginState, LoginSideEffect> = container(
@@ -172,6 +175,12 @@ class LoginViewModel @Inject constructor(
 
                     val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
                     userDao.update(id = "date", value3 = currentDate)
+                    userDao.update(id = "etc2", value2 = "$currentDate.1")
+                    val prefs = context.getSharedPreferences("step_prefs", Context.MODE_PRIVATE)
+                    prefs.edit()
+                        .putString("stepsRaw", "$currentDate.1")
+                        .apply()
+
                     letterDao.updateDateByTitle(title = "시작의 편지", todayDate = currentDate)
                     val userRef = db.collection("users").document(it.uid)
                     userRef.set(
@@ -251,6 +260,14 @@ class LoginViewModel @Inject constructor(
                             val totalDate = dateMap["totalDate"]
                             val lastDate = dateMap["lastDate"]
                             userDao.update(id = "date", value = lastDate, value2 = totalDate, value3 = firstDate)
+
+                            //걸음 수 기록
+                            val stepsRaw = userDoc.getString("stepsRaw")
+                            val prefs = context.getSharedPreferences("step_prefs", Context.MODE_PRIVATE)
+                            prefs.edit()
+                                .putString("stepsRaw", stepsRaw)
+                                .apply()
+                            userDao.update(id = "etc2", value2 = stepsRaw)
 
                             val gameMap = userDoc.get("game") as Map<String, String>
                             val firstGame = gameMap["firstGame"]
@@ -738,6 +755,8 @@ class LoginViewModel @Inject constructor(
                         "totalDate" to userDataList.find { it.id == "date"}!!.value2,
                         "lastDate" to userDataList.find { it.id == "date"}!!.value
                     ),
+
+                    "stepsRaw" to userDataList.find { it.id == "etc2"}!!.value2,
 
                     "game" to mapOf(
                         "firstGame" to userDataList.find { it.id == "firstGame"}!!.value,

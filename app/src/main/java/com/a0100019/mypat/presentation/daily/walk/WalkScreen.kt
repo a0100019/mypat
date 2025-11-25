@@ -37,13 +37,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.user.User
-import com.a0100019.mypat.data.room.walk.Walk
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
@@ -72,19 +70,11 @@ fun WalkScreen(
     }
 
     WalkScreen(
-        walkDataList = walkState.walkDataList,
         userDataList = walkState.userDataList,
-
-        todayWalk = walkState.saveSteps,
-        walkState = walkState.walkState,
-        totalWalkCount = walkState.totalWalkCount,
-        totalSuccessCount = walkState.totalSuccessCount,
         today = walkState.today,
         calendarMonth = walkState.calendarMonth,
-        successRate = walkState.successRate,
-        maxContinuous = walkState.maxContinuous,
-        sensor =  walkState.sensor,
-        lastWalkCount = walkState.lastWalkCount,
+        saveSteps = walkState.saveSteps,
+        stepsRaw = walkState.stepsRaw,
 
         onTodayWalkSubmitClick = walkViewModel::onTodayWalkSubmitClick,
         onCalendarMonthChangeClick = walkViewModel::onCalendarMonthChangeClick,
@@ -96,19 +86,12 @@ fun WalkScreen(
 @Composable
 fun WalkScreen(
 
-    walkDataList: List<Walk> = emptyList(),
     userDataList: List<User> = emptyList(),
 
-    todayWalk: Int = 1000,
-    totalWalkCount: String = "0",
-    walkState: String = "완료",
-    totalSuccessCount: Int = 0,
     today: String = "2025-07-15",
     calendarMonth: String = "2025-07",
-    successRate: Int = 0,
-    maxContinuous: Int = 0,
-    sensor: Boolean = false,
-    lastWalkCount: Int = 0,
+    saveSteps: Int = 0,
+    stepsRaw: String = "2001-01-01.1",
 
     onCalendarMonthChangeClick: (String)-> Unit = {},
     onTodayWalkSubmitClick: ()-> Unit = {},
@@ -142,44 +125,23 @@ fun WalkScreen(
             ) {
 
                 StepProgressCircle(
-                    steps = todayWalk,
+                    steps = saveSteps,
                     modifier = Modifier
                         .size(200.dp)
                 )
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    if (todayWalk != 0) {
-                        Text(
-                            text = "충전된 걸음 수",
-                            style = MaterialTheme.typography.headlineMedium
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        if(lastWalkCount == 0){
-                            Text(
-                                text = todayWalk.toString(),
-                                style = MaterialTheme.typography.displaySmall,
-                                fontWeight = FontWeight.Bold
-                            )
-                        } else {
-                            Text(
-                                text = lastWalkCount.toString(),
-                                style = MaterialTheme.typography.displaySmall,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    } else {
-                        Text(
-                            text = "로딩중...",
-                            style = MaterialTheme.typography.headlineMedium
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            text = "핸드폰을 흔들어주세요",
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                    }
-
+                    Text(
+                        text = "충전된 걸음 수",
+                        style = MaterialTheme.typography.headlineMedium
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = saveSteps.toString(),
+                        style = MaterialTheme.typography.displaySmall,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
 
                 // 오른쪽 버튼
@@ -192,61 +154,61 @@ fun WalkScreen(
                 )
             }
 
-            if (walkState == "완료") {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                        .background(
-                            MaterialTheme.colorScheme.scrim,
-                            shape = RoundedCornerShape(16.dp)
-                        )
-                        .border(
-                            width = 2.dp,
-                            color = MaterialTheme.colorScheme.primaryContainer,
-                            shape = RoundedCornerShape(16.dp)
-                        )
-                        .padding(16.dp)
-                ) {
-                    Text(
-                        text = "오늘도 수고하셨어요!",
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        textAlign = TextAlign.Center
-                    )
-                }
-            } else {
-                if (todayWalk <= 10000) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                            .background(
-                                MaterialTheme.colorScheme.scrim,
-                                shape = RoundedCornerShape(16.dp)
-                            )
-                            .border(
-                                width = 2.dp,
-                                color = MaterialTheme.colorScheme.primaryContainer,
-                                shape = RoundedCornerShape(16.dp)
-                            )
-                            .padding(16.dp)
-                    ) {
-                        Text(
-                            text = "10000보를 모아 일일 미션을 완료하세요!",
-                            style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                } else {
-                    ShinyMissionCard(
-                        onClick = onTodayWalkSubmitClick
-                    )
-                }
-            }
+//            if (walkState == "완료") {
+//                Column(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(16.dp)
+//                        .background(
+//                            MaterialTheme.colorScheme.scrim,
+//                            shape = RoundedCornerShape(16.dp)
+//                        )
+//                        .border(
+//                            width = 2.dp,
+//                            color = MaterialTheme.colorScheme.primaryContainer,
+//                            shape = RoundedCornerShape(16.dp)
+//                        )
+//                        .padding(16.dp)
+//                ) {
+//                    Text(
+//                        text = "오늘도 수고하셨어요!",
+//                        style = MaterialTheme.typography.bodyLarge,
+//                        modifier = Modifier
+//                            .fillMaxWidth(),
+//                        textAlign = TextAlign.Center
+//                    )
+//                }
+//            } else {
+//                if (todayWalk <= 10000) {
+//                    Column(
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .padding(16.dp)
+//                            .background(
+//                                MaterialTheme.colorScheme.scrim,
+//                                shape = RoundedCornerShape(16.dp)
+//                            )
+//                            .border(
+//                                width = 2.dp,
+//                                color = MaterialTheme.colorScheme.primaryContainer,
+//                                shape = RoundedCornerShape(16.dp)
+//                            )
+//                            .padding(16.dp)
+//                    ) {
+//                        Text(
+//                            text = "10000보를 모아 일일 미션을 완료하세요!",
+//                            style = MaterialTheme.typography.bodyLarge,
+//                            modifier = Modifier
+//                                .fillMaxWidth(),
+//                            textAlign = TextAlign.Center
+//                        )
+//                    }
+//                } else {
+//                    ShinyMissionCard(
+//                        onClick = onTodayWalkSubmitClick
+//                    )
+//                }
+//            }
 
             Column(
                 modifier = Modifier
@@ -283,10 +245,10 @@ fun WalkScreen(
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Medium
                     )
-                    Text(
-                        text = totalWalkCount,
-                        style = MaterialTheme.typography.bodyLarge
-                    )
+//                    Text(
+//                        text = totalWalkCount,
+//                        style = MaterialTheme.typography.bodyLarge
+//                    )
 
                     Spacer(modifier = Modifier.weight(1f))
 
@@ -296,46 +258,9 @@ fun WalkScreen(
                         tint = Color(0xFFFFC107)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "성공 비율 : ",
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.Medium
-                    )
-                    Text(
-                        text = "${successRate}%",
-                        style = MaterialTheme.typography.bodyLarge
-                    )
+
                 }
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        Icons.Default.Check,
-                        contentDescription = "만보 달성",
-                        tint = Color(0xFF4CAF50)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "만보 달성 횟수 : ",
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.Medium
-                    )
-                    Text(text = "$totalSuccessCount")
-
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    Icon(
-                        Icons.Default.Refresh,
-                        contentDescription = "연속 횟수",
-                        tint = Color(0xFF00BCD4)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "최대 연속 횟수 : ",
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.Medium
-                    )
-                    Text(text = "$maxContinuous")
-                }
+                
             }
 
             Column(
@@ -397,7 +322,7 @@ fun WalkScreen(
                 CalendarView(
                     today = today,
                     calendarMonth = calendarMonth,
-                    walkList = walkDataList.filter { it.success == "1" }
+                    stepsRaw = stepsRaw
                 )
 
             }
@@ -412,7 +337,7 @@ fun WalkScreen(
 fun WalkScreenPreview() {
     MypatTheme {
         WalkScreen(
-            walkDataList = listOf(Walk(date = "2025-07-15", success = "1"), Walk(date = "2025-07-08", success = "1"), Walk(date = "2025-07-12", success = "1"))
+            stepsRaw = "2025-07-01.100/2025-07-03.200"
         )
     }
 }

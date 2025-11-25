@@ -66,21 +66,11 @@ class StepForegroundService : Service(), SensorEventListener {
                 .putInt("saveSteps", updatedSteps)
                 .apply()
 
-
-            //걸음 수 기록
-            val stepsRaw = prefs.getString("stepsRaw", "") ?: ""
-
             // 오늘 날짜 (YYMMDD)
             val today = SimpleDateFormat("yyyy-MM-dd", Locale.KOREA).format(Date())
 
-            // 기록이 없을 경우 바로 새로 생성
-            if (stepsRaw.isEmpty()) {
-                val newValue = "$today.1"
-                prefs.edit().putString("stepsRaw", newValue).apply()
-                // 알림에 표시
-                updateNotification("오늘 : 1 걸음")
-                return
-            }
+            //걸음 수 기록
+            val stepsRaw = prefs.getString("stepsRaw", "$today.1") ?: "$today.1"
 
             // "/" 기준으로 날짜 목록 나누기
             val items = stepsRaw.split("/").toMutableList()
