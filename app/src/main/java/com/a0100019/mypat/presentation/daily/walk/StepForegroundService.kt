@@ -15,6 +15,9 @@ import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.a0100019.mypat.R
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class StepForegroundService : Service(), SensorEventListener {
 
@@ -48,24 +51,83 @@ class StepForegroundService : Service(), SensorEventListener {
 
     override fun onBind(intent: Intent?): IBinder? = null
 
-    override fun onSensorChanged(event: android.hardware.SensorEvent?) {
+    override fun onSensorChanged(event: SensorEvent?) {
         if (event?.sensor?.type == Sensor.TYPE_STEP_COUNTER) {
 
-            val totalSteps = event.values[0].toInt()
+            // SharedPreferences 불러오기
+            val prefs = getSharedPreferences("step_prefs", Context.MODE_PRIVATE)
 
-            if (startSteps == -1) {
-                // 오늘 처음 측정한 누적값 저장
-                startSteps = totalSteps
+            //저장 걸음 수
+            // 기존 걸음 수 가져오기
+            val saveSteps = prefs.getInt("saveSteps", 0)
+            // 그냥 +1 해서 저장
+            val updatedSteps = saveSteps + 1
+            prefs.edit()
+                .putInt("saveSteps", updatedSteps)
+                .apply()
+
+
+            //걸음 수 기록
+            val stepsRaw = prefs.getString("stepsRaw", "") ?: ""
+
+            // 오늘 날짜 (YYMMDD)
+            val today = SimpleDateFormat("yyyy-MM-dd", Locale.KOREA).format(Date())
+
+            // 기록이 없을 경우 바로 새로 생성
+            if (stepsRaw.isEmpty()) {
+                val newValue = "$today.1"
+                prefs.edit().putString("stepsRaw", newValue).apply()
+                // 알림에 표시
+                updateNotification("오늘 : 1 걸음")
+                return
             }
 
-            todaySteps = totalSteps - startSteps
+            // "/" 기준으로 날짜 목록 나누기
+            val items = stepsRaw.split("/").toMutableList()
 
-            updateNotification("오늘 걸음 수: $todaySteps 걸음")
+            var updated = false
+
+            for (i in items.indices) {
+                val parts = items[i].split(".")
+                if (parts.size == 2) {
+                    val date = parts[0]
+                    val count = parts[1].toInt()
+
+                    if (date == today) {
+                        // 오늘 날짜 존재 → 걸음수 +1
+                        val newCount = count + 1
+                        items[i] = "$today.$newCount"
+                        updated = true
+                        // 알림에 표시
+                        updateNotification("오늘 : $newCount 걸음")
+                        break
+                    }
+                }
+            }
+
+            // 오늘 날짜가 없었다면 새로 추가
+            if (!updated) {
+                items.add("$today.1")
+                // 알림에 표시
+                updateNotification("오늘 : 1 걸음")
+            }
+
+            // 다시 "/"로 합치기
+            val newRaw = items.joinToString("/")
+
+            prefs.edit()
+                .putString("stepsRaw", newRaw)
+                .apply()
+
+
         }
     }
 
+
+
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
 
+    @SuppressLint("ObsoleteSdkInt")
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(

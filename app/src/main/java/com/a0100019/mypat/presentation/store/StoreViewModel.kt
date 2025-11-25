@@ -225,25 +225,32 @@ class StoreViewModel @Inject constructor(
 
         val moneyField = state.userData.find { it.id == "money" }
 
-        if(state.userData.find{it.id == "name"}!!.value != "이웃"){
-            if (moneyField!!.value.toInt() >= 3) {
+        val forbiddenNames = listOf("운영자", "공지사항", "GM")
+        val currentName = state.userData.find { it.id == "name" }!!.value
 
-                moneyField.value = (moneyField.value.toInt() - 3).toString()
-                userDao.update(id = moneyField.id, value = moneyField.value)
+        if(currentName !in forbiddenNames){
+            if (currentName != "이웃") {
+                if (moneyField!!.value.toInt() >= 3) {
 
+                    moneyField.value = (moneyField.value.toInt() - 3).toString()
+                    userDao.update(id = moneyField.id, value = moneyField.value)
+
+                    userDao.update("name", value = state.newName)
+                    postSideEffect(StoreSideEffect.Toast("닉네임이 변경되었습니다."))
+                    loadData()
+                    onDialogCloseClick()
+
+                } else {
+                    postSideEffect(StoreSideEffect.Toast("돈이 부족합니다!"))
+                }
+            } else {
                 userDao.update("name", value = state.newName)
                 postSideEffect(StoreSideEffect.Toast("닉네임이 변경되었습니다."))
                 loadData()
                 onDialogCloseClick()
-
-            } else {
-                postSideEffect(StoreSideEffect.Toast("돈이 부족합니다!"))
             }
         } else {
-            userDao.update("name", value = state.newName)
-            postSideEffect(StoreSideEffect.Toast("닉네임이 변경되었습니다."))
-            loadData()
-            onDialogCloseClick()
+            postSideEffect(StoreSideEffect.Toast("경고 : 부적절한 닉네임입니다."))
         }
 
     }

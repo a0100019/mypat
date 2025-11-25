@@ -11,7 +11,7 @@ fun getUserInitialData(): List<User> {
         User(id = "name", value = "이웃"),
         User(id = "auth", value3 = "0"), //uid, 테그, timeStemp
         User(id = "etc"), // page, 커뮤니티업데이트날짜, 음악 켜기끄기
-        User(id = "etc2"), // clickDiaryDate,
+        User(id = "etc2"), // clickDiaryDate, 걸음 수 데이터
         User(id = "firstGame"), //
         User(id = "secondGame", value = "100000"), //
         User(id = "thirdGame"), //1은 쉬움, 2는 보통, 3은 어려움 개수

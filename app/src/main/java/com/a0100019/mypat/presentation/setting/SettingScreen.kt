@@ -286,7 +286,7 @@ fun SettingScreen(
                 Spacer(modifier = Modifier.size(12.dp))
 
                 MainButton(
-                    text = "설명서",
+                    text = "스토리",
                     onClick = { onSituationChange("explanation") },
                     modifier = Modifier.weight(1f)
                 )
