@@ -68,6 +68,7 @@ class WalkViewModel @Inject constructor(
                 saveSteps = saveSteps,
                 today = today,
                 calendarMonth = today.substring(0, 7),
+                baseDate = today
             )
         }
     }
@@ -106,32 +107,75 @@ class WalkViewModel @Inject constructor(
 
     }
 
+    fun onSituationChangeClick() = intent {
+        when(state.situation) {
+            "month" -> reduce {
+                state.copy(
+                    situation = "week"
+                )
+            }
+            "week" -> reduce {
+                state.copy(
+                    situation = "record"
+                )
+            }
+            "record" -> reduce {
+                state.copy(
+                    situation = "month"
+                )
+            }
+        }
+    }
+
     fun onCalendarMonthChangeClick(direction: String) = intent {
 
-        val oldMonth = state.calendarMonth // 예: "2025-04"
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM")
-        val yearMonth = YearMonth.parse(oldMonth, formatter)
+        val today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
 
-        val newYearMonth = when (direction) {
-            "left" -> yearMonth.minusMonths(1)
-            "right" -> yearMonth.plusMonths(1)
-            else -> yearMonth
-        }
+        if(state.situation == "month"){
+            val oldMonth = state.calendarMonth // 예: "2025-04"
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM")
+            val yearMonth = YearMonth.parse(oldMonth, formatter)
 
-        val newMonth = newYearMonth.format(formatter)
-        if(direction == "today"){
+            val newYearMonth = when (direction) {
+                "left" -> yearMonth.minusMonths(1)
+                "right" -> yearMonth.plusMonths(1)
+                else -> yearMonth
+            }
+
+            val newMonth = newYearMonth.format(formatter)
+            if (direction == "today") {
+                reduce {
+                    state.copy(
+                        calendarMonth = state.today.substring(0, 7)
+                    )
+                }
+            } else {
+                reduce {
+                    state.copy(
+                        calendarMonth = newMonth
+                    )
+                }
+            }
+        } else if (state.situation == "week") {
+
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+            val oldDate = LocalDate.parse(state.baseDate, formatter)
+
+            val newDate = when (direction) {
+                "left" -> oldDate.minusDays(7)
+                "right" -> oldDate.plusDays(7)
+                "today" -> LocalDate.parse(state.today)
+                else -> oldDate
+            }
+
             reduce {
                 state.copy(
-                    calendarMonth = state.today.substring(0, 7)
-                )
-            }
-        } else {
-            reduce {
-                state.copy(
-                    calendarMonth = newMonth
+                    baseDate = newDate.format(formatter)
                 )
             }
         }
+
+
 
     }
 
@@ -148,7 +192,8 @@ data class WalkState(
     val stepsRaw: String = "",
     val today: String = "2025-07-05",
     val calendarMonth: String = "2025-07",
-    val sensor: Boolean = false,
+    val baseDate: String = "2025-11-26",
+    val situation: String = "month"
 
     )
 

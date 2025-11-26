@@ -135,7 +135,7 @@ class StepForegroundService : Service(), SensorEventListener {
         return NotificationCompat.Builder(this, channelId)
             .setContentTitle("만보기 실행 중")
             .setContentText(text)
-            .setSmallIcon(R.drawable.heart) // 직접 아이콘 하나 넣어줘!
+            .setSmallIcon(R.drawable.star_gray) // 직접 아이콘 하나 넣어줘!
             .setOngoing(true)
             .build()
     }
@@ -145,7 +145,7 @@ class StepForegroundService : Service(), SensorEventListener {
         val notification = NotificationCompat.Builder(this, channelId)
             .setContentTitle("만보기 실행 중")
             .setContentText(text)
-            .setSmallIcon(R.drawable.heart)
+            .setSmallIcon(R.drawable.star_gray)
             .setOngoing(true)
             .build()
 

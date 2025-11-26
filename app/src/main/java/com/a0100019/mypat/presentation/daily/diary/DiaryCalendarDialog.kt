@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -30,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.diary.Diary
-import com.a0100019.mypat.presentation.daily.walk.CalendarView
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 

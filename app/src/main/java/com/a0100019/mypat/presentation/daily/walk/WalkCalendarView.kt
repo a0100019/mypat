@@ -1,25 +1,28 @@
 package com.a0100019.mypat.presentation.daily.walk
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
-
 @Composable
-fun CalendarView(
+fun WalkCalendarView(
     today: String,
     calendarMonth: String,
     stepsRaw: String = ""
@@ -34,10 +37,8 @@ fun CalendarView(
     val daysInMonth = yearMonth.lengthOfMonth()
     val startDayOfWeek = firstDayOfMonth.dayOfWeek.value % 7
 
-    // "/" 기준으로 날짜 목록 나누기
     val items = stepsRaw.split("/").filter { it.isNotBlank() }
 
-    // 🔥 walkList → Map<String, Int> 변환
     val walkMap = items
         .mapNotNull {
             val parts = it.split(".")
@@ -63,7 +64,9 @@ fun CalendarView(
                 Text(
                     text = day,
                     color = textColor,
-                    modifier = Modifier.weight(1f).padding(4.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(4.dp),
                     textAlign = TextAlign.Center
                 )
             }
@@ -76,9 +79,12 @@ fun CalendarView(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                week.forEachIndexed { index, date ->
+                week.forEach { date ->
                     val dateString = date?.toString()
-                    val count = walkMap[dateString] // 🔥 날짜가 있으면 숫자
+                    val count = walkMap[dateString]
+
+                    // 오늘인가?
+                    val isToday = date != null && date == todayDate
 
                     Box(
                         modifier = Modifier
@@ -86,27 +92,47 @@ fun CalendarView(
                             .padding(2.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
-                            // 날짜 숫자
-                            Text(
-                                text = date?.dayOfMonth?.toString() ?: "",
-                                textAlign = TextAlign.Center
+                        // 🌸 오늘 날짜 배경 원 (살짝 크고 파스텔톤)
+                        if (isToday) {
+                            Box(
+                                modifier = Modifier
+                                    .size(36.dp)
+                                    .background(
+                                        color = Color(0xFFEDE7F6), // 연보라 파스텔
+                                        shape = CircleShape
+                                    )
                             )
-
-                            // 🔥 날짜가 walkList에 있으면 → count 표시
-                            if (count != null) {
-                                Text(
-                                    text = count.toString(),
-                                    color = Color(0xFF00897B), // 예쁜 색
-                                    modifier = Modifier.padding(top = 2.dp),
-                                    textAlign = TextAlign.Center
-                                )
-                            }
                         }
+
+                        // 🔥 걸음 원 (StepProgressCircle)
+                        if (date != null) {
+                            StepProgressCircle(
+                                steps = count ?: 0,
+                                modifier = Modifier.size(30.dp)
+                            )
+                        }
+
+                        // 날짜 텍스트
+                        Text(
+                            text = date?.dayOfMonth?.toString() ?: "",
+                            textAlign = TextAlign.Center,
+                            color = Color.Black
+                        )
                     }
                 }
             }
         }
     }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewCalendarView() {
+    WalkCalendarView(
+        today = "2025-01-15",
+        calendarMonth = "2025-01",
+        stepsRaw = "2025-01-01.2000/2025-01-03.8000/2025-01-10.15000/2025-01-15.5000"
+    )
 }

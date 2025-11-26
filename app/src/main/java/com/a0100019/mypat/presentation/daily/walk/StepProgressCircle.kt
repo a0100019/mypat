@@ -24,39 +24,62 @@ import androidx.compose.ui.unit.dp
 fun StepProgressCircle(
     steps: Int,
     goal: Int = 10000,
-    @SuppressLint("ModifierParameter") modifier: Modifier = Modifier.fillMaxSize().aspectRatio(1f)) {
-    val progress = (steps.toFloat() / goal).coerceIn(0f, 1f) // ✅ 0~1 범위로 정규화
-    val sweepAngle = progress * 360 // ✅ 채울 각도 (0~360도)
+    @SuppressLint("ModifierParameter") modifier: Modifier = Modifier
+        .fillMaxSize()
+        .aspectRatio(1f)
+) {
+    val progress = (steps.toFloat() / goal).coerceIn(0f, 1f)
+    val sweepAngle = progress * 360f
 
-    Canvas(
-        modifier = modifier
-    ) {
-        val size = size.minDimension
-        val strokeWidth = size * 0.05f // ✅ 원 테두리 두께 설정
+    Canvas(modifier = modifier) {
+        val minSize = size.minDimension
+        val strokeWidth = minSize * 0.08f
+        val halfStroke = strokeWidth / 2f
+        val radius = minSize / 2f - halfStroke
 
-        // ✅ 배경 원 테두리 (회색)
+        // ▣ 배경 원
         drawArc(
-            color = Color.LightGray,
+            color = Color(0xFFDDE4EA),
             startAngle = 0f,
             sweepAngle = 360f,
             useCenter = false,
             style = Stroke(width = strokeWidth)
         )
 
-        // ✅ 진행 상황 원 테두리 (초록색)
+        // ▣ 기본 파스텔 그라데이션
+        val normalGradient = Brush.sweepGradient(
+            listOf(
+                Color(0xFF86E3CE), // 민트
+                Color(0xFF91E5F6), // 하늘
+                Color(0xFFC7B8EA), // 연보라
+                Color(0xFF86E3CE),
+            )
+        )
+
+        // ▣ 100% 완료 시 특별한 그라데이션
+        val fullGradient = Brush.sweepGradient(
+            listOf(
+                Color(0xFFFFD54F),  // 골드
+                Color(0xFFFFA726),  // 오렌지
+                Color(0xFFFF80AB),  // 핑크
+                Color(0xFFFFD54F),
+            )
+        )
+
+        // 🔥 100% 여부에 따라 색 선택
+        val ringBrush = if (progress >= 1f) fullGradient else normalGradient
+
+        // ▣ 메인 링만 그리기 (Glow 제거됨)
         drawArc(
-            brush = Brush.linearGradient(
-                colors = listOf(
-                    Color(0xff63C6C4), Color(0xff97CA49)
-                ),
-            ),
-            startAngle = 270f, // ✅ 12시 방향에서 시작
-            sweepAngle = sweepAngle, // ✅ 진행 정도에 따른 각도
+            brush = ringBrush,
+            startAngle = 270f,
+            sweepAngle = sweepAngle,
             useCenter = false,
             style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
         )
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable

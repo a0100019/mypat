@@ -350,14 +350,7 @@ fun CommunityScreen(
                                         message.tag == userDataList.find { it.id == "auth" }!!.value2
                                     val alignment =
                                         if (isMine) Arrangement.End else Arrangement.Start
-                                    val bubbleColor =
-                                        if (isMine) MaterialTheme.colorScheme.scrim else Color(
-                                            0xFFAEDFF7
-                                        )
-                                    val bubbleBorderColor =
-                                        if (isMine) MaterialTheme.colorScheme.primaryContainer else Color(
-                                            0xFF4A90E2
-                                        )
+                                    val bubbleColor = getPastelColorForTag(message.tag)
 
                                     val dateFormat = SimpleDateFormat("yyyyMMdd", Locale.getDefault())
                                     val today = dateFormat.format(Date()) // 오늘 날짜 (ex: "20251113")
@@ -459,11 +452,6 @@ fun CommunityScreen(
                                                     .background(
                                                         bubbleColor,
                                                         RoundedCornerShape(8.dp)
-                                                    )
-                                                    .border(
-                                                        width = 2.dp,
-                                                        color = bubbleBorderColor,
-                                                        shape = RoundedCornerShape(8.dp)
                                                     )
                                                     .padding(8.dp)
                                             ) {
@@ -672,3 +660,18 @@ fun CommunityScreenPreview() {
         )
     }
 }
+
+fun getPastelColorForTag(tag: String): Color {
+    val hash = kotlin.math.abs(tag.hashCode())
+
+    // Hue: 0~360도 사이 값 생성 (hash 기반)
+    val hue = (hash % 360).toFloat()
+
+    // Pastel 톤 유지: Saturation 낮게, Value 높게
+    val saturation = 0.35f   // 부드러운 파스텔
+    val value = 0.95f        // 밝은 느낌 유지
+
+    val hsv = floatArrayOf(hue, saturation, value)
+    return Color(android.graphics.Color.HSVToColor(hsv))
+}
+
