@@ -50,10 +50,10 @@ fun StepProgressCircle(
         // ▣ 기본 파스텔 그라데이션
         val normalGradient = Brush.sweepGradient(
             listOf(
-                Color(0xFFFFF59D), // 파스텔 노랑
-                Color(0xFFFFCC80), // 연피치
-                Color(0xFFF8BBD0), // 연핑크
-                Color(0xFFFFF59D)
+                Color(0xFF82B1FF), // 파스텔 블루
+                Color(0xFFB39DDB), // 라벤더 퍼플
+                Color(0xFF9575CD), // 보라
+                Color(0xFF82B1FF)
             )
         )
 
@@ -87,6 +87,6 @@ fun StepProgressCircle(
 @Composable
 fun PreviewStepProgress() {
         StepProgressCircle(
-            steps = 5000
+            steps = 8000
         ) // ✅ 5000 걸음 (반 채워짐)
 }

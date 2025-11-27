@@ -198,6 +198,7 @@ class SettingViewModel @Inject constructor(
         val userData = mapOf(
             "cash" to userDataList.find { it.id == "money"}!!.value2,
             "money" to userDataList.find { it.id == "money"}!!.value,
+            "stepsRaw" to userDataList.find { it.id == "etc2" }!!.value2,
 
             "community" to mapOf(
                 "ban" to userDataList.find { it.id == "community"}!!.value3,

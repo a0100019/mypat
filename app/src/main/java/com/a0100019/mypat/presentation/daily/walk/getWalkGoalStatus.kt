@@ -43,12 +43,23 @@ data class WalkGoal(
 )
 
 val walkGoals = listOf(
-    WalkGoal("에펠탑", 0.324),
-    WalkGoal("롯데타워", 0.555),
+    WalkGoal("롯데타워 높이", 0.555),
     WalkGoal("지리산", 1.915),
     WalkGoal("후지산", 3.776),
-    WalkGoal("서울 ➜ 부산", 325.0),            // 325km
-    WalkGoal("한국縦断", 500.0),
+    WalkGoal("토네이도 폭넓이", 4.2),
+    WalkGoal("남산 둘레길", 5.0),
+    WalkGoal("에베레스트산", 8.848),
+    WalkGoal("대류권 높이", 11.0),
+    WalkGoal("그랜드캐년", 13.0),
+    WalkGoal("하프 마라톤", 21.097),
+    WalkGoal("서울 지하철 4호선", 31.1),
+    WalkGoal("마라톤", 42.195),
+    WalkGoal("베를린 장벽", 43.0),
+    WalkGoal("성층권 높이", 50.0),
+    WalkGoal("울릉도 ➜ 독도", 87.4),
+    WalkGoal("우주 기준선-카르마 라인", 100.0),
+    WalkGoal("서울 한바퀴", 156.5),
+    WalkGoal("서울 ➜ 부산", 325.0),
+    WalkGoal("대한민국 한바퀴", 4500.0),
     WalkGoal("세계 일주", 40075.0)
 )
-

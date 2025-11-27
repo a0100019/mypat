@@ -72,7 +72,7 @@ fun ShinyMissionCard(
     )
     {
         Text(
-            text = "클릭하여 보상을 획득하세요!",
+            text = "클릭하여 햇살을 획득하세요!",
             style = MaterialTheme.typography.bodyLarge,
             color = Color.Black,
             modifier = Modifier

@@ -231,7 +231,7 @@ fun WalkScreen(
                 )
             }
 
-            if (saveSteps <= 10000) {
+            if (saveSteps <= 5000) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -248,13 +248,38 @@ fun WalkScreen(
                         .padding(16.dp)
                 ) {
                     Text(
-                        text = "10000보를 모아 일일 미션을 완료하세요! $saveSteps",
+                        text = "5000보를 모아 햇살을 획득하세요!  현재 걸음 수 : $saveSteps",
                         style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier
-                            .fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center
                     )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // 🔥 10000보 기준 진행률 표시
+                    val progress = (saveSteps.coerceAtMost(5000) / 5000f)
+
+                    LinearProgressIndicator(
+                        progress = progress,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(14.dp)
+                            .clip(RoundedCornerShape(12.dp)),
+                        color = Color(0xFF81D4FA),      // 연한 하늘색 (Pastel Sky Blue)
+                        trackColor = Color(0xFFE1F5FE)  // 아주 연한 하늘색 (Ice Blue)
+                    )
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    // 퍼센트 텍스트
+                    Text(
+                        text = String.format("%.1f%%", progress * 100),
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.align(Alignment.End)
+                    )
                 }
+
             } else {
                 ShinyMissionCard(
                     onClick = onTodayWalkSubmitClick
@@ -322,12 +347,64 @@ fun WalkScreen(
                             )
                             .padding(16.dp)
                     ) {
+
+
+                        val goalStatus = getWalkGoalStatus(totalSteps, walkGoals)
+
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp)
+                        ) {
+                            Text(
+                                text = "목표 : ${goalStatus.currentGoal.name}",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+
+                            // 🔥 전체 거리 + 남은 거리 표시
+                            Text(
+                                text = String.format(
+                                    "전체 %.3f km / 남은 거리 %.3f km",
+                                    goalStatus.currentGoal.distanceKm,   // 전체 거리
+                                    goalStatus.remainKm               // 남은 거리
+                                ),
+                                style = MaterialTheme.typography.bodyLarge,
+                                modifier = Modifier.padding(top = 4.dp, bottom = 12.dp)
+                            )
+
+                            // 🔥 프로그레스바 + 퍼센트
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+
+                                LinearProgressIndicator(
+                                    progress = goalStatus.progress.toFloat(),
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(14.dp)
+                                        .clip(RoundedCornerShape(12.dp)),
+                                    color = Color(0xFFFFB74D),   // 오렌지
+                                    trackColor = Color(0xFFFFECB3)
+                                )
+
+                                Spacer(modifier = Modifier.width(8.dp))
+
+                                Text(
+                                    text = String.format("%.2f%%", goalStatus.progress * 100),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
+                        }
+
                         Text(
                             text = "📊 걸음 수 통계",
                             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier
-                                .padding(bottom = 12.dp)
+                                .padding(bottom = 12.dp, top = 12.dp)
                                 .align(Alignment.CenterHorizontally),
                         )
 
@@ -384,56 +461,6 @@ fun WalkScreen(
                                 text = totalSteps.toString(),
                                 style = MaterialTheme.typography.bodyLarge
                             )
-                        }
-
-                        val goalStatus = getWalkGoalStatus(totalSteps, walkGoals)
-
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp)
-                        ) {
-                            Text(
-                                text = "목표 : ${goalStatus.currentGoal.name}",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
-                            )
-
-                            // 🔥 전체 거리 + 남은 거리 표시
-                            Text(
-                                text = String.format(
-                                    "전체 %.3f km / 남은 거리 %.3f km",
-                                    goalStatus.currentGoal.distanceKm,   // 전체 거리
-                                    goalStatus.remainKm               // 남은 거리
-                                ),
-                                style = MaterialTheme.typography.bodyLarge,
-                                modifier = Modifier.padding(top = 4.dp, bottom = 12.dp)
-                            )
-
-                            // 🔥 프로그레스바 + 퍼센트
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-
-                                LinearProgressIndicator(
-                                    progress = goalStatus.progress.toFloat(),
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .height(14.dp)
-                                        .clip(RoundedCornerShape(12.dp)),
-                                    color = Color(0xFFFFB74D),   // 오렌지
-                                    trackColor = Color(0xFFFFECB3)
-                                )
-
-                                Spacer(modifier = Modifier.width(8.dp))
-
-                                Text(
-                                    text = String.format("%.2f%%", goalStatus.progress * 100),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Medium
-                                )
-                            }
                         }
 
                     }
@@ -522,7 +549,9 @@ fun WalkScreen(
 fun WalkScreenPreview() {
     MypatTheme {
         WalkScreen(
-            stepsRaw = "2025-07-01.10000/2025-07-03.2000/2025-07-15.10000"
+            stepsRaw = "2025-07-17.10000/2025-07-14.2000/2025-07-15.500",
+            situation = "record",
+            saveSteps = 3000
         )
     }
 }

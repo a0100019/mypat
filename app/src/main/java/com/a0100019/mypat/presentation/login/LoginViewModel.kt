@@ -244,6 +244,14 @@ class LoginViewModel @Inject constructor(
                             val cash = userDoc.getString("cash")
                             userDao.update(id = "money", value = money, value2 = cash)
 
+                            val saveStepsRaw = userDoc.getString("stepsRaw")
+
+                            // SharedPreferences 불러오기
+                            val prefs = context.getSharedPreferences("step_prefs", Context.MODE_PRIVATE)
+                            prefs.edit()
+                                .putString("stepsRaw", saveStepsRaw)
+                                .apply()
+
                             val communityMap = userDoc.get("community") as Map<String, String>
                             val ban = communityMap["ban"]
                             val like = communityMap["like"]
@@ -730,6 +738,7 @@ class LoginViewModel @Inject constructor(
                 val userData = mapOf(
                     "cash" to userDataList.find { it.id == "money"}!!.value2,
                     "money" to userDataList.find { it.id == "money"}!!.value,
+                    "stepsRaw" to userDataList.find { it.id == "etc2" }!!.value2,
 
                     "community" to mapOf(
                         "ban" to userDataList.find { it.id == "community"}!!.value3,

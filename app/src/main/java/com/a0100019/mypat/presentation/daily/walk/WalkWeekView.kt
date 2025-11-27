@@ -55,7 +55,7 @@ fun WalkWeekView(
     // 🟦 걸음 수 (없으면 0)
     val stepsList = weekDates.map { walkMap[it.toString()] ?: 0 }
 
-    val maxGoal = 20000f
+    val maxGoal = 15000f
 
     Column(
         modifier = Modifier
@@ -64,12 +64,6 @@ fun WalkWeekView(
             .padding(16.dp)
     ) {
 
-//        Text(
-//            text = "${baseLocalDate.monthValue}월 ${baseLocalDate.dayOfMonth}일 기준 주간 그래프",
-//            color = Color(0xFF444444),
-//            style = MaterialTheme.typography.titleMedium,
-//            modifier = Modifier.padding(bottom = 12.dp)
-//        )
 
         Spacer(modifier = Modifier.weight(1f))
 
@@ -96,8 +90,8 @@ fun WalkWeekView(
                     )
                     steps > 0 -> Brush.verticalGradient(
                         listOf(
-                            Color(0xFFB2EBF2),
-                            Color(0xFF80DEEA)
+                            Color(0xFF9575CD), // 파스텔 라일락 퍼플 (부드러움↑)
+                            Color(0xFF7986CB)  // 차분한 블루퍼플
                         )
                     )
                     else -> Brush.verticalGradient(
@@ -109,13 +103,13 @@ fun WalkWeekView(
                 }
 
                 Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
 
                     // 그래프 막대
                     Box(
                         modifier = Modifier
-                            .height((120 * progress).dp)
+                            .height((170 * progress).dp)
                             .width(16.dp)
                             .background(barBrush, shape = RoundedCornerShape(12.dp))
                     )

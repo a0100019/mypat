@@ -60,6 +60,8 @@ class WalkViewModel @Inject constructor(
         //걸음 수 기록
         val stepsRaw = prefs.getString("stepsRaw", "$today.1") ?: "$today.1"
 
+        userDao.update(id = "etc2", value2 = stepsRaw)
+
         reduce {
             state.copy(
                 userDataList = userDataList,
@@ -75,7 +77,7 @@ class WalkViewModel @Inject constructor(
 
     fun onTodayWalkSubmitClick() = intent {
 
-        if(state.saveSteps >= 10000){
+        if(state.saveSteps >= 5000){
 
             //보상
             userDao.update(
