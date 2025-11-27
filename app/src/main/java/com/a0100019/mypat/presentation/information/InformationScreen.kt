@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -39,6 +40,7 @@ import com.a0100019.mypat.data.room.area.Area
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.world.World
+import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.image.item.WorldItemImage
 import com.a0100019.mypat.presentation.ui.image.pat.PatImage
@@ -49,7 +51,8 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 fun InformationScreen(
-    informationViewModel: InformationViewModel = hiltViewModel()
+    informationViewModel: InformationViewModel = hiltViewModel(),
+    popBackStack: () -> Unit = {}
 
 ) {
 
@@ -72,7 +75,8 @@ fun InformationScreen(
         allAreaDataList = informationState.allAreaDataList,
         userDataList = informationState.userData,
         gameRankList = informationState.gameRankList,
-        worldDataList = informationState.worldDataList
+        worldDataList = informationState.worldDataList,
+        popBackStack = popBackStack
 
         )
 }
@@ -87,7 +91,9 @@ fun InformationScreen(
     allAreaDataList: List<Area>,
     worldDataList : List<World> = emptyList(),
     userDataList: List<User>,
-    gameRankList: List<String> = listOf("-", "-", "-", "-", "-")
+    gameRankList: List<String> = listOf("-", "-", "-", "-", "-"),
+
+    popBackStack: () -> Unit = {},
 
     ) {
 
@@ -113,7 +119,6 @@ fun InformationScreen(
                     .fillMaxWidth()
                     .padding(bottom = 6.dp)
                 ,
-                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(
@@ -130,11 +135,16 @@ fun InformationScreen(
                         style = MaterialTheme.typography.titleSmall
                     )
                 }
+                Spacer(modifier = Modifier.weight(1f))
                 Text(
                     text = "좋아요 ${userDataList.find { it.id == "community" }?.value}개",
                     style = MaterialTheme.typography.titleSmall,
                     modifier = Modifier
                         .padding(end = 10.dp)
+                )
+                MainButton(
+                    text = "닫기",
+                    onClick = popBackStack
                 )
             }
 

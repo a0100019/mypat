@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -59,6 +60,7 @@ fun WalkWeekView(
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .fillMaxHeight()
             .padding(16.dp)
     ) {
 
@@ -118,12 +120,11 @@ fun WalkWeekView(
                             .background(barBrush, shape = RoundedCornerShape(12.dp))
                     )
 
-                    Spacer(modifier = Modifier.height(8.dp))
 
                     // 요일 표시
                     Box(
                         contentAlignment = Alignment.Center,
-                        modifier = Modifier.padding(top = 6.dp)
+                        modifier = Modifier.padding(top = 6.dp, bottom = 6.dp)
                     ) {
                         // 오늘이면 배경 원 표시
                         if (isToday) {
@@ -141,6 +142,12 @@ fun WalkWeekView(
                             modifier = Modifier.padding(4.dp)
                         )
                     }
+
+                    Text(
+                        text = if(steps != 0) steps.toString() else "",
+                        style = MaterialTheme.typography.labelMedium
+                    )
+
                 }
             }
         }

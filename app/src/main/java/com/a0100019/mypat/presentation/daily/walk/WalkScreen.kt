@@ -1,5 +1,6 @@
 package com.a0100019.mypat.presentation.daily.walk
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -24,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -31,11 +33,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -46,6 +50,9 @@ import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
+import java.time.DayOfWeek
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun WalkScreen(
@@ -85,6 +92,7 @@ fun WalkScreen(
     )
 }
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun WalkScreen(
 
@@ -100,7 +108,7 @@ fun WalkScreen(
     onCalendarMonthChangeClick: (String)-> Unit = {},
     onTodayWalkSubmitClick: ()-> Unit = {},
     popBackStack: () -> Unit = {},
-    onSituationChangeClick: () -> Unit = {},
+    onSituationChangeClick: (String) -> Unit = {},
 
 ) {
 
@@ -108,6 +116,7 @@ fun WalkScreen(
     val intent = Intent(context, StepForegroundService::class.java)
     context.startForegroundService(intent)
 
+// stepsRaw → 날짜별 걸음수 Map
     val items = stepsRaw.split("/").filter { it.isNotBlank() }
 
     val walkMap = items
@@ -117,13 +126,17 @@ fun WalkScreen(
         }
         .toMap()
 
+// 전체 걸음 수
     val totalSteps = walkMap.values.sum()
 
-    // 마지막 기록 가져오기
-    val last = items.lastOrNull()
+    // 전체 평균 걸음 수
+    val averageSteps = if (walkMap.isNotEmpty()) walkMap.values.average().toInt() else 0
 
     // 기본값 0
     var todaySteps = 0
+
+    // 마지막 기록 가져오기
+    val last = items.lastOrNull()
 
     if (last != null) {
         val parts = last.split(".")
@@ -138,6 +151,34 @@ fun WalkScreen(
             }
         }
     }
+
+// 보폭(0.65m) 가정
+    val stride = 0.65
+
+// 오늘 이동 거리(km)
+    val todayDistance = todaySteps * stride / 1000.0
+
+// 오늘 칼로리 (1걸음 ≈ 0.04kcal)
+    val todayCalories = todaySteps * 0.04
+
+// 최근 7일 날짜 범위
+    val todayDate = LocalDate.parse(today)
+    val weekStart = todayDate.minusDays(6)
+
+// 수정된 방식: 값이 있는 날짜만 추출
+    val weekSteps = (0..6)
+        .map { weekStart.plusDays(it.toLong()).toString() }
+        .mapNotNull { date -> walkMap[date] }   // 🔥 값 있는 날짜만 가져옴 (null 제거)
+
+// 일주일 평균 걸음 수 (값 있는 날만 평균)
+    val weekAverageSteps = if (weekSteps.isNotEmpty()) {
+        weekSteps.average().toInt()
+    } else 0
+
+
+// 총 이동 거리(km)
+    val totalDistance = totalSteps * stride / 1000.0
+
 
     Surface(
         modifier = Modifier
@@ -161,6 +202,7 @@ fun WalkScreen(
 
                 StepProgressCircle(
                     steps = todaySteps,
+                    strokeWidthCustom = 0.08f,
                     modifier = Modifier
                         .size(200.dp)
                 )
@@ -189,78 +231,77 @@ fun WalkScreen(
                 )
             }
 
-//            if (walkState == "완료") {
-//                Column(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .padding(16.dp)
-//                        .background(
-//                            MaterialTheme.colorScheme.scrim,
-//                            shape = RoundedCornerShape(16.dp)
-//                        )
-//                        .border(
-//                            width = 2.dp,
-//                            color = MaterialTheme.colorScheme.primaryContainer,
-//                            shape = RoundedCornerShape(16.dp)
-//                        )
-//                        .padding(16.dp)
-//                ) {
-//                    Text(
-//                        text = "오늘도 수고하셨어요!",
-//                        style = MaterialTheme.typography.bodyLarge,
-//                        modifier = Modifier
-//                            .fillMaxWidth(),
-//                        textAlign = TextAlign.Center
-//                    )
-//                }
-//            } else {
-//                if (todayWalk <= 10000) {
-//                    Column(
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .padding(16.dp)
-//                            .background(
-//                                MaterialTheme.colorScheme.scrim,
-//                                shape = RoundedCornerShape(16.dp)
-//                            )
-//                            .border(
-//                                width = 2.dp,
-//                                color = MaterialTheme.colorScheme.primaryContainer,
-//                                shape = RoundedCornerShape(16.dp)
-//                            )
-//                            .padding(16.dp)
-//                    ) {
-//                        Text(
-//                            text = "10000보를 모아 일일 미션을 완료하세요!",
-//                            style = MaterialTheme.typography.bodyLarge,
-//                            modifier = Modifier
-//                                .fillMaxWidth(),
-//                            textAlign = TextAlign.Center
-//                        )
-//                    }
-//                } else {
-//                    ShinyMissionCard(
-//                        onClick = onTodayWalkSubmitClick
-//                    )
-//                }
-//            }
+            if (saveSteps <= 10000) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .background(
+                            MaterialTheme.colorScheme.scrim,
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                        .border(
+                            width = 2.dp,
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        text = "10000보를 모아 일일 미션을 완료하세요! $saveSteps",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+                }
+            } else {
+                ShinyMissionCard(
+                    onClick = onTodayWalkSubmitClick
+                )
+            }
 
             Column(
                 modifier = Modifier
-                    .fillMaxHeight(0.55f)
+                    .height(380.dp)
                     .padding(10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Bottom
             ) {
 
-                MainButton(
-                    text = when(situation) {
-                        "record" -> "월간 기록 보기"
-                        "month" -> "주간 기록 보기"
-                        else -> "업적 보기"
-                    },
-                    onClick = onSituationChangeClick
-                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(0.5f)
+                    ,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+
+                    MainButton(
+                        text = "통계",
+                        onClick = {
+                            onSituationChangeClick("record")
+                        },
+                        backgroundColor = if(situation=="record")MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.scrim,
+                        borderColor = if(situation=="record")MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.primaryContainer
+                    )
+                    MainButton(
+                        text = "주간",
+                        onClick = {
+                            onSituationChangeClick("week")
+                        },
+                        backgroundColor = if(situation=="week")MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.scrim,
+                        borderColor = if(situation=="week")MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.primaryContainer
+                    )
+                    MainButton(
+                        text = "월간",
+                        onClick = {
+                            onSituationChangeClick("month")
+                        },
+                        backgroundColor = if(situation=="month")MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.scrim,
+                        borderColor = if(situation=="month")MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.primaryContainer
+                    )
+
+                }
 
                 Spacer(modifier = Modifier.size(8.dp))
 
@@ -294,27 +335,105 @@ fun WalkScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(bottom = 12.dp)
                         ) {
-                            Icon(Icons.Default.Favorite, contentDescription = "총 걸음", tint = Color.Red)
-                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("오늘 이동 거리 : ", style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
+                            Text(String.format("%.3f km", todayDistance), style = MaterialTheme.typography.bodyLarge)
+
+                            Spacer(modifier = Modifier.weight(1f))
+
+                            Text("오늘 칼로리 소모 : ", style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
+                            Text(String.format("%.1f kcal", todayCalories), style = MaterialTheme.typography.bodyLarge)
+                        }
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(bottom = 12.dp)
+                        ) {
+                            Text("일주일 평균 걸음 수 : ", style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
+                            Text(weekAverageSteps.toString(), style = MaterialTheme.typography.bodyLarge)
+
+                            Spacer(modifier = Modifier.weight(1f))
+
+                            Text("전체 평균 걸음 수 : ", style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
+                            Text(averageSteps.toString(), style = MaterialTheme.typography.bodyLarge)
+                        }
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(bottom = 12.dp)
+                        ) {
                             Text(
-                                text = "총 걸음 수 : ",
+                                text = "총 이동 거리 : ",
                                 style = MaterialTheme.typography.bodyLarge,
                                 fontWeight = FontWeight.Medium
                             )
+
                             Text(
-                                text = totalSteps.toString(),
+                                text = String.format("%.3f km", totalDistance),
                                 style = MaterialTheme.typography.bodyLarge
                             )
 
                             Spacer(modifier = Modifier.weight(1f))
 
-                            Icon(
-                                Icons.Default.ThumbUp,
-                                contentDescription = "최고 기록",
-                                tint = Color(0xFFFFC107)
+                            Text(
+                                text = "총 걸음 수 : ",
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.Medium
                             )
-                            Spacer(modifier = Modifier.width(8.dp))
 
+                            Text(
+                                text = totalSteps.toString(),
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
+
+                        val goalStatus = getWalkGoalStatus(totalSteps, walkGoals)
+
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp)
+                        ) {
+                            Text(
+                                text = "목표 : ${goalStatus.currentGoal.name}",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+
+                            // 🔥 전체 거리 + 남은 거리 표시
+                            Text(
+                                text = String.format(
+                                    "전체 %.3f km / 남은 거리 %.3f km",
+                                    goalStatus.currentGoal.distanceKm,   // 전체 거리
+                                    goalStatus.remainKm               // 남은 거리
+                                ),
+                                style = MaterialTheme.typography.bodyLarge,
+                                modifier = Modifier.padding(top = 4.dp, bottom = 12.dp)
+                            )
+
+                            // 🔥 프로그레스바 + 퍼센트
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+
+                                LinearProgressIndicator(
+                                    progress = goalStatus.progress.toFloat(),
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(14.dp)
+                                        .clip(RoundedCornerShape(12.dp)),
+                                    color = Color(0xFFFFB74D),   // 오렌지
+                                    trackColor = Color(0xFFFFECB3)
+                                )
+
+                                Spacer(modifier = Modifier.width(8.dp))
+
+                                Text(
+                                    text = String.format("%.2f%%", goalStatus.progress * 100),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
                         }
 
                     }
@@ -376,7 +495,7 @@ fun WalkScreen(
                     )
                 } else if(situation == "week"){
                     Text(
-                        text = "1주전",
+                        text = getWeekLabel(today = today, baseDate = baseDate),
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier
                             .padding(top = 6.dp)
@@ -406,4 +525,26 @@ fun WalkScreenPreview() {
             stepsRaw = "2025-07-01.10000/2025-07-03.2000/2025-07-15.10000"
         )
     }
+}
+
+fun getWeekLabel(today: String, baseDate: String): String {
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    val todayDate = LocalDate.parse(today, formatter)
+    val base = LocalDate.parse(baseDate, formatter)
+
+    // baseDate가 속한 주의 월요일
+    val weekStart = base.with(DayOfWeek.MONDAY)
+    val weekEnd = weekStart.plusDays(6)
+
+    // today가 그 주 안에 있으면 = "이번 주"
+    if (!todayDate.isBefore(weekStart) && !todayDate.isAfter(weekEnd)) {
+        return "이번 주"
+    }
+
+    // 오늘이 포함되지 않는 주면 → "MM/dd ~ MM/dd"
+    val uiFormatter = DateTimeFormatter.ofPattern("MM/dd")
+    val startStr = weekStart.format(uiFormatter)
+    val endStr = weekEnd.format(uiFormatter)
+
+    return "$startStr ~ $endStr"
 }

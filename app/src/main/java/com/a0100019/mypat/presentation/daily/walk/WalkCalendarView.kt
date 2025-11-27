@@ -5,10 +5,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -74,51 +76,56 @@ fun WalkCalendarView(
 
         val todayDate = LocalDate.parse(today)
 
-        dates.chunked(7).forEach { week ->
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                week.forEach { date ->
-                    val dateString = date?.toString()
-                    val count = walkMap[dateString]
+        Column (
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center
+        ){
+            dates.chunked(7).forEach { week ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    week.forEach { date ->
+                        val dateString = date?.toString()
+                        val count = walkMap[dateString]
 
-                    // 오늘인가?
-                    val isToday = date != null && date == todayDate
+                        // 오늘인가?
+                        val isToday = date != null && date == todayDate
 
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(2.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(2.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
 
-                        // 🌸 오늘 날짜 배경 원 (살짝 크고 파스텔톤)
-                        if (isToday) {
-                            Box(
-                                modifier = Modifier
-                                    .size(36.dp)
-                                    .background(
-                                        color = Color(0xFFEDE7F6), // 연보라 파스텔
-                                        shape = CircleShape
-                                    )
+                            // 🌸 오늘 날짜 배경 원 (살짝 크고 파스텔톤)
+                            if (isToday) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(30.dp)
+                                        .background(
+                                            color = MaterialTheme.colorScheme.tertiary,
+                                            shape = CircleShape
+                                        )
+                                )
+                            }
+
+                            // 🔥 걸음 원 (StepProgressCircle)
+                            if (date != null) {
+                                StepProgressCircle(
+                                    steps = count ?: 0,
+                                    modifier = Modifier.size(30.dp)
+                                )
+                            }
+
+                            // 날짜 텍스트
+                            Text(
+                                text = date?.dayOfMonth?.toString() ?: "",
+                                textAlign = TextAlign.Center,
+                                color = Color.Black
                             )
                         }
-
-                        // 🔥 걸음 원 (StepProgressCircle)
-                        if (date != null) {
-                            StepProgressCircle(
-                                steps = count ?: 0,
-                                modifier = Modifier.size(30.dp)
-                            )
-                        }
-
-                        // 날짜 텍스트
-                        Text(
-                            text = date?.dayOfMonth?.toString() ?: "",
-                            textAlign = TextAlign.Center,
-                            color = Color.Black
-                        )
                     }
                 }
             }

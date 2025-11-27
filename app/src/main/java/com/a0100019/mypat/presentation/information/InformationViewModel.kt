@@ -158,6 +158,7 @@ data class InformationState(
 //상태와 관련없는 것
 sealed interface InformationSideEffect{
     class Toast(val message:String): InformationSideEffect
+
 //    data object NavigateToDailyActivity: LoadingSideEffect
 
 }

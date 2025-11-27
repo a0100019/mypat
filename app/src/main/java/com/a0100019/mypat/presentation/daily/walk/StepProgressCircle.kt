@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun StepProgressCircle(
     steps: Int,
+    strokeWidthCustom: Float = 0.1f,
     goal: Int = 10000,
     @SuppressLint("ModifierParameter") modifier: Modifier = Modifier
         .fillMaxSize()
@@ -33,13 +34,13 @@ fun StepProgressCircle(
 
     Canvas(modifier = modifier) {
         val minSize = size.minDimension
-        val strokeWidth = minSize * 0.08f
+        val strokeWidth = minSize * strokeWidthCustom
         val halfStroke = strokeWidth / 2f
         val radius = minSize / 2f - halfStroke
 
         // ▣ 배경 원
         drawArc(
-            color = Color(0xFFDDE4EA),
+            color = Color(0xFFECEFF1),
             startAngle = 0f,
             sweepAngle = 360f,
             useCenter = false,
@@ -49,12 +50,13 @@ fun StepProgressCircle(
         // ▣ 기본 파스텔 그라데이션
         val normalGradient = Brush.sweepGradient(
             listOf(
-                Color(0xFF86E3CE), // 민트
-                Color(0xFF91E5F6), // 하늘
-                Color(0xFFC7B8EA), // 연보라
-                Color(0xFF86E3CE),
+                Color(0xFFFFF59D), // 파스텔 노랑
+                Color(0xFFFFCC80), // 연피치
+                Color(0xFFF8BBD0), // 연핑크
+                Color(0xFFFFF59D)
             )
         )
+
 
         // ▣ 100% 완료 시 특별한 그라데이션
         val fullGradient = Brush.sweepGradient(

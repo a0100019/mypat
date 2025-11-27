@@ -77,27 +77,23 @@ class WalkViewModel @Inject constructor(
 
         if(state.saveSteps >= 10000){
 
-            userDao.update(
-                id = "walk",
-                //두번 더해지는 거 방지
-                value = (state.saveSteps - 10000).toString(),
-            )
-
             //보상
             userDao.update(
                 id = "money",
                 value = (state.userDataList.find { it.id == "money" }!!.value.toInt() + 1).toString()
             )
 
-            val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+            postSideEffect(WalkSideEffect.Toast("햇살 +1"))
 
-            walkDao.updateSuccessByDate(date = currentDate, success = "1")
+            val prefs = context.getSharedPreferences("step_prefs", Context.MODE_PRIVATE)
 
-            postSideEffect(WalkSideEffect.Toast("일일 미션 완료"))
+            prefs.edit()
+                .putInt("saveSteps", 0)
+                .apply()
 
             reduce {
                 state.copy(
-                    saveSteps = state.saveSteps - 10000,
+                    saveSteps = 0,
                 )
             }
 
@@ -107,21 +103,21 @@ class WalkViewModel @Inject constructor(
 
     }
 
-    fun onSituationChangeClick() = intent {
-        when(state.situation) {
+    fun onSituationChangeClick(situation: String) = intent {
+        when(situation) {
             "month" -> reduce {
                 state.copy(
-                    situation = "week"
+                    situation = "month"
                 )
             }
             "week" -> reduce {
                 state.copy(
-                    situation = "record"
+                    situation = "week"
                 )
             }
             "record" -> reduce {
                 state.copy(
-                    situation = "month"
+                    situation = "record"
                 )
             }
         }
@@ -175,11 +171,7 @@ class WalkViewModel @Inject constructor(
             }
         }
 
-
-
     }
-
-
 
 }
 
@@ -193,7 +185,7 @@ data class WalkState(
     val today: String = "2025-07-05",
     val calendarMonth: String = "2025-07",
     val baseDate: String = "2025-11-26",
-    val situation: String = "month"
+    val situation: String = "record"
 
     )
 

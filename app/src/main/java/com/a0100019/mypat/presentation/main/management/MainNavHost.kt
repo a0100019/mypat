@@ -120,7 +120,9 @@ fun MainNavHost() {
         }
 
         composable(route = MainRoute.InformationScreen.name) {
-            InformationScreen()
+            InformationScreen(
+                popBackStack = { navController.popBackStack() }
+            )
         }
 
         composable(route = MainRoute.CommunityScreen.name) {
