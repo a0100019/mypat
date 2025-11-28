@@ -275,62 +275,17 @@ class MainViewModel @Inject constructor(
 
     }
 
-    fun onLoveItemDrag(itemId: String, newX: Float, newY: Float) = intent {
+    fun onLoveItemClick(itemId: String) = intent {
         if(state.situation == "lovePatOnGoing"){
-            val targetItem = when (itemId) {
-                "1" -> state.loveItemData1
-                "2" -> state.loveItemData2
-                else -> state.loveItemData3
+
+            reduce {
+                state.copy(
+                    situation = "lovePatStop",
+                    musicTrigger = 0
+                )
             }
+            lovePatCheck(itemId)
 
-            var updatedItem = targetItem.copy(x = newX, y = newY)
-
-            if (newY < 0.5f) {
-//                if (targetItem.date.toInt() % 2 == 0) {
-//                    if (newX > 0.4f) {
-//                        updatedItem =
-//                            updatedItem.copy(date = (targetItem.date.toInt() + 1).toString())
-//                        reduce {
-//                            state.copy(
-//                                musicTrigger = state.musicTrigger + 1
-//                            )
-//                        }
-//                    }
-//                } else {
-//                    if (newX < 0.4f) {
-//                        updatedItem =
-//                            updatedItem.copy(date = (targetItem.date.toInt() + 1).toString())
-//                        reduce {
-//                            state.copy(
-//                                musicTrigger = state.musicTrigger + 1
-//                            )
-//                        }
-//                    }
-//                }
-                reduce {
-                    when (itemId) {
-                        "1" -> state.copy(loveItemData1 = updatedItem)
-                        "2" -> state.copy(loveItemData2 = updatedItem)
-                        else -> state.copy(loveItemData3 = updatedItem)
-                    }
-
-                }
-
-                reduce {
-                    state.copy(
-                        situation = "lovePatStop",
-                        musicTrigger = 0
-                    )
-                }
-                lovePatCheck(itemId)
-
-            }
-
-
-
-//            if (updatedItem.date.toInt() > 6) {
-//
-//            }
         }
     }
 

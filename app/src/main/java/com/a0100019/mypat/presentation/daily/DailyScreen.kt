@@ -155,11 +155,11 @@ fun DailyScreen(
                 )
             }
 
-
-            LazyColumn (
+            LazyColumn(
                 modifier = Modifier
-                    .padding(top = 24.dp)
-                    .weight(1f)
+                    .padding(top = 36.dp)
+                    .weight(1f),
+                verticalArrangement = Arrangement.spacedBy(16.dp) // ← 아이템 사이 간격
             ){
 
                 item {

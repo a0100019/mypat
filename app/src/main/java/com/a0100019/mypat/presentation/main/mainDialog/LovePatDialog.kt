@@ -22,7 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -37,12 +36,13 @@ import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.image.etc.LoveHorizontalLine
 import com.a0100019.mypat.presentation.ui.image.item.DraggableItemImage
+import com.a0100019.mypat.presentation.ui.image.item.WorldItemImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
 @Composable
 fun LovePatDialog(
     lovePatData: Pat,
-    onItemDrag: (String, Float, Float) -> Unit,
+    onItemClick: (String) -> Unit,
     loveItemData1: Item,
     loveItemData2: Item,
     loveItemData3: Item,
@@ -104,7 +104,7 @@ fun LovePatDialog(
 
                 Box(
                     modifier = Modifier
-                        .fillMaxHeight(0.5f)
+                        .fillMaxHeight(0.45f)
                         .fillMaxWidth()
                         .background(
                             MaterialTheme.colorScheme.scrim,
@@ -163,8 +163,8 @@ fun LovePatDialog(
 
                 if(situation == "lovePatOnGoing"){
                     Text(
-                        text = "장난감을 펫에게 전달해 주세요\n펫이 원하는 장난감을 찾아주세요",
-                        style = MaterialTheme.typography.bodyMedium,
+                        text = "펫이 원하는 장난감을 찾아주세요\n장난감을 선택해주세요!",
+                        style = MaterialTheme.typography.bodyLarge,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
                             .align(Alignment.CenterHorizontally)
@@ -279,44 +279,41 @@ fun LovePatDialog(
 
             if(situation == "lovePatOnGoing"){
 
-                DraggableItemImage(
+                WorldItemImage(
                     itemUrl = loveItemData1.url,
                     surfaceWidthDp = surfaceWidthDp,
                     surfaceHeightDp = surfaceHeightDp,
                     xFloat = loveItemData1.x,
                     yFloat = loveItemData1.y,
                     sizeFloat = 0.2f,
-                    border = false,
-                    onClick = { },
-                ) { newXFloat, newYFloat ->
-                    onItemDrag(loveItemData1.id.toString(), newXFloat, newYFloat)
-                }
+                    onClick = {
+                        onItemClick(loveItemData1.id.toString())
+                    },
+                )
 
-                DraggableItemImage(
+                WorldItemImage(
                     itemUrl = loveItemData2.url,
                     surfaceWidthDp = surfaceWidthDp,
                     surfaceHeightDp = surfaceHeightDp,
                     xFloat = loveItemData2.x,
                     yFloat = loveItemData2.y,
                     sizeFloat = 0.2f,
-                    border = false,
-                    onClick = { }
-                ) { newXFloat, newYFloat ->
-                    onItemDrag(loveItemData2.id.toString(), newXFloat, newYFloat)
-                }
+                    onClick = {
+                        onItemClick(loveItemData2.id.toString())
+                    },
+                )
 
-                DraggableItemImage(
+                WorldItemImage(
                     itemUrl = loveItemData3.url,
                     surfaceWidthDp = surfaceWidthDp,
                     surfaceHeightDp = surfaceHeightDp,
                     xFloat = loveItemData3.x,
                     yFloat = loveItemData3.y,
                     sizeFloat = 0.2f,
-                    border = false,
-                    onClick = { }
-                ) { newXFloat, newYFloat ->
-                    onItemDrag(loveItemData3.id.toString(), newXFloat, newYFloat)
-                }
+                    onClick = {
+                        onItemClick(loveItemData3.id.toString())
+                    },
+                )
             }
             
         }
@@ -329,7 +326,7 @@ fun LovePatDialogPreview() {
     MypatTheme {
         LovePatDialog(
             lovePatData = Pat(url = "pat/cat.json"),
-            onItemDrag = { id, newX, newY -> },
+            onItemClick = { },
             loveItemData1 = Item(id = 1, name = "쓰다듬기", url = "etc/toy_car.png", x = 0.2f, y = 0.7f, sizeFloat = 0.2f),
             loveItemData2 = Item(id = 2, name = "장난감", url = "etc/toy_lego.png", x = 0.5f, y = 0.7f, sizeFloat = 0.2f),
             loveItemData3 = Item(id = 3, name = "비행기", url = "etc/toy_bear.png", x = 0.8f, y = 0.7f, sizeFloat = 0.2f),

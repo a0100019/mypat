@@ -320,7 +320,6 @@ fun CommunityScreen(
                         }
                     }
 
-
                     "chat" -> Column(
                         modifier = Modifier
                             .weight(1f)

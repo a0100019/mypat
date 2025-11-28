@@ -116,7 +116,7 @@ fun WalkScreen(
     val intent = Intent(context, StepForegroundService::class.java)
     context.startForegroundService(intent)
 
-// stepsRaw → 날짜별 걸음수 Map
+    // stepsRaw → 날짜별 걸음수 Map
     val items = stepsRaw.split("/").filter { it.isNotBlank() }
 
     val walkMap = items
@@ -126,7 +126,7 @@ fun WalkScreen(
         }
         .toMap()
 
-// 전체 걸음 수
+    // 전체 걸음 수
     val totalSteps = walkMap.values.sum()
 
     // 전체 평균 걸음 수
@@ -229,6 +229,18 @@ fun WalkScreen(
                         .align(Alignment.TopEnd)
                         .padding(8.dp)
                 )
+//
+//                // 오른쪽 버튼
+//                MainButton(
+//                    text = "끄기",
+//                    onClick = {
+//                        context.stopService(intent)
+//                    },
+//                    modifier = Modifier
+//                        .align(Alignment.TopStart)
+//                        .padding(8.dp)
+//                )
+
             }
 
             if (saveSteps <= 5000) {
@@ -347,7 +359,6 @@ fun WalkScreen(
                             )
                             .padding(16.dp)
                     ) {
-
 
                         val goalStatus = getWalkGoalStatus(totalSteps, walkGoals)
 
@@ -540,6 +551,7 @@ fun WalkScreen(
             }
 
         }
+
     }
 
 }

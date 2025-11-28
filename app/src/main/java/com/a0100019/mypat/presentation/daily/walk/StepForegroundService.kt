@@ -47,6 +47,10 @@ class StepForegroundService : Service(), SensorEventListener {
     override fun onDestroy() {
         super.onDestroy()
         sensorManager.unregisterListener(this)
+
+        // 알림 제거
+        val manager = getSystemService(NotificationManager::class.java)
+        manager.cancel(1)
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
@@ -89,7 +93,7 @@ class StepForegroundService : Service(), SensorEventListener {
                         items[i] = "$today.$newCount"
                         updated = true
                         // 알림에 표시
-                        updateNotification("오늘 : $newCount 걸음")
+                        updateNotification("오늘 $newCount 걸음")
                         break
                     }
                 }
@@ -99,7 +103,7 @@ class StepForegroundService : Service(), SensorEventListener {
             if (!updated) {
                 items.add("$today.1")
                 // 알림에 표시
-                updateNotification("오늘 : 1 걸음")
+                updateNotification("오늘 1 걸음")
             }
 
             // 다시 "/"로 합치기
@@ -133,7 +137,7 @@ class StepForegroundService : Service(), SensorEventListener {
 
     private fun createNotification(text: String): Notification {
         return NotificationCompat.Builder(this, channelId)
-            .setContentTitle("만보기 실행 중")
+            .setContentTitle("만보기")
             .setContentText(text)
             .setSmallIcon(R.drawable.star_gray) // 직접 아이콘 하나 넣어줘!
             .setOngoing(true)
@@ -143,7 +147,7 @@ class StepForegroundService : Service(), SensorEventListener {
     @SuppressLint("NotificationPermission")
     private fun updateNotification(text: String) {
         val notification = NotificationCompat.Builder(this, channelId)
-            .setContentTitle("만보기 실행 중")
+            .setContentTitle("만보기")
             .setContentText(text)
             .setSmallIcon(R.drawable.star_gray)
             .setOngoing(true)

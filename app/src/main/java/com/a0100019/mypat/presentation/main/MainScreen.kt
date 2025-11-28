@@ -33,14 +33,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.letter.Letter
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.domain.AppBgmManager
-import com.a0100019.mypat.presentation.ui.MusicPlayer
 import com.a0100019.mypat.presentation.main.mainDialog.LovePatDialog
 import com.a0100019.mypat.presentation.main.mainDialog.TutorialDialog
 import com.a0100019.mypat.presentation.main.management.ManagementViewModel
@@ -106,7 +104,7 @@ fun MainScreen(
         dialogPatIdChange = mainViewModel::dialogPatIdChange,
         onSituationChange = mainViewModel::onSituationChange,
         onLovePatChange = mainViewModel::onLovePatChange,
-        onLoveItemDrag = mainViewModel::onLoveItemDrag,
+        onLoveItemClick = mainViewModel::onLoveItemClick,
         onLovePatNextClick = mainViewModel::onLovePatNextClick,
         onLovePatStopClick = mainViewModel::onLovePatStopClick,
 
@@ -152,7 +150,7 @@ fun MainScreen(
     onLetterLinkClick: () -> Unit,
     onSituationChange: (String) -> Unit,
     onLovePatChange: (Int) -> Unit,
-    onLoveItemDrag: (String, Float, Float) -> Unit,
+    onLoveItemClick: (String) -> Unit,
     onLovePatNextClick: () -> Unit,
     onLovePatStopClick: () -> Unit,
 
@@ -196,6 +194,7 @@ fun MainScreen(
             "미션" -> TutorialDialog(
                 state = "미션",
                 onDailyClick = {
+                    tutorialText = "완료"
                     onDailyNavigateClick()
                     tutorialPrefs.edit().putString("tutorial", "커뮤니티").apply()
                 }
@@ -204,6 +203,7 @@ fun MainScreen(
             "커뮤니티" -> TutorialDialog(
                 state = "커뮤니티",
                 onCommunityClick = {
+                    tutorialText = "완료"
                     onCommunityNavigateClick()
                     tutorialPrefs.edit().putString("tutorial", "상점").apply()
                 }
@@ -212,6 +212,7 @@ fun MainScreen(
             "상점" -> TutorialDialog(
                 state = "상점",
                 onStoreClick = {
+                    tutorialText = "완료"
                     onStoreNavigateClick()
                     tutorialPrefs.edit().putString("tutorial", "꾸미기").apply()
                 }
@@ -220,6 +221,7 @@ fun MainScreen(
             "꾸미기" -> TutorialDialog(
                 state = "꾸미기",
                 onDesignClick = {
+                    tutorialText = "완료"
                     onWorldNavigateClick()
                     tutorialPrefs.edit().putString("tutorial", "펫").apply()
                 }
@@ -228,9 +230,9 @@ fun MainScreen(
             "펫" -> TutorialDialog(
                 state = "펫",
                 onPatClick = {
+                    tutorialText = "완료"
                     dialogPatIdChange("1")
                     tutorialPrefs.edit().putString("tutorial", "완료").apply()
-                    tutorialText = "완료"
                 }
             )
         }
@@ -252,7 +254,7 @@ fun MainScreen(
             loveItemData1 = loveItemData1,
             loveItemData2 = loveItemData2,
             loveItemData3 = loveItemData3,
-            onItemDrag = onLoveItemDrag,
+            onItemClick = onLoveItemClick,
             situation = situation,
             onLovePatNextClick = onLovePatNextClick,
             onLovePatStopClick = onLovePatStopClick,
@@ -504,7 +506,7 @@ fun MainScreenPreview() {
             showLetterData = Letter(id = 1),
             onLovePatChange = {},
             lovePatData = Pat(url = "pat/cat.json"),
-            onLoveItemDrag = { id, newX, newY -> },
+            onLoveItemClick = { },
             loveItemData1 = Item(id = 1, name = "쓰다듬기", url = "etc/toy_car.png", x = 0.2f, y = 0.7f, sizeFloat = 0.2f),
             loveItemData2 = Item(id = 2, name = "장난감", url = "etc/toy_lego.png", x = 0.5f, y = 0.7f, sizeFloat = 0.2f),
             loveItemData3 = Item(id = 3, name = "비행기", url = "etc/toy_bear.png", x = 0.8f, y = 0.7f, sizeFloat = 0.2f),

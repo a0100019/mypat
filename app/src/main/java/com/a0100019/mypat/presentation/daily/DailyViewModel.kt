@@ -167,12 +167,12 @@ class DailyViewModel @Inject constructor(
 
         if (hasPermission) {
             // 권한 있을 때 처리
-            postSideEffect(DailySideEffect.NavigateToWalkScreen)
             reduce {
                 state.copy(
                     situation = ""
                 )
             }
+            postSideEffect(DailySideEffect.NavigateToWalkScreen)
         } else {
             reduce {
                 state.copy(

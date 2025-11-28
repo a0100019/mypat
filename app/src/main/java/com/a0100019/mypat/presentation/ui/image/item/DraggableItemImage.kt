@@ -48,7 +48,8 @@ fun DraggableItemImage(
     sizeFloat: Float,
     onClick: () -> Unit,
     border: Boolean = true,
-    newFloat: (Float, Float) -> Unit,
+    newFloat: (Float, Float) -> Unit = { _, _ -> }
+
 ) {
     val key = instanceKey ?: itemUrl
     val density = LocalDensity.current

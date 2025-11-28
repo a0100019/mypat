@@ -315,6 +315,12 @@ fun WorldScreen(
 
                 }
 
+                Text(
+                    text = "펫과 아이템을 클릭해보세요!",
+                    style = MaterialTheme.typography.labelLarge,
+                    modifier = Modifier.padding(top = 6.dp)
+                )
+
             }
 
             Column(
