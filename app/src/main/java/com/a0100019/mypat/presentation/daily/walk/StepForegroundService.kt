@@ -93,7 +93,7 @@ class StepForegroundService : Service(), SensorEventListener {
                         items[i] = "$today.$newCount"
                         updated = true
                         // 알림에 표시
-                        updateNotification("오늘 $newCount 걸음")
+                        updateNotification("$newCount 걸음")
                         break
                     }
                 }
@@ -103,7 +103,7 @@ class StepForegroundService : Service(), SensorEventListener {
             if (!updated) {
                 items.add("$today.1")
                 // 알림에 표시
-                updateNotification("오늘 1 걸음")
+                updateNotification("1 걸음")
             }
 
             // 다시 "/"로 합치기
@@ -139,7 +139,7 @@ class StepForegroundService : Service(), SensorEventListener {
         return NotificationCompat.Builder(this, channelId)
             .setContentTitle("만보기")
             .setContentText(text)
-            .setSmallIcon(R.drawable.star_gray) // 직접 아이콘 하나 넣어줘!
+            .setSmallIcon(R.drawable.pet) // 직접 아이콘 하나 넣어줘!
             .setOngoing(true)
             .build()
     }
@@ -149,7 +149,7 @@ class StepForegroundService : Service(), SensorEventListener {
         val notification = NotificationCompat.Builder(this, channelId)
             .setContentTitle("만보기")
             .setContentText(text)
-            .setSmallIcon(R.drawable.star_gray)
+            .setSmallIcon(R.drawable.pet)
             .setOngoing(true)
             .build()
 

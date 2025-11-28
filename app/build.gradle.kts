@@ -6,7 +6,6 @@ plugins {
     id("com.google.dagger.hilt.android")
     alias(libs.plugins.google.gms.google.services)
 
-
 }
 
 android {
@@ -17,8 +16,8 @@ android {
         applicationId = "com.a0100019.mypat"
         minSdk = 26
         targetSdk = 35
-        versionCode = 11
-        versionName = "25.5"
+        versionCode = 12
+        versionName = "25.6"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

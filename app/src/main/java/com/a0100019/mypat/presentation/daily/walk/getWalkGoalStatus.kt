@@ -3,15 +3,13 @@ package com.a0100019.mypat.presentation.daily.walk
 fun getWalkGoalStatus(totalSteps: Int, goals: List<WalkGoal>): WalkGoalStatus {
     val distanceKm = totalSteps * 0.65 / 1000.0
 
-    var accumulated = 0.0
-
     for (goal in goals) {
         val goalDistance = goal.distanceKm
 
-        // 아직 도달 못 한 목표
-        if (distanceKm < accumulated + goalDistance) {
-            val progress = (distanceKm - accumulated) / goalDistance
-            val remain = (accumulated + goalDistance) - distanceKm
+        // 총 이동거리가 이 목표를 넘지 않았으면 현재 목표
+        if (distanceKm < goalDistance) {
+            val progress = distanceKm / goalDistance
+            val remain = goalDistance - distanceKm
 
             return WalkGoalStatus(
                 currentGoal = goal,
@@ -19,11 +17,9 @@ fun getWalkGoalStatus(totalSteps: Int, goals: List<WalkGoal>): WalkGoalStatus {
                 remainKm = remain
             )
         }
-
-        accumulated += goalDistance
     }
 
-    // 마지막 목표도 도달한 경우
+    // 모든 목표도 도달한 경우
     return WalkGoalStatus(
         currentGoal = goals.last(),
         progress = 1.0,
@@ -44,11 +40,11 @@ data class WalkGoal(
 
 val walkGoals = listOf(
     WalkGoal("롯데타워 높이", 0.555),
-    WalkGoal("지리산", 1.915),
-    WalkGoal("후지산", 3.776),
+    WalkGoal("지리산 높이", 1.915),
+    WalkGoal("후지산 높이", 3.776),
     WalkGoal("토네이도 폭넓이", 4.2),
     WalkGoal("남산 둘레길", 5.0),
-    WalkGoal("에베레스트산", 8.848),
+    WalkGoal("에베레스트산 높이", 8.848),
     WalkGoal("대류권 높이", 11.0),
     WalkGoal("그랜드캐년", 13.0),
     WalkGoal("하프 마라톤", 21.097),
