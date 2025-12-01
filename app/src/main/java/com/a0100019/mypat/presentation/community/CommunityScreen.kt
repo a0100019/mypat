@@ -55,6 +55,7 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.math.abs
 
 @Composable
 fun CommunityScreen(
@@ -94,6 +95,7 @@ fun CommunityScreen(
         userDataList = communityState.userDataList,
         alertState = communityState.alertState,
         allAreaCount = communityState.allAreaCount,
+        dialogState = communityState.dialogState,
 
         onPageUpClick = communityViewModel::opPageUpClick,
         onUserWorldClick = communityViewModel::onUserWorldClick,
@@ -105,7 +107,12 @@ fun CommunityScreen(
         onBanClick = communityViewModel::onBanClick,
         alertStateChange = communityViewModel::alertStateChange,
         onUpdateCheckClick = communityViewModel::onUpdateCheckClick,
-        popBackStack = popBackStack
+        popBackStack = popBackStack,
+        onAskChatWrite = communityViewModel::onAskChatWrite,
+        onDialogChangeClick = communityViewModel::onDialogChangeClick,
+        onAskSubmitClick = communityViewModel::onAskSubmitClick,
+        onNoticeChatWrite = communityViewModel::onNoticeChatWrite,
+        onCloseClick = communityViewModel::onCloseClick
 
     )
 }
@@ -133,6 +140,7 @@ fun CommunityScreen(
     userDataList: List<User> = emptyList(),
     alertState: String = "",
     allAreaCount: String = "0",
+    dialogState: String = "",
 
     onPageUpClick: () -> Unit = {},
     onUserWorldClick: (Int) -> Unit = {},
@@ -145,12 +153,26 @@ fun CommunityScreen(
     alertStateChange: (String) -> Unit = {},
     onUpdateCheckClick: () -> Unit = {},
     popBackStack: () -> Unit = {},
+    onDialogChangeClick: (String) -> Unit = {},
+    onAskSubmitClick: () -> Unit = {},
+    onAskChatWrite: () -> Unit = {},
+    onNoticeChatWrite: () -> Unit = {},
+    onCloseClick: () -> Unit = {}
 
     ) {
 
     val context = LocalContext.current
     val prefs = context.getSharedPreferences("bgm_prefs", Context.MODE_PRIVATE)
     val bgmOn = prefs.getBoolean("bgmOn", true)
+
+    when(dialogState) {
+        "ask" -> CommunityAskDialog(
+            onClose = onCloseClick,
+            onTextChange = onChatTextChange,
+            text = newChat,
+            onConfirmClick = onAskSubmitClick,
+        )
+    }
 
     if(clickAllUserData.tag != "0") {
         AppBgmManager.pause()
@@ -215,6 +237,17 @@ fun CommunityScreen(
                         .padding(16.dp),
                     contentAlignment = Alignment.Center
                 ) {
+
+                    if(situation == "chat") {
+                        MainButton(
+                            text = "도란도란",
+                            onClick = {
+                                onDialogChangeClick("ask")
+                            },
+                            modifier = Modifier.align(Alignment.CenterStart)
+                        )
+                    }
+
                     Text(
                         text = when (situation) {
                             "world" -> "이웃 마을"
@@ -358,7 +391,7 @@ fun CommunityScreen(
                                     val currentDate = dateFormat.format(Date(message.timestamp))
                                     val previousDate = prevDate?.let { dateFormat.format(Date(it.timestamp)) }
 
-// 📅 날짜 구분선 (이전 메시지와 날짜 다르고, 오늘이 아닐 때만)
+                                    // 📅 날짜 구분선 (이전 메시지와 날짜 다르고, 오늘이 아닐 때만)
                                     if (currentDate != previousDate && currentDate != today) {
                                         Box(
                                             modifier = Modifier
@@ -375,8 +408,7 @@ fun CommunityScreen(
                                             )
                                         }
                                     }
-
-
+                                    
                                     Row(
                                         modifier = Modifier
                                             .fillMaxWidth()
@@ -654,14 +686,15 @@ fun CommunityScreenPreview() {
     MypatTheme {
         CommunityScreen(
             userDataList = listOf(User(id = "auth")),
-            chatMessages = emptyList()
-//            chatMessages = listOf(ChatMessage(10202020, "a", "a", tag = "0", ban = "0"), ChatMessage(10202020, "a11", "a11", tag = "1", ban = "0"))
+            situation = "chat",
+//            chatMessages = emptyList()
+            chatMessages = listOf(ChatMessage(10202020, "a", "a", tag = "0", ban = "0"), ChatMessage(10202020, "a11", "a11", tag = "1200", ban = "0"))
         )
     }
 }
 
 fun getPastelColorForTag(tag: String): Color {
-    val hash = kotlin.math.abs(tag.hashCode())
+    val hash = abs(tag.hashCode())
 
     // Hue: 0~360도 사이 값 생성 (hash 기반)
     val hue = (hash % 360).toFloat()

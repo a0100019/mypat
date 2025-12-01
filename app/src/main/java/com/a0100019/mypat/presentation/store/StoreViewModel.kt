@@ -213,13 +213,12 @@ class StoreViewModel @Inject constructor(
             else -> {
                 reduce {
                     state.copy(
-                        simpleDialogState = "부적절한 닉네임일 경우 경고 없이 제제를 받을 수 있습니다. 변경하겠습니까?"
+                        simpleDialogState = "부적절한 닉네임(욕설, 부적절한 내용, 운영자 사칭 등)일 경우, 경고 없이 제제를 받을 수 있습니다. 변경하겠습니까?"
                     )
                 }
             }
         }
     }
-
 
     fun onNameChangeClick() = intent {
 

@@ -117,8 +117,6 @@ class StepForegroundService : Service(), SensorEventListener {
         }
     }
 
-
-
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
 
     @SuppressLint("ObsoleteSdkInt")

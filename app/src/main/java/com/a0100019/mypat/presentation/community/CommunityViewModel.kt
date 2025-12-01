@@ -136,6 +136,140 @@ class CommunityViewModel @Inject constructor(
         }
     }
 
+    fun onCloseClick() = intent {
+        reduce {
+            state.copy(
+                dialogState = "",
+                newChat = ""
+            )
+        }
+    }
+
+    fun onDialogChangeClick(dialog: String) = intent {
+        reduce {
+            state.copy(
+                dialogState = dialog
+            )
+        }
+    }
+
+    fun onAskSubmitClick() = intent {
+        val currentMessage = state.newChat.trim()
+        val userName = state.userDataList.find { it.id == "name" }!!.value // 또는 상태에서 유저 이름을 가져올 수 있다면 사용
+        val userId = state.userDataList.find { it.id == "auth" }!!.value
+        val userTag = state.userDataList.find { it.id == "auth" }!!.value2
+        val userBan = state.userDataList.find { it.id == "community" }!!.value3
+
+        if (currentMessage.isEmpty()) return@intent
+
+        val timestamp = System.currentTimeMillis()
+        val todayDocId = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date())
+
+        val chatData = mapOf(
+            "message" to currentMessage,
+            "name" to userName,
+            "ban" to userBan,
+            "tag" to userTag,
+            "uid" to userId
+        )
+
+        Firebase.firestore.collection("ask")
+            .document(todayDocId)
+            .set(mapOf(timestamp.toString() to chatData), SetOptions.merge())
+            .addOnSuccessListener {
+                Log.d("ChatSubmit", "채팅 전송 성공 (merge)")
+            }
+            .addOnFailureListener { e ->
+                Log.e("ChatSubmit", "채팅 전송 실패: ${e.message}")
+            }
+
+        // 입력 필드 초기화
+        reduce {
+            state.copy(
+                newChat = "",
+                dialogState = ""
+            )
+        }
+    }
+
+    fun onAskChatWrite() = intent {
+        val currentMessage = state.newChat.trim()
+        val userName = state.userDataList.find { it.id == "name" }!!.value // 또는 상태에서 유저 이름을 가져올 수 있다면 사용
+        val userId = state.userDataList.find { it.id == "auth" }!!.value
+        val userTag = state.userDataList.find { it.id == "auth" }!!.value2
+        val userBan = state.userDataList.find { it.id == "community" }!!.value3
+
+        if (currentMessage.isEmpty()) return@intent
+
+        val timestamp = System.currentTimeMillis()
+        val todayDocId = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date())
+
+        val chatData = mapOf(
+            "message" to "[해당 내용은 최신 버전에서 확인할 수 있습니다.]",
+            "name" to userName,
+            "ban" to userBan,
+            "tag" to "2",
+            "uid" to currentMessage
+        )
+
+        Firebase.firestore.collection("chat")
+            .document(todayDocId)
+            .set(mapOf(timestamp.toString() to chatData), SetOptions.merge())
+            .addOnSuccessListener {
+                Log.d("ChatSubmit", "채팅 전송 성공 (merge)")
+            }
+            .addOnFailureListener { e ->
+                Log.e("ChatSubmit", "채팅 전송 실패: ${e.message}")
+            }
+
+        // 입력 필드 초기화
+        reduce {
+            state.copy(
+                newChat = "",
+                dialogState = ""
+            )
+        }
+    }
+
+    fun onNoticeChatWrite() = intent {
+        val currentMessage = state.newChat.trim()
+        val userName = state.userDataList.find { it.id == "name" }!!.value // 또는 상태에서 유저 이름을 가져올 수 있다면 사용
+        val userId = state.userDataList.find { it.id == "auth" }!!.value
+        val userTag = state.userDataList.find { it.id == "auth" }!!.value2
+        val userBan = state.userDataList.find { it.id == "community" }!!.value3
+
+        if (currentMessage.isEmpty()) return@intent
+
+        val timestamp = System.currentTimeMillis()
+        val todayDocId = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date())
+
+        val chatData = mapOf(
+            "message" to "[해당 내용은 최신 버전에서 확인할 수 있습니다.]",
+            "name" to userName,
+            "ban" to userBan,
+            "tag" to "3",
+            "uid" to currentMessage
+        )
+
+        Firebase.firestore.collection("chat")
+            .document(todayDocId)
+            .set(mapOf(timestamp.toString() to chatData), SetOptions.merge())
+            .addOnSuccessListener {
+                Log.d("ChatSubmit", "채팅 전송 성공 (merge)")
+            }
+            .addOnFailureListener { e ->
+                Log.e("ChatSubmit", "채팅 전송 실패: ${e.message}")
+            }
+
+        // 입력 필드 초기화
+        reduce {
+            state.copy(
+                newChat = "",
+                dialogState = ""
+            )
+        }
+    }
+
     fun onUpdateCheckClick() = intent {
 
         val db = Firebase.firestore
@@ -798,7 +932,8 @@ data class CommunityState(
     val newChat: String = "",
     val chatMessages: List<ChatMessage> = emptyList(),
     val alertState: String = "",
-    val allAreaCount: String = ""
+    val allAreaCount: String = "",
+    val dialogState: String = ""
 )
 
 @Immutable
