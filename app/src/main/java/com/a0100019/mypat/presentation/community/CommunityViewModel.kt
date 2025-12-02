@@ -178,9 +178,15 @@ class CommunityViewModel @Inject constructor(
             .set(mapOf(timestamp.toString() to chatData), SetOptions.merge())
             .addOnSuccessListener {
                 Log.d("ChatSubmit", "채팅 전송 성공 (merge)")
+                viewModelScope.launch {
+                    postSideEffect(CommunitySideEffect.Toast("도란도란을 전송했습니다 :)"))
+                }
             }
             .addOnFailureListener { e ->
                 Log.e("ChatSubmit", "채팅 전송 실패: ${e.message}")
+                viewModelScope.launch {
+                    postSideEffect(CommunitySideEffect.Toast("전송에 실패했습니다."))
+                }
             }
 
         // 입력 필드 초기화
@@ -376,9 +382,10 @@ class CommunityViewModel @Inject constructor(
                             val name = map["name"] as? String
                             val tag = map["tag"] as? String
                             val ban = map["ban"] as? String
+                            val uid = map["uid"] as? String
 
-                            if (message != null && name != null && tag != null && ban == "0") {
-                                ChatMessage(timestamp, message, name, tag, ban)
+                            if (message != null && name != null && tag != null && ban == "0" && uid != null) {
+                                ChatMessage(timestamp, message, name, tag, ban, uid)
                             } else null
                         }
                         allMessages.addAll(messages)
@@ -942,7 +949,8 @@ data class ChatMessage(
     val message: String,
     val name: String,
     val tag: String,
-    val ban: String
+    val ban: String,
+    val uid: String
 )
 
 

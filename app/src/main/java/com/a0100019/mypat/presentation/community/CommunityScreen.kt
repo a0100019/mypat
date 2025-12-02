@@ -35,6 +35,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -45,6 +46,9 @@ import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.domain.AppBgmManager
+import com.a0100019.mypat.presentation.community.operator.CommunityAskWriteDialog
+import com.a0100019.mypat.presentation.community.operator.CommunityNoticeDialog
+import com.a0100019.mypat.presentation.community.operator.CommunityOperatorChatDialog
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
@@ -112,7 +116,7 @@ fun CommunityScreen(
         onDialogChangeClick = communityViewModel::onDialogChangeClick,
         onAskSubmitClick = communityViewModel::onAskSubmitClick,
         onNoticeChatWrite = communityViewModel::onNoticeChatWrite,
-        onCloseClick = communityViewModel::onCloseClick
+        onCloseClick = communityViewModel::onCloseClick,
 
     )
 }
@@ -157,7 +161,7 @@ fun CommunityScreen(
     onAskSubmitClick: () -> Unit = {},
     onAskChatWrite: () -> Unit = {},
     onNoticeChatWrite: () -> Unit = {},
-    onCloseClick: () -> Unit = {}
+    onCloseClick: () -> Unit = {},
 
     ) {
 
@@ -171,6 +175,24 @@ fun CommunityScreen(
             onTextChange = onChatTextChange,
             text = newChat,
             onConfirmClick = onAskSubmitClick,
+        )
+        "askWrite" -> CommunityAskWriteDialog(
+            onClose = onCloseClick,
+            onTextChange = onChatTextChange,
+            text = newChat,
+            onConfirmClick = onAskChatWrite,
+        )
+        "notice" -> CommunityNoticeDialog(
+            onClose = onCloseClick,
+            onTextChange = onChatTextChange,
+            text = newChat,
+            onConfirmClick = onNoticeChatWrite,
+        )
+        "operatorChat" -> CommunityOperatorChatDialog(
+            onClose = onCloseClick,
+            onTextChange = onChatTextChange,
+            text = newChat,
+            onConfirmClick = {},
         )
     }
 
@@ -269,6 +291,26 @@ fun CommunityScreen(
                         onClick = popBackStack,
                         modifier = Modifier.align(Alignment.CenterEnd)
                     )
+                }
+
+                if(userDataList.find { it.id == "auth" }?.value2 ?: "" in listOf("1", "38", "75") ) {
+                    Row {
+                        MainButton(
+                            text = "도란도란",
+                            onClick = { onDialogChangeClick("askWrite") },
+                            modifier = Modifier
+                        )
+                        MainButton(
+                            text = "공지",
+                            onClick = { onDialogChangeClick("notice") },
+                            modifier = Modifier
+                        )
+                        MainButton(
+                            text = "채팅",
+                            onClick = { onDialogChangeClick("operatorChat") },
+                            modifier = Modifier
+                        )
+                    }
                 }
 
                 when (situation) {
@@ -377,121 +419,152 @@ fun CommunityScreen(
                             reverseLayout = true,
                             verticalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
-                                itemsIndexed(chatMessages.reversed()) { index, message ->
-                                    val isMine =
-                                        message.tag == userDataList.find { it.id == "auth" }!!.value2
-                                    val alignment =
-                                        if (isMine) Arrangement.End else Arrangement.Start
-                                    val bubbleColor = getPastelColorForTag(message.tag)
+                            itemsIndexed(chatMessages.reversed()) { index, message ->
 
-                                    val dateFormat = SimpleDateFormat("yyyyMMdd", Locale.getDefault())
-                                    val today = dateFormat.format(Date()) // 오늘 날짜 (ex: "20251113")
+                                val isAsk = message.tag == "2"
+                                val isNotice = message.tag == "3"
 
-                                    val prevDate = chatMessages.reversed().getOrNull(index - 1)
-                                    val currentDate = dateFormat.format(Date(message.timestamp))
-                                    val previousDate = prevDate?.let { dateFormat.format(Date(it.timestamp)) }
+                                // 공지 여부 확인
+                                val isMine = !isNotice && !isAsk && message.tag == userDataList.find { it.id == "auth" }!!.value2
 
-                                    // 📅 날짜 구분선 (이전 메시지와 날짜 다르고, 오늘이 아닐 때만)
-                                    if (currentDate != previousDate && currentDate != today) {
+                                val alignment = when {
+                                    isNotice -> Arrangement.Center // 공지는 가운데 정렬
+                                    isAsk -> Arrangement.Center
+                                    isMine -> Arrangement.End
+                                    else -> Arrangement.Start
+                                }
+
+                                val bubbleColor = getPastelColorForTag(message.tag)
+
+                                val textColor = Color.Black
+
+                                val dateFormat = SimpleDateFormat("yyyyMMdd", Locale.getDefault())
+                                val today = dateFormat.format(Date())
+
+                                val prevDate = chatMessages.reversed().getOrNull(index - 1)
+                                val currentDate = dateFormat.format(Date(message.timestamp))
+                                val previousDate = prevDate?.let { dateFormat.format(Date(it.timestamp)) }
+
+                                // 📅 날짜 구분선
+                                if (currentDate != previousDate && currentDate != today) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = 8.dp),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            text = SimpleDateFormat("MM월 dd일 E요일", Locale.KOREA)
+                                                .format(Date(message.timestamp)),
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = Color.Gray,
+                                            textAlign = TextAlign.Center
+                                        )
+                                    }
+                                }
+
+                                // 공지일 경우 전체 Row
+                                when (message.tag) {
+                                    "2" -> {
                                         Box(
                                             modifier = Modifier
                                                 .fillMaxWidth()
-                                                .padding(vertical = 8.dp),
+                                                .padding(vertical = 4.dp)
+                                                .background(Color(0xFF856404), RoundedCornerShape(8.dp))
+                                                .padding(8.dp),
                                             contentAlignment = Alignment.Center
                                         ) {
                                             Text(
-                                                text = SimpleDateFormat("MM월 dd일 E요일", Locale.KOREA)
-                                                    .format(Date(message.timestamp)),
-                                                style = MaterialTheme.typography.labelSmall,
-                                                color = Color.Gray,
+                                                text = message.message,
+                                                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
                                                 textAlign = TextAlign.Center
                                             )
                                         }
                                     }
-                                    
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(bottom = 6.dp),
-                                        horizontalArrangement = alignment
-                                    ) {
-                                        Column(
+                                    "3" -> {
+                                        Box(
                                             modifier = Modifier
-                                                .widthIn(max = 280.dp)
-                                                .padding(horizontal = 8.dp),
-                                            horizontalAlignment = if (isMine) Alignment.End else Alignment.Start
+                                                .fillMaxWidth()
+                                                .padding(vertical = 4.dp)
+                                                .background(bubbleColor, RoundedCornerShape(8.dp))
+                                                .padding(8.dp),
+                                            contentAlignment = Alignment.Center
                                         ) {
-                                            Row {
-                                                Row(
-                                                    modifier = Modifier
-                                                        .clickable {
+                                            Text(
+                                                text = message.message,
+                                                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                                                color = textColor,
+                                                textAlign = TextAlign.Center
+                                            )
+                                        }
+                                    }
+                                    else -> {
+                                        // 일반 채팅
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(bottom = 6.dp),
+                                            horizontalArrangement = alignment
+                                        ) {
+                                            Column(
+                                                modifier = Modifier
+                                                    .widthIn(max = 280.dp)
+                                                    .padding(horizontal = 8.dp),
+                                                horizontalAlignment = if (isMine) Alignment.End else Alignment.Start
+                                            ) {
+                                                Row {
+                                                    Row(
+                                                        modifier = Modifier.clickable {
                                                             onUserRankClick(message.tag.toInt())
                                                         }
+                                                    ) {
+                                                        Text(
+                                                            text = message.name,
+                                                            style = MaterialTheme.typography.labelSmall,
+                                                            modifier = Modifier.padding(start = 4.dp, bottom = 2.dp)
+                                                        )
+                                                        Text(
+                                                            text = "#" + message.tag,
+                                                            style = MaterialTheme.typography.labelSmall,
+                                                            modifier = Modifier.padding(start = 4.dp, bottom = 2.dp)
+                                                        )
+                                                    }
+
+                                                    val time = remember(message.timestamp) {
+                                                        SimpleDateFormat("MM/dd HH:mm", Locale.getDefault())
+                                                            .format(Date(message.timestamp))
+                                                    }
+
+                                                    Text(
+                                                        text = time,
+                                                        style = MaterialTheme.typography.labelSmall,
+                                                        modifier = Modifier.padding(start = 4.dp, bottom = 2.dp)
+                                                    )
+
+                                                    if (!isMine) {
+                                                        JustImage(
+                                                            filePath = "etc/ban.png",
+                                                            modifier = Modifier
+                                                                .size(10.dp)
+                                                                .clickable { alertStateChange(index.toString()) }
+                                                        )
+                                                    }
+                                                }
+
+                                                Box(
+                                                    modifier = Modifier
+                                                        .background(bubbleColor, RoundedCornerShape(8.dp))
+                                                        .padding(8.dp)
                                                 ) {
-                                                    Text(
-                                                        text = message.name,
-                                                        style = MaterialTheme.typography.labelSmall,
-                                                        modifier = Modifier.padding(
-                                                            start = 4.dp,
-                                                            bottom = 2.dp
-                                                        )
-                                                    )
-
-                                                    Text(
-                                                        text = "#" + message.tag,
-                                                        style = MaterialTheme.typography.labelSmall,
-                                                        modifier = Modifier.padding(
-                                                            start = 4.dp,
-                                                            bottom = 2.dp
-                                                        )
-                                                    )
+                                                    Text(text = message.message)
                                                 }
-
-                                                // 시간 포맷
-                                                val time = remember(message.timestamp) {
-                                                    SimpleDateFormat(
-                                                        "MM/dd HH:mm",   // ← 변경된 부분
-                                                        Locale.getDefault()
-                                                    ).format(
-                                                        Date(message.timestamp)
-                                                    )
-                                                }
-
-                                                Text(
-                                                    text = time,
-                                                    style = MaterialTheme.typography.labelSmall,
-                                                    modifier = Modifier.padding(
-                                                        start = 4.dp,
-                                                        bottom = 2.dp
-                                                    )
-                                                )
-
-                                                if (!isMine) {
-                                                    JustImage(
-                                                        filePath = "etc/ban.png",
-                                                        modifier = Modifier
-                                                            .size(10.dp)
-                                                            .clickable {
-                                                                alertStateChange(index.toString())
-                                                            }
-                                                    )
-                                                }
-
-                                            }
-                                            Box(
-                                                modifier = Modifier
-                                                    .background(
-                                                        bubbleColor,
-                                                        RoundedCornerShape(8.dp)
-                                                    )
-                                                    .padding(8.dp)
-                                            ) {
-                                                Text(text = message.message)
                                             }
                                         }
                                     }
                                 }
                             }
+
+                        }
                         } else {
                         Box(
                             modifier = Modifier
@@ -688,7 +761,7 @@ fun CommunityScreenPreview() {
             userDataList = listOf(User(id = "auth")),
             situation = "chat",
 //            chatMessages = emptyList()
-            chatMessages = listOf(ChatMessage(10202020, "a", "a", tag = "0", ban = "0"), ChatMessage(10202020, "a11", "a11", tag = "1200", ban = "0"))
+            chatMessages = listOf(ChatMessage(10202020, "a", "a", tag = "1", ban = "0", uid = "hello"), ChatMessage(10202020, "a11", "a11", tag = "2", ban = "0", uid = "assssssssssssssssssssssssssssssssssssssds"), ChatMessage(10202020, "a11", "a11", tag = "3", ban = "0", uid = "adssssssssssssssssssssssssssssssssssssssssssssssssssss"))
         )
     }
 }

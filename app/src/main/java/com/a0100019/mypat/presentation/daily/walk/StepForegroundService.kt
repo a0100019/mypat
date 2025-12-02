@@ -13,23 +13,33 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Build
 import android.os.IBinder
+import android.os.PowerManager
 import androidx.core.app.NotificationCompat
 import com.a0100019.mypat.R
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-
 class StepForegroundService : Service(), SensorEventListener {
 
     private lateinit var sensorManager: SensorManager
     private var stepSensor: Sensor? = null
-    private var startSteps = -1
-    private var todaySteps = 0
+
+    private var wakeLock: PowerManager.WakeLock? = null
 
     private val channelId = "step_counter_channel"
 
+    @SuppressLint("WakelockTimeout")
     override fun onCreate() {
         super.onCreate()
+
+        // 🔥 WAKE_LOCK 획득 (절전 모드에서도 유지)
+        val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
+        wakeLock = pm.newWakeLock(
+            PowerManager.PARTIAL_WAKE_LOCK,
+            "HaruVillage:StepWakeLock"
+        )
+        wakeLock?.acquire() // 화면 꺼져도 CPU 살아있음
+
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
 
@@ -44,39 +54,42 @@ class StepForegroundService : Service(), SensorEventListener {
         return START_STICKY
     }
 
+
     override fun onDestroy() {
         super.onDestroy()
+
         sensorManager.unregisterListener(this)
 
-        // 알림 제거
+        // 🔥 WAKE_LOCK 해제
+        if (wakeLock?.isHeld == true) {
+            wakeLock?.release()
+        }
+
         val manager = getSystemService(NotificationManager::class.java)
         manager.cancel(1)
     }
 
+
     override fun onBind(intent: Intent?): IBinder? = null
 
+
+
+    // ================================================================
+    // 🔥 걸음 수 저장 로직 (너가 작성한 것 그대로 둠)
+    // ================================================================
     override fun onSensorChanged(event: SensorEvent?) {
         if (event?.sensor?.type == Sensor.TYPE_STEP_COUNTER) {
 
-            // SharedPreferences 불러오기
             val prefs = getSharedPreferences("step_prefs", Context.MODE_PRIVATE)
 
-            //저장 걸음 수
-            // 기존 걸음 수 가져오기
+            // 누적 걸음 저장
             val saveSteps = prefs.getInt("saveSteps", 0)
-            // 그냥 +1 해서 저장
             val updatedSteps = saveSteps + 1
-            prefs.edit()
-                .putInt("saveSteps", updatedSteps)
-                .apply()
+            prefs.edit().putInt("saveSteps", updatedSteps).apply()
 
-            // 오늘 날짜 (YYMMDD)
             val today = SimpleDateFormat("yyyy-MM-dd", Locale.KOREA).format(Date())
 
-            //걸음 수 기록
             val stepsRaw = prefs.getString("stepsRaw", "$today.1") ?: "$today.1"
-
-            // "/" 기준으로 날짜 목록 나누기
             val items = stepsRaw.split("/").toMutableList()
 
             var updated = false
@@ -88,37 +101,33 @@ class StepForegroundService : Service(), SensorEventListener {
                     val count = parts[1].toInt()
 
                     if (date == today) {
-                        // 오늘 날짜 존재 → 걸음수 +1
                         val newCount = count + 1
                         items[i] = "$today.$newCount"
                         updated = true
-                        // 알림에 표시
                         updateNotification("$newCount 걸음")
                         break
                     }
                 }
             }
 
-            // 오늘 날짜가 없었다면 새로 추가
             if (!updated) {
                 items.add("$today.1")
-                // 알림에 표시
                 updateNotification("1 걸음")
             }
 
-            // 다시 "/"로 합치기
-            val newRaw = items.joinToString("/")
-
             prefs.edit()
-                .putString("stepsRaw", newRaw)
+                .putString("stepsRaw", items.joinToString("/"))
                 .apply()
-
-
         }
     }
 
+
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
 
+
+    // ================================================================
+    // 🔔 알림 설정
+    // ================================================================
     @SuppressLint("ObsoleteSdkInt")
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -137,7 +146,7 @@ class StepForegroundService : Service(), SensorEventListener {
         return NotificationCompat.Builder(this, channelId)
             .setContentTitle("만보기")
             .setContentText(text)
-            .setSmallIcon(R.drawable.pet) // 직접 아이콘 하나 넣어줘!
+            .setSmallIcon(R.drawable.pet)
             .setOngoing(true)
             .build()
     }
