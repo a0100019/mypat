@@ -211,8 +211,8 @@ class CommunityViewModel @Inject constructor(
         val todayDocId = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date())
 
         val chatData = mapOf(
-            "message" to "[해당 내용은 최신 버전에서 확인할 수 있습니다.]",
-            "name" to userName,
+            "message" to currentMessage,
+            "name" to "공지사항",
             "ban" to userBan,
             "tag" to "2",
             "uid" to currentMessage
@@ -251,7 +251,7 @@ class CommunityViewModel @Inject constructor(
 
         val chatData = mapOf(
             "message" to "[해당 내용은 최신 버전에서 확인할 수 있습니다.]",
-            "name" to userName,
+            "name" to "도란도란",
             "ban" to userBan,
             "tag" to "3",
             "uid" to currentMessage

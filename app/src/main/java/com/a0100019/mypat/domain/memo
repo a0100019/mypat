@@ -26,3 +26,5 @@ fun main() {
     val sb = StringBuilder()
     for (x in arr) sb.append(x).append('\n')
     print(sb.toString())        // 한 번에 출력
+
+    list.maxOrNull() 은 리스트에 사용, maxOf(a, b, c)는 개별 변수에 사용

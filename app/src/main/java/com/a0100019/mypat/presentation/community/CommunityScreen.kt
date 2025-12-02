@@ -466,37 +466,112 @@ fun CommunityScreen(
                                 // 공지일 경우 전체 Row
                                 when (message.tag) {
                                     "2" -> {
-                                        Box(
+                                        Column(
                                             modifier = Modifier
                                                 .fillMaxWidth()
-                                                .padding(vertical = 4.dp)
-                                                .background(Color(0xFF856404), RoundedCornerShape(8.dp))
-                                                .padding(8.dp),
-                                            contentAlignment = Alignment.Center
+                                                .padding(12.dp)
+                                                .background(Color(0xFFFFA8A8), RoundedCornerShape(12.dp)) // 파스텔 레드 배경
+                                                .padding(2.dp)
                                         ) {
-                                            Text(
-                                                text = message.message,
-                                                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                                                textAlign = TextAlign.Center
-                                            )
+
+                                            // 상단 공지 배너
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .background(Color(0xFFFF6F6F), RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp))
+                                                    .padding(vertical = 6.dp),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Text(
+                                                    text = "📢 공지사항",
+                                                    style = MaterialTheme.typography.bodyMedium.copy(
+                                                        fontWeight = FontWeight.Bold
+                                                    ),
+                                                    color = Color.White
+                                                )
+                                            }
+
+                                            // 실제 메시지 박스
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .background(Color.White, RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp))
+                                                    .padding(12.dp),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Text(
+                                                    text = message.uid,
+                                                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
+                                                    textAlign = TextAlign.Center,
+                                                    color = Color(0xFF7A0000) // 진한 레드 글씨
+                                                )
+                                            }
                                         }
+
                                     }
                                     "3" -> {
-                                        Box(
+                                        Column(
                                             modifier = Modifier
                                                 .fillMaxWidth()
-                                                .padding(vertical = 4.dp)
-                                                .background(bubbleColor, RoundedCornerShape(8.dp))
-                                                .padding(8.dp),
-                                            contentAlignment = Alignment.Center
+                                                .padding(12.dp)
+                                                .background(Color(0xFFAED9FF), RoundedCornerShape(12.dp)) // 파스텔 파랑 테두리 느낌
+                                                .padding(2.dp)
                                         ) {
-                                            Text(
-                                                text = message.message,
-                                                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                                                color = textColor,
-                                                textAlign = TextAlign.Center
-                                            )
+
+                                            // 상단 도란도란 타이틀 영역
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .background(Color(0xFF7CC8FF), RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp))
+                                                    .padding(vertical = 6.dp),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Text(
+                                                    text = "💬 도란도란",
+                                                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                                                    color = Color.White
+                                                )
+                                            }
+
+                                            // 메시지 본문 박스
+                                            Column(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .background(Color.White, RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp))
+                                                    .padding(top = 12.dp, start = 12.dp, end = 12.dp, bottom = 3.dp),
+                                            ) {
+                                                Text(
+                                                    text = message.uid,
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .padding(bottom = 6.dp),
+                                                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
+                                                    textAlign = TextAlign.Center,
+                                                    color = Color(0xFF004E7A) // 진한 파랑
+                                                )
+
+                                                // 하단 안내문
+                                                Text(
+                                                    text = "채팅으로 자유롭게 답변해주세요!",
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .padding(top = 6.dp),
+                                                    textAlign = TextAlign.Center,
+                                                    style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFF4A6FA5))
+                                                )
+                                            }
+
+//                                            // 하단 안내문
+//                                            Text(
+//                                                text = "채팅으로 자유롭게 답변해주세요!",
+//                                                modifier = Modifier
+//                                                    .fillMaxWidth()
+//                                                    .padding(top = 4.dp, bottom = 6.dp),
+//                                                textAlign = TextAlign.Center,
+//                                                style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFF4A6FA5))
+//                                            )
                                         }
+
                                     }
                                     else -> {
                                         // 일반 채팅
@@ -761,7 +836,7 @@ fun CommunityScreenPreview() {
             userDataList = listOf(User(id = "auth")),
             situation = "chat",
 //            chatMessages = emptyList()
-            chatMessages = listOf(ChatMessage(10202020, "a", "a", tag = "1", ban = "0", uid = "hello"), ChatMessage(10202020, "a11", "a11", tag = "2", ban = "0", uid = "assssssssssssssssssssssssssssssssssssssds"), ChatMessage(10202020, "a11", "a11", tag = "3", ban = "0", uid = "adssssssssssssssssssssssssssssssssssssssssssssssssssss"))
+            chatMessages = listOf(ChatMessage(10202020, "a", "a", tag = "1", ban = "0", uid = "hello"), ChatMessage(10202020, "a11", "a11", tag = "2", ban = "0", uid = "assssssssssssssssssssssssssssssssssssssds".repeat(5)), ChatMessage(10202020, "a11", "a11", tag = "3", ban = "0", uid = "adssssssssssssssssssssssssssssssssssssssssssssssssssss".repeat(5)))
         )
     }
 }

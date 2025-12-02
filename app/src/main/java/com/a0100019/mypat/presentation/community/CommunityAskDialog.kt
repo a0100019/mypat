@@ -65,7 +65,7 @@ fun CommunityAskDialog(
                 )
 
                 Text(
-                    text = "도란도란은 평소에 말 못했던 질문이나 고민을 익명으로 올리고 이웃들에게 조언을 받을 수 있는 기능입니다. 운영자가 검토하고 게시하니 어떤 내용이든 부담없이 작성해주세요!",
+                    text = "도란도란은 평소에 말 못했던 질문이나 고민을 익명으로 올리고 이웃들에게 조언을 받을 수 있는 기능입니다. 검토 후 게시하니 어떤 내용이든 부담없이 작성해주세요!",
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(10.dp),
