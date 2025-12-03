@@ -46,6 +46,7 @@ import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.domain.AppBgmManager
+import com.a0100019.mypat.presentation.community.operator.CommunityAskViewDialog
 import com.a0100019.mypat.presentation.community.operator.CommunityAskWriteDialog
 import com.a0100019.mypat.presentation.community.operator.CommunityNoticeDialog
 import com.a0100019.mypat.presentation.community.operator.CommunityOperatorChatDialog
@@ -100,6 +101,9 @@ fun CommunityScreen(
         alertState = communityState.alertState,
         allAreaCount = communityState.allAreaCount,
         dialogState = communityState.dialogState,
+        text2 = communityState.text2,
+        text3 = communityState.text3,
+        askMessages = communityState.askMessages,
 
         onPageUpClick = communityViewModel::opPageUpClick,
         onUserWorldClick = communityViewModel::onUserWorldClick,
@@ -117,6 +121,10 @@ fun CommunityScreen(
         onAskSubmitClick = communityViewModel::onAskSubmitClick,
         onNoticeChatWrite = communityViewModel::onNoticeChatWrite,
         onCloseClick = communityViewModel::onCloseClick,
+        onTextChange2 = communityViewModel::onTextChange2,
+        onTextChange3 = communityViewModel::onTextChange3,
+        onOperatorChatSubmitClick = communityViewModel::onOperatorChatSubmitClick,
+        onAskClick = communityViewModel::onAskClick
 
     )
 }
@@ -140,11 +148,14 @@ fun CommunityScreen(
     clickAllUserWorldDataList: List<String> = emptyList(),
     allUserRankDataList: List<AllUser> = listOf(AllUser(), AllUser()),
     chatMessages: List<ChatMessage> = emptyList(),
+    askMessages: List<ChatMessage> = emptyList(),
     newChat: String = "",
     userDataList: List<User> = emptyList(),
     alertState: String = "",
     allAreaCount: String = "0",
     dialogState: String = "",
+    text2: String = "",
+    text3: String = "",
 
     onPageUpClick: () -> Unit = {},
     onUserWorldClick: (Int) -> Unit = {},
@@ -162,6 +173,10 @@ fun CommunityScreen(
     onAskChatWrite: () -> Unit = {},
     onNoticeChatWrite: () -> Unit = {},
     onCloseClick: () -> Unit = {},
+    onTextChange2: (String) -> Unit = {},
+    onTextChange3: (String) -> Unit = {},
+    onOperatorChatSubmitClick: () -> Unit = {},
+    onAskClick: (String) -> Unit = {},
 
     ) {
 
@@ -170,6 +185,11 @@ fun CommunityScreen(
     val bgmOn = prefs.getBoolean("bgmOn", true)
 
     when(dialogState) {
+        "askView" -> CommunityAskViewDialog(
+            onClose = onCloseClick,
+            onAskClick = onAskClick,
+            askMessages = askMessages
+        )
         "ask" -> CommunityAskDialog(
             onClose = onCloseClick,
             onTextChange = onChatTextChange,
@@ -191,8 +211,14 @@ fun CommunityScreen(
         "operatorChat" -> CommunityOperatorChatDialog(
             onClose = onCloseClick,
             onTextChange = onChatTextChange,
+            onTextChange2 = onTextChange2,
+            onTextChange3 = onTextChange3,
+            text2 = text2,
+            text3 = text3,
             text = newChat,
             onConfirmClick = {},
+            onOperatorChatSubmitClick = onOperatorChatSubmitClick
+
         )
     }
 
@@ -297,7 +323,7 @@ fun CommunityScreen(
                     Row {
                         MainButton(
                             text = "도란도란",
-                            onClick = { onDialogChangeClick("askWrite") },
+                            onClick = { onDialogChangeClick("askView") },
                             modifier = Modifier
                         )
                         MainButton(

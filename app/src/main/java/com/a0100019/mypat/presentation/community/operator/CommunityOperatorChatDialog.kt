@@ -28,8 +28,14 @@ import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 fun CommunityOperatorChatDialog(
     onClose: () -> Unit = {},
     onTextChange: (String) -> Unit = {},
+    onTextChange2: (String) -> Unit = {},
+    onTextChange3: (String) -> Unit = {},
     text: String = "",
+    text2: String = "",
+    text3: String = "",
     onConfirmClick: () -> Unit = {},
+    onOperatorChatSubmitClick: () -> Unit = {}
+
 ) {
 
     Dialog(
@@ -64,10 +70,9 @@ fun CommunityOperatorChatDialog(
                     modifier = Modifier.padding(10.dp),
                 )
 
-
                 OutlinedTextField(
-                    value = text,
-                    onValueChange = onTextChange,
+                    value = text2,
+                    onValueChange = onTextChange2,
                     label = { Text("이름") },
                     placeholder = { Text(
                         textAlign = TextAlign.Center,
@@ -79,8 +84,8 @@ fun CommunityOperatorChatDialog(
                 )
 
                 OutlinedTextField(
-                    value = text,
-                    onValueChange = onTextChange,
+                    value = text3,
+                    onValueChange = onTextChange3,
                     label = { Text("태그") },
                     placeholder = { Text(
                         textAlign = TextAlign.Center,
@@ -117,7 +122,7 @@ fun CommunityOperatorChatDialog(
 
                     MainButton(
                         text = " 전송 ",
-                        onClick = onConfirmClick,
+                        onClick = onOperatorChatSubmitClick,
                         modifier = Modifier
                             .padding(16.dp)
                     )

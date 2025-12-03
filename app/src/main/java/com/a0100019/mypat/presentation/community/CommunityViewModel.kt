@@ -140,17 +140,25 @@ class CommunityViewModel @Inject constructor(
         reduce {
             state.copy(
                 dialogState = "",
-                newChat = ""
+                newChat = "",
+                text2 = "",
+                text3 = ""
             )
         }
     }
 
     fun onDialogChangeClick(dialog: String) = intent {
+
+        if(dialog == "askView") {
+            loadAskMessages()
+        }
+
         reduce {
             state.copy(
                 dialogState = dialog
             )
         }
+
     }
 
     fun onAskSubmitClick() = intent {
@@ -198,7 +206,7 @@ class CommunityViewModel @Inject constructor(
         }
     }
 
-    fun onAskChatWrite() = intent {
+    fun onNoticeChatWrite() = intent {
         val currentMessage = state.newChat.trim()
         val userName = state.userDataList.find { it.id == "name" }!!.value // 또는 상태에서 유저 이름을 가져올 수 있다면 사용
         val userId = state.userDataList.find { it.id == "auth" }!!.value
@@ -237,7 +245,16 @@ class CommunityViewModel @Inject constructor(
         }
     }
 
-    fun onNoticeChatWrite() = intent {
+    fun onAskClick(message: String) = intent {
+        reduce {
+            state.copy(
+                newChat = message,
+                dialogState = "askWrite"
+            )
+        }
+    }
+
+    fun onAskChatWrite() = intent {
         val currentMessage = state.newChat.trim()
         val userName = state.userDataList.find { it.id == "name" }!!.value // 또는 상태에서 유저 이름을 가져올 수 있다면 사용
         val userId = state.userDataList.find { it.id == "auth" }!!.value
@@ -397,6 +414,53 @@ class CommunityViewModel @Inject constructor(
                         intent {
                             reduce {
                                 state.copy(chatMessages = sorted)
+                            }
+                        }
+                    }
+                } else {
+                    Log.w("CommunityViewModel", "chat 컬렉션에 문서가 없음")
+                }
+            }
+    }
+
+    private fun loadAskMessages() {
+        Firebase.firestore.collection("ask")
+            .addSnapshotListener { snapshot, error ->
+                Log.d("CommunityViewModel", "전체 채팅 스냅샷 수신됨")
+
+                if (error != null) {
+                    Log.e("CommunityViewModel", "채팅 데이터 에러: ${error.message}")
+                    return@addSnapshotListener
+                }
+
+                if (snapshot != null && !snapshot.isEmpty) {
+                    val allMessages = mutableListOf<ChatMessage>()
+
+                    for (doc in snapshot.documents) {
+
+                        val data = doc.data ?: continue
+                        val messages = data.mapNotNull { (key, value) ->
+                            val timestamp = key.toLongOrNull() ?: return@mapNotNull null
+                            val map = value as? Map<*, *> ?: return@mapNotNull null
+                            val message = map["message"] as? String
+                            val name = map["name"] as? String
+                            val tag = map["tag"] as? String
+                            val ban = map["ban"] as? String
+                            val uid = map["uid"] as? String
+
+                            if (message != null && name != null && tag != null && ban == "0" && uid != null) {
+                                ChatMessage(timestamp, message, name, tag, ban, uid)
+                            } else null
+                        }
+                        allMessages.addAll(messages)
+                    }
+
+                    val sorted = allMessages.sortedBy { it.timestamp }
+
+                    viewModelScope.launch {
+                        intent {
+                            reduce {
+                                state.copy(askMessages = sorted)
                             }
                         }
                     }
@@ -574,6 +638,39 @@ class CommunityViewModel @Inject constructor(
         }
     }
 
+    fun onOperatorChatSubmitClick() = intent {
+        val currentMessage = state.newChat.trim()
+        val userName = state.userDataList.find { it.id == "name" }!!.value // 또는 상태에서 유저 이름을 가져올 수 있다면 사용
+        val userId = state.userDataList.find { it.id == "auth" }!!.value
+        val userTag = state.userDataList.find { it.id == "auth" }!!.value2
+        val userBan = state.userDataList.find { it.id == "community" }!!.value3
+
+        if (currentMessage.isEmpty()) return@intent
+
+        val timestamp = System.currentTimeMillis()
+        val todayDocId = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date())
+
+        val chatData = mapOf(
+            "message" to state.newChat,
+            "name" to state.text2,
+            "ban" to userBan,
+            "tag" to state.text3,
+            "uid" to ""
+        )
+
+        Firebase.firestore.collection("chat")
+            .document(todayDocId)
+            .set(mapOf(timestamp.toString() to chatData), SetOptions.merge())
+            .addOnSuccessListener {
+                Log.d("ChatSubmit", "채팅 전송 성공 (merge)")
+            }
+            .addOnFailureListener { e ->
+                Log.e("ChatSubmit", "채팅 전송 실패: ${e.message}")
+            }
+
+        onCloseClick()
+    }
+
     //입력 가능하게 하는 코드
     @OptIn(OrbitExperimental::class)
     fun onChatTextChange(chatText: String) = blockingIntent {
@@ -582,6 +679,28 @@ class CommunityViewModel @Inject constructor(
             reduce {
                 state.copy(newChat = chatText)
             }
+//        }
+    }
+
+    //입력 가능하게 하는 코드
+    @OptIn(OrbitExperimental::class)
+    fun onTextChange2(text2: String) = blockingIntent {
+
+//        if (chatText.length <= 50) {
+        reduce {
+            state.copy(text2 = text2)
+        }
+//        }
+    }
+
+    //입력 가능하게 하는 코드
+    @OptIn(OrbitExperimental::class)
+    fun onTextChange3(text3: String) = blockingIntent {
+
+//        if (chatText.length <= 50) {
+        reduce {
+            state.copy(text3 = text3)
+        }
 //        }
     }
 
@@ -940,7 +1059,10 @@ data class CommunityState(
     val chatMessages: List<ChatMessage> = emptyList(),
     val alertState: String = "",
     val allAreaCount: String = "",
-    val dialogState: String = ""
+    val dialogState: String = "",
+    val text2: String = "",
+    val text3: String = "",
+    val askMessages: List<ChatMessage> = emptyList()
 )
 
 @Immutable
