@@ -11,12 +11,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -46,10 +44,11 @@ import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.domain.AppBgmManager
-import com.a0100019.mypat.presentation.community.operator.CommunityAskViewDialog
-import com.a0100019.mypat.presentation.community.operator.CommunityAskWriteDialog
-import com.a0100019.mypat.presentation.community.operator.CommunityNoticeDialog
-import com.a0100019.mypat.presentation.community.operator.CommunityOperatorChatDialog
+import com.a0100019.mypat.presentation.chat.CommunityAskDialog
+import com.a0100019.mypat.presentation.chat.operator.CommunityAskViewDialog
+import com.a0100019.mypat.presentation.chat.operator.CommunityAskWriteDialog
+import com.a0100019.mypat.presentation.chat.operator.CommunityNoticeDialog
+import com.a0100019.mypat.presentation.chat.operator.CommunityOperatorChatDialog
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
@@ -103,28 +102,21 @@ fun CommunityScreen(
         dialogState = communityState.dialogState,
         text2 = communityState.text2,
         text3 = communityState.text3,
-        askMessages = communityState.askMessages,
 
         onPageUpClick = communityViewModel::opPageUpClick,
         onUserWorldClick = communityViewModel::onUserWorldClick,
         onLikeClick = communityViewModel::onLikeClick,
         onSituationChange = communityViewModel::onSituationChange,
         onChatTextChange = communityViewModel::onChatTextChange,
-        onChatSubmitClick = communityViewModel::onChatSubmitClick,
         onUserRankClick = communityViewModel::onUserRankClick,
         onBanClick = communityViewModel::onBanClick,
         alertStateChange = communityViewModel::alertStateChange,
         onUpdateCheckClick = communityViewModel::onUpdateCheckClick,
         popBackStack = popBackStack,
-        onAskChatWrite = communityViewModel::onAskChatWrite,
         onDialogChangeClick = communityViewModel::onDialogChangeClick,
-        onAskSubmitClick = communityViewModel::onAskSubmitClick,
-        onNoticeChatWrite = communityViewModel::onNoticeChatWrite,
         onCloseClick = communityViewModel::onCloseClick,
         onTextChange2 = communityViewModel::onTextChange2,
         onTextChange3 = communityViewModel::onTextChange3,
-        onOperatorChatSubmitClick = communityViewModel::onOperatorChatSubmitClick,
-        onAskClick = communityViewModel::onAskClick
 
     )
 }
@@ -132,7 +124,7 @@ fun CommunityScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CommunityScreen(
-    situation : String = "chat",
+    situation : String = "world",
     patDataList: List<Pat> = emptyList(),
     itemDataList: List<Item> = emptyList(),
     allUserDataList: List<AllUser> = emptyList(),
@@ -148,7 +140,6 @@ fun CommunityScreen(
     clickAllUserWorldDataList: List<String> = emptyList(),
     allUserRankDataList: List<AllUser> = listOf(AllUser(), AllUser()),
     chatMessages: List<ChatMessage> = emptyList(),
-    askMessages: List<ChatMessage> = emptyList(),
     newChat: String = "",
     userDataList: List<User> = emptyList(),
     alertState: String = "",
@@ -162,65 +153,21 @@ fun CommunityScreen(
     onLikeClick: () -> Unit = {},
     onSituationChange: (String) -> Unit = {},
     onChatTextChange: (String) -> Unit = {},
-    onChatSubmitClick: () -> Unit = {},
     onUserRankClick: (Int) -> Unit = {},
     onBanClick: (Int) -> Unit = {},
     alertStateChange: (String) -> Unit = {},
     onUpdateCheckClick: () -> Unit = {},
     popBackStack: () -> Unit = {},
     onDialogChangeClick: (String) -> Unit = {},
-    onAskSubmitClick: () -> Unit = {},
-    onAskChatWrite: () -> Unit = {},
-    onNoticeChatWrite: () -> Unit = {},
     onCloseClick: () -> Unit = {},
     onTextChange2: (String) -> Unit = {},
     onTextChange3: (String) -> Unit = {},
-    onOperatorChatSubmitClick: () -> Unit = {},
-    onAskClick: (String) -> Unit = {},
 
     ) {
 
     val context = LocalContext.current
     val prefs = context.getSharedPreferences("bgm_prefs", Context.MODE_PRIVATE)
     val bgmOn = prefs.getBoolean("bgmOn", true)
-
-    when(dialogState) {
-        "askView" -> CommunityAskViewDialog(
-            onClose = onCloseClick,
-            onAskClick = onAskClick,
-            askMessages = askMessages
-        )
-        "ask" -> CommunityAskDialog(
-            onClose = onCloseClick,
-            onTextChange = onChatTextChange,
-            text = newChat,
-            onConfirmClick = onAskSubmitClick,
-        )
-        "askWrite" -> CommunityAskWriteDialog(
-            onClose = onCloseClick,
-            onTextChange = onChatTextChange,
-            text = newChat,
-            onConfirmClick = onAskChatWrite,
-        )
-        "notice" -> CommunityNoticeDialog(
-            onClose = onCloseClick,
-            onTextChange = onChatTextChange,
-            text = newChat,
-            onConfirmClick = onNoticeChatWrite,
-        )
-        "operatorChat" -> CommunityOperatorChatDialog(
-            onClose = onCloseClick,
-            onTextChange = onChatTextChange,
-            onTextChange2 = onTextChange2,
-            onTextChange3 = onTextChange3,
-            text2 = text2,
-            text3 = text3,
-            text = newChat,
-            onConfirmClick = {},
-            onOperatorChatSubmitClick = onOperatorChatSubmitClick
-
-        )
-    }
 
     if(clickAllUserData.tag != "0") {
         AppBgmManager.pause()
@@ -286,20 +233,9 @@ fun CommunityScreen(
                     contentAlignment = Alignment.Center
                 ) {
 
-                    if(situation == "chat") {
-                        MainButton(
-                            text = "도란도란",
-                            onClick = {
-                                onDialogChangeClick("ask")
-                            },
-                            modifier = Modifier.align(Alignment.CenterStart)
-                        )
-                    }
-
                     Text(
                         text = when (situation) {
                             "world" -> "이웃 마을"
-                            "chat" -> "통신"
                             "firstGame" -> "컬링"
                             "secondGame" -> "1to50"
                             "thirdGameEasy" -> "스도쿠 - 쉬움"
@@ -317,26 +253,6 @@ fun CommunityScreen(
                         onClick = popBackStack,
                         modifier = Modifier.align(Alignment.CenterEnd)
                     )
-                }
-
-                if(userDataList.find { it.id == "auth" }?.value2 ?: "" in listOf("1", "38", "75") ) {
-                    Row {
-                        MainButton(
-                            text = "도란도란",
-                            onClick = { onDialogChangeClick("askView") },
-                            modifier = Modifier
-                        )
-                        MainButton(
-                            text = "공지",
-                            onClick = { onDialogChangeClick("notice") },
-                            modifier = Modifier
-                        )
-                        MainButton(
-                            text = "채팅",
-                            onClick = { onDialogChangeClick("operatorChat") },
-                            modifier = Modifier
-                        )
-                    }
                 }
 
                 when (situation) {
@@ -419,315 +335,6 @@ fun CommunityScreen(
                                 text = " 다음 "
                             )
                         }
-                    }
-
-                    "chat" -> Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 70.dp)
-                            .border(
-                                width = 2.dp,
-                                color = MaterialTheme.colorScheme.outline,
-                                shape = RoundedCornerShape(16.dp)
-                            )
-                            .background(
-                                color = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.7f),
-                                shape = RoundedCornerShape(16.dp)
-                            )
-                    ) {
-
-                    if(chatMessages.isNotEmpty()){
-                        LazyColumn(
-                            modifier = Modifier
-                                .weight(1f)
-                                .fillMaxWidth()
-                                .padding(start = 6.dp, end = 6.dp, top = 12.dp),
-                            reverseLayout = true,
-                            verticalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            itemsIndexed(chatMessages.reversed()) { index, message ->
-
-                                val isAsk = message.tag == "2"
-                                val isNotice = message.tag == "3"
-
-                                // 공지 여부 확인
-                                val isMine = !isNotice && !isAsk && message.tag == userDataList.find { it.id == "auth" }!!.value2
-
-                                val alignment = when {
-                                    isNotice -> Arrangement.Center // 공지는 가운데 정렬
-                                    isAsk -> Arrangement.Center
-                                    isMine -> Arrangement.End
-                                    else -> Arrangement.Start
-                                }
-
-                                val bubbleColor = getPastelColorForTag(message.tag)
-
-                                val textColor = Color.Black
-
-                                val dateFormat = SimpleDateFormat("yyyyMMdd", Locale.getDefault())
-                                val today = dateFormat.format(Date())
-
-                                val prevDate = chatMessages.reversed().getOrNull(index - 1)
-                                val currentDate = dateFormat.format(Date(message.timestamp))
-                                val previousDate = prevDate?.let { dateFormat.format(Date(it.timestamp)) }
-
-                                // 📅 날짜 구분선
-                                if (currentDate != previousDate && currentDate != today) {
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(vertical = 8.dp),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Text(
-                                            text = SimpleDateFormat("MM월 dd일 E요일", Locale.KOREA)
-                                                .format(Date(message.timestamp)),
-                                            style = MaterialTheme.typography.labelSmall,
-                                            color = Color.Gray,
-                                            textAlign = TextAlign.Center
-                                        )
-                                    }
-                                }
-
-                                // 공지일 경우 전체 Row
-                                when (message.tag) {
-                                    "2" -> {
-                                        Column(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(12.dp)
-                                                .background(Color(0xFFFFA8A8), RoundedCornerShape(12.dp)) // 파스텔 레드 배경
-                                                .padding(2.dp)
-                                        ) {
-
-                                            // 상단 공지 배너
-                                            Box(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .background(Color(0xFFFF6F6F), RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp))
-                                                    .padding(vertical = 6.dp),
-                                                contentAlignment = Alignment.Center
-                                            ) {
-                                                Text(
-                                                    text = "📢 공지사항",
-                                                    style = MaterialTheme.typography.bodyMedium.copy(
-                                                        fontWeight = FontWeight.Bold
-                                                    ),
-                                                    color = Color.White
-                                                )
-                                            }
-
-                                            // 실제 메시지 박스
-                                            Box(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .background(Color.White, RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp))
-                                                    .padding(12.dp),
-                                                contentAlignment = Alignment.Center
-                                            ) {
-                                                Text(
-                                                    text = message.uid,
-                                                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
-                                                    textAlign = TextAlign.Center,
-                                                    color = Color(0xFF7A0000) // 진한 레드 글씨
-                                                )
-                                            }
-                                        }
-
-                                    }
-                                    "3" -> {
-                                        Column(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(12.dp)
-                                                .background(Color(0xFFAED9FF), RoundedCornerShape(12.dp)) // 파스텔 파랑 테두리 느낌
-                                                .padding(2.dp)
-                                        ) {
-
-                                            // 상단 도란도란 타이틀 영역
-                                            Box(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .background(Color(0xFF7CC8FF), RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp))
-                                                    .padding(vertical = 6.dp),
-                                                contentAlignment = Alignment.Center
-                                            ) {
-                                                Text(
-                                                    text = "💬 도란도란",
-                                                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                                                    color = Color.White
-                                                )
-                                            }
-
-                                            // 메시지 본문 박스
-                                            Column(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .background(Color.White, RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp))
-                                                    .padding(top = 12.dp, start = 12.dp, end = 12.dp, bottom = 3.dp),
-                                            ) {
-                                                Text(
-                                                    text = message.uid,
-                                                    modifier = Modifier
-                                                        .fillMaxWidth()
-                                                        .padding(bottom = 6.dp),
-                                                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
-                                                    textAlign = TextAlign.Center,
-                                                    color = Color(0xFF004E7A) // 진한 파랑
-                                                )
-
-                                                // 하단 안내문
-                                                Text(
-                                                    text = "채팅으로 자유롭게 답변해주세요!",
-                                                    modifier = Modifier
-                                                        .fillMaxWidth()
-                                                        .padding(top = 6.dp),
-                                                    textAlign = TextAlign.Center,
-                                                    style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFF4A6FA5))
-                                                )
-                                            }
-
-//                                            // 하단 안내문
-//                                            Text(
-//                                                text = "채팅으로 자유롭게 답변해주세요!",
-//                                                modifier = Modifier
-//                                                    .fillMaxWidth()
-//                                                    .padding(top = 4.dp, bottom = 6.dp),
-//                                                textAlign = TextAlign.Center,
-//                                                style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFF4A6FA5))
-//                                            )
-                                        }
-
-                                    }
-                                    else -> {
-                                        // 일반 채팅
-                                        Row(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(bottom = 6.dp),
-                                            horizontalArrangement = alignment
-                                        ) {
-                                            Column(
-                                                modifier = Modifier
-                                                    .widthIn(max = 280.dp)
-                                                    .padding(horizontal = 8.dp),
-                                                horizontalAlignment = if (isMine) Alignment.End else Alignment.Start
-                                            ) {
-                                                Row {
-                                                    Row(
-                                                        modifier = Modifier.clickable {
-                                                            onUserRankClick(message.tag.toInt())
-                                                        }
-                                                    ) {
-                                                        Text(
-                                                            text = message.name,
-                                                            style = MaterialTheme.typography.labelSmall,
-                                                            modifier = Modifier.padding(start = 4.dp, bottom = 2.dp)
-                                                        )
-                                                        Text(
-                                                            text = "#" + message.tag,
-                                                            style = MaterialTheme.typography.labelSmall,
-                                                            modifier = Modifier.padding(start = 4.dp, bottom = 2.dp)
-                                                        )
-                                                    }
-
-                                                    val time = remember(message.timestamp) {
-                                                        SimpleDateFormat("MM/dd HH:mm", Locale.getDefault())
-                                                            .format(Date(message.timestamp))
-                                                    }
-
-                                                    Text(
-                                                        text = time,
-                                                        style = MaterialTheme.typography.labelSmall,
-                                                        modifier = Modifier.padding(start = 4.dp, bottom = 2.dp)
-                                                    )
-
-                                                    if (!isMine) {
-                                                        JustImage(
-                                                            filePath = "etc/ban.png",
-                                                            modifier = Modifier
-                                                                .size(10.dp)
-                                                                .clickable { alertStateChange(index.toString()) }
-                                                        )
-                                                    }
-                                                }
-
-                                                Box(
-                                                    modifier = Modifier
-                                                        .background(bubbleColor, RoundedCornerShape(8.dp))
-                                                        .padding(8.dp)
-                                                ) {
-                                                    Text(text = message.message)
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-
-                        }
-                        } else {
-                        Box(
-                            modifier = Modifier
-                                .weight(1f), // 화면 전체 채우기
-                            contentAlignment = Alignment.Center // 가로+세로 가운데 정렬
-                        ) {
-                            Text(
-                                text = "올해 첫 대화를 시작해보세요",
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier
-                                    .fillMaxWidth(1f)
-                            )
-                        }
-
-                    }
-
-                        // 입력창 + 전송버튼
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 3.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            TextField(
-                                value = newChat,
-                                onValueChange = onChatTextChange,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .border(
-                                        width = 2.dp,
-                                        color = MaterialTheme.colorScheme.outline,
-                                        shape = RoundedCornerShape(16.dp)
-                                    )
-                                    .background(
-                                        color = MaterialTheme.colorScheme.background,
-                                        shape = RoundedCornerShape(16.dp)
-                                    ),
-                                shape = RoundedCornerShape(16.dp),
-                                placeholder = { Text("메시지를 입력하세요") },
-                                maxLines = 4,
-                                colors = TextFieldDefaults.textFieldColors(
-                                    containerColor = MaterialTheme.colorScheme.surfaceContainerLow,// 배경색 필요 시 조정
-                                    focusedIndicatorColor = Color.Transparent, // 포커스 상태 밑줄 제거
-                                    unfocusedIndicatorColor = Color.Transparent, // 비포커스 상태 밑줄 제거
-                                    disabledIndicatorColor = Color.Transparent // 비활성화 상태 밑줄 제거
-                                )
-                            )
-
-                            Image(
-                                painter = painterResource(id = R.drawable.forwarding),
-                                contentDescription = "회전된 이미지",
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .rotate(90f)
-                                    .padding(8.dp)
-                                    .clickable {
-                                        onChatSubmitClick()
-                                    }
-                            )
-
-                        }
-
                     }
 
                     else -> LazyColumn(
@@ -821,7 +428,6 @@ fun CommunityScreen(
                     "컬링" to "firstGame",
                     "1to50" to "secondGame",
                     "스도쿠" to "thirdGameEasy", // 대표 키만 지정
-                    "통신" to "chat"
                 )
 
                 Row(
@@ -866,18 +472,3 @@ fun CommunityScreenPreview() {
         )
     }
 }
-
-fun getPastelColorForTag(tag: String): Color {
-    val hash = abs(tag.hashCode())
-
-    // Hue: 0~360도 사이 값 생성 (hash 기반)
-    val hue = (hash % 360).toFloat()
-
-    // Pastel 톤 유지: Saturation 낮게, Value 높게
-    val saturation = 0.35f   // 부드러운 파스텔
-    val value = 0.95f        // 밝은 느낌 유지
-
-    val hsv = floatArrayOf(hue, saturation, value)
-    return Color(android.graphics.Color.HSVToColor(hsv))
-}
-

@@ -47,7 +47,7 @@ fun TutorialDialog(
     onDailyClick: () -> Unit = {},
     onPatClick: () -> Unit = {},
     onDesignClick: () -> Unit = {},
-    onCommunityClick: () -> Unit = {}
+    onChatClick: () -> Unit = {}
 ) {
 
     Dialog(
@@ -131,9 +131,9 @@ fun TutorialDialog(
                                 Spacer(modifier = Modifier.size(12.dp))
 
                                 Text(
-                                    text = "커뮤니티 기능을 이용해보세요! 다른 사람들의 마을을 구경하고 대화를 할 수 있습니다. 미니 게임에서 높은 순위를 차지하여 이름을 남겨보세요!\n" +
+                                    text = "커뮤니티 기능을 이용해보세요! 채팅으로 대화를 하거나 이웃 마을을 구경할 수 있습니다. 그리고 미니 게임에서 높은 순위를 차지하여 이름을 남겨보세요!\n" +
                                             "\n" +
-                                            "목표 : 커뮤니티 기능 둘러보기"
+                                            "목표 : 채팅 기능 둘러보기"
                                     ,
                                     style = MaterialTheme.typography.bodyMedium,
                                     textAlign = TextAlign.Center,
@@ -143,9 +143,9 @@ fun TutorialDialog(
 
                                 MainButton(
                                     onClick = {
-                                        onCommunityClick()
+                                        onChatClick()
                                     },
-                                    text = "     커뮤니티     "
+                                    text = "   채팅   "
                                 )
 
                             }

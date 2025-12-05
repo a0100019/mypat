@@ -190,7 +190,7 @@ class FirstGameViewModel @Inject constructor(
             if(distance < (state.targetSize.value/2 + state.snowballSize.value/2) && mapIn && state.level < 99) {
 
                 //점수
-                val addScore = (1 - (distance / (state.targetSize.value/2 + state.snowballSize.value/2))) * 100
+                val addScore = (1 - (distance / (state.targetSize.value/2 + state.snowballSize.value/2))) * 200
 
                 reduce {
                     state.copy(

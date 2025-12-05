@@ -1,4 +1,4 @@
-package com.a0100019.mypat.presentation.community.operator
+package com.a0100019.mypat.presentation.chat.operator
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -25,11 +25,17 @@ import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
 @Composable
-fun CommunityAskWriteDialog(
+fun CommunityOperatorChatDialog(
     onClose: () -> Unit = {},
     onTextChange: (String) -> Unit = {},
+    onTextChange2: (String) -> Unit = {},
+    onTextChange3: (String) -> Unit = {},
     text: String = "",
+    text2: String = "",
+    text3: String = "",
     onConfirmClick: () -> Unit = {},
+    onOperatorChatSubmitClick: () -> Unit = {}
+
 ) {
 
     Dialog(
@@ -59,11 +65,36 @@ fun CommunityAskWriteDialog(
             ) {
 
                 Text(
-                    text = "도란도란 게시",
+                    text = "채팅 작성",
                     style = MaterialTheme.typography.headlineSmall,
                     modifier = Modifier.padding(10.dp),
                 )
 
+                OutlinedTextField(
+                    value = text2,
+                    onValueChange = onTextChange2,
+                    label = { Text("이름") },
+                    placeholder = { Text(
+                        textAlign = TextAlign.Center,
+                        text = "이름") },
+                    shape = RoundedCornerShape(8.dp), // 테두리를 둥글게
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                )
+
+                OutlinedTextField(
+                    value = text3,
+                    onValueChange = onTextChange3,
+                    label = { Text("태그") },
+                    placeholder = { Text(
+                        textAlign = TextAlign.Center,
+                        text = "태그") },
+                    shape = RoundedCornerShape(8.dp), // 테두리를 둥글게
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                )
 
                 OutlinedTextField(
                     value = text,
@@ -71,7 +102,7 @@ fun CommunityAskWriteDialog(
                     label = { Text("내용") },
                     placeholder = { Text(
                         textAlign = TextAlign.Center,
-                        text = "도란도란 게시") },
+                        text = "내용") },
                     shape = RoundedCornerShape(8.dp), // 테두리를 둥글게
                     modifier = Modifier
                         .fillMaxWidth()
@@ -91,7 +122,7 @@ fun CommunityAskWriteDialog(
 
                     MainButton(
                         text = " 전송 ",
-                        onClick = onConfirmClick,
+                        onClick = onOperatorChatSubmitClick,
                         modifier = Modifier
                             .padding(16.dp)
                     )
@@ -104,9 +135,9 @@ fun CommunityAskWriteDialog(
 
 @Preview(showBackground = true)
 @Composable
-fun CommunityAskWriteDialogPreview() {
+fun CommunityOperatorChatDialogPreview() {
     MypatTheme {
-        CommunityAskWriteDialog(
+        CommunityOperatorChatDialog(
             onClose = {},
             onTextChange = {},
             onConfirmClick = {},

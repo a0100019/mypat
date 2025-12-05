@@ -68,6 +68,7 @@ fun MainScreen(
     onFirstGameNavigateClick: () -> Unit,
     onSecondGameNavigateClick: () -> Unit,
     onThirdGameNavigateClick: () -> Unit,
+    onChatNavigateClick: () -> Unit,
 
     ) {
 
@@ -98,6 +99,7 @@ fun MainScreen(
         onSecondGameNavigateClick = onSecondGameNavigateClick,
         onThirdGameNavigateClick = onThirdGameNavigateClick,
         onWorldNavigateClick = onWorldNavigateClick,
+        onChatNavigateClick = onChatNavigateClick,
 
         onLetterReadClick = mainViewModel::onLetterReadClick,
         onLetterLinkClick = mainViewModel::onLetterLinkClick,
@@ -144,6 +146,7 @@ fun MainScreen(
     onFirstGameNavigateClick: () -> Unit,
     onSecondGameNavigateClick: () -> Unit,
     onThirdGameNavigateClick: () -> Unit,
+    onChatNavigateClick: () -> Unit = {},
 
     dialogPatIdChange: (String) -> Unit,
     onLetterReadClick: () -> Unit = {},
@@ -202,9 +205,9 @@ fun MainScreen(
 
             "커뮤니티" -> TutorialDialog(
                 state = "커뮤니티",
-                onCommunityClick = {
+                onChatClick = {
                     tutorialText = "완료"
-                    onCommunityNavigateClick()
+                    onChatNavigateClick()
                     tutorialPrefs.edit().putString("tutorial", "상점").apply()
                 }
             )
@@ -402,7 +405,11 @@ fun MainScreen(
                         )
                     }
                     MainButton(
-                        text = "커뮤니티",
+                        text = "채팅",
+                        onClick = onChatNavigateClick
+                    )
+                    MainButton(
+                        text = "이웃 마을",
                         onClick = onCommunityNavigateClick
                     )
                     MainButton(

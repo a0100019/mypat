@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.a0100019.mypat.presentation.chat.ChatScreen
 import com.a0100019.mypat.presentation.community.CommunityScreen
 import com.a0100019.mypat.presentation.daily.DailyScreen
 import com.a0100019.mypat.presentation.daily.diary.DiaryScreen
@@ -70,6 +71,9 @@ fun MainNavHost() {
                 },
                 onThirdGameNavigateClick = {
                     navController.navigate(route = MainRoute.ThirdGameScreen.name)
+                },
+                onChatNavigateClick = {
+                    navController.navigate(route = MainRoute.ChatScreen.name)
                 }
             )
         }
@@ -189,6 +193,13 @@ fun MainNavHost() {
                 popBackStack = { navController.popBackStack() }
             )
         }
+
+        composable(route = MainRoute.ChatScreen.name) {
+            ChatScreen(
+                popBackStack = { navController.popBackStack() }
+            )
+        }
+
 
         composable(route = MainRoute.WalkScreen.name) {
             WalkScreen(

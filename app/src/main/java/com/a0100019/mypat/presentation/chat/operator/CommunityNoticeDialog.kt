@@ -1,4 +1,4 @@
-package com.a0100019.mypat.presentation.community
+package com.a0100019.mypat.presentation.chat.operator
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -25,7 +25,7 @@ import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
 @Composable
-fun CommunityAskDialog(
+fun CommunityNoticeDialog(
     onClose: () -> Unit = {},
     onTextChange: (String) -> Unit = {},
     text: String = "",
@@ -59,17 +59,11 @@ fun CommunityAskDialog(
             ) {
 
                 Text(
-                    text = "도란도란",
+                    text = "공지 작성",
                     style = MaterialTheme.typography.headlineSmall,
                     modifier = Modifier.padding(10.dp),
                 )
 
-                Text(
-                    text = "도란도란은 평소에 말 못했던 질문이나 고민을 익명으로 올리고 이웃들에게 조언을 받을 수 있는 기능입니다. 검토 후 게시하니 어떤 내용이든 부담없이 작성해주세요!",
-                    style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(10.dp),
-                )
 
                 OutlinedTextField(
                     value = text,
@@ -77,9 +71,7 @@ fun CommunityAskDialog(
                     label = { Text("내용") },
                     placeholder = { Text(
                         textAlign = TextAlign.Center,
-                        text = "도란도란이 많을 경우, 선별되어 게시됩니다.\n\n" +
-                                "ex) 요즘 미래에 대해 고민이 있어요..\n햄버거 vs 치킨 평생 하나만 먹는다면?!\n" +
-                                "시험을 망쳤어요 위로해주세요 ㅠㅠ\n좋아하는 사람이 생겼어요! 어떻게 해야할까요?") },
+                        text = "공지 작성") },
                     shape = RoundedCornerShape(8.dp), // 테두리를 둥글게
                     modifier = Modifier
                         .fillMaxWidth()
@@ -110,12 +102,11 @@ fun CommunityAskDialog(
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
-fun CommunityAskDialogPreview() {
+fun CommunityNoticeDialogPreview() {
     MypatTheme {
-        CommunityAskDialog(
+        CommunityNoticeDialog(
             onClose = {},
             onTextChange = {},
             onConfirmClick = {},

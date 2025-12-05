@@ -1,4 +1,4 @@
-package com.a0100019.mypat.presentation.community.operator
+package com.a0100019.mypat.presentation.chat
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -25,17 +25,11 @@ import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
 @Composable
-fun CommunityOperatorChatDialog(
+fun CommunityAskDialog(
     onClose: () -> Unit = {},
     onTextChange: (String) -> Unit = {},
-    onTextChange2: (String) -> Unit = {},
-    onTextChange3: (String) -> Unit = {},
     text: String = "",
-    text2: String = "",
-    text3: String = "",
     onConfirmClick: () -> Unit = {},
-    onOperatorChatSubmitClick: () -> Unit = {}
-
 ) {
 
     Dialog(
@@ -65,35 +59,16 @@ fun CommunityOperatorChatDialog(
             ) {
 
                 Text(
-                    text = "채팅 작성",
+                    text = "도란도란",
                     style = MaterialTheme.typography.headlineSmall,
                     modifier = Modifier.padding(10.dp),
                 )
 
-                OutlinedTextField(
-                    value = text2,
-                    onValueChange = onTextChange2,
-                    label = { Text("이름") },
-                    placeholder = { Text(
-                        textAlign = TextAlign.Center,
-                        text = "이름") },
-                    shape = RoundedCornerShape(8.dp), // 테두리를 둥글게
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                )
-
-                OutlinedTextField(
-                    value = text3,
-                    onValueChange = onTextChange3,
-                    label = { Text("태그") },
-                    placeholder = { Text(
-                        textAlign = TextAlign.Center,
-                        text = "태그") },
-                    shape = RoundedCornerShape(8.dp), // 테두리를 둥글게
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
+                Text(
+                    text = "도란도란은 평소에 말 못했던 질문이나 고민을 익명으로 올리고 이웃들에게 조언을 받을 수 있는 기능입니다. 검토 후 게시하니 어떤 내용이든 부담없이 작성해주세요!",
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(10.dp),
                 )
 
                 OutlinedTextField(
@@ -102,7 +77,9 @@ fun CommunityOperatorChatDialog(
                     label = { Text("내용") },
                     placeholder = { Text(
                         textAlign = TextAlign.Center,
-                        text = "내용") },
+                        text = "도란도란이 많을 경우, 선별되어 게시됩니다.\n\n" +
+                                "ex) 요즘 미래에 대해 고민이 있어요..\n햄버거 vs 치킨 평생 하나만 먹는다면?!\n" +
+                                "시험을 망쳤어요 위로해주세요 ㅠㅠ\n좋아하는 사람이 생겼어요! 어떻게 해야할까요?") },
                     shape = RoundedCornerShape(8.dp), // 테두리를 둥글게
                     modifier = Modifier
                         .fillMaxWidth()
@@ -122,7 +99,7 @@ fun CommunityOperatorChatDialog(
 
                     MainButton(
                         text = " 전송 ",
-                        onClick = onOperatorChatSubmitClick,
+                        onClick = onConfirmClick,
                         modifier = Modifier
                             .padding(16.dp)
                     )
@@ -133,11 +110,12 @@ fun CommunityOperatorChatDialog(
     }
 }
 
+
 @Preview(showBackground = true)
 @Composable
-fun CommunityOperatorChatDialogPreview() {
+fun CommunityAskDialogPreview() {
     MypatTheme {
-        CommunityOperatorChatDialog(
+        CommunityAskDialog(
             onClose = {},
             onTextChange = {},
             onConfirmClick = {},

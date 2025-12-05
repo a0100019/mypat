@@ -239,6 +239,7 @@ fun StoreScreen(
     }
 
     if (simpleDialogState != "") {
+        //다이얼로그 맨트 변경 시 얘도 바꿔야하는 거 주의!!!!!!!
         SimpleAlertDialog (
             onDismiss = { onSimpleDialog("") },
             onConfirm = {
@@ -247,7 +248,7 @@ fun StoreScreen(
                     "아이템을 뽑으시겠습니까?" -> onItemStoreClick()
                     "펫 공간을 늘리겠습니까?" -> onPatRoomUpClick()
                     "아이템 공간을 늘리겠습니까?" -> onItemRoomUpClick()
-                    "부적절한 닉네임일 경우 경고 없이 제제를 받을 수 있습니다. 변경하겠습니까?" -> {
+                    "부적절한 닉네임(욕설, 부적절한 내용, 운영자 사칭 등)일 경우, 경고 없이 제제를 받을 수 있습니다. 변경하겠습니까?" -> {
                         onNameChangeClick()
                         SfxPlayer.play(context, R.raw.positive11)
                     }

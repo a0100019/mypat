@@ -36,4 +36,5 @@ sealed class MainRoute(
 
     object WalkScreen : MainRoute("WalkScreen")
 
+    object ChatScreen : MainRoute("ChatScreen")
 }
