@@ -83,6 +83,7 @@ fun ChatScreen(
         patDataList = chatState.patDataList,
         itemDataList = chatState.itemDataList,
         allUserDataList = chatState.allUserDataList,
+        clickAllUserData = chatState.clickAllUserData,
         clickAllUserWorldDataList = chatState.clickAllUserWorldDataList,
         allUserRankDataList = chatState.allUserRankDataList,
         chatMessages = chatState.chatMessages,
