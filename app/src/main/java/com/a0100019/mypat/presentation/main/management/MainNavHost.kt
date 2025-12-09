@@ -27,6 +27,7 @@ import com.a0100019.mypat.presentation.main.MainScreen
 import com.a0100019.mypat.presentation.setting.SettingScreen
 import com.a0100019.mypat.presentation.store.StoreScreen
 import com.a0100019.mypat.presentation.main.world.WorldScreen
+import com.a0100019.mypat.presentation.operator.OperatorScreen
 
 @Composable
 fun MainNavHost() {
@@ -74,7 +75,11 @@ fun MainNavHost() {
                 },
                 onChatNavigateClick = {
                     navController.navigate(route = MainRoute.ChatScreen.name)
+                },
+                onOperatorNavigateClick = {
+                    navController.navigate(route = MainRoute.OperatorScreen.name)
                 }
+
             )
         }
 
@@ -203,6 +208,13 @@ fun MainNavHost() {
 
         composable(route = MainRoute.WalkScreen.name) {
             WalkScreen(
+                popBackStack = { navController.popBackStack() }
+            )
+        }
+
+
+        composable(route = MainRoute.OperatorScreen.name) {
+            OperatorScreen(
                 popBackStack = { navController.popBackStack() }
             )
         }

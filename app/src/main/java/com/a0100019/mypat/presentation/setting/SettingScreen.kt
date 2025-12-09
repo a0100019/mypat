@@ -43,6 +43,7 @@ import androidx.compose.ui.text.style.TextAlign
 import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.letter.Letter
 import com.a0100019.mypat.domain.AppBgmManager
+import com.a0100019.mypat.presentation.daily.walk.StepForegroundService
 import com.a0100019.mypat.presentation.login.ExplanationDialog
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
@@ -253,15 +254,31 @@ fun SettingScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            MainButton(
-                text = "추천인 확인",
-                onClick = onRecommendationClick,
-                modifier = Modifier.fillMaxWidth()
-            )
-
             val context = LocalContext.current
             val prefs = context.getSharedPreferences("bgm_prefs", Context.MODE_PRIVATE)
             var bgmOn = prefs.getBoolean("bgmOn", true)
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ){
+                MainButton(
+                    text = "추천인 확인",
+                    onClick = onRecommendationClick,
+                    modifier = Modifier.weight(1f)
+                )
+
+                Spacer(modifier = Modifier.size(12.dp))
+
+                MainButton(
+                    text = "만보기 기능 정지",
+                    onClick = {
+                        val intent = Intent(context, StepForegroundService::class.java)
+                        context.stopService(intent)
+                    },
+                    modifier = Modifier.weight(1f)
+                )
+            }
 
             Row(
                 modifier = Modifier

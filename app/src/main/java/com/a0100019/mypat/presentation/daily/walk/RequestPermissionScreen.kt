@@ -1,9 +1,14 @@
 package com.a0100019.mypat.presentation.daily.walk
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
+import android.os.PowerManager
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -11,6 +16,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
+import android.provider.Settings
+
 
 @Composable
 fun RequestPermissionScreen() {
@@ -57,5 +64,19 @@ fun RequestNotificationPermissionScreen() {
         ) {
             permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
+    }
+}
+
+@SuppressLint("BatteryLife")
+@Composable
+fun RequestBatteryPermissionScreen() {
+
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
+            data = Uri.parse("package:${context.packageName}")
+        }
+        context.startActivity(intent)
     }
 }

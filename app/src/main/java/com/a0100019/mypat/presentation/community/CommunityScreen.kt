@@ -45,10 +45,10 @@ import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.domain.AppBgmManager
 import com.a0100019.mypat.presentation.chat.CommunityAskDialog
-import com.a0100019.mypat.presentation.chat.operator.CommunityAskViewDialog
-import com.a0100019.mypat.presentation.chat.operator.CommunityAskWriteDialog
-import com.a0100019.mypat.presentation.chat.operator.CommunityNoticeDialog
-import com.a0100019.mypat.presentation.chat.operator.CommunityOperatorChatDialog
+import com.a0100019.mypat.presentation.operator.CommunityAskViewDialog
+import com.a0100019.mypat.presentation.operator.CommunityAskWriteDialog
+import com.a0100019.mypat.presentation.operator.CommunityNoticeDialog
+import com.a0100019.mypat.presentation.operator.CommunityOperatorChatDialog
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage

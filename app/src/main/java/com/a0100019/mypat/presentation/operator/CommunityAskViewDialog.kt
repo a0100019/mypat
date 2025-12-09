@@ -1,4 +1,4 @@
-package com.a0100019.mypat.presentation.chat.operator
+package com.a0100019.mypat.presentation.operator
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -37,7 +37,7 @@ import java.util.Locale
 @Composable
 fun CommunityAskViewDialog(
     onClose: () -> Unit = {},
-    askMessages: List<com.a0100019.mypat.presentation.chat.ChatMessage> = emptyList(),
+    askMessages: List<OperatorMessage> = emptyList(),
     onAskClick: (String) -> Unit = {},
 ) {
 
@@ -195,7 +195,7 @@ fun CommunityAskViewDialogPreview() {
         CommunityAskViewDialog(
             onClose = {},
             onAskClick = {},
-            askMessages = listOf(ChatMessage(10202020, "a", "a", tag = "1", ban = "0", uid = "hello"))
+            askMessages = listOf(OperatorMessage(10202020, "a", "a", tag = "1", ban = "0", uid = "hello"))
         )
     }
 }

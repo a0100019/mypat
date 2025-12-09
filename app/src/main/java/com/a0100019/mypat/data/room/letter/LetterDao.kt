@@ -46,6 +46,13 @@ interface LetterDao {
 """)
     suspend fun updateTitleAndOpenState(oldTitle: String, newTitle: String, todayDate: String): Int
 
+    @Query("""
+    SELECT *
+    FROM letter_table
+    WHERE state != 'waiting'
+    ORDER BY id DESC
+""")
+    suspend fun getNotWaitingLetterData(): List<Letter>
 
     @Query("""
         SELECT *

@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Build
+import android.os.PowerManager
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -106,7 +107,7 @@ class DailyViewModel @Inject constructor(
 
         if (hasPermission) {
             // 권한 있음 → 정상 진행
-            postSideEffect(DailySideEffect.NavigateToWalkScreen)
+            batteryPermissionCheck(context)
         } else {
             val activity = context as? Activity
             val isDeniedPermanently = activity?.let {
@@ -131,6 +132,20 @@ class DailyViewModel @Inject constructor(
         }
     }
 
+    private fun batteryPermissionCheck(context: Context) = intent {
+
+        val pm = context.getSystemService(Context.POWER_SERVICE) as PowerManager
+
+        val isIgnoring = pm.isIgnoringBatteryOptimizations(context.packageName)
+
+        if (isIgnoring) {
+            postSideEffect(DailySideEffect.NavigateToWalkScreen)
+        } else {
+            reduce {
+                state.copy(situation = "batteryPermissionRequest")
+            }
+        }
+    }
 
     @SuppressLint("NewApi")
     @RequiresApi(Build.VERSION_CODES.Q)
@@ -167,12 +182,7 @@ class DailyViewModel @Inject constructor(
 
         if (hasPermission) {
             // 권한 있을 때 처리
-            reduce {
-                state.copy(
-                    situation = ""
-                )
-            }
-            postSideEffect(DailySideEffect.NavigateToWalkScreen)
+            batteryPermissionCheck(context)
         } else {
             reduce {
                 state.copy(
@@ -181,6 +191,31 @@ class DailyViewModel @Inject constructor(
             }
         }
 
+    }
+
+    fun onDialogBatteryOptimizationPermissionCheckClick(context: Context) = intent {
+
+        val pm = context.getSystemService(Context.POWER_SERVICE) as PowerManager
+
+        val isIgnoring = pm.isIgnoringBatteryOptimizations(context.packageName)
+
+        if (isIgnoring) {
+            // ✅ 배터리 최적화 예외 허용됨
+            reduce {
+                state.copy(
+                    situation = ""
+                )
+            }
+            postSideEffect(DailySideEffect.NavigateToWalkScreen)
+
+        } else {
+            // ❌ 아직 허용 안 됨
+            reduce {
+                state.copy(
+                    situation = "batteryPermissionSettingNo"
+                )
+            }
+        }
     }
 
     fun onCloseClick() = intent {

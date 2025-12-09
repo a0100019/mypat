@@ -44,10 +44,10 @@ import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.domain.AppBgmManager
-import com.a0100019.mypat.presentation.chat.operator.CommunityAskViewDialog
-import com.a0100019.mypat.presentation.chat.operator.CommunityAskWriteDialog
-import com.a0100019.mypat.presentation.chat.operator.CommunityNoticeDialog
-import com.a0100019.mypat.presentation.chat.operator.CommunityOperatorChatDialog
+import com.a0100019.mypat.presentation.operator.CommunityAskViewDialog
+import com.a0100019.mypat.presentation.operator.CommunityAskWriteDialog
+import com.a0100019.mypat.presentation.operator.CommunityNoticeDialog
+import com.a0100019.mypat.presentation.operator.CommunityOperatorChatDialog
 import com.a0100019.mypat.presentation.community.CommunityUserDialog
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
 import com.a0100019.mypat.presentation.ui.component.MainButton
@@ -94,7 +94,6 @@ fun ChatScreen(
         dialogState = chatState.dialogState,
         text2 = chatState.text2,
         text3 = chatState.text3,
-        askMessages = chatState.askMessages,
 
         onLikeClick = chatViewModel::onLikeClick,
         onSituationChange = chatViewModel::onSituationChange,
@@ -104,14 +103,11 @@ fun ChatScreen(
         onBanClick = chatViewModel::onBanClick,
         alertStateChange = chatViewModel::alertStateChange,
         popBackStack = popBackStack,
-        onAskChatWrite = chatViewModel::onAskChatWrite,
         onDialogChangeClick = chatViewModel::onDialogChangeClick,
         onAskSubmitClick = chatViewModel::onAskSubmitClick,
-        onNoticeChatWrite = chatViewModel::onNoticeChatWrite,
         onCloseClick = chatViewModel::onCloseClick,
         onTextChange2 = chatViewModel::onTextChange2,
         onTextChange3 = chatViewModel::onTextChange3,
-        onOperatorChatSubmitClick = chatViewModel::onOperatorChatSubmitClick,
         onAskClick = chatViewModel::onAskClick
 
     )
@@ -128,7 +124,6 @@ fun CommunityScreen(
     clickAllUserWorldDataList: List<String> = emptyList(),
     allUserRankDataList: List<AllUser> = listOf(AllUser(), AllUser()),
     chatMessages: List<ChatMessage> = emptyList(),
-    askMessages: List<ChatMessage> = emptyList(),
     newChat: String = "",
     userDataList: List<User> = emptyList(),
     alertState: String = "",
@@ -148,12 +143,9 @@ fun CommunityScreen(
     popBackStack: () -> Unit = {},
     onDialogChangeClick: (String) -> Unit = {},
     onAskSubmitClick: () -> Unit = {},
-    onAskChatWrite: () -> Unit = {},
-    onNoticeChatWrite: () -> Unit = {},
     onCloseClick: () -> Unit = {},
     onTextChange2: (String) -> Unit = {},
     onTextChange3: (String) -> Unit = {},
-    onOperatorChatSubmitClick: () -> Unit = {},
     onAskClick: (String) -> Unit = {},
 
     ) {
@@ -163,40 +155,11 @@ fun CommunityScreen(
     val bgmOn = prefs.getBoolean("bgmOn", true)
 
     when(dialogState) {
-        "askView" -> CommunityAskViewDialog(
-            onClose = onCloseClick,
-            onAskClick = onAskClick,
-            askMessages = askMessages
-        )
         "ask" -> CommunityAskDialog(
             onClose = onCloseClick,
             onTextChange = onChatTextChange,
             text = newChat,
             onConfirmClick = onAskSubmitClick,
-        )
-        "askWrite" -> CommunityAskWriteDialog(
-            onClose = onCloseClick,
-            onTextChange = onChatTextChange,
-            text = newChat,
-            onConfirmClick = onAskChatWrite,
-        )
-        "notice" -> CommunityNoticeDialog(
-            onClose = onCloseClick,
-            onTextChange = onChatTextChange,
-            text = newChat,
-            onConfirmClick = onNoticeChatWrite,
-        )
-        "operatorChat" -> CommunityOperatorChatDialog(
-            onClose = onCloseClick,
-            onTextChange = onChatTextChange,
-            onTextChange2 = onTextChange2,
-            onTextChange3 = onTextChange3,
-            text2 = text2,
-            text3 = text3,
-            text = newChat,
-            onConfirmClick = {},
-            onOperatorChatSubmitClick = onOperatorChatSubmitClick
-
         )
     }
 
@@ -279,25 +242,6 @@ fun CommunityScreen(
                     )
                 }
 
-                if(userDataList.find { it.id == "auth" }?.value2 ?: "" in listOf("1", "38", "75") ) {
-                    Row {
-                        MainButton(
-                            text = "도란도란",
-                            onClick = { onDialogChangeClick("askView") },
-                            modifier = Modifier
-                        )
-                        MainButton(
-                            text = "공지",
-                            onClick = { onDialogChangeClick("notice") },
-                            modifier = Modifier
-                        )
-                        MainButton(
-                            text = "채팅",
-                            onClick = { onDialogChangeClick("operatorChat") },
-                            modifier = Modifier
-                        )
-                    }
-                }
 
                     Column(
                         modifier = Modifier

@@ -13,6 +13,7 @@ import com.a0100019.mypat.presentation.ui.image.etc.LottieCache
 import com.a0100019.mypat.presentation.ui.image.etc.PatEffectImage
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 
 @Composable
@@ -24,11 +25,12 @@ fun PatImage(
     xFloat: Float,
     yFloat: Float,
     sizeFloat: Float,
-    onClick: (() -> Unit)? = null // 👉 null 가능하게 바꿈
+    isPlaying: Boolean = true,          // ✅ 애니메이션 ON/OFF 변수
+    onClick: (() -> Unit)? = null
 ) {
     val composition by rememberLottieComposition(LottieCache.get(patUrl))
 
-    val imageSize = surfaceWidthDp * sizeFloat // 이미지 크기를 Surface 너비의 비율로 설정
+    val imageSize = surfaceWidthDp * sizeFloat
 
     PatEffectImage(
         surfaceWidthDp = surfaceWidthDp,
@@ -55,10 +57,16 @@ fun PatImage(
             } else it
         }
 
-    // LottieAnimation을 Modifier와 함께 적용
+    // ✅ 애니메이션 상태 제어
+    val progress by animateLottieCompositionAsState(
+        composition = composition,
+        isPlaying = isPlaying,
+        iterations = if (isPlaying) Int.MAX_VALUE else 1
+    )
+
     LottieAnimation(
         composition = composition,
-        iterations = Int.MAX_VALUE,
+        progress = { progress },
         modifier = modifier
     )
 }

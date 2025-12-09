@@ -37,6 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.a0100019.mypat.presentation.daily.walk.RequestBatteryPermissionScreen
 import com.a0100019.mypat.presentation.daily.walk.RequestNotificationPermissionScreen
 import com.a0100019.mypat.presentation.daily.walk.RequestPermissionScreen
 import com.a0100019.mypat.presentation.ui.component.MainButton
@@ -77,6 +78,7 @@ fun DailyScreen(
         onCloseClick = dailyViewModel::onCloseClick,
         onDialogPermissionCheckClick = dailyViewModel::onDialogPermissionCheckClick,
         onDialogNotificationPermissionCheckClick = dailyViewModel::onDialogNotificationPermissionCheckClick,
+        onDialogBatteryOptimizationPermissionCheckClick = dailyViewModel::onDialogBatteryOptimizationPermissionCheckClick,
         popBackStack = popBackStack,
 
         situation = dailyState.situation,
@@ -93,6 +95,7 @@ fun DailyScreen(
     onCloseClick: () -> Unit = {},
     onDialogPermissionCheckClick: (Context) -> Unit = {},
     onDialogNotificationPermissionCheckClick: (Context) -> Unit = {},
+    onDialogBatteryOptimizationPermissionCheckClick: (Context) -> Unit = {},
     situation: String,
     popBackStack: () -> Unit = {}
 ) {
@@ -119,6 +122,14 @@ fun DailyScreen(
             situation = situation,
             onCloseClick = onCloseClick,
             onCheckClick = onDialogNotificationPermissionCheckClick
+        )
+    } else if (situation == "batteryPermissionRequest") {
+        RequestBatteryPermissionScreen()
+    } else if (situation in listOf("batteryPermissionSetting", "batteryPermissionSettingNo")) {
+        BatteryPermissionDialog(
+            situation = situation,
+            onCloseClick = onCloseClick,
+            onCheckClick = onDialogBatteryOptimizationPermissionCheckClick
         )
     }
 
@@ -381,14 +392,73 @@ fun DailyScreen(
                                     ,
                                 )
                                 Text(
-                                    text = "매일 만보를 걸어 보상을 획득하세요",
+                                    text = "건강과 함께 마을을 키워보세요",
                                     style = MaterialTheme.typography.titleMedium,
                                     modifier = Modifier
                                         .padding(bottom = 10.dp)
                                     ,
                                 )
                                 Text(
-                                    text = "하루가 지나면 보상을 획득할 수 없습니다",
+                                    text = "언제든지 설정에서 만보기 기능을 정지할 수 있습니다",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    modifier = Modifier,
+                                )
+                            }
+                        }
+
+                    }
+                }
+
+                item {
+                    //버튼 기본 설정
+                    val interactionSource = remember { MutableInteractionSource() }
+                    val isPressed by interactionSource.collectIsPressedAsState()
+                    val scale by animateFloatAsState(
+                        targetValue = if (isPressed) 0.95f else 1f,
+                        label = "scale"
+                    )
+
+                    Surface(
+                        shape = RoundedCornerShape(16.dp),
+                        color = MaterialTheme.colorScheme.scrim,
+                        border = BorderStroke(3.dp, MaterialTheme.colorScheme.primaryContainer),
+                        modifier = Modifier
+                            .graphicsLayer {
+                                scaleX = scale
+                                scaleY = scale
+                            }
+                            .clickable(
+                                interactionSource = interactionSource,
+                                indication = null,
+                                onClick = onWalkNavigateClick
+                            )
+                            .padding(top = 6.dp, bottom = 6.dp)
+                    ) {
+                        Box {
+
+                            Column(
+                                modifier = Modifier
+                                    .padding(8.dp)
+                                    .fillMaxWidth(),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = "광고보기",
+                                    style = MaterialTheme.typography.headlineMedium,
+                                    modifier = Modifier
+                                        .padding(bottom = 10.dp)
+                                    ,
+                                )
+                                Text(
+                                    text = "하루에 1회만 가능합니다",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    modifier = Modifier
+                                        .padding(bottom = 10.dp)
+                                    ,
+                                )
+                                Text(
+                                    text = "광고를 보면 1 햇살을 얻을 수 있습니다!",
                                     style = MaterialTheme.typography.titleSmall,
                                     modifier = Modifier,
                                 )

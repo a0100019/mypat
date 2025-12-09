@@ -83,7 +83,7 @@ class CommunityViewModel @Inject constructor(
             }
         }
 
-        val page = userDataList.find { it.id == "etc" }!!.value.toInt()
+        val page = 0
         val allUserData1 = allUserDataList[4*page]
         val allUserData2 = allUserDataList[4*page + 1]
         val allUserData3 = allUserDataList[4*page + 2]

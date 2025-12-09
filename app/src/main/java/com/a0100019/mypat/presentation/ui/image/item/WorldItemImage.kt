@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.Dp
 import com.a0100019.mypat.presentation.ui.image.etc.LottieCache
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 
 @Composable
@@ -34,6 +35,7 @@ fun WorldItemImage(
     xFloat: Float,
     yFloat: Float,
     sizeFloat: Float,
+    isPlaying: Boolean = true,   // ✅ 애니메이션 ON/OFF 변수 추가
     onClick: () -> Unit = {}
 ) {
     val imageSize = surfaceWidthDp * sizeFloat
@@ -49,19 +51,27 @@ fun WorldItemImage(
 
         val composition by rememberLottieComposition(LottieCache.get(itemUrl))
 
+        // ✅ 애니메이션 상태 제어
+        val progress by animateLottieCompositionAsState(
+            composition = composition,
+            isPlaying = isPlaying,
+            iterations = if (isPlaying) Int.MAX_VALUE else 1
+        )
+
         LottieAnimation(
             composition = composition,
-            iterations = Int.MAX_VALUE,
+            progress = { progress },
             modifier = Modifier
                 .size(imageSize)
                 .offset(
                     x = (surfaceWidthDp * xFloat),
                     y = (surfaceHeightDp * yFloat)
                 )
-                .then(noEffectClickable)  // ← 클릭 효과 제거
+                .then(noEffectClickable)
         )
 
     } else {
+
         val context = LocalContext.current
         var bitmap by remember { mutableStateOf<Bitmap?>(null) }
 
@@ -84,7 +94,7 @@ fun WorldItemImage(
                         x = (surfaceWidthDp * xFloat),
                         y = (surfaceHeightDp * yFloat)
                     )
-                    .then(noEffectClickable) // ← 클릭 효과 제거
+                    .then(noEffectClickable)
             )
         } else {
             Box(

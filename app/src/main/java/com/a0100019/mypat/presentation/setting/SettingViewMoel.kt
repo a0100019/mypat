@@ -55,6 +55,7 @@ import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
+import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
@@ -97,7 +98,10 @@ class SettingViewModel @Inject constructor(
         val itemDataList = itemDao.getAllItemDataWithShadow()
         val patDataList = patDao.getAllPatData()
         val worldDataList = worldDao.getAllWorldData()
-        val letterDataList = letterDao.getAllLetterData()
+        val letterDataList = letterDao.getNotWaitingLetterData()
+        val sortedLetterList = letterDataList.sortedByDescending { letter ->
+            LocalDate.parse(letter.date)
+        }
         val walkDataList = walkDao.getAllWalkData()
         val englishDataList = englishDao.getOpenEnglishData()
         val koreanIdiomDataList = koreanIdiomDao.getOpenKoreanIdiomData()
@@ -111,7 +115,7 @@ class SettingViewModel @Inject constructor(
                 itemDataList = itemDataList,
                 patDataList = patDataList,
                 worldDataList = worldDataList,
-                letterDataList = letterDataList,
+                letterDataList = sortedLetterList,
                 walkDataList = walkDataList,
                 englishDataList = englishDataList,
                 koreanIdiomDataList = koreanIdiomDataList,
@@ -832,7 +836,7 @@ class SettingViewModel @Inject constructor(
             val todayDate = java.time.LocalDate.now(java.time.ZoneId.of("Asia/Seoul"))
                 .format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd"))
 
-            val letterFieldKey = today + forTag // 예: 2025091244
+            val letterFieldKey = "90$forTag" // 예: 2025091244
             val letterValue = mapOf(
                 "amount" to "10",
                 "date" to todayDate,

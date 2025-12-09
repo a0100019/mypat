@@ -1,4 +1,4 @@
-package com.a0100019.mypat.presentation.chat.operator
+package com.a0100019.mypat.presentation.operator
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -25,7 +25,7 @@ import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
 @Composable
-fun CommunityAskWriteDialog(
+fun CommunityNoticeDialog(
     onClose: () -> Unit = {},
     onTextChange: (String) -> Unit = {},
     text: String = "",
@@ -59,7 +59,7 @@ fun CommunityAskWriteDialog(
             ) {
 
                 Text(
-                    text = "도란도란 게시",
+                    text = "공지 작성",
                     style = MaterialTheme.typography.headlineSmall,
                     modifier = Modifier.padding(10.dp),
                 )
@@ -71,7 +71,7 @@ fun CommunityAskWriteDialog(
                     label = { Text("내용") },
                     placeholder = { Text(
                         textAlign = TextAlign.Center,
-                        text = "도란도란 게시") },
+                        text = "공지 작성") },
                     shape = RoundedCornerShape(8.dp), // 테두리를 둥글게
                     modifier = Modifier
                         .fillMaxWidth()
@@ -104,9 +104,9 @@ fun CommunityAskWriteDialog(
 
 @Preview(showBackground = true)
 @Composable
-fun CommunityAskWriteDialogPreview() {
+fun CommunityNoticeDialogPreview() {
     MypatTheme {
-        CommunityAskWriteDialog(
+        CommunityNoticeDialog(
             onClose = {},
             onTextChange = {},
             onConfirmClick = {},

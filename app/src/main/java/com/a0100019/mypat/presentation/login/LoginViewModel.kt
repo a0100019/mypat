@@ -515,7 +515,6 @@ class LoginViewModel @Inject constructor(
                                 }
                             }
 
-
                         } else {
                             Log.w("login", "Firestore에 유저 문서가 없습니다")
                             postSideEffect(LoginSideEffect.Toast("유저 정보를 찾을 수 없습니다"))
@@ -566,11 +565,9 @@ class LoginViewModel @Inject constructor(
                         var shouldDelete = false
 
                         val shouldInsert = when {
-                            //전체 편지
-                            key.length == 8 -> true
                             //개인 편지
-                            key.length >= 9 -> {
-                                val subId = key.drop(8)
+                            key.take(2) == "90" -> {
+                                val subId = key.drop(2)
                                 val match = (tag == subId)
                                 if (match) shouldDelete = true
                                 match

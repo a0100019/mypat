@@ -1,0 +1,389 @@
+package com.a0100019.mypat.presentation.operator
+
+import android.util.Log
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.a0100019.mypat.data.room.allUser.AllUser
+import com.a0100019.mypat.data.room.allUser.AllUserDao
+import com.a0100019.mypat.data.room.area.AreaDao
+import com.a0100019.mypat.data.room.item.Item
+import com.a0100019.mypat.data.room.item.ItemDao
+import com.a0100019.mypat.data.room.pat.Pat
+import com.a0100019.mypat.data.room.pat.PatDao
+import com.a0100019.mypat.data.room.user.User
+import com.a0100019.mypat.data.room.user.UserDao
+import com.a0100019.mypat.data.room.world.WorldDao
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.SetOptions
+import com.google.firebase.firestore.firestore
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.launch
+import org.orbitmvi.orbit.Container
+import org.orbitmvi.orbit.ContainerHost
+import org.orbitmvi.orbit.annotation.OrbitExperimental
+import org.orbitmvi.orbit.syntax.simple.blockingIntent
+import org.orbitmvi.orbit.syntax.simple.intent
+import org.orbitmvi.orbit.syntax.simple.postSideEffect
+import org.orbitmvi.orbit.syntax.simple.reduce
+import org.orbitmvi.orbit.viewmodel.container
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Date
+import java.util.Locale
+import javax.annotation.concurrent.Immutable
+import javax.inject.Inject
+
+@HiltViewModel
+class OperatorViewModel @Inject constructor(
+    private val userDao: UserDao,
+    private val worldDao: WorldDao,
+    private val patDao: PatDao,
+    private val itemDao: ItemDao,
+    private val allUserDao: AllUserDao,
+    private val areaDao: AreaDao
+) : ViewModel(), ContainerHost<OperatorState, OperatorSideEffect> {
+
+    override val container: Container<OperatorState, OperatorSideEffect> = container(
+        initialState = OperatorState(),
+        buildSettings = {
+            this.exceptionHandler = CoroutineExceptionHandler { _ , throwable ->
+                intent {
+                    postSideEffect(OperatorSideEffect.Toast(message = throwable.message.orEmpty()))
+                }
+            }
+        }
+    )
+
+    // 뷰 모델 초기화 시 모든 user 데이터를 로드
+    init {
+        loadData()
+    }
+
+    //room에서 데이터 가져옴
+    private fun loadData() = intent {
+        val userDataList = userDao.getAllUserData()
+        val patDataList = patDao.getAllPatData()
+        val itemDataList = itemDao.getAllItemDataWithShadow()
+        var allUserDataList = allUserDao.getAllUserDataNoBan()
+        allUserDataList = allUserDataList.filter { it.totalDate != "1" && it.totalDate != "0" }
+
+        val allAreaCount = areaDao.getAllAreaData().size.toString()
+
+        reduce {
+            state.copy(
+                userDataList = userDataList,
+                patDataList = patDataList,
+                itemDataList = itemDataList,
+                allUserDataList =  allUserDataList,
+                allAreaCount = allAreaCount
+            )
+        }
+    }
+
+    fun onCloseClick() = intent {
+        reduce {
+            state.copy(
+                dialogState = "",
+                newChat = "",
+                text2 = "",
+                text3 = ""
+            )
+        }
+    }
+
+    fun onDialogChangeClick(dialog: String) = intent {
+
+        if(dialog == "askView") {
+            loadAskMessages()
+        }
+
+        reduce {
+            state.copy(
+                dialogState = dialog
+            )
+        }
+
+    }
+
+    fun onNoticeChatWrite() = intent {
+        val currentMessage = state.newChat.trim()
+        val userName = state.userDataList.find { it.id == "name" }!!.value // 또는 상태에서 유저 이름을 가져올 수 있다면 사용
+        val userId = state.userDataList.find { it.id == "auth" }!!.value
+        val userTag = state.userDataList.find { it.id == "auth" }!!.value2
+        val userBan = state.userDataList.find { it.id == "community" }!!.value3
+
+        if (currentMessage.isEmpty()) return@intent
+
+        val timestamp = System.currentTimeMillis()
+        val todayDocId = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date())
+
+        val chatData = mapOf(
+            "message" to currentMessage,
+            "name" to "공지사항",
+            "ban" to userBan,
+            "tag" to "2",
+            "uid" to currentMessage
+        )
+
+        Firebase.firestore.collection("chat")
+            .document(todayDocId)
+            .set(mapOf(timestamp.toString() to chatData), SetOptions.merge())
+            .addOnSuccessListener {
+                Log.d("ChatSubmit", "채팅 전송 성공 (merge)")
+            }
+            .addOnFailureListener { e ->
+                Log.e("ChatSubmit", "채팅 전송 실패: ${e.message}")
+            }
+
+        // 입력 필드 초기화
+        reduce {
+            state.copy(
+                newChat = "",
+                dialogState = ""
+            )
+        }
+    }
+
+    fun onAskClick(message: String) = intent {
+        reduce {
+            state.copy(
+                newChat = message,
+                dialogState = "askWrite"
+            )
+        }
+    }
+
+    fun onAskChatWrite() = intent {
+        val currentMessage = state.newChat.trim()
+        val userName = state.userDataList.find { it.id == "name" }!!.value // 또는 상태에서 유저 이름을 가져올 수 있다면 사용
+        val userId = state.userDataList.find { it.id == "auth" }!!.value
+        val userTag = state.userDataList.find { it.id == "auth" }!!.value2
+        val userBan = state.userDataList.find { it.id == "community" }!!.value3
+
+        if (currentMessage.isEmpty()) return@intent
+
+        val timestamp = System.currentTimeMillis()
+        val todayDocId = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date())
+
+        val chatData = mapOf(
+            "message" to "[해당 내용은 최신 버전에서 확인할 수 있습니다.]",
+            "name" to "도란도란",
+            "ban" to userBan,
+            "tag" to "3",
+            "uid" to currentMessage
+        )
+
+        Firebase.firestore.collection("chat")
+            .document(todayDocId)
+            .set(mapOf(timestamp.toString() to chatData), SetOptions.merge())
+            .addOnSuccessListener {
+                Log.d("ChatSubmit", "채팅 전송 성공 (merge)")
+            }
+            .addOnFailureListener { e ->
+                Log.e("ChatSubmit", "채팅 전송 실패: ${e.message}")
+            }
+
+        // 입력 필드 초기화
+        reduce {
+            state.copy(
+                newChat = "",
+                dialogState = ""
+            )
+        }
+    }
+
+    fun onUserRankClick(userTag: Int) = intent {
+        if(userTag == 0){
+            reduce {
+                state.copy(
+                    clickAllUserData = AllUser(),
+                    clickAllUserWorldDataList = emptyList()
+                )
+            }
+        } else {
+            val selectedUser = state.allUserDataList.find { it.tag == userTag.toString() }
+            val selectedUserWorldDataList: List<String> = selectedUser!!.worldData
+                .split("/")
+                .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
+
+            reduce {
+                state.copy(
+                    clickAllUserData = selectedUser,
+                    clickAllUserWorldDataList = selectedUserWorldDataList
+                )
+            }
+        }
+    }
+
+
+    private fun loadAskMessages() {
+        Firebase.firestore.collection("ask")
+            .addSnapshotListener { snapshot, error ->
+                Log.d("CommunityViewModel", "전체 채팅 스냅샷 수신됨")
+
+                if (error != null) {
+                    Log.e("CommunityViewModel", "채팅 데이터 에러: ${error.message}")
+                    return@addSnapshotListener
+                }
+
+                if (snapshot != null && !snapshot.isEmpty) {
+                    val allMessages = mutableListOf<OperatorMessage>()
+
+                    for (doc in snapshot.documents) {
+
+                        val data = doc.data ?: continue
+                        val messages = data.mapNotNull { (key, value) ->
+                            val timestamp = key.toLongOrNull() ?: return@mapNotNull null
+                            val map = value as? Map<*, *> ?: return@mapNotNull null
+                            val message = map["message"] as? String
+                            val name = map["name"] as? String
+                            val tag = map["tag"] as? String
+                            val ban = map["ban"] as? String
+                            val uid = map["uid"] as? String
+
+                            if (message != null && name != null && tag != null && ban == "0" && uid != null) {
+                                OperatorMessage(timestamp, message, name, tag, ban, uid)
+                            } else null
+                        }
+                        allMessages.addAll(messages)
+                    }
+
+                    val sorted = allMessages.sortedBy { it.timestamp }
+
+                    viewModelScope.launch {
+                        intent {
+                            reduce {
+                                state.copy(askMessages = sorted)
+                            }
+                        }
+                    }
+                } else {
+                    Log.w("CommunityViewModel", "chat 컬렉션에 문서가 없음")
+                }
+            }
+    }
+
+    fun onSituationChange(newSituation: String) = intent {
+        reduce {
+
+            state.copy(
+                situation = newSituation,
+            )
+        }
+    }
+
+    fun onOperatorChatSubmitClick() = intent {
+        val currentMessage = state.newChat.trim()
+        val userName = state.userDataList.find { it.id == "name" }!!.value // 또는 상태에서 유저 이름을 가져올 수 있다면 사용
+        val userId = state.userDataList.find { it.id == "auth" }!!.value
+        val userTag = state.userDataList.find { it.id == "auth" }!!.value2
+        val userBan = state.userDataList.find { it.id == "community" }!!.value3
+
+        if (currentMessage.isEmpty()) return@intent
+
+        val timestamp = System.currentTimeMillis()
+        val todayDocId = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date())
+
+        val chatData = mapOf(
+            "message" to state.newChat,
+            "name" to state.text2,
+            "ban" to userBan,
+            "tag" to state.text3,
+            "uid" to ""
+        )
+
+        Firebase.firestore.collection("chat")
+            .document(todayDocId)
+            .set(mapOf(timestamp.toString() to chatData), SetOptions.merge())
+            .addOnSuccessListener {
+                Log.d("ChatSubmit", "채팅 전송 성공 (merge)")
+            }
+            .addOnFailureListener { e ->
+                Log.e("ChatSubmit", "채팅 전송 실패: ${e.message}")
+            }
+
+        onCloseClick()
+    }
+
+    //입력 가능하게 하는 코드
+    @OptIn(OrbitExperimental::class)
+    fun onChatTextChange(chatText: String) = blockingIntent {
+
+//        if (chatText.length <= 50) {
+        reduce {
+            state.copy(newChat = chatText)
+        }
+//        }
+    }
+
+    //입력 가능하게 하는 코드
+    @OptIn(OrbitExperimental::class)
+    fun onTextChange2(text2: String) = blockingIntent {
+
+//        if (chatText.length <= 50) {
+        reduce {
+            state.copy(text2 = text2)
+        }
+//        }
+    }
+
+    //입력 가능하게 하는 코드
+    @OptIn(OrbitExperimental::class)
+    fun onTextChange3(text3: String) = blockingIntent {
+
+//        if (chatText.length <= 50) {
+        reduce {
+            state.copy(text3 = text3)
+        }
+//        }
+    }
+
+    fun alertStateChange(alertState: String) = intent {
+        reduce {
+            state.copy(
+                alertState = alertState
+            )
+        }
+    }
+
+}
+
+@Immutable
+data class OperatorState(
+    val userDataList: List<User> = emptyList(),
+    val patDataList: List<Pat> = emptyList(),
+    val itemDataList: List<Item> = emptyList(),
+    val allUserDataList: List<AllUser> = emptyList(),
+    val situation: String = "world",
+    val clickAllUserData: AllUser = AllUser(),
+    val clickAllUserWorldDataList: List<String> = emptyList(),
+    val allUserRankDataList: List<AllUser> = emptyList(),
+    val newChat: String = "",
+    val alertState: String = "",
+    val allAreaCount: String = "",
+    val dialogState: String = "",
+    val text2: String = "",
+    val text3: String = "",
+    val askMessages: List<OperatorMessage> = emptyList()
+)
+
+@Immutable
+data class OperatorMessage(
+    val timestamp: Long,
+    val message: String,
+    val name: String,
+    val tag: String,
+    val ban: String,
+    val uid: String
+)
+
+
+//상태와 관련없는 것
+sealed interface OperatorSideEffect{
+    class Toast(val message:String): OperatorSideEffect
+//    data object NavigateToDailyActivity: LoadingSideEffect
+
+}

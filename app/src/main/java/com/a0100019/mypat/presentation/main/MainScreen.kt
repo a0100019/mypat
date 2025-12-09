@@ -69,6 +69,7 @@ fun MainScreen(
     onSecondGameNavigateClick: () -> Unit,
     onThirdGameNavigateClick: () -> Unit,
     onChatNavigateClick: () -> Unit,
+    onOperatorNavigateClick: () -> Unit,
 
     ) {
 
@@ -100,6 +101,7 @@ fun MainScreen(
         onThirdGameNavigateClick = onThirdGameNavigateClick,
         onWorldNavigateClick = onWorldNavigateClick,
         onChatNavigateClick = onChatNavigateClick,
+        onOperatorNavigateClick = onOperatorNavigateClick,
 
         onLetterReadClick = mainViewModel::onLetterReadClick,
         onLetterLinkClick = mainViewModel::onLetterLinkClick,
@@ -147,6 +149,7 @@ fun MainScreen(
     onSecondGameNavigateClick: () -> Unit,
     onThirdGameNavigateClick: () -> Unit,
     onChatNavigateClick: () -> Unit = {},
+    onOperatorNavigateClick: () -> Unit = {},
 
     dialogPatIdChange: (String) -> Unit,
     onLetterReadClick: () -> Unit = {},
@@ -467,6 +470,15 @@ fun MainScreen(
                             .fillMaxWidth(0.4f),
                         onClick = onStoreNavigateClick
                     )
+
+                    if(userDataList.find { it.id == "auth" }?.value2 ?: "" in listOf("1", "38", "75", "181") ) {
+                        MainButton(
+                            text = "관리자",
+                            modifier = Modifier
+                                .fillMaxWidth(0.4f),
+                            onClick = onOperatorNavigateClick
+                        )
+                    }
 
                     MainButton(
                         text = "도감",

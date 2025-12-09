@@ -122,7 +122,6 @@ fun CommunityWorldCard(
                     val surfaceWidthDp = with(density) { surfaceWidth.toDp() }
                     val surfaceHeightDp = with(density) { surfaceHeight.toDp() }
 
-
                     if(worldDataList.isNotEmpty()){
                         worldDataList.forEach { data ->
                             val parts = data.split("@")
@@ -137,7 +136,8 @@ fun CommunityWorldCard(
                                         yFloat = parts[4].toFloat(),
                                         sizeFloat = parts[1].toFloat(),
                                         effect = parts[5].toInt(),
-                                        onClick = null
+                                        onClick = null,
+                                        isPlaying = false
                                     )
                                 }
 
@@ -152,6 +152,7 @@ fun CommunityWorldCard(
                                             xFloat = parts[3].toFloat(),
                                             yFloat = parts[4].toFloat(),
                                             sizeFloat = parts[1].toFloat(),
+                                            isPlaying = false
                                         )
                                     }
                             }
