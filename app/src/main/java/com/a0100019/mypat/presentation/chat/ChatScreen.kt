@@ -9,7 +9,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -44,10 +43,6 @@ import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.domain.AppBgmManager
-import com.a0100019.mypat.presentation.operator.CommunityAskViewDialog
-import com.a0100019.mypat.presentation.operator.CommunityAskWriteDialog
-import com.a0100019.mypat.presentation.operator.CommunityNoticeDialog
-import com.a0100019.mypat.presentation.operator.CommunityOperatorChatDialog
 import com.a0100019.mypat.presentation.community.CommunityUserDialog
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
 import com.a0100019.mypat.presentation.ui.component.MainButton
@@ -108,7 +103,8 @@ fun ChatScreen(
         onCloseClick = chatViewModel::onCloseClick,
         onTextChange2 = chatViewModel::onTextChange2,
         onTextChange3 = chatViewModel::onTextChange3,
-        onAskClick = chatViewModel::onAskClick
+        onAskClick = chatViewModel::onAskClick,
+        onPrivateChatStartClick = chatViewModel::onPrivateChatStartClick
 
     )
 }
@@ -147,6 +143,7 @@ fun CommunityScreen(
     onTextChange2: (String) -> Unit = {},
     onTextChange3: (String) -> Unit = {},
     onAskClick: (String) -> Unit = {},
+    onPrivateChatStartClick: () -> Unit = {},
 
     ) {
 
@@ -160,6 +157,13 @@ fun CommunityScreen(
             onTextChange = onChatTextChange,
             text = newChat,
             onConfirmClick = onAskSubmitClick,
+        )
+        "privateChat" -> SimpleAlertDialog(
+            onConfirm = {
+                onPrivateChatStartClick()
+            },
+            onDismiss = onCloseClick,
+            text = "개인 채팅을 시작하시겠습니까?"
         )
     }
 
@@ -178,7 +182,10 @@ fun CommunityScreen(
                 alertStateChange("-1")
             },
             allUserDataList = allUserDataList,
-            allMapCount = allAreaCount
+            allMapCount = allAreaCount,
+            onPrivateChatClick = {
+                onDialogChangeClick("privateChat")
+            }
         )
     } else {
         if (bgmOn) {
@@ -241,7 +248,6 @@ fun CommunityScreen(
                         modifier = Modifier.align(Alignment.CenterEnd)
                     )
                 }
-
 
                     Column(
                         modifier = Modifier
@@ -318,7 +324,10 @@ fun CommunityScreen(
                                                 modifier = Modifier
                                                     .fillMaxWidth()
                                                     .padding(12.dp)
-                                                    .background(Color(0xFFFFA8A8), RoundedCornerShape(12.dp)) // 파스텔 레드 배경
+                                                    .background(
+                                                        Color(0xFFFFA8A8),
+                                                        RoundedCornerShape(12.dp)
+                                                    ) // 파스텔 레드 배경
                                                     .padding(2.dp)
                                             ) {
 
@@ -326,7 +335,13 @@ fun CommunityScreen(
                                                 Box(
                                                     modifier = Modifier
                                                         .fillMaxWidth()
-                                                        .background(Color(0xFFFF6F6F), RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp))
+                                                        .background(
+                                                            Color(0xFFFF6F6F),
+                                                            RoundedCornerShape(
+                                                                topStart = 12.dp,
+                                                                topEnd = 12.dp
+                                                            )
+                                                        )
                                                         .padding(vertical = 6.dp),
                                                     contentAlignment = Alignment.Center
                                                 ) {
@@ -343,7 +358,13 @@ fun CommunityScreen(
                                                 Box(
                                                     modifier = Modifier
                                                         .fillMaxWidth()
-                                                        .background(Color.White, RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp))
+                                                        .background(
+                                                            Color.White,
+                                                            RoundedCornerShape(
+                                                                bottomStart = 12.dp,
+                                                                bottomEnd = 12.dp
+                                                            )
+                                                        )
                                                         .padding(12.dp),
                                                     contentAlignment = Alignment.Center
                                                 ) {
@@ -362,7 +383,10 @@ fun CommunityScreen(
                                                 modifier = Modifier
                                                     .fillMaxWidth()
                                                     .padding(12.dp)
-                                                    .background(Color(0xFFAED9FF), RoundedCornerShape(12.dp)) // 파스텔 파랑 테두리 느낌
+                                                    .background(
+                                                        Color(0xFFAED9FF),
+                                                        RoundedCornerShape(12.dp)
+                                                    ) // 파스텔 파랑 테두리 느낌
                                                     .padding(2.dp)
                                             ) {
 
@@ -370,7 +394,13 @@ fun CommunityScreen(
                                                 Box(
                                                     modifier = Modifier
                                                         .fillMaxWidth()
-                                                        .background(Color(0xFF7CC8FF), RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp))
+                                                        .background(
+                                                            Color(0xFF7CC8FF),
+                                                            RoundedCornerShape(
+                                                                topStart = 12.dp,
+                                                                topEnd = 12.dp
+                                                            )
+                                                        )
                                                         .padding(vertical = 6.dp),
                                                     contentAlignment = Alignment.Center
                                                 ) {
@@ -385,8 +415,19 @@ fun CommunityScreen(
                                                 Column(
                                                     modifier = Modifier
                                                         .fillMaxWidth()
-                                                        .background(Color.White, RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp))
-                                                        .padding(top = 12.dp, start = 12.dp, end = 12.dp, bottom = 3.dp),
+                                                        .background(
+                                                            Color.White,
+                                                            RoundedCornerShape(
+                                                                bottomStart = 12.dp,
+                                                                bottomEnd = 12.dp
+                                                            )
+                                                        )
+                                                        .padding(
+                                                            top = 12.dp,
+                                                            start = 12.dp,
+                                                            end = 12.dp,
+                                                            bottom = 3.dp
+                                                        ),
                                                 ) {
                                                     Text(
                                                         text = message.uid,
@@ -460,14 +501,21 @@ fun CommunityScreen(
                                                                 filePath = "etc/ban.png",
                                                                 modifier = Modifier
                                                                     .size(10.dp)
-                                                                    .clickable { alertStateChange(index.toString()) }
+                                                                    .clickable {
+                                                                        alertStateChange(
+                                                                            index.toString()
+                                                                        )
+                                                                    }
                                                             )
                                                         }
                                                     }
 
                                                     Box(
                                                         modifier = Modifier
-                                                            .background(bubbleColor, RoundedCornerShape(8.dp))
+                                                            .background(
+                                                                bubbleColor,
+                                                                RoundedCornerShape(8.dp)
+                                                            )
                                                             .padding(8.dp)
                                                     ) {
                                                         Text(text = message.message)
@@ -486,7 +534,7 @@ fun CommunityScreen(
                                 contentAlignment = Alignment.Center // 가로+세로 가운데 정렬
                             ) {
                                 Text(
-                                    text = "올해 첫 대화를 시작해보세요",
+                                    text = "첫 대화를 시작해보세요",
                                     textAlign = TextAlign.Center,
                                     modifier = Modifier
                                         .fillMaxWidth(1f)

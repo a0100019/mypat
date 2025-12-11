@@ -2,7 +2,6 @@ package com.a0100019.mypat.data.di
 
 import android.app.Application
 import android.content.Context
-import com.a0100019.mypat.data.usecase.CombineNumberUseCaseImpl
 import com.a0100019.mypat.domain.CombineNumberUseCase
 import dagger.Binds
 import dagger.Module
@@ -18,8 +17,5 @@ abstract class MainModule {
 
     @Binds
     abstract fun bindContext(application: Application): Context
-
-    @Binds
-    abstract fun bindCombineNumberUseCase(uc: CombineNumberUseCaseImpl): CombineNumberUseCase
 
 }

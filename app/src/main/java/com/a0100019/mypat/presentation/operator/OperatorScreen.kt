@@ -2,61 +2,34 @@ package com.a0100019.mypat.presentation.operator
 
 import android.content.Context
 import android.widget.Toast
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.allUser.AllUser
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.domain.AppBgmManager
-import com.a0100019.mypat.presentation.chat.CommunityAskDialog
 import com.a0100019.mypat.presentation.community.CommunityUserDialog
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
-import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import kotlin.math.abs
 
 @Composable
 fun OperatorScreen(
@@ -83,7 +56,7 @@ fun OperatorScreen(
         clickAllUserData = operatorState.clickAllUserData,
         clickAllUserWorldDataList = operatorState.clickAllUserWorldDataList,
         allUserRankDataList = operatorState.allUserRankDataList,
-        newChat = operatorState.newChat,
+        text1 = operatorState.text1,
         userDataList = operatorState.userDataList,
         alertState = operatorState.alertState,
         allAreaCount = operatorState.allAreaCount,
@@ -91,9 +64,11 @@ fun OperatorScreen(
         text2 = operatorState.text2,
         text3 = operatorState.text3,
         askMessages = operatorState.askMessages,
+        text4 = operatorState.text4,
+        text5 = operatorState.text5,
 
         onSituationChange = operatorViewModel::onSituationChange,
-        onChatTextChange = operatorViewModel::onChatTextChange,
+        onChatTextChange = operatorViewModel::onTextChange,
         onUserRankClick = operatorViewModel::onUserRankClick,
         alertStateChange = operatorViewModel::alertStateChange,
         popBackStack = popBackStack,
@@ -103,8 +78,11 @@ fun OperatorScreen(
         onCloseClick = operatorViewModel::onCloseClick,
         onTextChange2 = operatorViewModel::onTextChange2,
         onTextChange3 = operatorViewModel::onTextChange3,
+        onTextChange4 = operatorViewModel::onTextChange4,
+        onTextChange5 = operatorViewModel::onTextChange5,
         onOperatorChatSubmitClick = operatorViewModel::onOperatorChatSubmitClick,
-        onAskClick = operatorViewModel::onAskClick
+        onAskClick = operatorViewModel::onAskClick,
+        onLetterSubmitClick = operatorViewModel::onOperatorLetterSubmitClick
 
     )
 }
@@ -120,13 +98,15 @@ fun CommunityScreen(
     clickAllUserWorldDataList: List<String> = emptyList(),
     allUserRankDataList: List<AllUser> = listOf(AllUser(), AllUser()),
     askMessages: List<OperatorMessage> = emptyList(),
-    newChat: String = "",
+    text1: String = "",
     userDataList: List<User> = emptyList(),
     alertState: String = "",
     allAreaCount: String = "0",
     dialogState: String = "",
     text2: String = "",
     text3: String = "",
+    text4: String = "",
+    text5: String = "",
 
     onPageUpClick: () -> Unit = {},
     onSituationChange: (String) -> Unit = {},
@@ -140,8 +120,11 @@ fun CommunityScreen(
     onCloseClick: () -> Unit = {},
     onTextChange2: (String) -> Unit = {},
     onTextChange3: (String) -> Unit = {},
+    onTextChange4: (String) -> Unit = {},
+    onTextChange5: (String) -> Unit = {},
     onOperatorChatSubmitClick: () -> Unit = {},
     onAskClick: (String) -> Unit = {},
+    onLetterSubmitClick: () -> Unit = {}
 
     ) {
 
@@ -150,35 +133,48 @@ fun CommunityScreen(
     val bgmOn = prefs.getBoolean("bgmOn", true)
 
     when(dialogState) {
-        "askView" -> CommunityAskViewDialog(
+        "askView" -> OperatorAskViewDialog(
             onClose = onCloseClick,
             onAskClick = onAskClick,
             askMessages = askMessages
         )
-        "askWrite" -> CommunityAskWriteDialog(
+        "askWrite" -> OperatorAskWriteDialog(
             onClose = onCloseClick,
             onTextChange = onChatTextChange,
-            text = newChat,
+            text = text1,
             onConfirmClick = onAskChatWrite,
         )
-        "notice" -> CommunityNoticeDialog(
+        "notice" -> OperatorNoticeDialog(
             onClose = onCloseClick,
             onTextChange = onChatTextChange,
-            text = newChat,
+            text = text1,
             onConfirmClick = onNoticeChatWrite,
         )
-        "operatorChat" -> CommunityOperatorChatDialog(
+        "operatorChat" -> OperatorChatDialog(
             onClose = onCloseClick,
             onTextChange = onChatTextChange,
             onTextChange2 = onTextChange2,
             onTextChange3 = onTextChange3,
             text2 = text2,
             text3 = text3,
-            text = newChat,
-            onConfirmClick = {},
+            text = text1,
             onOperatorChatSubmitClick = onOperatorChatSubmitClick
-
         )
+        "letter" -> OperatorLetterDialog(
+            onClose = onCloseClick,
+            onTextChange = onChatTextChange,
+            onTextChange2 = onTextChange2,
+            onTextChange3 = onTextChange3,
+            onTextChange4 = onTextChange4,
+            onTextChange5 = onTextChange5,
+            text2 = text2,
+            text3 = text3,
+            text4 = text4,
+            text5 = text5,
+            text = text1,
+            onConfirmClick = onLetterSubmitClick
+        )
+
     }
 
     if(clickAllUserData.tag != "0") {
@@ -252,6 +248,11 @@ fun CommunityScreen(
                     MainButton(
                         text = "채팅",
                         onClick = { onDialogChangeClick("operatorChat") },
+                        modifier = Modifier
+                    )
+                    MainButton(
+                        text = "편지",
+                        onClick = { onDialogChangeClick("letter") },
                         modifier = Modifier
                     )
                 }

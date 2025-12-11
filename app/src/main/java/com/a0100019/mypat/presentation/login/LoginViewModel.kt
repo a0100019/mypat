@@ -27,6 +27,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.firestore
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -645,6 +646,8 @@ class LoginViewModel @Inject constructor(
             //allUser 가져오기
             val db = Firebase.firestore
             db.collection("users")
+                .orderBy("lastLogin", Query.Direction.DESCENDING) // 최신순 정렬
+                .limit(1000) // 최대 1000개만 가져오기
                 .get()
                 .addOnSuccessListener { result ->
                     for (doc in result) {

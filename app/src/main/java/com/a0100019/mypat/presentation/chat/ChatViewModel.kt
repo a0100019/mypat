@@ -69,7 +69,7 @@ class ChatViewModel @Inject constructor(
         val patDataList = patDao.getAllPatData()
         val itemDataList = itemDao.getAllItemDataWithShadow()
         var allUserDataList = allUserDao.getAllUserDataNoBan()
-        allUserDataList = allUserDataList.filter { it.totalDate != "1" && it.totalDate != "0" }
+//        allUserDataList = allUserDataList.filter { it.totalDate != "1" && it.totalDate != "0" }
 
         val allAreaCount = areaDao.getAllAreaData().size.toString()
 
@@ -170,7 +170,6 @@ class ChatViewModel @Inject constructor(
             )
         }
     }
-
 
     fun onAskClick(message: String) = intent {
         reduce {
@@ -658,6 +657,80 @@ class ChatViewModel @Inject constructor(
             postSideEffect(ChatSideEffect.Toast("좋아요는 내일부터 누를 수 있습니다"))
         }
     }
+
+    fun onPrivateChatStartClick() = intent {
+        val myTag = state.userDataList.find { it.id == "auth" }!!.value2
+        val yourTag = state.clickAllUserData.tag
+
+        val myNum = myTag.toLongOrNull() ?: 0L
+        val yourNum = yourTag.toLongOrNull() ?: 0L
+
+        // 🔻 작은 숫자가 앞으로 오도록
+        val docId = if (myNum < yourNum) "${myTag}_${yourTag}" else "${yourTag}_${myTag}"
+
+        val docRef = Firebase.firestore
+            .collection("chatting")
+            .document("privateChat")
+            .collection("privateChat")
+            .document(docId)
+
+        // 🔍 문서 존재 여부 확인
+        docRef.get()
+            .addOnSuccessListener { snapshot ->
+                if (snapshot.exists()) {
+                    // 🔥 이미 방이 존재
+                    viewModelScope.launch {
+                        intent {
+                            postSideEffect(ChatSideEffect.Toast("이미 채팅방이 존재합니다."))
+                        }
+                    }
+                    return@addOnSuccessListener
+                }
+
+                // 📌 participants 배열 생성
+                val u1 = if (myNum < yourNum) myTag else yourTag
+                val u2 = if (myNum < yourNum) yourTag else myTag
+
+                // 📌 방 생성 데이터
+                val chatInitData = mapOf(
+                    "user1" to u1,
+                    "user2" to u2,
+                    "participants" to listOf(u1, u2),   // ⬅⬅⬅ 핵심 추가!
+                    "createdAt" to System.currentTimeMillis(),
+                    "last1" to System.currentTimeMillis(),
+                    "last2" to System.currentTimeMillis(),
+                    "lastMessage" to "",
+                    "name1" to state.userDataList.find { it.id == "name" }!!.value,
+                    "name2" to state.clickAllUserData.name,
+                    "createUser" to state.userDataList.find { it.id == "auth" }!!.value
+                )
+
+                // 문서 생성
+                docRef.set(chatInitData)
+                    .addOnSuccessListener {
+                        viewModelScope.launch {
+                            intent {
+                                postSideEffect(ChatSideEffect.Toast("채팅방 생성 완료!"))
+                            }
+                        }
+                    }
+                    .addOnFailureListener {
+                        viewModelScope.launch {
+                            intent {
+                                postSideEffect(ChatSideEffect.Toast("채팅방 생성 실패"))
+                            }
+                        }
+                    }
+            }
+            .addOnFailureListener {
+                viewModelScope.launch {
+                    intent {
+                        postSideEffect(ChatSideEffect.Toast("오류 발생"))
+                    }
+                }
+            }
+    }
+
 
 }
 

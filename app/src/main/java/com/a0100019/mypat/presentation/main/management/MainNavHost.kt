@@ -1,18 +1,13 @@
 package com.a0100019.mypat.presentation.main.management
 
-import android.net.Uri
 import androidx.compose.runtime.Composable
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import com.a0100019.mypat.presentation.chat.ChatScreen
 import com.a0100019.mypat.presentation.community.CommunityScreen
 import com.a0100019.mypat.presentation.daily.DailyScreen
 import com.a0100019.mypat.presentation.daily.diary.DiaryScreen
-import com.a0100019.mypat.presentation.daily.diary.DiaryViewModel
 import com.a0100019.mypat.presentation.daily.diary.DiaryWriteScreen
 import com.a0100019.mypat.presentation.daily.english.EnglishScreen
 import com.a0100019.mypat.presentation.daily.korean.KoreanScreen
@@ -28,6 +23,8 @@ import com.a0100019.mypat.presentation.setting.SettingScreen
 import com.a0100019.mypat.presentation.store.StoreScreen
 import com.a0100019.mypat.presentation.main.world.WorldScreen
 import com.a0100019.mypat.presentation.operator.OperatorScreen
+import com.a0100019.mypat.presentation.privateChat.PrivateChatInScreen
+import com.a0100019.mypat.presentation.privateChat.PrivateRoomScreen
 
 @Composable
 fun MainNavHost() {
@@ -78,6 +75,9 @@ fun MainNavHost() {
                 },
                 onOperatorNavigateClick = {
                     navController.navigate(route = MainRoute.OperatorScreen.name)
+                },
+                onPrivateRoomNavigateClick = {
+                    navController.navigate(route = MainRoute.PrivateRoomScreen.name)
                 }
 
             )
@@ -215,6 +215,22 @@ fun MainNavHost() {
 
         composable(route = MainRoute.OperatorScreen.name) {
             OperatorScreen(
+                popBackStack = { navController.popBackStack() }
+            )
+        }
+
+
+        composable(route = MainRoute.PrivateRoomScreen.name) {
+            PrivateRoomScreen(
+                popBackStack = { navController.popBackStack() },
+                onNavigateToPrivateChatInScreen = {
+                    navController.navigate(route = MainRoute.PrivateChatInScreen.name)
+                }
+            )
+        }
+
+        composable(route = MainRoute.PrivateChatInScreen.name) {
+            PrivateChatInScreen(
                 popBackStack = { navController.popBackStack() }
             )
         }

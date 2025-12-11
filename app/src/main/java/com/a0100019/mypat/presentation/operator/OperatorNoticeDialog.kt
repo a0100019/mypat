@@ -25,7 +25,7 @@ import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
 @Composable
-fun CommunityNoticeDialog(
+fun OperatorNoticeDialog(
     onClose: () -> Unit = {},
     onTextChange: (String) -> Unit = {},
     text: String = "",
@@ -104,9 +104,9 @@ fun CommunityNoticeDialog(
 
 @Preview(showBackground = true)
 @Composable
-fun CommunityNoticeDialogPreview() {
+fun OperatorNoticeDialogPreview() {
     MypatTheme {
-        CommunityNoticeDialog(
+        OperatorNoticeDialog(
             onClose = {},
             onTextChange = {},
             onConfirmClick = {},

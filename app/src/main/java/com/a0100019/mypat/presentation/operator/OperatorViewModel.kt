@@ -14,7 +14,6 @@ import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.world.WorldDao
 import com.google.firebase.Firebase
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.firestore
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -87,9 +86,11 @@ class OperatorViewModel @Inject constructor(
         reduce {
             state.copy(
                 dialogState = "",
-                newChat = "",
+                text1 = "",
                 text2 = "",
-                text3 = ""
+                text3 = "",
+                text4 = "",
+                text5 = "",
             )
         }
     }
@@ -109,7 +110,7 @@ class OperatorViewModel @Inject constructor(
     }
 
     fun onNoticeChatWrite() = intent {
-        val currentMessage = state.newChat.trim()
+        val currentMessage = state.text1.trim()
         val userName = state.userDataList.find { it.id == "name" }!!.value // 또는 상태에서 유저 이름을 가져올 수 있다면 사용
         val userId = state.userDataList.find { it.id == "auth" }!!.value
         val userTag = state.userDataList.find { it.id == "auth" }!!.value2
@@ -141,7 +142,7 @@ class OperatorViewModel @Inject constructor(
         // 입력 필드 초기화
         reduce {
             state.copy(
-                newChat = "",
+                text1 = "",
                 dialogState = ""
             )
         }
@@ -150,14 +151,14 @@ class OperatorViewModel @Inject constructor(
     fun onAskClick(message: String) = intent {
         reduce {
             state.copy(
-                newChat = message,
+                text1 = message,
                 dialogState = "askWrite"
             )
         }
     }
 
     fun onAskChatWrite() = intent {
-        val currentMessage = state.newChat.trim()
+        val currentMessage = state.text1.trim()
         val userName = state.userDataList.find { it.id == "name" }!!.value // 또는 상태에서 유저 이름을 가져올 수 있다면 사용
         val userId = state.userDataList.find { it.id == "auth" }!!.value
         val userTag = state.userDataList.find { it.id == "auth" }!!.value2
@@ -189,7 +190,7 @@ class OperatorViewModel @Inject constructor(
         // 입력 필드 초기화
         reduce {
             state.copy(
-                newChat = "",
+                text1 = "",
                 dialogState = ""
             )
         }
@@ -217,7 +218,6 @@ class OperatorViewModel @Inject constructor(
             }
         }
     }
-
 
     private fun loadAskMessages() {
         Firebase.firestore.collection("ask")
@@ -276,7 +276,7 @@ class OperatorViewModel @Inject constructor(
     }
 
     fun onOperatorChatSubmitClick() = intent {
-        val currentMessage = state.newChat.trim()
+        val currentMessage = state.text1.trim()
         val userName = state.userDataList.find { it.id == "name" }!!.value // 또는 상태에서 유저 이름을 가져올 수 있다면 사용
         val userId = state.userDataList.find { it.id == "auth" }!!.value
         val userTag = state.userDataList.find { it.id == "auth" }!!.value2
@@ -288,7 +288,7 @@ class OperatorViewModel @Inject constructor(
         val todayDocId = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date())
 
         val chatData = mapOf(
-            "message" to state.newChat,
+            "message" to state.text1,
             "name" to state.text2,
             "ban" to userBan,
             "tag" to state.text3,
@@ -308,13 +308,55 @@ class OperatorViewModel @Inject constructor(
         onCloseClick()
     }
 
+    fun onOperatorLetterSubmitClick() = intent {
+
+        val currentDate =
+            LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+
+        val letterData = mapOf(
+            "message" to state.text1,
+            "title" to state.text2,
+            "reward" to state.text4,
+            "amount" to state.text5,
+            "date" to currentDate,
+            "link" to "0",
+            "state" to "open"
+        )
+
+        // ✅ 필드명: "90" + state.tag
+        val fieldKey = "90${state.text3}"
+
+        Firebase.firestore
+            .collection("code")
+            .document("letter")
+            .set(
+                mapOf(fieldKey to letterData), // ✅ { "90abc" : { ... } }
+                SetOptions.merge()              // ✅ 기존 필드 유지
+            )
+            .addOnSuccessListener {
+                viewModelScope.launch {
+                    intent {
+                        postSideEffect(OperatorSideEffect.Toast("편지 전송 성공"))
+                    }
+                }
+                onCloseClick()
+            }
+            .addOnFailureListener {
+                viewModelScope.launch {
+                    intent {
+                        postSideEffect(OperatorSideEffect.Toast("편지 전송 실패"))
+                    }
+                }
+            }
+    }
+
     //입력 가능하게 하는 코드
     @OptIn(OrbitExperimental::class)
-    fun onChatTextChange(chatText: String) = blockingIntent {
+    fun onTextChange(text1: String) = blockingIntent {
 
 //        if (chatText.length <= 50) {
         reduce {
-            state.copy(newChat = chatText)
+            state.copy(text1 = text1)
         }
 //        }
     }
@@ -341,6 +383,28 @@ class OperatorViewModel @Inject constructor(
 //        }
     }
 
+    //입력 가능하게 하는 코드
+    @OptIn(OrbitExperimental::class)
+    fun onTextChange4(text4: String) = blockingIntent {
+
+//        if (chatText.length <= 50) {
+        reduce {
+            state.copy(text4 = text4)
+        }
+//        }
+    }
+
+    //입력 가능하게 하는 코드
+    @OptIn(OrbitExperimental::class)
+    fun onTextChange5(text5: String) = blockingIntent {
+
+//        if (chatText.length <= 50) {
+        reduce {
+            state.copy(text5 = text5)
+        }
+//        }
+    }
+
     fun alertStateChange(alertState: String) = intent {
         reduce {
             state.copy(
@@ -361,12 +425,14 @@ data class OperatorState(
     val clickAllUserData: AllUser = AllUser(),
     val clickAllUserWorldDataList: List<String> = emptyList(),
     val allUserRankDataList: List<AllUser> = emptyList(),
-    val newChat: String = "",
+    val text1: String = "",
     val alertState: String = "",
     val allAreaCount: String = "",
     val dialogState: String = "",
     val text2: String = "",
     val text3: String = "",
+    val text4: String = "",
+    val text5: String = "",
     val askMessages: List<OperatorMessage> = emptyList()
 )
 

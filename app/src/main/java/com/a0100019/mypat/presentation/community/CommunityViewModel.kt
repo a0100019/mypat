@@ -15,6 +15,7 @@ import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.world.WorldDao
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.firestore
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -160,6 +161,8 @@ class CommunityViewModel @Inject constructor(
 
         val db = Firebase.firestore
         db.collection("users")
+            .orderBy("lastLogin", Query.Direction.DESCENDING) // 최신순 정렬
+            .limit(1000) // 최대 1000개만 가져오기
             .get()
             .addOnSuccessListener { result ->
                 for (doc in result) {

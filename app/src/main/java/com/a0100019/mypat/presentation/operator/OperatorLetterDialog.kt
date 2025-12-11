@@ -25,16 +25,19 @@ import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
 @Composable
-fun CommunityOperatorChatDialog(
+fun OperatorLetterDialog(
     onClose: () -> Unit = {},
     onTextChange: (String) -> Unit = {},
     onTextChange2: (String) -> Unit = {},
     onTextChange3: (String) -> Unit = {},
+    onTextChange4: (String) -> Unit = {},
+    onTextChange5: (String) -> Unit = {},
     text: String = "",
     text2: String = "",
     text3: String = "",
+    text4: String = "",
+    text5: String = "",
     onConfirmClick: () -> Unit = {},
-    onOperatorChatSubmitClick: () -> Unit = {}
 
 ) {
 
@@ -65,7 +68,7 @@ fun CommunityOperatorChatDialog(
             ) {
 
                 Text(
-                    text = "채팅 작성",
+                    text = "편지 작성",
                     style = MaterialTheme.typography.headlineSmall,
                     modifier = Modifier.padding(10.dp),
                 )
@@ -73,10 +76,10 @@ fun CommunityOperatorChatDialog(
                 OutlinedTextField(
                     value = text2,
                     onValueChange = onTextChange2,
-                    label = { Text("이름") },
+                    label = { Text("제목") },
                     placeholder = { Text(
                         textAlign = TextAlign.Center,
-                        text = "이름") },
+                        text = "제목") },
                     shape = RoundedCornerShape(8.dp), // 테두리를 둥글게
                     modifier = Modifier
                         .fillMaxWidth()
@@ -90,6 +93,32 @@ fun CommunityOperatorChatDialog(
                     placeholder = { Text(
                         textAlign = TextAlign.Center,
                         text = "태그") },
+                    shape = RoundedCornerShape(8.dp), // 테두리를 둥글게
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                )
+
+                OutlinedTextField(
+                    value = text4,
+                    onValueChange = onTextChange4,
+                    label = { Text("보상종류") },
+                    placeholder = { Text(
+                        textAlign = TextAlign.Center,
+                        text = "money햇살, cash달빛") },
+                    shape = RoundedCornerShape(8.dp), // 테두리를 둥글게
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                )
+
+                OutlinedTextField(
+                    value = text5,
+                    onValueChange = onTextChange5,
+                    label = { Text("양") },
+                    placeholder = { Text(
+                        textAlign = TextAlign.Center,
+                        text = "양") },
                     shape = RoundedCornerShape(8.dp), // 테두리를 둥글게
                     modifier = Modifier
                         .fillMaxWidth()
@@ -122,12 +151,11 @@ fun CommunityOperatorChatDialog(
 
                     MainButton(
                         text = " 전송 ",
-                        onClick = onOperatorChatSubmitClick,
+                        onClick = onConfirmClick,
                         modifier = Modifier
                             .padding(16.dp)
                     )
                 }
-
             }
         }
     }
@@ -135,9 +163,9 @@ fun CommunityOperatorChatDialog(
 
 @Preview(showBackground = true)
 @Composable
-fun CommunityOperatorChatDialogPreview() {
+fun OperatorLetterDialogPreview() {
     MypatTheme {
-        CommunityOperatorChatDialog(
+        OperatorLetterDialog(
             onClose = {},
             onTextChange = {},
             onConfirmClick = {},

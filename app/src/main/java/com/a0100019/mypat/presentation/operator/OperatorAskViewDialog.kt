@@ -26,7 +26,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.a0100019.mypat.presentation.chat.ChatMessage
 import com.a0100019.mypat.presentation.chat.getPastelColorForTag
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
@@ -35,7 +34,7 @@ import java.util.Date
 import java.util.Locale
 
 @Composable
-fun CommunityAskViewDialog(
+fun OperatorAskViewDialog(
     onClose: () -> Unit = {},
     askMessages: List<OperatorMessage> = emptyList(),
     onAskClick: (String) -> Unit = {},
@@ -190,9 +189,9 @@ fun CommunityAskViewDialog(
 
 @Preview(showBackground = true)
 @Composable
-fun CommunityAskViewDialogPreview() {
+fun OperatorAskViewDialogPreview() {
     MypatTheme {
-        CommunityAskViewDialog(
+        OperatorAskViewDialog(
             onClose = {},
             onAskClick = {},
             askMessages = listOf(OperatorMessage(10202020, "a", "a", tag = "1", ban = "0", uid = "hello"))

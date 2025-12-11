@@ -3,7 +3,9 @@ package com.a0100019.mypat.presentation.loading
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -14,6 +16,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.a0100019.mypat.presentation.ui.component.MainButton
+import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
 import com.a0100019.mypat.presentation.ui.image.etc.KoreanIdiomImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
@@ -41,27 +45,24 @@ fun LoadingScreen(
     )
 }
 
-
-
 @Composable
 fun LoadingScreen(
     value : String
 ) {
-    // Fullscreen container
-    Box(
+    Surface(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White), // Optional: Set background color
-        contentAlignment = Alignment.Center // Center content
     ) {
-        // Text in the center
-        Text(
-            text = "로딩 중",
-            fontSize = 32.sp, // Large font size
-            fontWeight = FontWeight.Bold, // Bold text
-            color = Color.Black // Text color
-        )
-        KoreanIdiomImage("koreanIdiomImage/jukmagow1.jpg")
+
+        BackGroundImage()
+
+        Row {
+            MainButton(
+                onClick = {  },
+                text = "닫기"
+            )
+        }
+
     }
 }
 

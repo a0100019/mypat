@@ -70,6 +70,7 @@ fun MainScreen(
     onThirdGameNavigateClick: () -> Unit,
     onChatNavigateClick: () -> Unit,
     onOperatorNavigateClick: () -> Unit,
+    onPrivateRoomNavigateClick: () -> Unit,
 
     ) {
 
@@ -102,6 +103,7 @@ fun MainScreen(
         onWorldNavigateClick = onWorldNavigateClick,
         onChatNavigateClick = onChatNavigateClick,
         onOperatorNavigateClick = onOperatorNavigateClick,
+        onPrivateRoomNavigateClick = onPrivateRoomNavigateClick,
 
         onLetterReadClick = mainViewModel::onLetterReadClick,
         onLetterLinkClick = mainViewModel::onLetterLinkClick,
@@ -150,6 +152,7 @@ fun MainScreen(
     onThirdGameNavigateClick: () -> Unit,
     onChatNavigateClick: () -> Unit = {},
     onOperatorNavigateClick: () -> Unit = {},
+    onPrivateRoomNavigateClick: () -> Unit = {},
 
     dialogPatIdChange: (String) -> Unit,
     onLetterReadClick: () -> Unit = {},
@@ -408,15 +411,19 @@ fun MainScreen(
                         )
                     }
                     MainButton(
+                        text = "개인 채팅",
+                        onClick = onPrivateRoomNavigateClick
+                    )
+                    MainButton(
                         text = "채팅",
                         onClick = onChatNavigateClick
                     )
                     MainButton(
-                        text = "이웃 마을",
+                        text = "이웃",
                         onClick = onCommunityNavigateClick
                     )
                     MainButton(
-                        text = "꾸미기 모드",
+                        text = "꾸미기",
                         onClick = onWorldNavigateClick
                     )
                 }

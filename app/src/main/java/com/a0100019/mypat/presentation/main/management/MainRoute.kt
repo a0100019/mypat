@@ -26,7 +26,6 @@ sealed class MainRoute(
     object SecondGameScreen : MainRoute("SecondGameScreen")
     object ThirdGameScreen : MainRoute("ThirdGameScreen")
 
-
     object DiaryScreen : MainRoute("DiaryScreen")
     object DiaryWriteScreen : MainRoute("DiaryWriteScreen")
 
@@ -39,4 +38,8 @@ sealed class MainRoute(
     object ChatScreen : MainRoute("ChatScreen")
 
     object OperatorScreen : MainRoute("OperatorScreen")
+
+    object PrivateRoomScreen : MainRoute("PrivateRoomScreen")
+    object PrivateChatInScreen : MainRoute("PrivateChatInScreen")
+
 }

@@ -24,6 +24,9 @@ data class AllUser(
     val openArea: String = "0",
     val totalDate: String = "0",
     val worldData: String = "0",  // "id@size@type@x@y/id@size@type@x@y"
-
+//
+//    val uid: String = "0",
+//    val medal: String = "0",
+//    val doran: String = "0",
+//
 )
-

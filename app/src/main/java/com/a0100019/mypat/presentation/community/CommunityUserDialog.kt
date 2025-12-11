@@ -51,7 +51,8 @@ fun CommunityUserDialog(
     onLikeClick: () -> Unit = {},
     onBanClick: () -> Unit = {},
     allUserDataList: List<AllUser> = emptyList(),
-    allMapCount: String = "0"
+    allMapCount: String = "0",
+    onPrivateChatClick: () -> Unit = {}
 ) {
 
     MusicPlayer(
@@ -489,6 +490,11 @@ fun CommunityUserDialog(
                     MainButton(
                         text = "좋아요 누르기",
                         onClick = onLikeClick
+                    )
+
+                    MainButton(
+                        text = "1대1 채팅하기",
+                        onClick = onPrivateChatClick
                     )
 
                     MainButton(
