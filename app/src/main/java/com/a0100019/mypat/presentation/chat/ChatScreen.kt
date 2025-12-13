@@ -458,70 +458,84 @@ fun CommunityScreen(
                                         }
                                         else -> {
                                             // 일반 채팅
-                                            Row(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .padding(bottom = 6.dp),
-                                                horizontalArrangement = alignment
-                                            ) {
-                                                Column(
+                                            if(message.ban == "0" || message.tag == userDataList.find { it.id == "auth" }!!.value2){
+                                                Row(
                                                     modifier = Modifier
-                                                        .widthIn(max = 280.dp)
-                                                        .padding(horizontal = 8.dp),
-                                                    horizontalAlignment = if (isMine) Alignment.End else Alignment.Start
+                                                        .fillMaxWidth()
+                                                        .padding(bottom = 6.dp),
+                                                    horizontalArrangement = alignment
                                                 ) {
-                                                    Row {
-                                                        Row(
-                                                            modifier = Modifier.clickable {
-                                                                onUserRankClick(message.tag.toInt())
-                                                            }
-                                                        ) {
-                                                            Text(
-                                                                text = message.name,
-                                                                style = MaterialTheme.typography.labelSmall,
-                                                                modifier = Modifier.padding(start = 4.dp, bottom = 2.dp)
-                                                            )
-                                                            Text(
-                                                                text = "#" + message.tag,
-                                                                style = MaterialTheme.typography.labelSmall,
-                                                                modifier = Modifier.padding(start = 4.dp, bottom = 2.dp)
-                                                            )
-                                                        }
-
-                                                        val time = remember(message.timestamp) {
-                                                            SimpleDateFormat("MM/dd HH:mm", Locale.getDefault())
-                                                                .format(Date(message.timestamp))
-                                                        }
-
-                                                        Text(
-                                                            text = time,
-                                                            style = MaterialTheme.typography.labelSmall,
-                                                            modifier = Modifier.padding(start = 4.dp, bottom = 2.dp)
-                                                        )
-
-                                                        if (!isMine) {
-                                                            JustImage(
-                                                                filePath = "etc/ban.png",
-                                                                modifier = Modifier
-                                                                    .size(10.dp)
-                                                                    .clickable {
-                                                                        alertStateChange(
-                                                                            index.toString()
-                                                                        )
-                                                                    }
-                                                            )
-                                                        }
-                                                    }
-
-                                                    Box(
+                                                    Column(
                                                         modifier = Modifier
-                                                            .background(
-                                                                bubbleColor,
-                                                                RoundedCornerShape(8.dp)
-                                                            )
-                                                            .padding(8.dp)
+                                                            .widthIn(max = 280.dp)
+                                                            .padding(horizontal = 8.dp),
+                                                        horizontalAlignment = if (isMine) Alignment.End else Alignment.Start
                                                     ) {
-                                                        Text(text = message.message)
+                                                        Row {
+                                                            Row(
+                                                                modifier = Modifier.clickable {
+                                                                    onUserRankClick(message.tag.toInt())
+                                                                }
+                                                            ) {
+                                                                Text(
+                                                                    text = message.name,
+                                                                    style = MaterialTheme.typography.labelSmall,
+                                                                    modifier = Modifier.padding(
+                                                                        start = 4.dp,
+                                                                        bottom = 2.dp
+                                                                    )
+                                                                )
+                                                                Text(
+                                                                    text = "#" + message.tag,
+                                                                    style = MaterialTheme.typography.labelSmall,
+                                                                    modifier = Modifier.padding(
+                                                                        start = 4.dp,
+                                                                        bottom = 2.dp
+                                                                    )
+                                                                )
+                                                            }
+
+                                                            val time = remember(message.timestamp) {
+                                                                SimpleDateFormat(
+                                                                    "MM/dd HH:mm",
+                                                                    Locale.getDefault()
+                                                                )
+                                                                    .format(Date(message.timestamp))
+                                                            }
+
+                                                            Text(
+                                                                text = time,
+                                                                style = MaterialTheme.typography.labelSmall,
+                                                                modifier = Modifier.padding(
+                                                                    start = 4.dp,
+                                                                    bottom = 2.dp
+                                                                )
+                                                            )
+
+                                                            if (!isMine) {
+                                                                JustImage(
+                                                                    filePath = "etc/ban.png",
+                                                                    modifier = Modifier
+                                                                        .size(10.dp)
+                                                                        .clickable {
+                                                                            alertStateChange(
+                                                                                index.toString()
+                                                                            )
+                                                                        }
+                                                                )
+                                                            }
+                                                        }
+
+                                                        Box(
+                                                            modifier = Modifier
+                                                                .background(
+                                                                    bubbleColor,
+                                                                    RoundedCornerShape(8.dp)
+                                                                )
+                                                                .padding(8.dp)
+                                                        ) {
+                                                            Text(text = message.message)
+                                                        }
                                                     }
                                                 }
                                             }

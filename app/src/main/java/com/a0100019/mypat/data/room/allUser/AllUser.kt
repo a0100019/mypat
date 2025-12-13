@@ -10,7 +10,7 @@ data class AllUser(
     val lastLogin: Long = 0,
     val ban: String = "0",
     var like: String = "0",
-    val warning: String = "0",
+    val warning: String = "0", // 인삿말, 칭호로 사용 "안녕하세요/1/3/1/3/5/12/51/13"
     val firstDate: String = "0",
     val firstGame: String = "0",
     val secondGame: String = "0",
@@ -24,9 +24,8 @@ data class AllUser(
     val openArea: String = "0",
     val totalDate: String = "0",
     val worldData: String = "0",  // "id@size@type@x@y/id@size@type@x@y"
-//
+
 //    val uid: String = "0",
 //    val medal: String = "0",
 //    val doran: String = "0",
-//
 )

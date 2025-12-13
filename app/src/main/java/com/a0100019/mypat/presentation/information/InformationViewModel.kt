@@ -12,10 +12,13 @@ import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.data.room.world.WorldDao
+import com.a0100019.mypat.presentation.chat.ChatSideEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
+import org.orbitmvi.orbit.annotation.OrbitExperimental
+import org.orbitmvi.orbit.syntax.simple.blockingIntent
 import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
@@ -133,10 +136,42 @@ class InformationViewModel @Inject constructor(
 
     }
 
+    //입력 가능하게 하는 코드
+    @OptIn(OrbitExperimental::class)
+    fun onTextChange(text: String) = blockingIntent {
+
+        reduce {
+            state.copy(text = text)
+        }
+
+    }
+
+    fun onSituationChange(newSituation: String) = intent {
+        reduce {
+            state.copy(
+                situation = newSituation,
+            )
+        }
+    }
+
+    fun onClose() = intent {
+        reduce {
+            state.copy(
+                situation = "",
+                text = ""
+            )
+        }
+    }
+
+    fun onIntroductionChangeClick() = intent {
+        userDao.update(id = "etc", value = state.text)
+
+        postSideEffect(InformationSideEffect.Toast("인삿말을 변경하였습니다."))
+
+        onClose()
+    }
+
 }
-
-
-
 
 @Immutable
 data class InformationState(
@@ -151,6 +186,8 @@ data class InformationState(
     val gameRankList: List<String> = listOf("-", "-", "-", "-", "-"),
 
     val areaData: World? = null,
+    val text: String = "",
+    val situation: String = ""
 
     )
 

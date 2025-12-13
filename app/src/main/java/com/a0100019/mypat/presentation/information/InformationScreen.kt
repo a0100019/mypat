@@ -4,34 +4,38 @@ import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -76,7 +80,14 @@ fun InformationScreen(
         userDataList = informationState.userData,
         gameRankList = informationState.gameRankList,
         worldDataList = informationState.worldDataList,
-        popBackStack = popBackStack
+        text = informationState.text,
+        situation = informationState.situation,
+
+        popBackStack = popBackStack,
+        onTextChange = informationViewModel::onTextChange,
+        onSituationChange = informationViewModel::onSituationChange,
+        onClose = informationViewModel::onClose,
+        onIntroductionChangeClick = informationViewModel::onIntroductionChangeClick
 
         )
 }
@@ -92,10 +103,32 @@ fun InformationScreen(
     worldDataList : List<World> = emptyList(),
     userDataList: List<User>,
     gameRankList: List<String> = listOf("-", "-", "-", "-", "-"),
+    text: String = "",
+    situation: String = "",
 
     popBackStack: () -> Unit = {},
+    onTextChange: (String) -> Unit = {},
+    onSituationChange: (String) -> Unit = {},
+    onClose: () -> Unit = {},
+    onIntroductionChangeClick: () -> Unit = {}
 
     ) {
+
+    var page by remember { mutableIntStateOf(1) }
+
+    when(situation) {
+        "medal" -> {
+
+        }
+        "introduction" -> {
+            IntroductionChangeDialog(
+                onClose = onClose,
+                onTextChange = onTextChange,
+                text = text,
+                onConfirmClick = onIntroductionChangeClick
+            )
+        }
+    }
 
     Surface (
         modifier = Modifier
@@ -148,339 +181,496 @@ fun InformationScreen(
                 )
             }
 
-            // 미니맵 뷰
-            Surface(
-                modifier = Modifier
-                    .aspectRatio(1f / 1.25f)
-                ,
-                shape = RoundedCornerShape(16.dp),
-                color = Color(0xFFFFF8E7),
-                border = BorderStroke(2.dp, MaterialTheme.colorScheme.primaryContainer),
-            ) {
-                Box(
+            if(page == 0) {
+                Text(
+                    text = "칭호"
+                )
+
+                // 미니맵 뷰
+                Surface(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.White), // Optional: Set background color
-                    contentAlignment = Alignment.Center // Center content
+                        .aspectRatio(1f / 1.25f),
+                    shape = RoundedCornerShape(16.dp),
+                    color = Color(0xFFFFF8E7),
+                    border = BorderStroke(2.dp, MaterialTheme.colorScheme.primaryContainer),
                 ) {
-                    JustImage(
-                        filePath = areaUrl,
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.FillBounds
-                    )
-
-                    BoxWithConstraints(
-                        modifier = Modifier.fillMaxSize()
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.White), // Optional: Set background color
+                        contentAlignment = Alignment.Center // Center content
                     ) {
-                        val density = LocalDensity.current
+                        JustImage(
+                            filePath = areaUrl,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.FillBounds
+                        )
 
-                        // Surface 크기 가져오기 (px → dp 변환)
-                        val surfaceWidth = constraints.maxWidth
-                        val surfaceHeight = constraints.maxHeight
+                        BoxWithConstraints(
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            val density = LocalDensity.current
 
-                        val surfaceWidthDp = with(density) { surfaceWidth.toDp() }
-                        val surfaceHeightDp = with(density) { surfaceHeight.toDp() }
+                            // Surface 크기 가져오기 (px → dp 변환)
+                            val surfaceWidth = constraints.maxWidth
+                            val surfaceHeight = constraints.maxHeight
 
-                        worldDataList.forEachIndexed { index, worldData ->
-                            key("${worldData.id}_${worldData.type}") {
-                                if (worldData.type == "pat") {
-                                    patDataList.find { it.id.toString() == worldData.value }?.let { patData ->
+                            val surfaceWidthDp = with(density) { surfaceWidth.toDp() }
+                            val surfaceHeightDp = with(density) { surfaceHeight.toDp() }
 
-                                        PatImage(
-                                            patUrl = patData.url,
-                                            surfaceWidthDp = surfaceWidthDp,
-                                            surfaceHeightDp = surfaceHeightDp,
-                                            xFloat = patData.x,
-                                            yFloat = patData.y,
-                                            sizeFloat = patData.sizeFloat,
-                                            effect = patData.effect,
-                                            onClick = {  }
-                                        )
+                            worldDataList.forEachIndexed { index, worldData ->
+                                key("${worldData.id}_${worldData.type}") {
+                                    if (worldData.type == "pat") {
+                                        patDataList.find { it.id.toString() == worldData.value }
+                                            ?.let { patData ->
+
+                                                PatImage(
+                                                    patUrl = patData.url,
+                                                    surfaceWidthDp = surfaceWidthDp,
+                                                    surfaceHeightDp = surfaceHeightDp,
+                                                    xFloat = patData.x,
+                                                    yFloat = patData.y,
+                                                    sizeFloat = patData.sizeFloat,
+                                                    effect = patData.effect,
+                                                    onClick = { }
+                                                )
+
+                                            }
+
+                                    } else {
+                                        itemDataList.find { it.id.toString() == worldData.value }
+                                            ?.let { itemData ->
+                                                WorldItemImage(
+                                                    itemUrl = itemData.url,
+                                                    surfaceWidthDp = surfaceWidthDp,
+                                                    surfaceHeightDp = surfaceHeightDp,
+                                                    xFloat = itemData.x,
+                                                    yFloat = itemData.y,
+                                                    sizeFloat = itemData.sizeFloat
+                                                )
+
+                                            }
 
                                     }
-
-                                } else {
-                                    itemDataList.find { it.id.toString() == worldData.value }?.let { itemData ->
-                                        WorldItemImage(
-                                            itemUrl = itemData.url,
-                                            surfaceWidthDp = surfaceWidthDp,
-                                            surfaceHeightDp = surfaceHeightDp,
-                                            xFloat = itemData.x,
-                                            yFloat = itemData.y,
-                                            sizeFloat = itemData.sizeFloat
-                                        )
-
-                                    }
-
                                 }
                             }
+
                         }
 
                     }
-
                 }
-            }
 
-            Column(
-                modifier = Modifier
-                ,
-                verticalArrangement = Arrangement.SpaceEvenly
-            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(start = 6.dp, end = 6.dp, top = 6.dp, bottom = 6.dp),
+                    verticalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .border(
+                                width = 2.dp,
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                                shape = RoundedCornerShape(16.dp)
+                            ),
+                        shape = RoundedCornerShape(16.dp),
+                        tonalElevation = 2.dp,
+                        color = MaterialTheme.colorScheme.scrim
+                    ) {
+
+                        Column(
+                            modifier = Modifier
+                                .padding(12.dp)
+                        ) {
+                            Text(
+                                text = userDataList.find { it.id == "etc" }?.value ?: "",
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            )
+                        }
+
+                    }
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceAround
+                ) {// 접속 정보
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "마을 탄생일",
+                            style = MaterialTheme.typography.labelMedium,
+                            modifier = Modifier
+                                .padding(end = 6.dp)
+                        )
+                        Text(
+                            text = userDataList.find { it.id == "date" }?.value3 ?: "2015-03-12",
+                            style = MaterialTheme.typography.labelMedium
+                        )
+                    }
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "접속일",
+                            style = MaterialTheme.typography.labelMedium,
+                            modifier = Modifier
+                                .padding(end = 6.dp)
+                        )
+                        Text(
+                            text = "${userDataList.find { it.id == "date" }?.value2 ?: "-"}일",
+                            style = MaterialTheme.typography.labelMedium
+                        )
+                    }
+                }
+            } else {
+
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .border(
-                            width = 2.dp,
-                            color = MaterialTheme.colorScheme.primaryContainer,
-                            shape = RoundedCornerShape(16.dp)
-                        )
-                    ,
+                        .aspectRatio(1f / 1.25f)
+                        .padding(6.dp),
                     shape = RoundedCornerShape(16.dp),
-                    tonalElevation = 2.dp,
-                    color = MaterialTheme.colorScheme.scrim
+                    color = Color(0xFFFFF8E7),
+                    border = BorderStroke(2.dp, MaterialTheme.colorScheme.primaryContainer),
                 ) {
-                    Column(
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(3), // 한 줄에 3개
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+
+                        val myMedalString = userDataList.find { it.id == "etc" }?.value3 ?: ""
+
+                        val myMedalList: List<Int> =
+                            myMedalString
+                                .split("/")              // ["1","3","12","5"]
+                                .mapNotNull { it.toIntOrNull() } // [1,3,12,5]
+
+                        items(16) { index ->
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(
+                                        color = MaterialTheme.colorScheme.surface,
+                                        shape = RoundedCornerShape(12.dp)
+                                    )
+                                    .border(
+                                        1.dp,
+                                        MaterialTheme.colorScheme.outline,
+                                        RoundedCornerShape(12.dp)
+                                    )
+                                    .padding(vertical = 12.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = medalName(index),
+                                    style = MaterialTheme.typography.titleMedium,
+                                )
+                                if (myMedalList.contains(index)) {
+                                    Text(
+                                        text = "획득",
+                                        style = MaterialTheme.typography.titleMedium,
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Column(
+                    modifier = Modifier,
+                    verticalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    Surface(
                         modifier = Modifier
-                            .padding(horizontal = 16.dp, vertical = 12.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                            .fillMaxWidth()
+                            .border(
+                                width = 2.dp,
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                                shape = RoundedCornerShape(16.dp)
+                            ),
+                        shape = RoundedCornerShape(16.dp),
+                        tonalElevation = 2.dp,
+                        color = MaterialTheme.colorScheme.scrim
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp, vertical = 12.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "도감",
+                                style = MaterialTheme.typography.titleLarge,
+                                modifier = Modifier
+                                    .padding(bottom = 6.dp)
+                            )
+
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceAround,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            ) {
+                                Row {
+                                    Text(
+                                        text = "펫",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier
+                                            .padding(end = 6.dp)
+                                    )
+                                    Text(
+                                        text = "${allPatDataList.count { it.date != "0" }}/${allPatDataList.size}",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                }
+
+                                Row {
+                                    Text(
+                                        text = "아이템",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier
+                                            .padding(end = 6.dp)
+                                    )
+                                    Text(
+                                        text = "${allItemDataList.count { it.date != "0" } - 20}/${allItemDataList.size - 20}",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                }
+
+                                Row {
+                                    Text(
+                                        text = "맵",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier
+                                            .padding(end = 6.dp)
+                                    )
+                                    Text(
+                                        text = "${allAreaDataList.count { it.date != "0" }}/${allAreaDataList.size}",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                }
+                            }
+
+                            Divider(
+                                color = Color.LightGray,
+                                thickness = 1.dp,
+                                modifier = Modifier.padding(
+                                    start = 8.dp,
+                                    end = 8.dp,
+                                    top = 8.dp,
+                                    bottom = 8.dp
+                                )
+                            )
+
+                            Text(
+                                text = "게임",
+                                style = MaterialTheme.typography.titleLarge,
+                                modifier = Modifier
+                                    .padding(bottom = 6.dp)
+                            )
+
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceAround,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            ) {
+                                Row {
+                                    Text(
+                                        text = "컬링",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier
+                                            .padding(end = 6.dp)
+                                    )
+                                    Text(
+                                        text = userDataList.find { it.id == "firstGame" }?.value + "점",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier
+                                            .padding(end = 6.dp)
+                                    )
+                                    Text(
+                                        text = gameRankList[0] + "등",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                }
+
+                                Row {
+                                    Text(
+                                        text = "1to50",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier
+                                            .padding(end = 6.dp)
+                                    )
+
+                                    val secondGameTime =
+                                        userDataList.find { it.id == "secondGame" }?.value
+
+                                    Text(
+                                        text = if (secondGameTime != "100000") {
+                                            secondGameTime
+                                        } else {
+                                            "-"
+                                        } + "초",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier
+                                            .padding(end = 6.dp)
+                                    )
+                                    Text(
+                                        text = gameRankList[1] + "등",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                }
+
+                            }
+
+                            Divider(
+                                color = Color.LightGray,
+                                thickness = 1.dp,
+                                modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 8.dp)
+                            )
+
+                            Text(
+                                text = "스도쿠",
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier
+                                    .padding(top = 8.dp, bottom = 6.dp)
+                            )
+
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceAround,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            ) {
+                                Row {
+                                    Text(
+                                        text = "쉬움",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier
+                                            .padding(end = 6.dp)
+                                    )
+                                    Text(
+                                        text = userDataList.find { it.id == "thirdGame" }?.value + "개",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier
+                                            .padding(end = 6.dp)
+                                    )
+                                    Text(
+                                        text = gameRankList[2] + "등",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                }
+
+                                Row {
+                                    Text(
+                                        text = "보통",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier
+                                            .padding(end = 6.dp)
+                                    )
+                                    Text(
+                                        text = userDataList.find { it.id == "thirdGame" }?.value2 + "개",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier
+                                            .padding(end = 6.dp)
+                                    )
+                                    Text(
+                                        text = gameRankList[3] + "등",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                }
+
+                                Row {
+                                    Text(
+                                        text = "어려움",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier
+                                            .padding(end = 6.dp)
+                                    )
+                                    Text(
+                                        text = userDataList.find { it.id == "thirdGame" }?.value3 + "개",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier
+                                            .padding(end = 6.dp)
+                                    )
+                                    Text(
+                                        text = gameRankList[4] + "등",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                }
+
+                            }
+
+                        }
+                    }
+
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceAround
+                ) {// 접속 정보
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "도감",
-                            style = MaterialTheme.typography.titleLarge,
+                            text = "마을 탄생일",
+                            style = MaterialTheme.typography.labelMedium,
                             modifier = Modifier
-                                .padding(bottom = 6.dp)
+                                .padding(end = 6.dp)
                         )
-
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceAround,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                        ) {
-                            Row {
-                                Text(
-                                    text = "펫",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    modifier = Modifier
-                                        .padding(end = 6.dp)
-                                )
-                                Text(
-                                    text = "${allPatDataList.count { it.date != "0" }}/${allPatDataList.size}",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                            }
-
-                            Row {
-                                Text(
-                                    text = "아이템",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    modifier = Modifier
-                                        .padding(end = 6.dp)
-                                )
-                                Text(
-                                    text = "${allItemDataList.count { it.date != "0" }-20}/${allItemDataList.size - 20}",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                            }
-
-                            Row {
-                                Text(
-                                    text = "맵",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    modifier = Modifier
-                                        .padding(end = 6.dp)
-                                )
-                                Text(
-                                    text = "${allAreaDataList.count { it.date != "0" }}/${allAreaDataList.size}",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                            }
-                        }
-
-                        Divider(
-                            color = Color.LightGray,
-                            thickness = 1.dp,
-                            modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 8.dp, bottom = 8.dp)
-                        )
-                        
                         Text(
-                            text = "게임",
-                            style = MaterialTheme.typography.titleLarge,
-                            modifier = Modifier
-                                .padding(bottom = 6.dp)
+                            text = userDataList.find { it.id == "date" }?.value3 ?: "2015-03-12",
+                            style = MaterialTheme.typography.labelMedium
                         )
+                    }
 
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceAround,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                        ) {
-                            Row {
-                                Text(
-                                    text = "컬링",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    modifier = Modifier
-                                        .padding(end = 6.dp)
-                                )
-                                Text(
-                                    text = userDataList.find { it.id == "firstGame" }?.value + "점",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    modifier = Modifier
-                                        .padding(end = 6.dp)
-                                )
-                                Text(
-                                    text = gameRankList[0] + "등",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                            }
-
-                            Row {
-                                Text(
-                                    text = "1to50",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    modifier = Modifier
-                                        .padding(end = 6.dp)
-                                )
-
-                                val secondGameTime = userDataList.find { it.id == "secondGame" }?.value
-
-                                Text(
-                                    text = if(secondGameTime != "100000") {
-                                        secondGameTime
-                                    } else {
-                                        "-"
-                                    } + "초",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    modifier = Modifier
-                                        .padding(end = 6.dp)
-                                )
-                                Text(
-                                    text = gameRankList[1] + "등",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                            }
-
-                        }
-
-                        Divider(
-                            color = Color.LightGray,
-                            thickness = 1.dp,
-                            modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 8.dp)
-                        )
-
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Text(
-                            text = "스도쿠",
-                            style = MaterialTheme.typography.titleMedium,
+                            text = "접속일",
+                            style = MaterialTheme.typography.labelMedium,
                             modifier = Modifier
-                                .padding(top = 8.dp, bottom = 6.dp)
+                                .padding(end = 6.dp)
                         )
-
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceAround,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                        ) {
-                            Row {
-                                Text(
-                                    text = "쉬움",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    modifier = Modifier
-                                        .padding(end = 6.dp)
-                                )
-                                Text(
-                                    text = userDataList.find { it.id == "thirdGame" }?.value + "개",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    modifier = Modifier
-                                        .padding(end = 6.dp)
-                                )
-                                Text(
-                                    text = gameRankList[2] + "등",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                            }
-
-                            Row {
-                                Text(
-                                    text = "보통",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    modifier = Modifier
-                                        .padding(end = 6.dp)
-                                )
-                                Text(
-                                    text = userDataList.find { it.id == "thirdGame" }?.value2 + "개",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    modifier = Modifier
-                                        .padding(end = 6.dp)
-                                )
-                                Text(
-                                    text = gameRankList[3] + "등",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                            }
-
-                            Row {
-                                Text(
-                                    text = "어려움",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    modifier = Modifier
-                                        .padding(end = 6.dp)
-                                )
-                                Text(
-                                    text = userDataList.find { it.id == "thirdGame" }?.value3 + "개",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    modifier = Modifier
-                                        .padding(end = 6.dp)
-                                )
-                                Text(
-                                    text = gameRankList[4] + "등",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                            }
-
-                        }
-
+                        Text(
+                            text = "${userDataList.find { it.id == "date" }?.value2 ?: "-"}일",
+                            style = MaterialTheme.typography.labelMedium
+                        )
                     }
                 }
 
             }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceAround
-            ) {// 접속 정보
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "마을 탄생일",
-                        style = MaterialTheme.typography.labelMedium,
-                        modifier = Modifier
-                            .padding(end = 6.dp)
-                    )
-                    Text(
-                        text = userDataList.find { it.id == "date" }?.value3 ?: "2015-03-12",
-                        style = MaterialTheme.typography.labelMedium
-                    )
-                }
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "접속일",
-                        style = MaterialTheme.typography.labelMedium,
-                        modifier = Modifier
-                            .padding(end = 6.dp)
-                    )
-                    Text(
-                        text = "${userDataList.find { it.id == "date" }?.value2 ?: "-"}일",
-                        style = MaterialTheme.typography.labelMedium
-                    )
-                }
+            Row{
+                MainButton(
+                    text = "칭호 변경하기",
+                    onClick = {
+                        onSituationChange("medal")
+                    }
+                )
+                MainButton(
+                    text = "인삿말 변경하기",
+                    onClick = {
+                        onSituationChange("introduction")
+                    }
+                )
+                MainButton(
+                    text = if(page == 0) "상세 페이지 보기" else "메인 페이지 보기",
+                    onClick = {
+                        if(page == 0) page = 1 else page = 0
+                    },
+                    modifier = Modifier
+                )
             }
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable
