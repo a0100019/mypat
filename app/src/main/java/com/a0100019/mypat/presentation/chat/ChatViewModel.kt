@@ -181,51 +181,71 @@ class ChatViewModel @Inject constructor(
     }
 
     private fun loadChatMessages() {
-        Firebase.firestore.collection("chat")
-            .addSnapshotListener { snapshot, error ->
-                Log.d("CommunityViewModel", "전체 채팅 스냅샷 수신됨")
 
-                if (error != null) {
-                    Log.e("CommunityViewModel", "채팅 데이터 에러: ${error.message}")
-                    return@addSnapshotListener
-                }
+        viewModelScope.launch {
 
-                if (snapshot != null && !snapshot.isEmpty) {
-                    val allMessages = mutableListOf<ChatMessage>()
+            // 🔥 내 tag 가져오기
+            val myTag = userDao.getAllUserData()
+                .find { it.id == "auth" }
+                ?.value2 ?: ""
 
-                    for (doc in snapshot.documents) {
+            Firebase.firestore.collection("chat")
+                .addSnapshotListener { snapshot, error ->
+                    Log.d("CommunityViewModel", "전체 채팅 스냅샷 수신됨")
 
-                        val data = doc.data ?: continue
-                        val messages = data.mapNotNull { (key, value) ->
-                            val timestamp = key.toLongOrNull() ?: return@mapNotNull null
-                            val map = value as? Map<*, *> ?: return@mapNotNull null
-                            val message = map["message"] as? String
-                            val name = map["name"] as? String
-                            val tag = map["tag"] as? String
-                            val ban = map["ban"] as? String
-                            val uid = map["uid"] as? String
-
-                            if (message != null && name != null && tag != null && ban == "0" && uid != null) {
-                                ChatMessage(timestamp, message, name, tag, ban, uid)
-                            } else null
-                        }
-                        allMessages.addAll(messages)
+                    if (error != null) {
+                        Log.e("CommunityViewModel", "채팅 데이터 에러: ${error.message}")
+                        return@addSnapshotListener
                     }
 
-                    val sorted = allMessages.sortedBy { it.timestamp }
+                    if (snapshot != null && !snapshot.isEmpty) {
 
-                    viewModelScope.launch {
+                        val allMessages = mutableListOf<ChatMessage>()
+
+                        for (doc in snapshot.documents) {
+
+                            val data = doc.data ?: continue
+
+                            val messages = data.mapNotNull { (key, value) ->
+
+                                val timestamp = key.toLongOrNull() ?: return@mapNotNull null
+                                val map = value as? Map<*, *> ?: return@mapNotNull null
+
+                                val message = map["message"] as? String ?: return@mapNotNull null
+                                val name = map["name"] as? String ?: return@mapNotNull null
+                                val tag = map["tag"] as? String ?: return@mapNotNull null
+                                val ban = map["ban"] as? String ?: "0"
+                                val uid = map["uid"] as? String ?: return@mapNotNull null
+
+                                // 🔥 내 글이면 무조건 허용
+                                if (tag == myTag) {
+                                    ChatMessage(timestamp, message, name, tag, ban, uid)
+                                }
+                                // 🔥 남의 글은 ban == 0 만 허용
+                                else if (ban == "0") {
+                                    ChatMessage(timestamp, message, name, tag, ban, uid)
+                                }
+                                else null
+                            }
+
+                            allMessages.addAll(messages)
+                        }
+
+                        val sorted = allMessages.sortedBy { it.timestamp }
+
                         intent {
                             reduce {
                                 state.copy(chatMessages = sorted)
                             }
                         }
+
+                    } else {
+                        Log.w("CommunityViewModel", "chat 컬렉션에 문서가 없음")
                     }
-                } else {
-                    Log.w("CommunityViewModel", "chat 컬렉션에 문서가 없음")
                 }
-            }
+        }
     }
+
 
     fun onSituationChange(newSituation: String) = intent {
         reduce {
@@ -682,6 +702,8 @@ class ChatViewModel @Inject constructor(
                     viewModelScope.launch {
                         intent {
                             postSideEffect(ChatSideEffect.Toast("이미 채팅방이 존재합니다."))
+                            postSideEffect(ChatSideEffect.NavigateToPrivateRoomScreen)
+
                         }
                     }
                     return@addOnSuccessListener
@@ -711,6 +733,7 @@ class ChatViewModel @Inject constructor(
                         viewModelScope.launch {
                             intent {
                                 postSideEffect(ChatSideEffect.Toast("채팅방 생성 완료!"))
+                                postSideEffect(ChatSideEffect.NavigateToPrivateRoomScreen)
                             }
                         }
                     }
@@ -730,7 +753,6 @@ class ChatViewModel @Inject constructor(
                 }
             }
     }
-
 
 }
 
@@ -767,6 +789,6 @@ data class ChatMessage(
 //상태와 관련없는 것
 sealed interface ChatSideEffect{
     class Toast(val message:String): ChatSideEffect
-//    data object NavigateToDailyActivity: LoadingSideEffect
+    data object NavigateToPrivateRoomScreen: ChatSideEffect
 
 }

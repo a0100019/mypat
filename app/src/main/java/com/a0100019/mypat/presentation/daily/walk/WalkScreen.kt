@@ -175,10 +175,8 @@ fun WalkScreen(
         weekSteps.average().toInt()
     } else 0
 
-
 // 총 이동 거리(km)
     val totalDistance = totalSteps * stride / 1000.0
-
 
     Surface(
         modifier = Modifier
@@ -220,6 +218,13 @@ fun WalkScreen(
                         fontWeight = FontWeight.Bold
                     )
                 }
+
+                Text(
+                    text = "설정에서 만보기를 정지할 수 있습니다",
+                    style = MaterialTheme.typography.labelMedium,
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                )
 
                 // 오른쪽 버튼
                 MainButton(

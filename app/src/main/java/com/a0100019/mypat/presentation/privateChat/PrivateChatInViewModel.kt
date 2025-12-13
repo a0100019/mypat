@@ -75,7 +75,7 @@ class PrivateChatInViewModel @Inject constructor(
             .collection("privateChat")
             .document(roomId)
 
-        // 🔥 먼저 방 정보 불러오기 (상대 이름 얻기)
+        // 🔥 방 정보 먼저 불러오기
         roomRef.get()
             .addOnSuccessListener { roomSnap ->
 
@@ -84,19 +84,33 @@ class PrivateChatInViewModel @Inject constructor(
                 val name1 = roomSnap.getString("name1") ?: ""
                 val name2 = roomSnap.getString("name2") ?: ""
 
-                // 🔥 상대 이름 계산
+                // 🔥 상대 이름
                 val yourName =
-                    if (myTag == user1) name2
-                    else name1
+                    if (myTag == user1) name2 else name1
 
-                // 🔥 state.yourName 업데이트
+                // 🔥 내 last 필드 결정
+                val lastField = when (myTag) {
+                    user1 -> "last1"
+                    user2 -> "last2"
+                    else -> null
+                }
+
+                // 🔥 채팅방 진입 시 last 업데이트
+                if (lastField != null) {
+                    roomRef.update(lastField, System.currentTimeMillis())
+                        .addOnFailureListener {
+                            Log.e("PrivateChatIn", "last 업데이트 실패: ${it.message}")
+                        }
+                }
+
+                // 🔥 상대 이름 state 반영
                 viewModelScope.launch {
                     intent {
                         reduce { state.copy(yourName = yourName) }
                     }
                 }
 
-                // 🔥 이제 메시지 스냅샷 리스너 등록
+                // 🔥 메시지 스냅샷 리스너
                 roomRef.collection("message")
                     .addSnapshotListener { snapshot, error ->
 
@@ -112,11 +126,11 @@ class PrivateChatInViewModel @Inject constructor(
 
                         val allMessages = mutableListOf<PrivateChatMessage>()
 
-                        // 날짜 문서들 반복
+                        // 날짜 문서 반복
                         for (dateDoc in snapshot.documents) {
                             val data = dateDoc.data ?: continue
 
-                            // timestamp 필드들 반복
+                            // timestamp 필드 반복
                             for ((timestampKey, value) in data) {
 
                                 val timestamp = timestampKey.toLongOrNull() ?: continue
@@ -148,20 +162,20 @@ class PrivateChatInViewModel @Inject constructor(
             }
     }
 
-
     fun onChatSubmitClick() = intent {
 
         val userDataList = userDao.getAllUserData()
 
         val myName = userDataList.find { it.id == "name" }?.value ?: "익명"
-        val myTag = userDataList.find { it.id == "auth" }?.value2 ?: ""   // 내가 가진 userId
+        val myTag = userDataList.find { it.id == "auth" }?.value2 ?: ""
         val roomId = userDataList.find { it.id == "etc2" }!!.value3
 
         val text = state.text.trim()
         if (text.isEmpty()) return@intent
 
         val dateId = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date())
-        val timestamp = System.currentTimeMillis().toString()
+        val now = System.currentTimeMillis()
+        val timestampKey = now.toString()
 
         val messageData = mapOf(
             "message" to text,
@@ -169,7 +183,6 @@ class PrivateChatInViewModel @Inject constructor(
             "tag" to myTag
         )
 
-        // Firestore 참조
         val baseRef = Firebase.firestore
             .collection("chatting")
             .document("privateChat")
@@ -180,38 +193,48 @@ class PrivateChatInViewModel @Inject constructor(
             .collection("message")
             .document(dateId)
 
-        // 1. 먼저 user1/user2 를 가져와서 내가 어떤 유저인지 판단
+        // 🔥 user1 / user2 확인
         baseRef.get().addOnSuccessListener { roomDoc ->
 
             val user1 = roomDoc.getString("user1")
             val user2 = roomDoc.getString("user2")
 
-            val nameField = when (myTag) {
-                user1 -> "name1"
-                user2 -> "name2"
-                else -> null
+            val nameField: String
+            val lastField: String
+
+            when (myTag) {
+                user1 -> {
+                    nameField = "name1"
+                    lastField = "last1"
+                }
+                user2 -> {
+                    nameField = "name2"
+                    lastField = "last2"
+                }
+                else -> {
+                    Log.e("PrivateChatIn", "내 userId가 user1/user2와 일치하지 않음")
+                    return@addOnSuccessListener
+                }
             }
 
-            if (nameField == null) {
-                Log.e("PrivateChatIn", "내 userId가 user1/user2와 일치하지 않음")
-                return@addOnSuccessListener
-            }
-
-            // 2. batch로 메시지 저장 + name 필드 업데이트 동시에 실행
+            // 🔥 메시지 + 이름 + last 동시에 처리
             Firebase.firestore.runBatch { batch ->
 
                 // 메시지 저장
                 batch.set(
                     messageRef,
-                    mapOf(timestamp to messageData),
+                    mapOf(timestampKey to messageData),
                     SetOptions.merge()
                 )
 
-                // 내 이름 업데이트 (name1 또는 name2)
+                // 내 이름 업데이트
                 batch.update(baseRef, nameField, myName)
 
+                // 🔥 내 last 업데이트 (읽음 기준)
+                batch.update(baseRef, lastField, now)
+
             }.addOnSuccessListener {
-                Log.d("PrivateChatIn", "메시지 + 이름 업데이트 완료")
+                Log.d("PrivateChatIn", "메시지 + 이름 + last 업데이트 완료")
 
                 // 입력창 비우기
                 intent { reduce { state.copy(text = "") } }
@@ -259,6 +282,6 @@ data class PrivateChatMessage(
 sealed interface PrivateChatInSideEffect{
     class Toast(val message:String): PrivateChatInSideEffect
 
-//    data object NavigateToPrivateChatInScreen: PrivateChatInSideEffect
+    data object NavigateToPrivateRoomScreen: PrivateChatInSideEffect
 
 }

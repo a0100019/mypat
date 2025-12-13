@@ -620,9 +620,8 @@ class LoginViewModel @Inject constructor(
                 // community map 가져오기
                 val communityMap = snapshot.get("community") as? Map<String, Any>
 
-                // like 값이 String으로 존재할 때만 업데이트
+                // like 값
                 val likeValue = communityMap?.get("like") as? String
-
                 if (likeValue != null) {
                     userDao.update(id = "community", value = likeValue)
                     Log.d("Firestore", "community.like = $likeValue 로 업데이트 완료")
@@ -630,10 +629,20 @@ class LoginViewModel @Inject constructor(
                     Log.d("Firestore", "community.like 없음 → 업데이트 취소")
                 }
 
+                // 🔥 ban 값 → value3에 저장
+                val banValue = communityMap?.get("ban") as? String
+                if (banValue != null) {
+                    userDao.update(id = "community", value3 = banValue)
+                    Log.d("Firestore", "community.ban = $banValue 로 value3 업데이트 완료")
+                } else {
+                    Log.d("Firestore", "community.ban 없음 → 업데이트 취소")
+                }
+
             } catch (e: Exception) {
-                Log.e("Firestore", "community.like 가져오기 실패", e)
+                Log.e("Firestore", "community 데이터 가져오기 실패", e)
             }
         }
+
 
     }
 

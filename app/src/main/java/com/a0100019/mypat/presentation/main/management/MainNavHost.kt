@@ -201,10 +201,12 @@ fun MainNavHost() {
 
         composable(route = MainRoute.ChatScreen.name) {
             ChatScreen(
-                popBackStack = { navController.popBackStack() }
+                popBackStack = { navController.popBackStack() },
+                onNavigateToPrivateRoomScreen = {
+                    navController.navigate(route = MainRoute.PrivateRoomScreen.name)
+                },
             )
         }
-
 
         composable(route = MainRoute.WalkScreen.name) {
             WalkScreen(
@@ -212,29 +214,41 @@ fun MainNavHost() {
             )
         }
 
-
         composable(route = MainRoute.OperatorScreen.name) {
             OperatorScreen(
                 popBackStack = { navController.popBackStack() }
             )
         }
 
-
         composable(route = MainRoute.PrivateRoomScreen.name) {
             PrivateRoomScreen(
                 popBackStack = { navController.popBackStack() },
                 onNavigateToPrivateChatInScreen = {
-                    navController.navigate(route = MainRoute.PrivateChatInScreen.name)
+                    navController.navigate(route = MainRoute.PrivateChatInScreen.name) {
+                        popUpTo(0) { inclusive = true } // 백스택 전체 제거
+                        launchSingleTop = true // 같은 화면 여러 번 안 쌓이게
+                    }
+                },
+                onNavigateToMainScreen = {
+                    navController.navigate(route = MainRoute.MainScreen.name) {
+                        popUpTo(0) { inclusive = true } // 백스택 전체 제거
+                        launchSingleTop = true // 같은 화면 여러 번 안 쌓이게
+                    }
                 }
             )
         }
 
         composable(route = MainRoute.PrivateChatInScreen.name) {
             PrivateChatInScreen(
-                popBackStack = { navController.popBackStack() }
+                popBackStack = { navController.popBackStack() },
+                onNavigateToPrivateRoomScreen = {
+                    navController.navigate(route = MainRoute.PrivateRoomScreen.name) {
+                        popUpTo(0) { inclusive = true } // 백스택 전체 제거
+                        launchSingleTop = true // 같은 화면 여러 번 안 쌓이게
+                    }
+                }
             )
         }
-
 
 //
 //        composable(route = LoginRoute.SignUpScreen.name) {

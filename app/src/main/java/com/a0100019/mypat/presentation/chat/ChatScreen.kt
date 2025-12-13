@@ -59,7 +59,8 @@ import kotlin.math.abs
 @Composable
 fun ChatScreen(
     chatViewModel: ChatViewModel = hiltViewModel(),
-    popBackStack: () -> Unit = {}
+    popBackStack: () -> Unit = {},
+    onNavigateToPrivateRoomScreen: () -> Unit = {},
 
 ) {
 
@@ -70,6 +71,8 @@ fun ChatScreen(
     chatViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
             is ChatSideEffect.Toast -> Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
+            ChatSideEffect.NavigateToPrivateRoomScreen -> onNavigateToPrivateRoomScreen()
+
         }
     }
 

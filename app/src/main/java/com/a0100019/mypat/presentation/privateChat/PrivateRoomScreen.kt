@@ -35,6 +35,7 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 fun PrivateRoomScreen(
     privateRoomViewModel: PrivateRoomViewModel = hiltViewModel(),
     onNavigateToPrivateChatInScreen: () -> Unit = {},
+    onNavigateToMainScreen: () -> Unit = {},
     popBackStack: () -> Unit = {}
 
 ) {
@@ -47,6 +48,7 @@ fun PrivateRoomScreen(
         when (sideEffect) {
             is PrivateRoomSideEffect.Toast -> Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
             PrivateRoomSideEffect.NavigateToPrivateChatInScreen -> onNavigateToPrivateChatInScreen()
+            PrivateRoomSideEffect.NavigateToMainScreen -> onNavigateToMainScreen()
         }
     }
 
@@ -55,7 +57,8 @@ fun PrivateRoomScreen(
         userDataList = privateRoomState.userDataList,
 
         popBackStack = popBackStack,
-        onPrivateChatRoomClick = privateRoomViewModel::onPrivateChatRoomClick
+        onPrivateChatRoomClick = privateRoomViewModel::onPrivateChatRoomClick,
+        onNavigateToMainScreen = onNavigateToMainScreen
     )
 }
 
@@ -65,7 +68,8 @@ fun PrivateRoomScreen(
     userDataList: List<User> = emptyList(),
 
     popBackStack: () -> Unit = {},
-    onPrivateChatRoomClick: (String) -> Unit = {}
+    onPrivateChatRoomClick: (String) -> Unit = {},
+    onNavigateToMainScreen: () -> Unit = {}
 ) {
 
     Surface(
@@ -80,7 +84,7 @@ fun PrivateRoomScreen(
 
             Row(modifier = Modifier.padding(12.dp)) {
                 MainButton(
-                    onClick = popBackStack,
+                    onClick = onNavigateToMainScreen,
                     text = "닫기"
                 )
             }

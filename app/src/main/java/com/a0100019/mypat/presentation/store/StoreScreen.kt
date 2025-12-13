@@ -339,7 +339,7 @@ fun StoreScreen(
 
                     Text(
                         text = "아래로 드래그하세요",
-                        style = MaterialTheme.typography.labelLarge
+                        style = MaterialTheme.typography.bodyLarge
                     )
 
                 }

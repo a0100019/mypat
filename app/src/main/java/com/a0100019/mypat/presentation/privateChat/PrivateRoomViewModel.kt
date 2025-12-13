@@ -175,5 +175,7 @@ sealed interface PrivateRoomSideEffect{
     class Toast(val message:String): PrivateRoomSideEffect
 
     data object NavigateToPrivateChatInScreen: PrivateRoomSideEffect
+    data object NavigateToMainScreen: PrivateRoomSideEffect
+
 
 }

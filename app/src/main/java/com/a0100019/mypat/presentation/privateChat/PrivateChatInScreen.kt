@@ -55,7 +55,8 @@ import java.util.Locale
 @Composable
 fun PrivateChatInScreen(
     privateChatInViewModel: PrivateChatInViewModel = hiltViewModel(),
-    popBackStack: () -> Unit = {}
+    popBackStack: () -> Unit = {},
+    onNavigateToPrivateRoomScreen: () -> Unit = {}
 
 ) {
 
@@ -66,6 +67,8 @@ fun PrivateChatInScreen(
     privateChatInViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
             is PrivateChatInSideEffect.Toast -> Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
+            PrivateChatInSideEffect.NavigateToPrivateRoomScreen -> onNavigateToPrivateRoomScreen()
+
         }
     }
 
@@ -78,6 +81,7 @@ fun PrivateChatInScreen(
         popBackStack = popBackStack,
         onTextChange = privateChatInViewModel::onTextChange,
         onChatSubmitClick = privateChatInViewModel::onChatSubmitClick,
+        onNavigateToPrivateRoomScreen = onNavigateToPrivateRoomScreen
     )
 }
 
@@ -92,6 +96,7 @@ fun PrivateChatInScreen(
     popBackStack: () -> Unit = {},
     onTextChange: (String) -> Unit = {},
     onChatSubmitClick: () -> Unit = {},
+    onNavigateToPrivateRoomScreen: () -> Unit = {},
 ) {
 
     Surface(
@@ -126,7 +131,7 @@ fun PrivateChatInScreen(
                     // 오른쪽 버튼
                     MainButton(
                         text = "닫기",
-                        onClick = popBackStack,
+                        onClick = onNavigateToPrivateRoomScreen,
                         modifier = Modifier.align(Alignment.CenterEnd)
                     )
                 }
@@ -252,7 +257,6 @@ fun PrivateChatInScreen(
                                 }
 
                             }
-
 
                     } else {
                         Box(
