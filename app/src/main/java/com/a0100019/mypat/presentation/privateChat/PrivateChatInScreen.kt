@@ -40,7 +40,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.user.User
-import com.a0100019.mypat.presentation.chat.getPastelColorForTag
+import com.a0100019.mypat.presentation.neighbor.chat.getPastelColorForTag
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage

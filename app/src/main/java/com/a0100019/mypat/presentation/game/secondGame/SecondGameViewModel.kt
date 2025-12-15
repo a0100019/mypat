@@ -8,6 +8,7 @@ import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.pat.PatDao
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
+import com.a0100019.mypat.presentation.main.MainSideEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Job
@@ -133,6 +134,35 @@ class SecondGameViewModel @Inject constructor(
         val updatePatData = state.patData
         updatePatData.love = state.patData.love + plusLove
         updatePatData.gameCount = state.patData.gameCount + 1
+
+        if(state.patData.gameCount + 1 >= 100) {
+
+            //매달, medal, 칭호4
+            val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
+
+            val myMedalList: MutableList<Int> =
+                myMedal
+                    .split("/")
+                    .mapNotNull { it.toIntOrNull() }
+                    .toMutableList()
+
+            // 🔥 여기 숫자 두개 바꾸면 됨
+            if (!myMedalList.contains(4)) {
+                myMedalList.add(4)
+
+                // 다시 문자열로 합치기
+                val updatedMedal = myMedalList.joinToString("/")
+
+                // DB 업데이트
+                userDao.update(
+                    id = "etc",
+                    value3 = updatedMedal
+                )
+
+                postSideEffect(SecondGameSideEffect.Toast("칭호를 획득했습니다!"))
+            }
+
+        }
 
         patDao.update(updatePatData)
 

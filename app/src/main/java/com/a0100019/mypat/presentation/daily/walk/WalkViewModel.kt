@@ -7,6 +7,7 @@ import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.walk.Walk
 import com.a0100019.mypat.data.room.walk.WalkDao
+import com.a0100019.mypat.presentation.daily.diary.DiarySideEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -73,6 +74,44 @@ class WalkViewModel @Inject constructor(
                 baseDate = today
             )
         }
+
+        // stepsRaw → 날짜별 걸음수 Map
+        val items = stepsRaw.split("/").filter { it.isNotBlank() }
+        val walkMap = items
+            .mapNotNull {
+                val parts = it.split(".")
+                if (parts.size == 2) parts[0] to parts[1].toInt() else null
+            }
+            .toMap()
+        // 전체 걸음 수
+        val totalSteps = walkMap.values.sum()
+        if(totalSteps * 0.65 / 1000.0 >= 325.0) {
+            //매달, medal, 칭호9
+            val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
+
+            val myMedalList: MutableList<Int> =
+                myMedal
+                    .split("/")
+                    .mapNotNull { it.toIntOrNull() }
+                    .toMutableList()
+
+            // 🔥 여기 숫자 두개 바꾸면 됨
+            if (!myMedalList.contains(9)) {
+                myMedalList.add(9)
+
+                // 다시 문자열로 합치기
+                val updatedMedal = myMedalList.joinToString("/")
+
+                // DB 업데이트
+                userDao.update(
+                    id = "etc",
+                    value3 = updatedMedal
+                )
+
+                postSideEffect(WalkSideEffect.Toast("칭호를 획득했습니다!"))
+            }
+        }
+
     }
 
     fun onTodayWalkSubmitClick() = intent {

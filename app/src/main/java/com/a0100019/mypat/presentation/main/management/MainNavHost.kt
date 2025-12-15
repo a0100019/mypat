@@ -4,8 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.a0100019.mypat.presentation.chat.ChatScreen
-import com.a0100019.mypat.presentation.community.CommunityScreen
+import com.a0100019.mypat.presentation.neighbor.chat.ChatScreen
+import com.a0100019.mypat.presentation.neighbor.community.CommunityScreen
 import com.a0100019.mypat.presentation.daily.DailyScreen
 import com.a0100019.mypat.presentation.daily.diary.DiaryScreen
 import com.a0100019.mypat.presentation.daily.diary.DiaryWriteScreen
@@ -22,6 +22,9 @@ import com.a0100019.mypat.presentation.main.MainScreen
 import com.a0100019.mypat.presentation.setting.SettingScreen
 import com.a0100019.mypat.presentation.store.StoreScreen
 import com.a0100019.mypat.presentation.main.world.WorldScreen
+import com.a0100019.mypat.presentation.neighbor.NeighborScreen
+import com.a0100019.mypat.presentation.neighbor.board.BoardMessageScreen
+import com.a0100019.mypat.presentation.neighbor.board.BoardScreen
 import com.a0100019.mypat.presentation.operator.OperatorScreen
 import com.a0100019.mypat.presentation.privateChat.PrivateChatInScreen
 import com.a0100019.mypat.presentation.privateChat.PrivateRoomScreen
@@ -52,9 +55,6 @@ fun MainNavHost() {
                 onWorldNavigateClick = {
                     navController.navigate(route = MainRoute.WorldScreen.name)
                 },
-                onCommunityNavigateClick = {
-                    navController.navigate(route = MainRoute.CommunityScreen.name)
-                },
                 onInformationNavigateClick = {
                     navController.navigate(route = MainRoute.InformationScreen.name)
                 },
@@ -70,8 +70,8 @@ fun MainNavHost() {
                 onThirdGameNavigateClick = {
                     navController.navigate(route = MainRoute.ThirdGameScreen.name)
                 },
-                onChatNavigateClick = {
-                    navController.navigate(route = MainRoute.ChatScreen.name)
+                onNeighborNavigateClick = {
+                    navController.navigate(route = MainRoute.NeighborScreen.name)
                 },
                 onOperatorNavigateClick = {
                     navController.navigate(route = MainRoute.OperatorScreen.name)
@@ -247,6 +247,36 @@ fun MainNavHost() {
                         launchSingleTop = true // 같은 화면 여러 번 안 쌓이게
                     }
                 }
+            )
+        }
+
+        composable(route = MainRoute.NeighborScreen.name) {
+            NeighborScreen(
+                popBackStack = { navController.popBackStack() },
+                onChatNavigateClick = {
+                    navController.navigate(route = MainRoute.ChatScreen.name)
+                },
+                onCommunityNavigateClick = {
+                    navController.navigate(route = MainRoute.CommunityScreen.name)
+                },
+                onBoardNavigateClick = {
+                    navController.navigate(route = MainRoute.BoardScreen.name)
+                },
+            )
+        }
+
+        composable(route = MainRoute.BoardScreen.name) {
+            BoardScreen(
+                popBackStack = { navController.popBackStack() },
+                onNavigateToBoardMessageScreen = {
+                    navController.navigate(route = MainRoute.BoardMessageScreen.name)
+                },
+            )
+        }
+
+        composable(route = MainRoute.BoardMessageScreen.name) {
+            BoardMessageScreen(
+                popBackStack = { navController.popBackStack() }
             )
         }
 

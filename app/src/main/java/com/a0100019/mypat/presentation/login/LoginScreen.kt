@@ -78,6 +78,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
 import com.a0100019.mypat.presentation.setting.TermsDialog
 import com.a0100019.mypat.presentation.ui.MusicPlayer
+import com.a0100019.mypat.presentation.ui.component.MainButton
 
 @Composable
 fun LoginScreen(
@@ -462,16 +463,17 @@ fun LoginScreen(
             "login" -> Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
-                        onClick = onNavigateToMainScreen
-                    )
                         ,
                 verticalArrangement = Arrangement.Bottom,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                TextFlash("화면 터치해서 시작")
+                Spacer(modifier = Modifier.size(20.dp))
+                TextFlash("하루마을에 오신 것을 환영합니다!")
+                Spacer(modifier = Modifier.weight(1f))
+                MainButton(
+                    text = " 마을로 들어가기 ",
+                    onClick = onNavigateToMainScreen
+                )
                 Spacer(modifier = Modifier.size(70.dp))
 
             }

@@ -207,8 +207,11 @@ class SettingViewModel @Inject constructor(
             "community" to mapOf(
                 "ban" to userDataList.find { it.id == "community"}!!.value3,
 //                "like" to userDataList.find { it.id == "community"}!!.value,
-                "warning" to userDataList.find {it.id == "community"}!!.value2
+                "warning" to userDataList.find {it.id == "community"}!!.value2,
+                "medal" to userDataList.find { it.id == "etc"}!!.value3,
+                "introduction" to userDataList.find { it.id == "etc"}!!.value,
             ),
+
 
             "date" to mapOf(
                 "firstDate" to userDataList.find { it.id == "date"}!!.value3,

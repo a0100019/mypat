@@ -8,6 +8,7 @@ import com.a0100019.mypat.data.room.diary.DiaryDao
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.presentation.daily.walk.WalkSideEffect
+import com.a0100019.mypat.presentation.game.secondGame.SecondGameSideEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -54,6 +55,76 @@ class DiaryViewModel @Inject constructor(
         val userDataList = userDao.getAllUserData()
         val allDiaryData = diaryDao.getAllDiaryData()
         val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+
+        if(allDiaryData.count { it.emotion == "emotion/love.png" } >= 10) {
+            //매달, medal, 칭호5
+            val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
+
+            val myMedalList: MutableList<Int> =
+                myMedal
+                    .split("/")
+                    .mapNotNull { it.toIntOrNull() }
+                    .toMutableList()
+
+            // 🔥 여기 숫자 두개 바꾸면 됨
+            if (!myMedalList.contains(5)) {
+                myMedalList.add(5)
+
+                // 다시 문자열로 합치기
+                val updatedMedal = myMedalList.joinToString("/")
+
+                // DB 업데이트
+                userDao.update(
+                    id = "etc",
+                    value3 = updatedMedal
+                )
+                postSideEffect(DiarySideEffect.Toast("칭호를 획득했습니다!"))
+            }
+        }
+
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        // 날짜 파싱 + 정렬
+        val dateList = allDiaryData
+            .map { LocalDate.parse(it.date, formatter) }
+            .sorted()
+        var maxStreak = 0
+        var currentStreak = 0
+        for (i in dateList.indices) {
+            if (i == 0 || dateList[i] == dateList[i - 1].plusDays(1)) {
+                currentStreak++
+            } else {
+                currentStreak = 1
+            }
+            maxStreak = maxOf(maxStreak, currentStreak)
+        }
+        // 🎯 결과
+        if (maxStreak >= 10) {
+            // 최장 연속 출석 10일 이상
+            //매달, medal, 칭호8
+            val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
+
+            val myMedalList: MutableList<Int> =
+                myMedal
+                    .split("/")
+                    .mapNotNull { it.toIntOrNull() }
+                    .toMutableList()
+
+            // 🔥 여기 숫자 두개 바꾸면 됨
+            if (!myMedalList.contains(8)) {
+                myMedalList.add(8)
+
+                // 다시 문자열로 합치기
+                val updatedMedal = myMedalList.joinToString("/")
+
+                // DB 업데이트
+                userDao.update(
+                    id = "etc",
+                    value3 = updatedMedal
+                )
+
+                postSideEffect(DiarySideEffect.Toast("칭호를 획득했습니다!"))
+            }
+        }
 
         reduce {
             state.copy(

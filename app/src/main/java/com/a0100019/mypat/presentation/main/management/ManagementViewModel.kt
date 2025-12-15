@@ -1,12 +1,14 @@
 package com.a0100019.mypat.presentation.main.management
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.yml.charts.common.extensions.isNotNull
 import com.a0100019.mypat.data.room.diary.Diary
 import com.a0100019.mypat.data.room.diary.DiaryDao
 import com.a0100019.mypat.data.room.english.EnglishDao
+import com.a0100019.mypat.data.room.item.ItemDao
 import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiomDao
 import com.a0100019.mypat.data.room.letter.LetterDao
 import com.a0100019.mypat.data.room.user.User
@@ -14,6 +16,7 @@ import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.walk.Walk
 import com.a0100019.mypat.data.room.walk.WalkDao
 import com.a0100019.mypat.presentation.daily.walk.StepCounterManager
+import com.a0100019.mypat.presentation.store.StoreSideEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -38,6 +41,7 @@ class ManagementViewModel @Inject constructor(
     private val englishDao: EnglishDao,
     private val diaryDao: DiaryDao,
     private val letterDao: LetterDao,
+    private val itemDao: ItemDao,
     private val stepCounterManager: StepCounterManager,
     @ApplicationContext private val context: Context
 
@@ -56,6 +60,7 @@ class ManagementViewModel @Inject constructor(
 
     init {
         todayAttendance()
+
     }
 
     private fun todayAttendance() = intent {
@@ -91,6 +96,36 @@ class ManagementViewModel @Inject constructor(
                         title = "30일 출석 감사 편지",
                         todayDate = currentDate
                     )
+
+                    //매달, medal, 칭호1
+                    29 -> {
+                        //매달, medal, 칭호1
+                        val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
+
+                        val myMedalList: MutableList<Int> =
+                            myMedal
+                                .split("/")
+                                .mapNotNull { it.toIntOrNull() }
+                                .toMutableList()
+
+                        // 🔥 여기 숫자 두개 바꾸면 됨
+                        if (!myMedalList.contains(1)) {
+                            myMedalList.add(1)
+
+                            // 다시 문자열로 합치기
+                            val updatedMedal = myMedalList.joinToString("/")
+
+                            // DB 업데이트
+                            userDao.update(
+                                id = "etc",
+                                value3 = updatedMedal
+                            )
+
+                            postSideEffect(ManagementSideEffect.Toast("칭호를 획득했습니다!"))
+                        }
+
+                    }
+
 
                     100 -> letterDao.updateDateByTitle(
                         title = "100일 출석 감사 편지",
@@ -133,6 +168,15 @@ class ManagementViewModel @Inject constructor(
             }
 
         }
+
+
+
+        //칭호, 편지 관리
+        if(itemDao.getAllCloseItemData().isEmpty()) {
+            val today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+            letterDao.updateDateByTitle(title = "모든 아이템 획득 축하 편지", todayDate = today)
+        }
+
 
     }
 

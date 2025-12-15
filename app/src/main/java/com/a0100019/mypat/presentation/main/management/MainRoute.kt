@@ -20,8 +20,6 @@ sealed class MainRoute(
 
     object InformationScreen : MainRoute("InformationScreen")
 
-    object CommunityScreen : MainRoute("CommunityScreen")
-
     object FirstGameScreen : MainRoute("FirstGameScreen")
     object SecondGameScreen : MainRoute("SecondGameScreen")
     object ThirdGameScreen : MainRoute("ThirdGameScreen")
@@ -35,11 +33,19 @@ sealed class MainRoute(
 
     object WalkScreen : MainRoute("WalkScreen")
 
-    object ChatScreen : MainRoute("ChatScreen")
-
     object OperatorScreen : MainRoute("OperatorScreen")
 
     object PrivateRoomScreen : MainRoute("PrivateRoomScreen")
     object PrivateChatInScreen : MainRoute("PrivateChatInScreen")
 
+    object NeighborScreen : MainRoute("NeighborScreen")
+
+    object BoardScreen : MainRoute("BoardScreen")
+    object BoardMessageScreen : MainRoute("BoardMessageScreen")
+    object ChatScreen : MainRoute("ChatScreen")
+    object CommunityScreen : MainRoute("CommunityScreen")
+
 }
+
+
+

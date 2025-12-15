@@ -1,4 +1,4 @@
-package com.a0100019.mypat.presentation.community
+package com.a0100019.mypat.presentation.neighbor.community
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -61,14 +61,14 @@ fun CommunityUpdateCheckDialog(
             ) {
 
                 Text(
-                    text = "인터넷 연결",
+                    text = "이웃 마을과 연결하기",
                     style = MaterialTheme.typography.titleLarge
                 )
 
                 Spacer(modifier = Modifier.size(30.dp))
 
                 Text(
-                    text = "인터넷 연결을 확인 중입니다. 새로 고침 버튼을 눌러주세요",
+                    text = "오늘의 이웃 마을 데이터를 불러옵니다. 업데이트 버튼을 눌러주세요",
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier
@@ -90,7 +90,7 @@ fun CommunityUpdateCheckDialog(
                     Spacer(modifier = Modifier.weight(1f))
 
                     MainButton(
-                        text = "  새로 고침  ",
+                        text = "  업데이트  ",
                         onClick = onConfirmClick,
                         modifier = Modifier
                     )

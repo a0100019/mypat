@@ -1,4 +1,4 @@
-package com.a0100019.mypat.presentation.chat
+package com.a0100019.mypat.presentation.neighbor.chat
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

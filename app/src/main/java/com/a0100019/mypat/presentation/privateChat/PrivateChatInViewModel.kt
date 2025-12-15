@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
-import com.a0100019.mypat.presentation.chat.ChatMessage
+import com.a0100019.mypat.presentation.neighbor.chat.ChatMessage
 import com.a0100019.mypat.presentation.daily.diary.DiarySideEffect
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FieldPath

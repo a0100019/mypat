@@ -1,4 +1,4 @@
-package com.a0100019.mypat.presentation.community
+package com.a0100019.mypat.presentation.neighbor.community
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.core.animateFloatAsState

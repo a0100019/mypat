@@ -26,7 +26,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.a0100019.mypat.presentation.chat.getPastelColorForTag
+import com.a0100019.mypat.presentation.neighbor.chat.getPastelColorForTag
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import java.text.SimpleDateFormat

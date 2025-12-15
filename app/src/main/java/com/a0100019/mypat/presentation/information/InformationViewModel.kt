@@ -12,7 +12,7 @@ import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.data.room.world.WorldDao
-import com.a0100019.mypat.presentation.chat.ChatSideEffect
+import com.a0100019.mypat.presentation.neighbor.chat.ChatSideEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import org.orbitmvi.orbit.Container
@@ -164,12 +164,47 @@ class InformationViewModel @Inject constructor(
     }
 
     fun onIntroductionChangeClick() = intent {
+
         userDao.update(id = "etc", value = state.text)
 
         postSideEffect(InformationSideEffect.Toast("인삿말을 변경하였습니다."))
 
         onClose()
+        loadData()
     }
+
+    fun onMedalChangeClick(index: Int) = intent {
+
+        val myMedal = state.userData.find { it.id == "etc" }?.value3 ?: ""
+
+        // 1️⃣ 문자열 → Int 리스트
+        val medalList = myMedal
+            .split("/")
+            .mapNotNull { it.toIntOrNull() }
+            .toMutableList()
+
+        if (medalList.isEmpty()) return@intent
+
+        // 2️⃣ 첫 번째 값만 index로 교체
+        medalList[0] = index
+
+        // 3️⃣ 다시 문자열로 합치기
+        val updatedMedal = medalList.joinToString("/")
+
+        // 4️⃣ DB 업데이트
+        userDao.update(
+            id = "etc",
+            value3 = updatedMedal
+        )
+
+        postSideEffect(
+            InformationSideEffect.Toast("칭호를 변경하였습니다.")
+        )
+
+        onClose()
+        loadData()
+    }
+
 
 }
 

@@ -22,6 +22,7 @@ import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.data.room.world.WorldDao
+import com.a0100019.mypat.presentation.main.management.ManagementSideEffect
 import com.google.firebase.storage.FirebaseStorage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -325,6 +326,60 @@ class MainViewModel @Inject constructor(
 
         patDao.update(state.lovePatData.copy(love = state.lovePatData.love + state.loveAmount))
         userDao.update(id = "money", value2 = (userDao.getValue2ById("money").toInt()+state.cashAmount).toString() )
+
+        if(state.lovePatData.love + state.loveAmount >= 500000) {
+            //매달, medal, 칭호2
+            val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
+
+            val myMedalList: MutableList<Int> =
+                myMedal
+                    .split("/")
+                    .mapNotNull { it.toIntOrNull() }
+                    .toMutableList()
+
+            // 🔥 여기 숫자 두개 바꾸면 됨
+            if (!myMedalList.contains(2)) {
+                myMedalList.add(2)
+
+                // 다시 문자열로 합치기
+                val updatedMedal = myMedalList.joinToString("/")
+
+                // DB 업데이트
+                userDao.update(
+                    id = "etc",
+                    value3 = updatedMedal
+                )
+
+                postSideEffect(MainSideEffect.Toast("칭호를 획득했습니다!"))
+            }
+        }
+
+        if(state.lovePatData.love + state.loveAmount >= 1000000) {
+            //매달, medal, 칭호3
+            val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
+
+            val myMedalList: MutableList<Int> =
+                myMedal
+                    .split("/")
+                    .mapNotNull { it.toIntOrNull() }
+                    .toMutableList()
+
+            // 🔥 여기 숫자 두개 바꾸면 됨
+            if (!myMedalList.contains(3)) {
+                myMedalList.add(3)
+
+                // 다시 문자열로 합치기
+                val updatedMedal = myMedalList.joinToString("/")
+
+                // DB 업데이트
+                userDao.update(
+                    id = "etc",
+                    value3 = updatedMedal
+                )
+
+                postSideEffect(MainSideEffect.Toast("칭호를 획득했습니다!"))
+            }
+        }
 
         val newWorldData = state.worldDataList.find { it.value == state.lovePatData.id.toString() && it.type == "pat" }
         worldDao.update(newWorldData!!.copy(situation = ""))

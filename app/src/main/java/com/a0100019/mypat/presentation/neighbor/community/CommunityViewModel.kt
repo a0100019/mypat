@@ -1,4 +1,4 @@
-package com.a0100019.mypat.presentation.chat
+package com.a0100019.mypat.presentation.neighbor.community
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -15,11 +15,13 @@ import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.world.WorldDao
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.firestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.annotation.OrbitExperimental
@@ -37,21 +39,21 @@ import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 
 @HiltViewModel
-class ChatViewModel @Inject constructor(
+class CommunityViewModel @Inject constructor(
     private val userDao: UserDao,
     private val worldDao: WorldDao,
     private val patDao: PatDao,
     private val itemDao: ItemDao,
     private val allUserDao: AllUserDao,
     private val areaDao: AreaDao
-) : ViewModel(), ContainerHost<ChatState, ChatSideEffect> {
+) : ViewModel(), ContainerHost<CommunityState, CommunitySideEffect> {
 
-    override val container: Container<ChatState, ChatSideEffect> = container(
-        initialState = ChatState(),
+    override val container: Container<CommunityState, CommunitySideEffect> = container(
+        initialState = CommunityState(),
         buildSettings = {
             this.exceptionHandler = CoroutineExceptionHandler { _ , throwable ->
                 intent {
-                    postSideEffect(ChatSideEffect.Toast(message = throwable.message.orEmpty()))
+                    postSideEffect(CommunitySideEffect.Toast(message = throwable.message.orEmpty()))
                 }
             }
         }
@@ -60,7 +62,6 @@ class ChatViewModel @Inject constructor(
     // 뷰 모델 초기화 시 모든 user 데이터를 로드
     init {
         loadData()
-        loadChatMessages()
     }
 
     //room에서 데이터 가져옴
@@ -69,7 +70,10 @@ class ChatViewModel @Inject constructor(
         val patDataList = patDao.getAllPatData()
         val itemDataList = itemDao.getAllItemDataWithShadow()
         var allUserDataList = allUserDao.getAllUserDataNoBan()
-//        allUserDataList = allUserDataList.filter { it.totalDate != "1" && it.totalDate != "0" }
+        allUserDataList = allUserDataList.filter { it.totalDate != "1" && it.totalDate != "0" }
+
+        var allUserRankDataList = allUserDao.getAllUserDataNoBan()
+        allUserRankDataList = allUserRankDataList.filter { it.totalDate != "1" && it.totalDate != "0" }
 
         val allAreaCount = areaDao.getAllAreaData().size.toString()
 
@@ -80,6 +84,24 @@ class ChatViewModel @Inject constructor(
                 )
             }
         }
+
+        val page = 0
+        val allUserData1 = allUserDataList[4*page]
+        val allUserData2 = allUserDataList[4*page + 1]
+        val allUserData3 = allUserDataList[4*page + 2]
+        val allUserData4 = allUserDataList[4*page + 3]
+        val allUserWorldDataList1: List<String> = allUserData1.worldData
+            .split("/")
+            .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
+        val allUserWorldDataList2: List<String> = allUserData2.worldData
+            .split("/")
+            .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
+        val allUserWorldDataList3: List<String> = allUserData3.worldData
+            .split("/")
+            .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
+        val allUserWorldDataList4: List<String> = allUserData4.worldData
+            .split("/")
+            .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
 
         val currentDate =
             LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
@@ -100,6 +122,16 @@ class ChatViewModel @Inject constructor(
                 patDataList = patDataList,
                 itemDataList = itemDataList,
                 allUserDataList =  allUserDataList,
+                page = page,
+                allUserData1 = allUserData1,
+                allUserData2 = allUserData2,
+                allUserData3 = allUserData3,
+                allUserData4 = allUserData4,
+                allUserWorldDataList1 = allUserWorldDataList1,
+                allUserWorldDataList2 = allUserWorldDataList2,
+                allUserWorldDataList3 = allUserWorldDataList3,
+                allUserWorldDataList4 = allUserWorldDataList4,
+                allUserRankDataList = allUserRankDataList,
                 allAreaCount = allAreaCount
             )
         }
@@ -126,180 +158,261 @@ class ChatViewModel @Inject constructor(
 
     }
 
-    fun onAskSubmitClick() = intent {
-        val currentMessage = state.newChat.trim()
-        val userName = state.userDataList.find { it.id == "name" }!!.value // 또는 상태에서 유저 이름을 가져올 수 있다면 사용
-        val userId = state.userDataList.find { it.id == "auth" }!!.value
-        val userTag = state.userDataList.find { it.id == "auth" }!!.value2
-        val userBan = state.userDataList.find { it.id == "community" }!!.value3
+    fun onUpdateCheckClick() = intent {
 
-        if (currentMessage.isEmpty()) return@intent
+        reduce {
+            state.copy(
+                situation = "updateLoading"
+            )
+        }
 
-        val timestamp = System.currentTimeMillis()
-        val todayDocId = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date())
+        val db = Firebase.firestore
+        db.collection("users")
+            .orderBy("lastLogin", Query.Direction.DESCENDING) // 최신순 정렬
+            .limit(1000) // 최대 1000개만 가져오기
+            .get()
+            .addOnSuccessListener { result ->
+                for (doc in result) {
+                    try {
+                        val gameMap = doc.get("game") as? Map<String, String> ?: emptyMap()
+                        val communityMap = doc.get("community") as? Map<String, String> ?: emptyMap()
+                        val dateMap = doc.get("date") as? Map<String, String> ?: emptyMap()
+                        val itemMap = doc.get("item") as? Map<String, String> ?: emptyMap()
+                        val patMap = doc.get("pat") as? Map<String, String> ?: emptyMap()
 
-        val chatData = mapOf(
-            "message" to currentMessage,
-            "name" to userName,
-            "ban" to userBan,
-            "tag" to userTag,
-            "uid" to userId
-        )
+                        val worldMap = doc.get("world") as? Map<String, Map<String, String>> ?: emptyMap()
 
-        Firebase.firestore.collection("ask")
-            .document(todayDocId)
-            .set(mapOf(timestamp.toString() to chatData), SetOptions.merge())
-            .addOnSuccessListener {
-                Log.d("ChatSubmit", "채팅 전송 성공 (merge)")
-                viewModelScope.launch {
-                    postSideEffect(ChatSideEffect.Toast("도란도란을 전송했습니다 :)"))
+                        val worldData = worldMap.entries.joinToString("/") { (_, innerMap) ->
+                            val id = innerMap["id"].orEmpty()
+                            val size = innerMap["size"].orEmpty()
+                            val type = innerMap["type"].orEmpty()
+                            val x = innerMap["x"].orEmpty()
+                            val y = innerMap["y"].orEmpty()
+                            val effect = innerMap["effect"].orEmpty()
+                            "$id@$size@$type@$x@$y@$effect"
+                        }
+
+                        val allUser = AllUser(
+                            tag = doc.getString("tag").orEmpty(),
+                            lastLogin = doc.getString("lastLogin").orEmpty().toLongOrNull() ?: 0L,
+                            ban = communityMap["ban"].orEmpty(),
+                            like = communityMap["like"].orEmpty(),
+                            warning = communityMap["introduction"].orEmpty() + "@" + communityMap["medal"].orEmpty(),
+                            firstDate = dateMap["firstDate"].orEmpty(),
+                            firstGame = gameMap["firstGame"].orEmpty(),
+                            secondGame = gameMap["secondGame"].orEmpty(),
+                            thirdGameEasy = gameMap["thirdGameEasy"].orEmpty(),
+                            thirdGameNormal = gameMap["thirdGameNormal"].orEmpty(),
+                            thirdGameHard = gameMap["thirdGameHard"].orEmpty(),
+                            openItem = itemMap["openItem"].orEmpty(),
+                            area = doc.getString("area").orEmpty(),
+                            name = doc.getString("name").orEmpty(),
+                            openPat = patMap["openPat"].orEmpty(),
+                            openArea = doc.getString("openArea").orEmpty(),
+                            totalDate = dateMap["totalDate"].orEmpty(),
+                            worldData = worldData
+                        )
+
+                        viewModelScope.launch {
+                            allUserDao.insert(allUser)
+                        }
+
+                    } catch (e: Exception) {
+                        Log.e("DB", "문서 처리 실패: ${doc.id}", e)
+                    }
                 }
+
+                viewModelScope.launch {
+                    val uid = userDao.getValueById("auth")
+
+                    val userDocRef = Firebase.firestore
+                        .collection("users")
+                        .document(uid)
+
+                    try {
+                        val snapshot = userDocRef.get().await()
+
+                        // community map 가져오기
+                        val communityMap = snapshot.get("community") as? Map<String, Any>
+
+                        // like 값
+                        val likeValue = communityMap?.get("like") as? String
+                        if (likeValue != null) {
+                            userDao.update(id = "community", value = likeValue)
+                            Log.d("Firestore", "community.like = $likeValue 로 업데이트 완료")
+                        } else {
+                            Log.d("Firestore", "community.like 없음 → 업데이트 취소")
+                        }
+
+                        // 🔥 ban 값 → value3에 저장
+                        val banValue = communityMap?.get("ban") as? String
+                        if (banValue != null) {
+                            userDao.update(id = "community", value3 = banValue)
+                            Log.d("Firestore", "community.ban = $banValue 로 value3 업데이트 완료")
+                        } else {
+                            Log.d("Firestore", "community.ban 없음 → 업데이트 취소")
+                        }
+
+                    } catch (e: Exception) {
+                        Log.e("Firestore", "community 데이터 가져오기 실패", e)
+                    }
+                }
+
+                viewModelScope.launch {
+                    try {
+                        userDao.update(
+                            id = "etc",
+                            value2 = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+                        )
+
+                        reduce { state.copy(situation = "world") }
+
+                        loadData()
+
+                    } catch (e: Exception) {
+                        Log.e("DB", "update 실패", e)
+                    }
+                }
+
+                Log.e("login", "allUser 가져옴")
             }
             .addOnFailureListener { e ->
-                Log.e("ChatSubmit", "채팅 전송 실패: ${e.message}")
+                Log.e("login", "users 컬렉션 가져오기 실패", e)
                 viewModelScope.launch {
-                    postSideEffect(ChatSideEffect.Toast("전송에 실패했습니다."))
+                    postSideEffect(CommunitySideEffect.Toast("인터넷 연결 오류"))
                 }
             }
 
-        // 입력 필드 초기화
-        reduce {
-            state.copy(
-                newChat = "",
-                dialogState = ""
-            )
-        }
     }
 
-    fun onAskClick(message: String) = intent {
-        reduce {
-            state.copy(
-                newChat = message,
-                dialogState = "askWrite"
-            )
-        }
-    }
+    fun opPageUpClick() = intent {
 
-    private fun loadChatMessages() {
-        Firebase.firestore.collection("chat")
-            .addSnapshotListener { snapshot, error ->
-                Log.d("CommunityViewModel", "전체 채팅 스냅샷 수신됨")
+        val page = state.page
+        val allUserDataList = state.allUserDataList
 
-                if (error != null) {
-                    Log.e("CommunityViewModel", "채팅 데이터 에러: ${error.message}")
-                    return@addSnapshotListener
-                }
+        if (allUserDataList.size > page * 4 + 8) {
+            //다음 페이지
+            val allUserData1 = allUserDataList[4*page + 4]
+            val allUserData2 = allUserDataList[4*page + 5]
+            val allUserData3 = allUserDataList[4*page + 6]
+            val allUserData4 = allUserDataList[4*page + 7]
+            val allUserWorldDataList1: List<String> = allUserData1.worldData
+                .split("/")
+                .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
+            val allUserWorldDataList2: List<String> = allUserData2.worldData
+                .split("/")
+                .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
+            val allUserWorldDataList3: List<String> = allUserData3.worldData
+                .split("/")
+                .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
+            val allUserWorldDataList4: List<String> = allUserData4.worldData
+                .split("/")
+                .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
 
-
-                if (snapshot != null && !snapshot.isEmpty) {
-                    val allMessages = mutableListOf<ChatMessage>()
-
-
-                    for (doc in snapshot.documents) {
-
-
-                        val data = doc.data ?: continue
-                        val messages = data.mapNotNull { (key, value) ->
-                            val timestamp = key.toLongOrNull() ?: return@mapNotNull null
-                            val map = value as? Map<*, *> ?: return@mapNotNull null
-                            val message = map["message"] as? String
-                            val name = map["name"] as? String
-                            val tag = map["tag"] as? String
-                            val ban = map["ban"] as? String
-                            val uid = map["uid"] as? String
-
-
-                            if (message != null && name != null && tag != null && ban != null && uid != null) {
-                                ChatMessage(timestamp, message, name, tag, ban, uid)
-                            } else null
-
-                        }
-                        allMessages.addAll(messages)
-                    }
-
-                    val sorted = allMessages.sortedBy { it.timestamp }
-
-                    viewModelScope.launch {
-                        intent {
-                            reduce {
-                                state.copy(chatMessages = sorted)
-                            }
-                        }
-
-                    }
-                } else {
-                    Log.w("CommunityViewModel", "chat 컬렉션에 문서가 없음")
-                }
-
+            userDao.update(id = "etc", value = (page+1).toString())
+            reduce {
+                state.copy(
+                    page = page + 1,
+                    allUserData1 = allUserData1,
+                    allUserData2 = allUserData2,
+                    allUserData3 = allUserData3,
+                    allUserData4 = allUserData4,
+                    allUserWorldDataList1 = allUserWorldDataList1,
+                    allUserWorldDataList2 = allUserWorldDataList2,
+                    allUserWorldDataList3 = allUserWorldDataList3,
+                    allUserWorldDataList4 = allUserWorldDataList4
+                )
             }
-    }
 
+        } else {
+            //첫 페이지
+
+            val allUserData1 = allUserDataList[0]
+            val allUserData2 = allUserDataList[1]
+            val allUserData3 = allUserDataList[2]
+            val allUserData4 = allUserDataList[3]
+            val allUserWorldDataList1: List<String> = allUserData1.worldData
+                .split("/")
+                .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
+            val allUserWorldDataList2: List<String> = allUserData2.worldData
+                .split("/")
+                .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
+            val allUserWorldDataList3: List<String> = allUserData3.worldData
+                .split("/")
+                .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
+            val allUserWorldDataList4: List<String> = allUserData4.worldData
+                .split("/")
+                .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
+
+            userDao.update(id = "etc", value = "0")
+            reduce {
+                state.copy(
+                    page = 0,
+                    allUserData1 = allUserData1,
+                    allUserData2 = allUserData2,
+                    allUserData3 = allUserData3,
+                    allUserData4 = allUserData4,
+                    allUserWorldDataList1 = allUserWorldDataList1,
+                    allUserWorldDataList2 = allUserWorldDataList2,
+                    allUserWorldDataList3 = allUserWorldDataList3,
+                    allUserWorldDataList4 = allUserWorldDataList4
+                )
+            }
+        }
+
+    }
 
     fun onSituationChange(newSituation: String) = intent {
         reduce {
+            val sortedList = when (newSituation) {
+                "firstGame" -> state.allUserRankDataList.sortedByDescending { it.firstGame.toInt() }
+                "secondGame" -> state.allUserRankDataList.sortedBy { it.secondGame.toDouble() }
+                "thirdGameEasy" -> state.allUserRankDataList.sortedByDescending { it.thirdGameEasy.toInt() }
+                "thirdGameNormal" -> state.allUserRankDataList.sortedByDescending { it.thirdGameNormal.toInt() }
+                "thirdGameHard" -> state.allUserRankDataList.sortedByDescending { it.thirdGameHard.toInt() }
+
+                else -> state.allUserRankDataList
+            }
 
             state.copy(
                 situation = newSituation,
+                allUserRankDataList = sortedList
             )
+        }
+    }
+
+    fun onUserWorldClick(clickUserNumber: Int) = intent {
+        val selectedUser = when (clickUserNumber) {
+            1 -> state.allUserData1
+            2 -> state.allUserData2
+            3 -> state.allUserData3
+            4 -> state.allUserData4
+            else -> AllUser()
+        }
+        val selectedUserWorldDataList = when (clickUserNumber) {
+            1 -> state.allUserWorldDataList1
+            2 -> state.allUserWorldDataList2
+            3 -> state.allUserWorldDataList3
+            4 -> state.allUserWorldDataList4
+            else -> emptyList()
+        }
+        reduce {
+            state.copy(
+                clickAllUserData = selectedUser,
+                clickAllUserWorldDataList = selectedUserWorldDataList)
         }
     }
 
     fun onUserRankClick(userTag: Int) = intent {
-        if(userTag == 0){
-            reduce {
-                state.copy(
-                    clickAllUserData = AllUser(),
-                    clickAllUserWorldDataList = emptyList()
-                )
-            }
-        } else {
-            val selectedUser = state.allUserDataList.find { it.tag == userTag.toString() }
-            val selectedUserWorldDataList: List<String> = selectedUser!!.worldData
-                .split("/")
-                .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
+        val selectedUser = state.allUserDataList.find { it.tag == userTag.toString() }
+        val selectedUserWorldDataList: List<String> = selectedUser!!.worldData
+            .split("/")
+            .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
 
-            reduce {
-                state.copy(
-                    clickAllUserData = selectedUser,
-                    clickAllUserWorldDataList = selectedUserWorldDataList
-                )
-            }
-        }
-    }
-
-    fun onChatSubmitClick() = intent {
-        val currentMessage = state.newChat.trim()
-        val userName = state.userDataList.find { it.id == "name" }!!.value // 또는 상태에서 유저 이름을 가져올 수 있다면 사용
-        val userId = state.userDataList.find { it.id == "auth" }!!.value
-        val userTag = state.userDataList.find { it.id == "auth" }!!.value2
-        val userBan = state.userDataList.find { it.id == "community" }!!.value3
-
-        if (currentMessage.isEmpty()) return@intent
-
-        val timestamp = System.currentTimeMillis()
-        val todayDocId = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date())
-
-        val chatData = mapOf(
-            "message" to currentMessage,
-            "name" to userName,
-            "ban" to userBan,
-            "tag" to userTag,
-            "uid" to userId
-        )
-
-        Firebase.firestore.collection("chat")
-            .document(todayDocId)
-            .set(mapOf(timestamp.toString() to chatData), SetOptions.merge())
-            .addOnSuccessListener {
-                Log.d("ChatSubmit", "채팅 전송 성공 (merge)")
-            }
-            .addOnFailureListener { e ->
-                Log.e("ChatSubmit", "채팅 전송 실패: ${e.message}")
-            }
-
-        // 입력 필드 초기화
         reduce {
-            state.copy(newChat = "")
+            state.copy(
+                clickAllUserData = selectedUser,
+                clickAllUserWorldDataList = selectedUserWorldDataList)
         }
     }
 
@@ -308,9 +421,9 @@ class ChatViewModel @Inject constructor(
     fun onChatTextChange(chatText: String) = blockingIntent {
 
 //        if (chatText.length <= 50) {
-        reduce {
-            state.copy(newChat = chatText)
-        }
+            reduce {
+                state.copy(newChat = chatText)
+            }
 //        }
     }
 
@@ -394,7 +507,7 @@ class ChatViewModel @Inject constructor(
 
                                         if (time == messageData.timestamp && firstFromUID == fromUID) {
                                             viewModelScope.launch {
-                                                postSideEffect(ChatSideEffect.Toast("이미 신고가 접수되었습니다."))
+                                                postSideEffect(CommunitySideEffect.Toast("이미 신고가 접수되었습니다."))
                                             }
                                             return@addOnSuccessListener  // 함수 조기 종료
                                         }
@@ -442,10 +555,10 @@ class ChatViewModel @Inject constructor(
                             .addOnFailureListener { e ->
                                 Log.e("BanCheck", "ban 문서 불러오기 실패: ${e.message}")
                             }
-                    }
+}
 
                     viewModelScope.launch {
-                        postSideEffect(ChatSideEffect.Toast("신고가 접수되었습니다"))
+                        postSideEffect(CommunitySideEffect.Toast("신고가 접수되었습니다"))
                     }
 
                 }
@@ -552,12 +665,12 @@ class ChatViewModel @Inject constructor(
                                 }
 
                             viewModelScope.launch {
-                                postSideEffect(ChatSideEffect.Toast("좋아요를 눌렀습니다"))
+                                postSideEffect(CommunitySideEffect.Toast("좋아요를 눌렀습니다"))
                             }
                         } else {
                             // 이미 존재할 때 Toast 띄우기
                             viewModelScope.launch {
-                                postSideEffect(ChatSideEffect.Toast("이미 좋아요를 눌렀습니다"))
+                                postSideEffect(CommunitySideEffect.Toast("이미 좋아요를 눌렀습니다"))
                             }
                         }
                     } else {
@@ -649,107 +762,40 @@ class ChatViewModel @Inject constructor(
 
 
                         viewModelScope.launch {
-                            postSideEffect(ChatSideEffect.Toast("좋아요를 눌렀습니다 +1000달빛"))
+                            postSideEffect(CommunitySideEffect.Toast("좋아요를 눌렀습니다 +1000달빛"))
                         }
                     }
                 }
                 .addOnFailureListener { e ->
                     Log.e("Firebase", "Error accessing community document", e)
                     viewModelScope.launch {
-                        postSideEffect(ChatSideEffect.Toast("인터넷 오류"))
+                        postSideEffect(CommunitySideEffect.Toast("인터넷 오류"))
                     }
                 }
 
             loadData()
         } else {
-            postSideEffect(ChatSideEffect.Toast("좋아요는 내일부터 누를 수 있습니다"))
+            postSideEffect(CommunitySideEffect.Toast("좋아요는 내일부터 누를 수 있습니다"))
         }
-    }
-
-    fun onPrivateChatStartClick() = intent {
-        val myTag = state.userDataList.find { it.id == "auth" }!!.value2
-        val yourTag = state.clickAllUserData.tag
-
-        val myNum = myTag.toLongOrNull() ?: 0L
-        val yourNum = yourTag.toLongOrNull() ?: 0L
-
-        // 🔻 작은 숫자가 앞으로 오도록
-        val docId = if (myNum < yourNum) "${myTag}_${yourTag}" else "${yourTag}_${myTag}"
-
-        val docRef = Firebase.firestore
-            .collection("chatting")
-            .document("privateChat")
-            .collection("privateChat")
-            .document(docId)
-
-        // 🔍 문서 존재 여부 확인
-        docRef.get()
-            .addOnSuccessListener { snapshot ->
-                if (snapshot.exists()) {
-                    // 🔥 이미 방이 존재
-                    viewModelScope.launch {
-                        intent {
-                            postSideEffect(ChatSideEffect.Toast("이미 채팅방이 존재합니다."))
-                            postSideEffect(ChatSideEffect.NavigateToPrivateRoomScreen)
-
-                        }
-                    }
-                    return@addOnSuccessListener
-                }
-
-                // 📌 participants 배열 생성
-                val u1 = if (myNum < yourNum) myTag else yourTag
-                val u2 = if (myNum < yourNum) yourTag else myTag
-
-                // 📌 방 생성 데이터
-                val chatInitData = mapOf(
-                    "user1" to u1,
-                    "user2" to u2,
-                    "participants" to listOf(u1, u2),   // ⬅⬅⬅ 핵심 추가!
-                    "createdAt" to System.currentTimeMillis(),
-                    "last1" to System.currentTimeMillis(),
-                    "last2" to System.currentTimeMillis(),
-                    "lastMessage" to "",
-                    "name1" to state.userDataList.find { it.id == "name" }!!.value,
-                    "name2" to state.clickAllUserData.name,
-                    "createUser" to state.userDataList.find { it.id == "auth" }!!.value
-                )
-
-                // 문서 생성
-                docRef.set(chatInitData)
-                    .addOnSuccessListener {
-                        viewModelScope.launch {
-                            intent {
-                                postSideEffect(ChatSideEffect.Toast("채팅방 생성 완료!"))
-                                postSideEffect(ChatSideEffect.NavigateToPrivateRoomScreen)
-                            }
-                        }
-                    }
-                    .addOnFailureListener {
-                        viewModelScope.launch {
-                            intent {
-                                postSideEffect(ChatSideEffect.Toast("채팅방 생성 실패"))
-                            }
-                        }
-                    }
-            }
-            .addOnFailureListener {
-                viewModelScope.launch {
-                    intent {
-                        postSideEffect(ChatSideEffect.Toast("오류 발생"))
-                    }
-                }
-            }
     }
 
 }
 
 @Immutable
-data class ChatState(
+data class CommunityState(
     val userDataList: List<User> = emptyList(),
     val patDataList: List<Pat> = emptyList(),
     val itemDataList: List<Item> = emptyList(),
+    val page: Int = 0,
     val allUserDataList: List<AllUser> = emptyList(),
+    val allUserData1: AllUser = AllUser(),
+    val allUserData2: AllUser = AllUser(),
+    val allUserData3: AllUser = AllUser(),
+    val allUserData4: AllUser = AllUser(),
+    val allUserWorldDataList1: List<String> = emptyList(),
+    val allUserWorldDataList2: List<String> = emptyList(),
+    val allUserWorldDataList3: List<String> = emptyList(),
+    val allUserWorldDataList4: List<String> = emptyList(),
     val situation: String = "world",
     val clickAllUserData: AllUser = AllUser(),
     val clickAllUserWorldDataList: List<String> = emptyList(),
@@ -775,8 +821,8 @@ data class ChatMessage(
 
 
 //상태와 관련없는 것
-sealed interface ChatSideEffect{
-    class Toast(val message:String): ChatSideEffect
-    data object NavigateToPrivateRoomScreen: ChatSideEffect
+sealed interface CommunitySideEffect{
+    class Toast(val message:String): CommunitySideEffect
+//    data object NavigateToDailyActivity: LoadingSideEffect
 
 }

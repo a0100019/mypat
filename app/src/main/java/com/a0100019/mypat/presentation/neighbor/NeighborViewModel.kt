@@ -1,15 +1,8 @@
-package com.a0100019.mypat.presentation.loading
+package com.a0100019.mypat.presentation.neighbor
 
-import android.content.Context
-import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
-import com.a0100019.mypat.data.room.allUser.AllUserDao
-import com.a0100019.mypat.data.room.area.AreaDao
-import com.a0100019.mypat.data.room.item.ItemDao
-import com.a0100019.mypat.data.room.pat.PatDao
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
-import com.a0100019.mypat.data.room.world.WorldDao
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import org.orbitmvi.orbit.Container
@@ -22,21 +15,16 @@ import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 
 @HiltViewModel
-class LoadingViewModel @Inject constructor(
+class NeighborViewModel @Inject constructor(
     private val userDao: UserDao,
-    private val worldDao: WorldDao,
-    private val patDao: PatDao,
-    private val itemDao: ItemDao,
-    private val allUserDao: AllUserDao,
-    private val areaDao: AreaDao
-) : ViewModel(), ContainerHost<LoadingState, LoadingSideEffect> {
+) : ViewModel(), ContainerHost<NeighborState, NeighborSideEffect> {
 
-    override val container: Container<LoadingState, LoadingSideEffect> = container(
-        initialState = LoadingState(),
+    override val container: Container<NeighborState, NeighborSideEffect> = container(
+        initialState = NeighborState(),
         buildSettings = {
             this.exceptionHandler = CoroutineExceptionHandler { _ , throwable ->
                 intent {
-                    postSideEffect(LoadingSideEffect.Toast(message = throwable.message.orEmpty()))
+                    postSideEffect(NeighborSideEffect.Toast(message = throwable.message.orEmpty()))
                 }
             }
         }
@@ -50,8 +38,7 @@ class LoadingViewModel @Inject constructor(
     //room에서 데이터 가져옴
     private fun loadData() = intent {
 
-        }
-
+    }
 
     fun onClose() = intent {
         reduce {
@@ -64,17 +51,15 @@ class LoadingViewModel @Inject constructor(
 }
 
 
-
-
 @Immutable
-data class LoadingState(
-    val userDataList: List<User> = emptyList()
+data class NeighborState(
+    val userData: List<User> = emptyList()
 )
 
 
 //상태와 관련없는 것
-sealed interface LoadingSideEffect{
-    class Toast(val message:String): LoadingSideEffect
+sealed interface NeighborSideEffect{
+    class Toast(val message:String): NeighborSideEffect
 //    data object NavigateToDailyActivity: LoadingSideEffect
 
 }

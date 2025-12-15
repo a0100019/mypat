@@ -1,5 +1,6 @@
 package com.a0100019.mypat.presentation.store
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.yml.charts.common.extensions.isNotNull
@@ -14,6 +15,7 @@ import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.data.room.world.WorldDao
+import com.a0100019.mypat.presentation.main.management.ManagementSideEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -349,10 +351,10 @@ class StoreViewModel @Inject constructor(
     }
 
     fun onItemStoreClick() = intent {
+        Log.d("STORE", "onItemStoreClick start")
         val moneyField = state.userData.find { it.id == "money" }
 
         if(moneyField!!.value2.toInt() >= state.itemPrice){
-            moneyField.value2 = (moneyField.value2.toInt() - state.itemPrice).toString()
 
             val shuffledItemDataList: MutableList<String> = (
                     state.allCloseItemDataList.map { "item@${it.id}@${it.url}@${it.name}" } +
@@ -363,16 +365,41 @@ class StoreViewModel @Inject constructor(
                 .toMutableList()
 
             if(shuffledItemDataList.isEmpty()) {
+                Log.d("STORE", "ALL ITEM GET -> RETURN")
                 postSideEffect(StoreSideEffect.Toast("아이템을 모두 얻었습니다!"))
-                val today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-                letterDao.updateDateByTitle(title = "모든 아이템 획득 축하 편지", todayDate = today)
+                //매달, medal, 칭호10
+                val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
+
+                val myMedalList: MutableList<Int> =
+                    myMedal
+                        .split("/")
+                        .mapNotNull { it.toIntOrNull() }
+                        .toMutableList()
+
+                // 🔥 여기 숫자 두개 바꾸면 됨
+                if (!myMedalList.contains(10)) {
+                    myMedalList.add(10)
+
+                    // 다시 문자열로 합치기
+                    val updatedMedal = myMedalList.joinToString("/")
+
+                    // DB 업데이트
+                    userDao.update(
+                        id = "etc",
+                        value3 = updatedMedal
+                    )
+                    postSideEffect(StoreSideEffect.Toast("칭호를 획득했습니다!"))
+                }
                 return@intent
             }
+
             // 부족한 경우 기본 객체 추가
             while (shuffledItemDataList.size < 5) {
                 shuffledItemDataList.add("@@@")
             }
 
+            Log.d("STORE", "UPDATE MONEY")
+            moneyField.value2 = (moneyField.value2.toInt() - state.itemPrice).toString()
             userDao.update(id = moneyField.id, value2 = moneyField.value2)
             reduce {
                 state.copy(
@@ -390,7 +417,6 @@ class StoreViewModel @Inject constructor(
         val moneyField = state.userData.find { it.id == "money" }
 
         if(moneyField!!.value.toInt() >= state.patPrice){
-            moneyField.value = (moneyField.value.toInt() - state.patPrice).toString()
 
             val randomPatList = state.allClosePatDataList
                 .shuffled()
@@ -410,6 +436,7 @@ class StoreViewModel @Inject constructor(
             // 각 요소를 두 번씩 추가
             val patEggDataList = (randomPatList + randomPatList).shuffled()
 
+            moneyField.value = (moneyField.value.toInt() - state.patPrice).toString()
             userDao.update(id = moneyField.id, value = moneyField.value)
             reduce {
                 state.copy(

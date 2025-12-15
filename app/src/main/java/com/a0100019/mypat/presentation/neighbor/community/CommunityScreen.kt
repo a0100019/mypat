@@ -1,4 +1,4 @@
-package com.a0100019.mypat.presentation.community
+package com.a0100019.mypat.presentation.neighbor.community
 
 import android.content.Context
 import android.widget.Toast
@@ -172,6 +172,10 @@ fun CommunityScreen(
     if(situation == "update") {
         CommunityUpdateCheckDialog(
             onConfirmClick = onUpdateCheckClick,
+            onDismissClick = popBackStack
+        )
+    } else if(situation == "updateLoading") {
+        CommunityUpdateLoadingDialog(
             onDismissClick = popBackStack
         )
     }

@@ -62,15 +62,14 @@ fun MainScreen(
     onStoreNavigateClick: () -> Unit,
     onIndexNavigateClick: () -> Unit,
     onInformationNavigateClick: () -> Unit,
-    onCommunityNavigateClick: () -> Unit,
     onSettingNavigateClick: () -> Unit,
     onWorldNavigateClick: () -> Unit,
     onFirstGameNavigateClick: () -> Unit,
     onSecondGameNavigateClick: () -> Unit,
     onThirdGameNavigateClick: () -> Unit,
-    onChatNavigateClick: () -> Unit,
     onOperatorNavigateClick: () -> Unit,
     onPrivateRoomNavigateClick: () -> Unit,
+    onNeighborNavigateClick: () -> Unit = {}
 
     ) {
 
@@ -96,14 +95,13 @@ fun MainScreen(
         onStoreNavigateClick = onStoreNavigateClick,
         onSettingNavigateClick = onSettingNavigateClick,
         onInformationNavigateClick = onInformationNavigateClick,
-        onCommunityNavigateClick = onCommunityNavigateClick,
         onFirstGameNavigateClick = onFirstGameNavigateClick,
         onSecondGameNavigateClick = onSecondGameNavigateClick,
         onThirdGameNavigateClick = onThirdGameNavigateClick,
         onWorldNavigateClick = onWorldNavigateClick,
-        onChatNavigateClick = onChatNavigateClick,
         onOperatorNavigateClick = onOperatorNavigateClick,
         onPrivateRoomNavigateClick = onPrivateRoomNavigateClick,
+        onNeighborNavigateClick = onNeighborNavigateClick,
 
         onLetterReadClick = mainViewModel::onLetterReadClick,
         onLetterLinkClick = mainViewModel::onLetterLinkClick,
@@ -146,11 +144,10 @@ fun MainScreen(
     onSettingNavigateClick: () -> Unit,
     onWorldNavigateClick: () -> Unit,
     onInformationNavigateClick: () -> Unit,
-    onCommunityNavigateClick: () -> Unit,
     onFirstGameNavigateClick: () -> Unit,
     onSecondGameNavigateClick: () -> Unit,
     onThirdGameNavigateClick: () -> Unit,
-    onChatNavigateClick: () -> Unit = {},
+    onNeighborNavigateClick: () -> Unit = {},
     onOperatorNavigateClick: () -> Unit = {},
     onPrivateRoomNavigateClick: () -> Unit = {},
 
@@ -213,7 +210,7 @@ fun MainScreen(
                 state = "커뮤니티",
                 onChatClick = {
                     tutorialText = "완료"
-                    onChatNavigateClick()
+                    onNeighborNavigateClick()
                     tutorialPrefs.edit().putString("tutorial", "상점").apply()
                 }
             )
@@ -415,12 +412,8 @@ fun MainScreen(
                         onClick = onPrivateRoomNavigateClick
                     )
                     MainButton(
-                        text = "채팅",
-                        onClick = onChatNavigateClick
-                    )
-                    MainButton(
                         text = "이웃",
-                        onClick = onCommunityNavigateClick
+                        onClick = onNeighborNavigateClick
                     )
                     MainButton(
                         text = "꾸미기",
@@ -512,7 +505,6 @@ fun MainScreenPreview() {
             onStoreNavigateClick = {},
             onInformationNavigateClick = {},
             onWorldNavigateClick = {},
-            onCommunityNavigateClick = {},
             onSettingNavigateClick = {},
             onFirstGameNavigateClick = {},
             onSecondGameNavigateClick = {},

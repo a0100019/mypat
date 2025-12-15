@@ -8,6 +8,7 @@ import com.a0100019.mypat.data.room.english.EnglishDao
 import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiom
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
+import com.a0100019.mypat.presentation.daily.diary.DiarySideEffect
 import com.a0100019.mypat.presentation.daily.korean.KoreanSideEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -59,6 +60,33 @@ class EnglishViewModel @Inject constructor(
                 allWordsData = words,
                 userData = userData
             )
+        }
+
+        if(englishDataList.count { it.state == "완료" || it.state == "별"} >= 50) {
+            //매달, medal, 칭호7
+            val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
+
+            val myMedalList: MutableList<Int> =
+                myMedal
+                    .split("/")
+                    .mapNotNull { it.toIntOrNull() }
+                    .toMutableList()
+
+            // 🔥 여기 숫자 두개 바꾸면 됨
+            if (!myMedalList.contains(7)) {
+                myMedalList.add(7)
+
+                // 다시 문자열로 합치기
+                val updatedMedal = myMedalList.joinToString("/")
+
+                // DB 업데이트
+                userDao.update(
+                    id = "etc",
+                    value3 = updatedMedal
+                )
+
+                postSideEffect(EnglishSideEffect.Toast("칭호를 획득했습니다!"))
+            }
         }
 
     }

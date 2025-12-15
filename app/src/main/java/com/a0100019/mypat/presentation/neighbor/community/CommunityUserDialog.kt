@@ -1,4 +1,4 @@
-package com.a0100019.mypat.presentation.community
+package com.a0100019.mypat.presentation.neighbor.community
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -16,6 +17,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
@@ -40,8 +43,10 @@ import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.data.room.allUser.AllUser
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pat.Pat
+import com.a0100019.mypat.presentation.information.medalName
 import com.a0100019.mypat.presentation.ui.MusicPlayer
 import com.a0100019.mypat.presentation.ui.component.MainButton
+import com.a0100019.mypat.presentation.ui.component.TextAutoResizeSingleLine
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.image.item.WorldItemImage
 import com.a0100019.mypat.presentation.ui.image.pat.PatImage
@@ -62,6 +67,20 @@ fun CommunityUserDialog(
 ) {
 
     var page by remember { mutableIntStateOf(1) }
+
+    val introduction =
+        clickAllUserData
+            .warning
+            .split("@")
+            .first()
+
+    val medalList: List<Int> =
+        clickAllUserData
+            .warning
+            .split("@")
+            .last()
+            .split("/")              // ["1","3","12","5"]
+            .mapNotNull { it.toIntOrNull() } // [1,3,12,5]
 
     MusicPlayer(
         music = clickAllUserData.area
@@ -224,7 +243,7 @@ fun CommunityUserDialog(
                                         .padding(12.dp)
                                 ) {
                                     Text(
-                                        text = "소갯말ㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁ",
+                                        text = introduction,
                                         textAlign = TextAlign.Center,
                                         modifier = Modifier
                                             .fillMaxWidth()
@@ -312,13 +331,50 @@ fun CommunityUserDialog(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .aspectRatio(1f / 1.25f)
-                                .padding(start = 6.dp, end = 6.dp, top = 6.dp, bottom = 6.dp),
+                                .padding(6.dp),
                             shape = RoundedCornerShape(16.dp),
                             color = Color(0xFFFFF8E7),
                             border = BorderStroke(2.dp, MaterialTheme.colorScheme.primaryContainer),
-//                    shadowElevation = 8.dp,
                         ) {
-                            Text("칭호")
+                            LazyVerticalGrid(
+                                columns = GridCells.Fixed(3), // 한 줄에 3개
+                                modifier = Modifier.fillMaxSize(),
+                                contentPadding = PaddingValues(8.dp),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+
+                                //칭호개수 +1 만큼 아이템크기
+                                items(16) { index ->
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .background(
+                                                color = MaterialTheme.colorScheme.surface,
+                                                shape = RoundedCornerShape(12.dp)
+                                            )
+                                            .border(
+                                                1.dp,
+                                                MaterialTheme.colorScheme.outline,
+                                                RoundedCornerShape(12.dp)
+                                            )
+                                            .padding(vertical = 12.dp),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        TextAutoResizeSingleLine(
+                                            text = medalName(index+1),
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                        )
+                                        if (medalList.contains(index+1)) {
+                                            Text(
+                                                text = "획득",
+                                                style = MaterialTheme.typography.titleMedium,
+                                            )
+                                        }
+                                    }
+                                }
+                            }
                         }
 
                         Column(

@@ -45,6 +45,7 @@ import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.presentation.ui.component.MainButton
+import com.a0100019.mypat.presentation.ui.component.TextAutoResizeSingleLine
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.image.item.WorldItemImage
 import com.a0100019.mypat.presentation.ui.image.pat.PatImage
@@ -87,7 +88,8 @@ fun InformationScreen(
         onTextChange = informationViewModel::onTextChange,
         onSituationChange = informationViewModel::onSituationChange,
         onClose = informationViewModel::onClose,
-        onIntroductionChangeClick = informationViewModel::onIntroductionChangeClick
+        onIntroductionChangeClick = informationViewModel::onIntroductionChangeClick,
+        onMedalChangeClick = informationViewModel::onMedalChangeClick
 
         )
 }
@@ -110,15 +112,27 @@ fun InformationScreen(
     onTextChange: (String) -> Unit = {},
     onSituationChange: (String) -> Unit = {},
     onClose: () -> Unit = {},
-    onIntroductionChangeClick: () -> Unit = {}
+    onIntroductionChangeClick: () -> Unit = {},
+    onMedalChangeClick: (Int) -> Unit = {},
 
     ) {
 
     var page by remember { mutableIntStateOf(1) }
 
+    val myMedalString = userDataList.find { it.id == "etc" }?.value3 ?: ""
+
+    val myMedalList: List<Int> =
+        myMedalString
+            .split("/")              // ["1","3","12","5"]
+            .mapNotNull { it.toIntOrNull() } // [1,3,12,5]
+
     when(situation) {
         "medal" -> {
-
+            MedalChangeDialog(
+                onClose = onClose,
+                onMedalClick = onMedalChangeClick,
+                userDataList = userDataList
+            )
         }
         "introduction" -> {
             IntroductionChangeDialog(
@@ -183,7 +197,7 @@ fun InformationScreen(
 
             if(page == 0) {
                 Text(
-                    text = "칭호"
+                    text = medalName(myMedalList[0])
                 )
 
                 // 미니맵 뷰
@@ -346,13 +360,7 @@ fun InformationScreen(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
 
-                        val myMedalString = userDataList.find { it.id == "etc" }?.value3 ?: ""
-
-                        val myMedalList: List<Int> =
-                            myMedalString
-                                .split("/")              // ["1","3","12","5"]
-                                .mapNotNull { it.toIntOrNull() } // [1,3,12,5]
-
+                        //칭호개수 +1 만큼 아이템크기
                         items(16) { index ->
                             Box(
                                 modifier = Modifier
@@ -369,11 +377,12 @@ fun InformationScreen(
                                     .padding(vertical = 12.dp),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Text(
-                                    text = medalName(index),
-                                    style = MaterialTheme.typography.titleMedium,
+                                TextAutoResizeSingleLine(
+                                    text = medalName(index+1),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
                                 )
-                                if (myMedalList.contains(index)) {
+                                if (myMedalList.contains(index+1)) {
                                     Text(
                                         text = "획득",
                                         style = MaterialTheme.typography.titleMedium,

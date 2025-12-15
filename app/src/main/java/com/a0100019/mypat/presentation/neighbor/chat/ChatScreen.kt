@@ -1,4 +1,4 @@
-package com.a0100019.mypat.presentation.chat
+package com.a0100019.mypat.presentation.neighbor.chat
 
 import android.content.Context
 import android.widget.Toast
@@ -43,7 +43,7 @@ import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.domain.AppBgmManager
-import com.a0100019.mypat.presentation.community.CommunityUserDialog
+import com.a0100019.mypat.presentation.neighbor.community.CommunityUserDialog
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
@@ -62,7 +62,7 @@ fun ChatScreen(
     popBackStack: () -> Unit = {},
     onNavigateToPrivateRoomScreen: () -> Unit = {},
 
-) {
+    ) {
 
     val chatState : ChatState = chatViewModel.collectAsState().value
 
@@ -83,7 +83,6 @@ fun ChatScreen(
         allUserDataList = chatState.allUserDataList,
         clickAllUserData = chatState.clickAllUserData,
         clickAllUserWorldDataList = chatState.clickAllUserWorldDataList,
-        allUserRankDataList = chatState.allUserRankDataList,
         chatMessages = chatState.chatMessages,
         newChat = chatState.newChat,
         userDataList = chatState.userDataList,
@@ -106,7 +105,6 @@ fun ChatScreen(
         onCloseClick = chatViewModel::onCloseClick,
         onTextChange2 = chatViewModel::onTextChange2,
         onTextChange3 = chatViewModel::onTextChange3,
-        onAskClick = chatViewModel::onAskClick,
         onPrivateChatStartClick = chatViewModel::onPrivateChatStartClick
 
     )
@@ -115,13 +113,12 @@ fun ChatScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CommunityScreen(
-    situation : String = "chat",
+    situation : String = "",
     patDataList: List<Pat> = emptyList(),
     itemDataList: List<Item> = emptyList(),
     allUserDataList: List<AllUser> = emptyList(),
     clickAllUserData: AllUser = AllUser(),
     clickAllUserWorldDataList: List<String> = emptyList(),
-    allUserRankDataList: List<AllUser> = listOf(AllUser(), AllUser()),
     chatMessages: List<ChatMessage> = emptyList(),
     newChat: String = "",
     userDataList: List<User> = emptyList(),
@@ -131,7 +128,6 @@ fun CommunityScreen(
     text2: String = "",
     text3: String = "",
 
-    onPageUpClick: () -> Unit = {},
     onLikeClick: () -> Unit = {},
     onSituationChange: (String) -> Unit = {},
     onChatTextChange: (String) -> Unit = {},
@@ -145,7 +141,6 @@ fun CommunityScreen(
     onCloseClick: () -> Unit = {},
     onTextChange2: (String) -> Unit = {},
     onTextChange3: (String) -> Unit = {},
-    onAskClick: (String) -> Unit = {},
     onPrivateChatStartClick: () -> Unit = {},
 
     ) {
@@ -267,6 +262,8 @@ fun CommunityScreen(
                             )
                     ) {
 
+                        val authTag = userDataList.find { it.id == "auth" }?.value2
+
                         if(chatMessages.isNotEmpty()){
                             LazyColumn(
                                 modifier = Modifier
@@ -282,7 +279,10 @@ fun CommunityScreen(
                                     val isNotice = message.tag == "3"
 
                                     // 공지 여부 확인
-                                    val isMine = !isNotice && !isAsk && message.tag == userDataList.find { it.id == "auth" }!!.value2
+                                    val isMine = authTag != null &&
+                                            !isNotice && !isAsk &&
+                                            message.tag == authTag
+
 
                                     val alignment = when {
                                         isNotice -> Arrangement.Center // 공지는 가운데 정렬
@@ -458,7 +458,10 @@ fun CommunityScreen(
                                         }
                                         else -> {
                                             // 일반 채팅
-                                            if(message.ban == "0" || message.tag == userDataList.find { it.id == "auth" }!!.value2){
+                                            if (
+                                                message.ban == "0" ||
+                                                message.tag == authTag
+                                            ) {
                                                 Row(
                                                     modifier = Modifier
                                                         .fillMaxWidth()
@@ -474,7 +477,9 @@ fun CommunityScreen(
                                                         Row {
                                                             Row(
                                                                 modifier = Modifier.clickable {
-                                                                    onUserRankClick(message.tag.toInt())
+                                                                    message.tag.toIntOrNull()?.let {
+                                                                        onUserRankClick(it)
+                                                                    }
                                                                 }
                                                             ) {
                                                                 Text(
@@ -622,7 +627,7 @@ fun CommunityScreenPreview() {
     MypatTheme {
         CommunityScreen(
             userDataList = listOf(User(id = "auth")),
-            situation = "chat",
+            situation = "",
 //            chatMessages = emptyList()
             chatMessages = listOf(ChatMessage(10202020, "a", "a", tag = "1", ban = "0", uid = "hello"), ChatMessage(10202020, "a11", "a11", tag = "2", ban = "0", uid = "assssssssssssssssssssssssssssssssssssssds".repeat(5)), ChatMessage(10202020, "a11", "a11", tag = "3", ban = "0", uid = "adssssssssssssssssssssssssssssssssssssssssssssssssssss".repeat(5)))
         )

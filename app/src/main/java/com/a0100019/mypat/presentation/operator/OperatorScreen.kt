@@ -23,7 +23,7 @@ import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.domain.AppBgmManager
-import com.a0100019.mypat.presentation.community.CommunityUserDialog
+import com.a0100019.mypat.presentation.neighbor.community.CommunityUserDialog
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
