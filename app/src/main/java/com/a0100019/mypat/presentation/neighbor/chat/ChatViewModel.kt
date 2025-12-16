@@ -105,51 +105,6 @@ class ChatViewModel @Inject constructor(
 
     }
 
-    fun onAskSubmitClick() = intent {
-        val currentMessage = state.newChat.trim()
-        val userName = state.userDataList.find { it.id == "name" }!!.value // 또는 상태에서 유저 이름을 가져올 수 있다면 사용
-        val userId = state.userDataList.find { it.id == "auth" }!!.value
-        val userTag = state.userDataList.find { it.id == "auth" }!!.value2
-        val userBan = state.userDataList.find { it.id == "community" }!!.value3
-
-        if (currentMessage.isEmpty()) return@intent
-
-        val timestamp = System.currentTimeMillis()
-        val todayDocId = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date())
-
-        val chatData = mapOf(
-            "message" to currentMessage,
-            "name" to userName,
-            "ban" to userBan,
-            "tag" to userTag,
-            "uid" to userId
-        )
-
-        Firebase.firestore.collection("ask")
-            .document(todayDocId)
-            .set(mapOf(timestamp.toString() to chatData), SetOptions.merge())
-            .addOnSuccessListener {
-                Log.d("ChatSubmit", "채팅 전송 성공 (merge)")
-                viewModelScope.launch {
-                    postSideEffect(ChatSideEffect.Toast("도란도란을 전송했습니다 :)"))
-                }
-            }
-            .addOnFailureListener { e ->
-                Log.e("ChatSubmit", "채팅 전송 실패: ${e.message}")
-                viewModelScope.launch {
-                    postSideEffect(ChatSideEffect.Toast("전송에 실패했습니다."))
-                }
-            }
-
-        // 입력 필드 초기화
-        reduce {
-            state.copy(
-                newChat = "",
-                dialogState = ""
-            )
-        }
-    }
-
     private fun loadChatMessages() {
         Firebase.firestore.collection("chat")
             .addSnapshotListener { snapshot, error ->

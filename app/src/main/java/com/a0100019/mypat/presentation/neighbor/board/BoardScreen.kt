@@ -58,10 +58,21 @@ fun BoardScreen(
 
     BoardScreen(
         boardMessages = boardState.boardMessages,
+        myBoardMessages = boardState.myBoardMessages,
+        text = boardState.text,
+        boardType = boardState.boardType,
+        boardAnonymous = boardState.boardAnonymous,
+        situation = boardState.situation,
 
         onClose = boardViewModel::onClose,
         popBackStack = popBackStack,
-        onBoardMessageClick = boardViewModel::onBoardMessageClick
+        onBoardMessageClick = boardViewModel::onBoardMessageClick,
+        onBoardTypeChange = boardViewModel::onBoardTypeChange,
+        onBoardAnonymousChange = boardViewModel::onBoardAnonymousChange,
+        onSituationChange = boardViewModel::onSituationChange,
+        onTextChange = boardViewModel::onTextChange,
+        onBoardSubmitClick = boardViewModel::onBoardSubmitClick,
+        loadBoardMessages = boardViewModel::loadBoardMessages
     )
 }
 
@@ -69,11 +80,42 @@ fun BoardScreen(
 fun BoardScreen(
     text: String = "",
     boardMessages: List<BoardMessage> = emptyList(),
+    myBoardMessages: List<BoardMessage> = emptyList(),
+    boardType: String = "free",
+    boardAnonymous: String = "0",
+    situation: String = "",
 
     onClose: () -> Unit = {},
     popBackStack: () -> Unit = {},
-    onBoardMessageClick: (String) -> Unit = {}
+    onBoardMessageClick: (String) -> Unit = {},
+    onBoardTypeChange: (String) -> Unit = {},
+    onBoardAnonymousChange: (String) -> Unit = {},
+    onSituationChange: (String) -> Unit = {},
+    onTextChange: (String) -> Unit = {},
+    onBoardSubmitClick: () -> Unit = {},
+    loadBoardMessages: () -> Unit = {}
+
 ) {
+
+    when(situation) {
+        "boardSubmit" -> BoardSubmitDialog(
+            text = text,
+            anonymous = boardAnonymous,
+            type = boardType,
+            onClose = onClose,
+            onChangeAnonymousClick = onBoardAnonymousChange,
+            onChangeTypeClick = onBoardTypeChange,
+            onTextChange = onTextChange,
+            onConfirmClick = onBoardSubmitClick
+        )
+        "boardSubmitConfirm" -> BoardSubmitConfirmDialog(
+            onDismissClick = {
+                onClose()
+                loadBoardMessages()
+            }
+        )
+    }
+
     Surface(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -95,6 +137,18 @@ fun BoardScreen(
                     onClick = popBackStack,
                     text = "닫기"
                 )
+                MainButton(
+                    onClick = {
+                        onSituationChange("boardSubmit")
+                    },
+                    text = "게시글 작성하기"
+                )
+                MainButton(
+                    onClick = {
+                        if(situation == "myBoard") onSituationChange("") else onSituationChange("myBoard")
+                    },
+                    text = if(situation == "myBoard") "전체 게시물 보기" else "내 게시물 보기"
+                )
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -107,7 +161,9 @@ fun BoardScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
 
-                items(boardMessages) { message ->
+                items(
+                    if(situation == "myBoard") myBoardMessages.reversed() else boardMessages.reversed()
+                ) { message ->
                     val isAnonymous = message.anonymous == "1"
                     val displayName = if (isAnonymous) "익명" else message.name
 

@@ -10,14 +10,17 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -101,7 +104,6 @@ fun ChatScreen(
         alertStateChange = chatViewModel::alertStateChange,
         popBackStack = popBackStack,
         onDialogChangeClick = chatViewModel::onDialogChangeClick,
-        onAskSubmitClick = chatViewModel::onAskSubmitClick,
         onCloseClick = chatViewModel::onCloseClick,
         onTextChange2 = chatViewModel::onTextChange2,
         onTextChange3 = chatViewModel::onTextChange3,
@@ -127,6 +129,7 @@ fun CommunityScreen(
     dialogState: String = "",
     text2: String = "",
     text3: String = "",
+    anonymous: String = "0",
 
     onLikeClick: () -> Unit = {},
     onSituationChange: (String) -> Unit = {},
@@ -137,7 +140,6 @@ fun CommunityScreen(
     alertStateChange: (String) -> Unit = {},
     popBackStack: () -> Unit = {},
     onDialogChangeClick: (String) -> Unit = {},
-    onAskSubmitClick: () -> Unit = {},
     onCloseClick: () -> Unit = {},
     onTextChange2: (String) -> Unit = {},
     onTextChange3: (String) -> Unit = {},
@@ -150,12 +152,6 @@ fun CommunityScreen(
     val bgmOn = prefs.getBoolean("bgmOn", true)
 
     when(dialogState) {
-        "ask" -> CommunityAskDialog(
-            onClose = onCloseClick,
-            onTextChange = onChatTextChange,
-            text = newChat,
-            onConfirmClick = onAskSubmitClick,
-        )
         "privateChat" -> SimpleAlertDialog(
             onConfirm = {
                 onPrivateChatStartClick()
@@ -225,14 +221,6 @@ fun CommunityScreen(
                     contentAlignment = Alignment.Center
                 ) {
 
-                    MainButton(
-                        text = "도란도란",
-                        onClick = {
-                            onDialogChangeClick("ask")
-                        },
-                        modifier = Modifier.align(Alignment.CenterStart)
-                    )
-
                     Text(
                         text = "채팅",
                         style = MaterialTheme.typography.displayMedium,
@@ -250,7 +238,7 @@ fun CommunityScreen(
                     Column(
                         modifier = Modifier
                             .weight(1f)
-                            .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 70.dp)
+                            .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 20.dp)
                             .border(
                                 width = 2.dp,
                                 color = MaterialTheme.colorScheme.outline,
@@ -572,6 +560,23 @@ fun CommunityScreen(
                                 .padding(top = 3.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
+                            Box (
+                                contentAlignment = Alignment.TopCenter
+                            ) {
+                                Text(
+                                    text = "익명",
+                                    style = MaterialTheme.typography.labelLarge
+                                )
+                                
+                                Checkbox(
+                                    checked = anonymous == "1",
+                                    onCheckedChange = {
+//                                        onChangeAnonymousClick(if (it) "1" else "0")
+                                    }
+                                )
+
+                            }
+
                             TextField(
                                 value = newChat,
                                 onValueChange = onChatTextChange,

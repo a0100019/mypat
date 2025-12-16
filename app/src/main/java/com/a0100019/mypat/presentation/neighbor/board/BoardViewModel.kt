@@ -13,7 +13,7 @@ import com.a0100019.mypat.data.room.pat.PatDao
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.world.WorldDao
-import com.a0100019.mypat.presentation.privateChat.PrivateRoomSideEffect
+import com.a0100019.mypat.presentation.neighbor.chat.ChatSideEffect
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,6 +21,8 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
+import org.orbitmvi.orbit.annotation.OrbitExperimental
+import org.orbitmvi.orbit.syntax.simple.blockingIntent
 import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
@@ -79,18 +81,37 @@ class BoardViewModel @Inject constructor(
     fun onClose() = intent {
         reduce {
             state.copy(
-                situation = ""
+                situation = "",
+                text = "",
+                boardAnonymous = "0",
+                boardType = "free",
+
             )
         }
     }
 
-    private fun loadBoardMessages() = intent {
+    fun onSituationChange(situation: String) = intent {
 
-        Firebase.firestore
+        reduce {
+            state.copy(
+                situation = situation
+            )
+        }
+    }
+
+    fun loadBoardMessages() = intent {
+
+        val myTag = userDao.getAllUserData()
+            .find { it.id == "auth" }!!
+            .value2
+
+        val boardRef = Firebase.firestore
             .collection("chatting")
             .document("board")
             .collection("board")
-            // 🔑 문서명(timestamp) 기준 최신순
+
+        // 1️⃣ 전체 게시글 100개
+        boardRef
             .orderBy(
                 com.google.firebase.firestore.FieldPath.documentId(),
                 com.google.firebase.firestore.Query.Direction.DESCENDING
@@ -99,56 +120,150 @@ class BoardViewModel @Inject constructor(
             .get()
             .addOnSuccessListener { snapshot ->
 
-                if (snapshot.isEmpty) {
-                    Log.w("BoardViewModel", "board 컬렉션에 문서 없음")
-                    return@addOnSuccessListener
-                }
-
                 val boardMessages = snapshot.documents.mapNotNull { doc ->
-
-                    // 🔑 문서명 = timestamp
                     val timestamp = doc.id.toLongOrNull() ?: return@mapNotNull null
                     val data = doc.data ?: return@mapNotNull null
 
-                    val message = data["message"] as? String ?: return@mapNotNull null
-                    val name = data["name"] as? String ?: return@mapNotNull null
-                    val tag = data["tag"] as? String ?: return@mapNotNull null
-                    val ban = data["ban"] as? String ?: return@mapNotNull null
-                    val uid = data["uid"] as? String ?: return@mapNotNull null
-                    val type = data["type"] as? String ?: return@mapNotNull null
-                    val anonymous = data["anonymous"] as? String ?: return@mapNotNull null
-
                     BoardMessage(
                         timestamp = timestamp,
-                        message = message,
-                        name = name,
-                        tag = tag,
-                        ban = ban,
-                        uid = uid,
-                        type = type,
-                        anonymous = anonymous
+                        message = data["message"] as String,
+                        name = data["name"] as String,
+                        tag = data["tag"] as String,
+                        ban = data["ban"] as String,
+                        uid = data["uid"] as String,
+                        type = data["type"] as String,
+                        anonymous = data["anonymous"] as String
                     )
-                }
-                    // ⏱ UI용으로 다시 시간 오름차순
-                    .sortedBy { it.timestamp }
+                }.sortedBy { it.timestamp }
 
-                viewModelScope.launch {
-                    intent {
-                        reduce {
-                            state.copy(boardMessages = boardMessages)
+                // 2️⃣ 내 게시글 전부 (limit ❌)
+                boardRef
+                    .whereEqualTo("tag", myTag) // 👉 uid 추천
+                    .orderBy(
+                        com.google.firebase.firestore.FieldPath.documentId(),
+                        com.google.firebase.firestore.Query.Direction.DESCENDING
+                    )
+                    .get()
+                    .addOnSuccessListener { mySnapshot ->
+
+                        val myBoardMessages = mySnapshot.documents.mapNotNull { doc ->
+                            val timestamp = doc.id.toLongOrNull() ?: return@mapNotNull null
+                            val data = doc.data ?: return@mapNotNull null
+
+                            BoardMessage(
+                                timestamp = timestamp,
+                                message = data["message"] as String,
+                                name = data["name"] as String,
+                                tag = data["tag"] as String,
+                                ban = data["ban"] as String,
+                                uid = data["uid"] as String,
+                                type = data["type"] as String,
+                                anonymous = data["anonymous"] as String
+                            )
+                        }.sortedBy { it.timestamp }
+
+                        viewModelScope.launch {
+                            intent {
+                                reduce {
+                                    state.copy(
+                                        boardMessages = boardMessages,      // ✅ 전체 100개
+                                        myBoardMessages = myBoardMessages   // ✅ 내 글 전부
+                                    )
+                                }
+                            }
                         }
                     }
-                }
             }
             .addOnFailureListener { e ->
                 Log.e("BoardViewModel", "보드 메시지 로드 실패: ${e.message}")
             }
     }
 
+
     fun onBoardMessageClick(boardTimestamp: String) = intent {
 
         userDao.update(id = "etc2", value3 = boardTimestamp)
         postSideEffect(BoardSideEffect.NavigateToBoardMessageScreen)
+
+    }
+
+    fun onBoardTypeChange(type: String) = intent {
+
+        reduce {
+            state.copy(
+                boardType = type
+            )
+        }
+    }
+
+    fun onBoardAnonymousChange(anonymous: String) = intent {
+
+        reduce {
+            state.copy(
+                boardAnonymous = anonymous
+            )
+        }
+    }
+
+    //입력 가능하게 하는 코드
+    @OptIn(OrbitExperimental::class)
+    fun onTextChange(text: String) = blockingIntent {
+
+        reduce {
+            state.copy(text = text)
+        }
+    }
+
+    fun onBoardSubmitClick() = intent {
+
+        val currentMessage = state.text.trim()
+
+        // ❌ 10자 이하 → 토스트
+        if (currentMessage.length < 5) {
+            postSideEffect(BoardSideEffect.Toast("5자 이상 입력해주세요."))
+            return@intent
+        }
+
+        val userName = state.userDataList.find { it.id == "name" }!!.value
+        val userId = state.userDataList.find { it.id == "auth" }!!.value
+        val userTag = state.userDataList.find { it.id == "auth" }!!.value2
+        val userBan = state.userDataList.find { it.id == "community" }!!.value3
+
+        val timestamp = System.currentTimeMillis()
+
+        val boardData = mapOf(
+            "message" to currentMessage,
+            "name" to userName,
+            "tag" to userTag,
+            "ban" to userBan,
+            "uid" to userId,
+            "type" to state.boardType,        // ex) worry / free
+            "anonymous" to state.boardAnonymous // "0" / "1"
+        )
+
+        Firebase.firestore
+            .collection("chatting")
+            .document("board")
+            .collection("board")
+            .document(timestamp.toString()) // 🔑 문서명 = timestamp
+            .set(boardData)
+            .addOnSuccessListener {
+                Log.d("BoardSubmit", "보드 글 작성 성공")
+
+                viewModelScope.launch {
+                    reduce {
+                        state.copy(
+                            situation = "boardSubmitConfirm"
+                        )
+                    }
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("BoardSubmit", "보드 글 작성 실패: ${e.message}")
+                viewModelScope.launch {
+                    postSideEffect(BoardSideEffect.Toast("작성 실패"))
+                }
+            }
 
     }
 
@@ -160,25 +275,28 @@ data class BoardState(
     val patDataList: List<Pat> = emptyList(),
     val itemDataList: List<Item> = emptyList(),
     val allUserDataList: List<AllUser> = emptyList(),
-    val situation: String = "world",
+    val situation: String = "",
     val clickAllUserData: AllUser = AllUser(),
     val clickAllUserWorldDataList: List<String> = emptyList(),
-    val newChat: String = "",
     val allAreaCount: String = "",
     val boardMessages: List<BoardMessage> = emptyList(),
+    val myBoardMessages: List<BoardMessage> = emptyList(),
+    val text: String = "",
+    val boardType: String = "free",
+    val boardAnonymous: String = "0"
 
     )
 
 @Immutable
 data class BoardMessage(
-    val timestamp: Long,
-    val message: String,
-    val name: String,
-    val tag: String,
-    val ban: String,
-    val uid: String,
-    val type: String,
-    val anonymous: String
+    val timestamp: Long = 0L,
+    val message: String = "",
+    val name: String = "",
+    val tag: String = "",
+    val ban: String = "0",
+    val uid: String = "",
+    val type: String = "",
+    val anonymous: String = "0"
 )
 
 //상태와 관련없는 것

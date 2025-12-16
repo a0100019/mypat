@@ -98,7 +98,7 @@ class LoginViewModel @Inject constructor(
             }
 
             dataSave()
-            newLetterAndLikeGet()
+            newLetterGet()
 
         }
 
@@ -553,7 +553,7 @@ class LoginViewModel @Inject constructor(
         postSideEffect(LoginSideEffect.NavigateToMainScreen)
     }
 
-    private fun newLetterAndLikeGet() = intent {
+    private fun newLetterGet() = intent {
         val letterDocRef = Firebase.firestore
             .collection("code")
             .document("letter")

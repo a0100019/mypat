@@ -84,7 +84,11 @@ class StepForegroundService : Service(), SensorEventListener {
 
             // 누적 걸음 저장
             val saveSteps = prefs.getInt("saveSteps", 0)
-            val updatedSteps = saveSteps + 1
+            var updatedSteps = saveSteps + 1
+            if (updatedSteps % 10 == 0) {
+                updatedSteps += 1
+            }
+
             prefs.edit().putInt("saveSteps", updatedSteps).apply()
 
             val today = SimpleDateFormat("yyyy-MM-dd", Locale.KOREA).format(Date())
@@ -101,7 +105,10 @@ class StepForegroundService : Service(), SensorEventListener {
                     val count = parts[1].toInt()
 
                     if (date == today) {
-                        val newCount = count + 1
+                        var newCount = count + 1
+                        if (newCount % 10 == 0) {
+                            newCount += 1
+                        }
                         items[i] = "$today.$newCount"
                         updated = true
                         updateNotification("$newCount 걸음")
