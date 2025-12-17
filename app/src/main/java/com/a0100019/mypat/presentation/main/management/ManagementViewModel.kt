@@ -98,7 +98,7 @@ class ManagementViewModel @Inject constructor(
                     )
 
                     //매달, medal, 칭호1
-                    29 -> {
+                    50 -> {
                         //매달, medal, 칭호1
                         val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
 
@@ -166,7 +166,6 @@ class ManagementViewModel @Inject constructor(
 
                 walkDao.insert(Walk(date = currentDate))
             }
-
         }
 
 

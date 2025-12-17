@@ -42,6 +42,7 @@ import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 @Composable
 fun TermsDialog(
     onClose: () -> Unit,
+    onMedal19Click: () -> Unit = {},
     privacy: Boolean = false
 ) {
 
@@ -132,6 +133,11 @@ fun TermsDialog(
                         text = termsText,
                         modifier = Modifier
                             .fillMaxSize()
+                    )
+
+                    MainButton(
+                        text = "꼼꼬미",
+                        onClick = onMedal19Click
                     )
                 }
 

@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -219,7 +220,7 @@ fun BoardMessageScreen(
                         contentAlignment = Alignment.Center // 가로+세로 가운데 정렬
                     ) {
                         Text(
-                            text = "첫 대화를 시작해보세요",
+                            text = "첫 댓글을 작성해주세요!",
                             textAlign = TextAlign.Center,
                             modifier = Modifier
                                 .fillMaxWidth(1f)
@@ -235,6 +236,25 @@ fun BoardMessageScreen(
                         .padding(top = 3.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+
+                    Box (
+                        contentAlignment = Alignment.TopCenter
+                    ) {
+                        Text(
+                            text = "익명",
+                            style = MaterialTheme.typography.labelLarge
+                        )
+
+                        Checkbox(
+                            checked = anonymous == "1",
+                            onCheckedChange = {
+                                        onAnonymousChange(if (it) "1" else "0")
+                            }
+                        )
+
+                    }
+
+
                     TextField(
                         value = text,
                         onValueChange = onTextChange,

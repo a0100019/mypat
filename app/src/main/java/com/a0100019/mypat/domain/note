@@ -1,39 +1,35 @@
 @@지금 할일
 
-대나무숲 가져오기
-칭호
-보석, 돈 순위
-첫날인사람 전용 쳇 화면 추가
-팀플로 서로 들어와야 할수있는 개인채팅기능
-개인채팅화면에서 다이얼러그 볼수있도록
-디자인
-전체채팅 이동
-액상화이트
-밴하면 채팅 못보내게
-영단어 힌트
-맵에 그리기
-채팅삭제
-아이템 다 쓰고 뽑기하면 햇살 차감
-달빛 앤드 컨텐츠 추가
 첫화면
 편지 혹은 코드로 칭호주기
-시작화면 1초 기다리게
-전체 챗 비밀
-댓글 삭제
 평화커뮤니티 멘트
-로딩중
-밴관리마지막에
+유저정보다운맨트
+채팅삭제, 게시물 삭제
+디자인
+파이어베이스 정리
 광고넣기
+이용약관 업데이트
+개인채팅화면에서 다이얼러그 볼수있도록
+팀플로 서로 들어와야 할수있는 개인채팅기능
+전체 챗 비밀
+전체채팅 이동
+만보기 보정
 
 @@나중에 할일
 bgm 자기마음대로
 전체편지
 마을2개
 한달지난 채팅 지우기
-파이어베이스 정리
+보석, 돈 순위
+대나무숲 가져오기
+액상화이트
+밴하면 채팅 못보내게
+영단어 힌트
+달빛 앤드 컨텐츠 추가
+밴관리마지막에
 
 칭호
-게시판 글 수, 답변 수, 좋아요 누른 수, 광고 매니아, 후원자
+광고 매니아, 후원자
 
 알깨기
 반응속도
@@ -50,25 +46,61 @@ google-services.json 이거 깃에 안올라가서 직접 컴터마다 넣어야
 
 편지 - / date 형식 2025-01-01 주의!! / 90으로 시작하면 개인편지 / 시스템 사용하는 편지는 10000부터 시작 / 1인용 편지는 key가 날짜8자리 + tag / link는 없으면 0
 
-                        //매달, medal, 칭호1
-                        val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
+//매달, medal, 칭호1
+val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
 
-                        val myMedalList: MutableList<Int> =
-                            myMedal
-                                .split("/")
-                                .mapNotNull { it.toIntOrNull() }
-                                .toMutableList()
+val myMedalList: MutableList<Int> =
+    myMedal
+        .split("/")
+        .mapNotNull { it.toIntOrNull() }
+        .toMutableList()
 
-                        // 🔥 여기 숫자 두개 바꾸면 됨
-                        if (!myMedalList.contains(1)) {
-                            myMedalList.add(1)
+// 🔥 여기 숫자 두개 바꾸면 됨
+if (!myMedalList.contains(1)) {
+    myMedalList.add(1)
 
-                            // 다시 문자열로 합치기
-                            val updatedMedal = myMedalList.joinToString("/")
+    // 다시 문자열로 합치기
+    val updatedMedal = myMedalList.joinToString("/")
 
-                            // DB 업데이트
-                            userDao.update(
-                                id = "etc",
-                                value3 = updatedMedal
-                            )
-                        }
+    // DB 업데이트
+    userDao.update(
+        id = "etc",
+        value3 = updatedMedal
+    )
+
+    postSideEffect(ManagementSideEffect.Toast("칭호를 획득했습니다!"))
+}
+
+var medalData = state.userDataList.find { it.id == "name" }!!.value2
+medalData = addMedalAction(medalData, actionId = 11)
+userDao.update(
+    id = "name",
+    value2 = medalData
+)
+
+if(getMedalActionCount(medalData, actionId = 11) == 100) {
+    //매달, medal, 칭호11
+    val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
+
+    val myMedalList: MutableList<Int> =
+        myMedal
+            .split("/")
+            .mapNotNull { it.toIntOrNull() }
+            .toMutableList()
+
+    // 🔥 여기 숫자 두개랑 위에 // 바꾸면 됨
+    if (!myMedalList.contains(11)) {
+        myMedalList.add(11)
+
+        // 다시 문자열로 합치기
+        val updatedMedal = myMedalList.joinToString("/")
+
+        // DB 업데이트
+        userDao.update(
+            id = "etc",
+            value3 = updatedMedal
+        )
+
+        postSideEffect(CommunitySideEffect.Toast("칭호를 획득했습니다!"))
+    }
+}

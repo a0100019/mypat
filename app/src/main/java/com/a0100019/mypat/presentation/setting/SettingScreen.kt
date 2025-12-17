@@ -97,6 +97,7 @@ fun SettingScreen(
         onLetterCloseClick = settingViewModel::onLetterCloseClick,
         onRecommendationClick = settingViewModel::onRecommendationClick,
         onRecommendationSubmitClick = settingViewModel::onRecommendationSubmitClick,
+        onMedal19Click = settingViewModel::onMedal19Click,
         popBackStack = popBackStack
     )
 }
@@ -126,13 +127,14 @@ fun SettingScreen(
     popBackStack: () -> Unit = {},
     onRecommendationClick: () -> Unit = {},
     onRecommendationSubmitClick: () -> Unit = {},
-
+    onMedal19Click: () -> Unit = {}
 
 ) {
 
     when (settingSituation) {
         "terms" -> TermsDialog(
             onClose = onClose,
+            onMedal19Click = onMedal19Click
         )
 
         "accountDelete" -> AccountDeleteDialog(

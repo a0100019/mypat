@@ -96,7 +96,9 @@ fun PrivateRoomScreen(
                         .padding(horizontal = 12.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(roomList) { room ->
+                    items(
+                        roomList.sortedByDescending { it.lastTimestamp }
+                    ) { room ->
 
                         // 내가 user1이면 상대는 user2, 반대도 처리
                         val opponent =

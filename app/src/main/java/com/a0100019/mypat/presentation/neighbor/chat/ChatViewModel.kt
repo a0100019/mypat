@@ -13,6 +13,8 @@ import com.a0100019.mypat.data.room.pat.PatDao
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.world.WorldDao
+import com.a0100019.mypat.presentation.information.addMedalAction
+import com.a0100019.mypat.presentation.information.getMedalActionCount
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.SetOptions
@@ -87,22 +89,12 @@ class ChatViewModel @Inject constructor(
     fun onCloseClick() = intent {
         reduce {
             state.copy(
-                dialogState = "",
                 newChat = "",
                 text2 = "",
-                text3 = ""
+                text3 = "",
+                situation = ""
             )
         }
-    }
-
-    fun onDialogChangeClick(dialog: String) = intent {
-
-        reduce {
-            state.copy(
-                dialogState = dialog
-            )
-        }
-
     }
 
     private fun loadChatMessages() {
@@ -177,10 +169,13 @@ class ChatViewModel @Inject constructor(
                 )
             }
         } else {
-            val selectedUser = state.allUserDataList.find { it.tag == userTag.toString() }
-            val selectedUserWorldDataList: List<String> = selectedUser!!.worldData
+            val selectedUser = state.allUserDataList
+                .find { it.tag == userTag.toString() }
+                ?: AllUser(tag = userTag.toString()) // 없으면 기본값
+
+            val selectedUserWorldDataList = selectedUser.worldData
                 .split("/")
-                .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
+                .filter { it.isNotBlank() }
 
             reduce {
                 state.copy(
@@ -216,6 +211,43 @@ class ChatViewModel @Inject constructor(
             .set(mapOf(timestamp.toString() to chatData), SetOptions.merge())
             .addOnSuccessListener {
                 Log.d("ChatSubmit", "채팅 전송 성공 (merge)")
+
+                viewModelScope.launch {
+
+                    var medalData = userDao.getAllUserData().find { it.id == "name" }!!.value2
+                    medalData = addMedalAction(medalData, actionId = 14)
+                    userDao.update(
+                        id = "name",
+                        value2 = medalData
+                    )
+
+                    if(getMedalActionCount(medalData, actionId = 14) >= 20) {
+                        //매달, medal, 칭호14
+                        val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
+
+                        val myMedalList: MutableList<Int> =
+                            myMedal
+                                .split("/")
+                                .mapNotNull { it.toIntOrNull() }
+                                .toMutableList()
+
+                        // 🔥 여기 숫자 두개랑 위에 // 바꾸면 됨
+                        if (!myMedalList.contains(14)) {
+                            myMedalList.add(14)
+
+                            // 다시 문자열로 합치기
+                            val updatedMedal = myMedalList.joinToString("/")
+
+                            // DB 업데이트
+                            userDao.update(
+                                id = "etc",
+                                value3 = updatedMedal
+                            )
+
+                            postSideEffect(ChatSideEffect.Toast("칭호를 획득했습니다!"))
+                        }
+                    }
+                }
             }
             .addOnFailureListener { e ->
                 Log.e("ChatSubmit", "채팅 전송 실패: ${e.message}")
@@ -389,282 +421,13 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun onLikeClick() = intent {
+    fun onNeighborInformationClick(neighborTag: String) = intent {
 
-        if(state.userDataList.find { it.id == "date" }!!.value2 != "1"){
-            val db = Firebase.firestore
-            val myUid = state.userDataList.find { it.id == "auth" }!!.value
-            val today =
-                LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")) // "20250516"
-            val docRef =
-                db.collection("users").document(myUid).collection("community").document(today)
-            val tag = state.clickAllUserData.tag
+        userDao.update(id = "etc2", value3 = neighborTag)
+        postSideEffect(ChatSideEffect.NavigateToNeighborInformationScreen)
 
-            docRef.get()
-                .addOnSuccessListener { documentSnapshot ->
-                    if (documentSnapshot.exists()) {
-                        val likeList = documentSnapshot.get("like") as? List<String> ?: emptyList()
-
-                        //오늘 좋아요를 누르지 않은 사람
-                        if (!likeList.contains(tag)) {
-                            //FieldValue.arrayUnion(...): Firestore에서 배열에 중복 없이 값 추가할 때 사용.
-                            docRef.update("like", FieldValue.arrayUnion(tag))
-
-                            Firebase.firestore.collection("users")
-                                .whereEqualTo("tag", tag)
-                                .get()
-                                .addOnSuccessListener { querySnapshot ->
-                                    val document = querySnapshot.documents.firstOrNull()
-
-                                    if (document != null) {
-                                        val community = document.get("community") as? Map<*, *>
-                                        val likeValueStr = community?.get("like")?.toString()
-
-                                        // 숫자로 변환 시도
-                                        val likeValue = likeValueStr?.toIntOrNull()
-
-                                        if (likeValue != null) {
-                                            val newLikeValue = likeValue + 1
-                                            val updatedCommunity = community.toMutableMap()
-                                            updatedCommunity["like"] = newLikeValue.toString()
-
-                                            document.reference.update("community", updatedCommunity)
-                                                .addOnSuccessListener {
-                                                    Log.d(
-                                                        "TAG",
-                                                        "like 값이 $likeValue → $newLikeValue 으로 업데이트됨"
-                                                    )
-                                                    viewModelScope.launch {
-                                                        allUserDao.updateLikeByTag(
-                                                            tag = tag,
-                                                            newLike = newLikeValue.toString()
-                                                        )
-                                                        reduce {
-                                                            state.copy(
-                                                                clickAllUserData = state.clickAllUserData.copy(
-                                                                    like = (state.clickAllUserData.like.toInt() + 1).toString()
-                                                                )
-                                                            )
-                                                        }
-                                                    }
-                                                }
-                                                .addOnFailureListener { e ->
-                                                    Log.e("TAG", "업데이트 실패: ${e.message}")
-                                                }
-                                        } else {
-                                            Log.w("TAG", "like 필드가 숫자가 아닙니다: $likeValueStr")
-                                        }
-                                    } else {
-                                        Log.w("TAG", "해당 태그를 가진 문서를 찾을 수 없습니다.")
-                                        viewModelScope.launch {
-                                            allUserDao.updateLikeByTag(
-                                                tag = tag,
-                                                newLike = (state.clickAllUserData.like.toInt() + 1).toString()
-                                            )
-                                            reduce {
-                                                state.copy(
-                                                    clickAllUserData = state.clickAllUserData.copy(
-                                                        like = (state.clickAllUserData.like.toInt() + 1).toString()
-                                                    )
-                                                )
-                                            }
-                                        }
-                                    }
-                                }
-                                .addOnFailureListener { e ->
-                                    Log.e("TAG", "문서 가져오기 실패: ${e.message}")
-                                }
-
-                            viewModelScope.launch {
-                                postSideEffect(ChatSideEffect.Toast("좋아요를 눌렀습니다"))
-                            }
-                        } else {
-                            // 이미 존재할 때 Toast 띄우기
-                            viewModelScope.launch {
-                                postSideEffect(ChatSideEffect.Toast("이미 좋아요를 눌렀습니다"))
-                            }
-                        }
-                    } else {
-                        //오늘 첫 좋아요
-                        val newData = hashMapOf(
-                            "like" to listOf(tag)
-                        )
-                        docRef.set(newData)
-
-                        Firebase.firestore.collection("users")
-                            .whereEqualTo("tag", tag)
-                            .get()
-                            .addOnSuccessListener { querySnapshot ->
-                                val document = querySnapshot.documents.firstOrNull()
-
-                                if (document != null) {
-                                    val community = document.get("community") as? Map<*, *>
-                                    val likeValueStr = community?.get("like")?.toString()
-
-                                    // 숫자로 변환 시도
-                                    val likeValue = likeValueStr?.toIntOrNull()
-
-                                    if (likeValue != null) {
-                                        val newLikeValue = likeValue + 1
-                                        val updatedCommunity = community.toMutableMap()
-                                        updatedCommunity["like"] = newLikeValue.toString()
-
-                                        document.reference.update("community", updatedCommunity)
-                                            .addOnSuccessListener {
-
-                                                Log.d(
-                                                    "TAG",
-                                                    "like 값이 $likeValue → $newLikeValue 으로 업데이트됨"
-                                                )
-                                                viewModelScope.launch {
-                                                    allUserDao.updateLikeByTag(
-                                                        tag = tag,
-                                                        newLike = newLikeValue.toString()
-                                                    )
-
-                                                    reduce {
-                                                        state.copy(
-                                                            clickAllUserData = state.clickAllUserData.copy(
-                                                                like = (state.clickAllUserData.like.toInt() + 1).toString()
-                                                            )
-                                                        )
-                                                    }
-
-                                                    userDao.update(
-                                                        id = "money",
-                                                        value2 = (state.userDataList.find { it.id == "money" }!!.value2.toInt() + 1000).toString()
-                                                    )
-                                                }
-
-                                            }
-                                            .addOnFailureListener { e ->
-                                                Log.e("TAG", "업데이트 실패: ${e.message}")
-                                            }
-                                    } else {
-                                        Log.w("TAG", "like 필드가 숫자가 아닙니다: $likeValueStr")
-                                    }
-                                } else {
-                                    Log.w("TAG", "해당 태그를 가진 문서를 찾을 수 없습니다.")
-                                    viewModelScope.launch {
-                                        allUserDao.updateLikeByTag(
-                                            tag = tag,
-                                            newLike = (state.clickAllUserData.like.toInt() + 1).toString()
-                                        )
-                                        reduce {
-                                            state.copy(
-                                                clickAllUserData = state.clickAllUserData.copy(
-                                                    like = (state.clickAllUserData.like.toInt() + 1).toString()
-                                                )
-                                            )
-                                        }
-
-                                        userDao.update(
-                                            id = "money",
-                                            value2 = (state.userDataList.find { it.id == "money" }!!.value2.toInt() + 1000).toString()
-                                        )
-
-                                    }
-
-                                }
-                            }
-                            .addOnFailureListener { e ->
-                                Log.e("TAG", "문서 가져오기 실패: ${e.message}")
-                            }
-
-
-                        viewModelScope.launch {
-                            postSideEffect(ChatSideEffect.Toast("좋아요를 눌렀습니다 +1000달빛"))
-                        }
-                    }
-                }
-                .addOnFailureListener { e ->
-                    Log.e("Firebase", "Error accessing community document", e)
-                    viewModelScope.launch {
-                        postSideEffect(ChatSideEffect.Toast("인터넷 오류"))
-                    }
-                }
-
-            loadData()
-        } else {
-            postSideEffect(ChatSideEffect.Toast("좋아요는 내일부터 누를 수 있습니다"))
-        }
     }
 
-    fun onPrivateChatStartClick() = intent {
-        val myTag = state.userDataList.find { it.id == "auth" }!!.value2
-        val yourTag = state.clickAllUserData.tag
-
-        val myNum = myTag.toLongOrNull() ?: 0L
-        val yourNum = yourTag.toLongOrNull() ?: 0L
-
-        // 🔻 작은 숫자가 앞으로 오도록
-        val docId = if (myNum < yourNum) "${myTag}_${yourTag}" else "${yourTag}_${myTag}"
-
-        val docRef = Firebase.firestore
-            .collection("chatting")
-            .document("privateChat")
-            .collection("privateChat")
-            .document(docId)
-
-        // 🔍 문서 존재 여부 확인
-        docRef.get()
-            .addOnSuccessListener { snapshot ->
-                if (snapshot.exists()) {
-                    // 🔥 이미 방이 존재
-                    viewModelScope.launch {
-                        intent {
-                            postSideEffect(ChatSideEffect.Toast("이미 채팅방이 존재합니다."))
-                            postSideEffect(ChatSideEffect.NavigateToPrivateRoomScreen)
-
-                        }
-                    }
-                    return@addOnSuccessListener
-                }
-
-                // 📌 participants 배열 생성
-                val u1 = if (myNum < yourNum) myTag else yourTag
-                val u2 = if (myNum < yourNum) yourTag else myTag
-
-                // 📌 방 생성 데이터
-                val chatInitData = mapOf(
-                    "user1" to u1,
-                    "user2" to u2,
-                    "participants" to listOf(u1, u2),   // ⬅⬅⬅ 핵심 추가!
-                    "createdAt" to System.currentTimeMillis(),
-                    "last1" to System.currentTimeMillis(),
-                    "last2" to System.currentTimeMillis(),
-                    "lastMessage" to "",
-                    "name1" to state.userDataList.find { it.id == "name" }!!.value,
-                    "name2" to state.clickAllUserData.name,
-                    "createUser" to state.userDataList.find { it.id == "auth" }!!.value
-                )
-
-                // 문서 생성
-                docRef.set(chatInitData)
-                    .addOnSuccessListener {
-                        viewModelScope.launch {
-                            intent {
-                                postSideEffect(ChatSideEffect.Toast("채팅방 생성 완료!"))
-                                postSideEffect(ChatSideEffect.NavigateToPrivateRoomScreen)
-                            }
-                        }
-                    }
-                    .addOnFailureListener {
-                        viewModelScope.launch {
-                            intent {
-                                postSideEffect(ChatSideEffect.Toast("채팅방 생성 실패"))
-                            }
-                        }
-                    }
-            }
-            .addOnFailureListener {
-                viewModelScope.launch {
-                    intent {
-                        postSideEffect(ChatSideEffect.Toast("오류 발생"))
-                    }
-                }
-            }
-    }
 
 }
 
@@ -674,14 +437,13 @@ data class ChatState(
     val patDataList: List<Pat> = emptyList(),
     val itemDataList: List<Item> = emptyList(),
     val allUserDataList: List<AllUser> = emptyList(),
-    val situation: String = "world",
+    val situation: String = "",
     val clickAllUserData: AllUser = AllUser(),
     val clickAllUserWorldDataList: List<String> = emptyList(),
     val newChat: String = "",
     val chatMessages: List<ChatMessage> = emptyList(),
     val alertState: String = "",
     val allAreaCount: String = "",
-    val dialogState: String = "",
     val text2: String = "",
     val text3: String = "",
 )
@@ -693,12 +455,12 @@ data class ChatMessage(
     val name: String,
     val tag: String,
     val ban: String,
-    val uid: String
+    val uid: String,
 )
 
 //상태와 관련없는 것
 sealed interface ChatSideEffect{
     class Toast(val message:String): ChatSideEffect
-    data object NavigateToPrivateRoomScreen: ChatSideEffect
+    data object NavigateToNeighborInformationScreen: ChatSideEffect
 
 }

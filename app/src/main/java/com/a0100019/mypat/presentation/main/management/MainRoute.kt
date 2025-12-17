@@ -45,6 +45,8 @@ sealed class MainRoute(
     object ChatScreen : MainRoute("ChatScreen")
     object CommunityScreen : MainRoute("CommunityScreen")
 
+    object NeighborInformationScreen : MainRoute("NeighborInformationScreen")
+
 }
 
 

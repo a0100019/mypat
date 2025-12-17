@@ -10,6 +10,8 @@ import com.a0100019.mypat.data.room.pat.PatDao
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.world.WorldDao
+import com.a0100019.mypat.presentation.information.addMedalAction
+import com.a0100019.mypat.presentation.information.getMedalActionCount
 import com.a0100019.mypat.presentation.privateChat.PrivateRoom
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.SetOptions
@@ -214,6 +216,42 @@ class BoardMessageViewModel @Inject constructor(
             .set(updateMap, SetOptions.merge())
             .addOnSuccessListener {
                 Log.d("BoardChatSubmit", "댓글 작성 성공")
+                viewModelScope.launch {
+
+                    var medalData = userDao.getAllUserData().find { it.id == "name" }!!.value2
+                    medalData = addMedalAction(medalData, actionId = 13)
+                    userDao.update(
+                        id = "name",
+                        value2 = medalData
+                    )
+
+                    if(getMedalActionCount(medalData, actionId = 13) >= 10) {
+                        //매달, medal, 칭호13
+                        val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
+
+                        val myMedalList: MutableList<Int> =
+                            myMedal
+                                .split("/")
+                                .mapNotNull { it.toIntOrNull() }
+                                .toMutableList()
+
+                        // 🔥 여기 숫자 두개랑 위에 // 바꾸면 됨
+                        if (!myMedalList.contains(13)) {
+                            myMedalList.add(13)
+
+                            // 다시 문자열로 합치기
+                            val updatedMedal = myMedalList.joinToString("/")
+
+                            // DB 업데이트
+                            userDao.update(
+                                id = "etc",
+                                value3 = updatedMedal
+                            )
+
+                            postSideEffect(BoardMessageSideEffect.Toast("칭호를 획득했습니다!"))
+                        }
+                    }
+                }
             }
             .addOnFailureListener { e ->
                 Log.e("BoardChatSubmit", "댓글 작성 실패: ${e.message}")

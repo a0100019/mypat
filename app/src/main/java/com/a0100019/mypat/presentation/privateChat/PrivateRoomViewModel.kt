@@ -3,6 +3,7 @@ package com.a0100019.mypat.presentation.privateChat
 import androidx.lifecycle.ViewModel
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
+import com.a0100019.mypat.presentation.setting.SettingSideEffect
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -56,6 +57,8 @@ class PrivateRoomViewModel @Inject constructor(
         val userDataList = userDao.getAllUserData()
         val myTag = userDataList.find { it.id == "auth" }!!.value2
 
+        var roomCount = 0
+
         val roomRef = Firebase.firestore
             .collection("chatting")
             .document("privateChat")
@@ -72,6 +75,7 @@ class PrivateRoomViewModel @Inject constructor(
                 }
 
                 val totalRooms = snapshot.size()
+                roomCount = totalRooms
                 var completed = 0
 
                 val roomsList = mutableListOf<PrivateRoom>()
@@ -124,6 +128,7 @@ class PrivateRoomViewModel @Inject constructor(
                                 user2 = user2,
                                 name1 = name1,
                                 name2 = name2,
+                                lastTimestamp = maxOf(last1, last2),
                                 lastMessage = lastMessage,
                                 messageCount = messageCount
                             )
@@ -140,6 +145,35 @@ class PrivateRoomViewModel @Inject constructor(
                         }
                 }
             }
+
+        if(roomCount >= 10) {
+            //매달, medal, 칭호20
+            val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
+
+            val myMedalList: MutableList<Int> =
+                myMedal
+                    .split("/")
+                    .mapNotNull { it.toIntOrNull() }
+                    .toMutableList()
+
+            // 🔥 여기 숫자 두개랑 위에 // 바꾸면 됨
+            if (!myMedalList.contains(20)) {
+                myMedalList.add(20)
+
+                // 다시 문자열로 합치기
+                val updatedMedal = myMedalList.joinToString("/")
+
+                // DB 업데이트
+                userDao.update(
+                    id = "etc",
+                    value3 = updatedMedal
+                )
+
+                postSideEffect(PrivateRoomSideEffect.Toast("칭호를 획득했습니다!"))
+            }
+
+        }
+
     }
 
     fun onPrivateChatRoomClick(roomId: String) = intent {
@@ -161,14 +195,16 @@ data class PrivateRoomState(
 
 @Immutable
 data class PrivateRoom(
-    val roomId: String,
-    val user1: String,
-    val user2: String,
-    val name1: String,
-    val name2: String,
-    val lastMessage: String,
-    val messageCount: Int,
+    val roomId: String = "",
+    val user1: String = "",
+    val user2: String = "",
+    val name1: String = "",
+    val name2: String = "",
+    val lastTimestamp: Long = 0L,
+    val lastMessage: String = "",
+    val messageCount: Int = 0,
 )
+
 
 //상태와 관련없는 것
 sealed interface PrivateRoomSideEffect{

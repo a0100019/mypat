@@ -7,8 +7,10 @@ import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.presentation.neighbor.chat.ChatMessage
 import com.a0100019.mypat.presentation.daily.diary.DiarySideEffect
+import com.a0100019.mypat.presentation.setting.SettingSideEffect
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FieldPath
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.firestore
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -83,6 +85,7 @@ class PrivateChatInViewModel @Inject constructor(
                 val user2 = roomSnap.getString("user2") ?: ""
                 val name1 = roomSnap.getString("name1") ?: ""
                 val name2 = roomSnap.getString("name2") ?: ""
+                val messageCount = (roomSnap.getLong("messageCount") ?: 0L).toInt()
 
                 // 🔥 상대 이름
                 val yourName =
@@ -107,6 +110,33 @@ class PrivateChatInViewModel @Inject constructor(
                 viewModelScope.launch {
                     intent {
                         reduce { state.copy(yourName = yourName) }
+                    }
+
+                    if(messageCount >= 100) {
+                        //매달, medal, 칭호21
+                        val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
+
+                        val myMedalList: MutableList<Int> =
+                            myMedal
+                                .split("/")
+                                .mapNotNull { it.toIntOrNull() }
+                                .toMutableList()
+
+                        // 🔥 여기 숫자 두개랑 위에 // 바꾸면 됨
+                        if (!myMedalList.contains(21)) {
+                            myMedalList.add(21)
+
+                            // 다시 문자열로 합치기
+                            val updatedMedal = myMedalList.joinToString("/")
+
+                            // DB 업데이트
+                            userDao.update(
+                                id = "etc",
+                                value3 = updatedMedal
+                            )
+
+                            postSideEffect(PrivateChatInSideEffect.Toast("칭호를 획득했습니다!"))
+                        }
                     }
                 }
 
@@ -232,6 +262,11 @@ class PrivateChatInViewModel @Inject constructor(
 
                 // 🔥 내 last 업데이트 (읽음 기준)
                 batch.update(baseRef, lastField, now)
+
+                batch.update(baseRef, "lastMessage", text)
+
+                // 🔥 메시지 카운트 +1
+                batch.update(baseRef, "messageCount", FieldValue.increment(1))
 
             }.addOnSuccessListener {
                 Log.d("PrivateChatIn", "메시지 + 이름 + last 업데이트 완료")

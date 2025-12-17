@@ -37,6 +37,9 @@ import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.data.room.world.WorldDao
 import com.a0100019.mypat.data.room.world.getWorldInitialData
 import com.a0100019.mypat.domain.AppBgmManager
+import com.a0100019.mypat.presentation.index.IndexSideEffect
+import com.a0100019.mypat.presentation.information.addMedalAction
+import com.a0100019.mypat.presentation.information.getMedalActionCount
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
@@ -138,21 +141,72 @@ class SettingViewModel @Inject constructor(
         }
     }
 
-//    fun onTermsClick() = intent {
-//        try {
-//            val uri = FirebaseStorage.getInstance()
-//                .reference.child("sample.png")
-//                .downloadUrl.await()
-//
-//            reduce {
-//                state.copy(imageUrl = uri.toString())
-//            }
-//        } catch (e: Exception) {
-//            // 실패 처리 가능
-//        }
-//    }
+    fun onMedal19Click() = intent {
+        //매달, medal, 칭호19
+        val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
+
+        val myMedalList: MutableList<Int> =
+            myMedal
+                .split("/")
+                .mapNotNull { it.toIntOrNull() }
+                .toMutableList()
+
+        // 🔥 여기 숫자 두개랑 위에 // 바꾸면 됨
+        if (!myMedalList.contains(19)) {
+            myMedalList.add(19)
+
+            // 다시 문자열로 합치기
+            val updatedMedal = myMedalList.joinToString("/")
+
+            // DB 업데이트
+            userDao.update(
+                id = "etc",
+                value3 = updatedMedal
+            )
+
+            postSideEffect(SettingSideEffect.Toast("칭호를 획득했습니다!"))
+        }
+
+    }
 
     fun onSituationChange(situation: String) = intent {
+
+        if(situation == "explanation") {
+            var medalData = userDao.getAllUserData().find { it.id == "name" }!!.value2
+            medalData = addMedalAction(medalData, actionId = 18)
+            userDao.update(
+                id = "name",
+                value2 = medalData
+            )
+
+            if (getMedalActionCount(medalData, actionId = 18) >= 10) {
+                //매달, medal, 칭호18
+                val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
+
+                val myMedalList: MutableList<Int> =
+                    myMedal
+                        .split("/")
+                        .mapNotNull { it.toIntOrNull() }
+                        .toMutableList()
+
+                // 🔥 여기 숫자 두개랑 위에 // 바꾸면 됨
+                if (!myMedalList.contains(18)) {
+                    myMedalList.add(18)
+
+                    // 다시 문자열로 합치기
+                    val updatedMedal = myMedalList.joinToString("/")
+
+                    // DB 업데이트
+                    userDao.update(
+                        id = "etc",
+                        value3 = updatedMedal
+                    )
+
+                    postSideEffect(SettingSideEffect.Toast("칭호를 획득했습니다!"))
+                }
+            }
+        }
+
         reduce {
             state.copy(
                 settingSituation = situation
@@ -687,6 +741,31 @@ class SettingViewModel @Inject constructor(
                     onCloseClick()
                 }
             }
+
+        //매달, medal, 칭호17
+        val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
+
+        val myMedalList: MutableList<Int> =
+            myMedal
+                .split("/")
+                .mapNotNull { it.toIntOrNull() }
+                .toMutableList()
+
+        // 🔥 여기 숫자 두개랑 위에 // 바꾸면 됨
+        if (!myMedalList.contains(17)) {
+            myMedalList.add(17)
+
+            // 다시 문자열로 합치기
+            val updatedMedal = myMedalList.joinToString("/")
+
+            // DB 업데이트
+            userDao.update(
+                id = "etc",
+                value3 = updatedMedal
+            )
+
+            postSideEffect(SettingSideEffect.Toast("칭호를 획득했습니다!"))
+        }
     }
 
 

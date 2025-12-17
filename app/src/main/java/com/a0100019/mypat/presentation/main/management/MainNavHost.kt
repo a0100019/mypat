@@ -22,6 +22,7 @@ import com.a0100019.mypat.presentation.main.MainScreen
 import com.a0100019.mypat.presentation.setting.SettingScreen
 import com.a0100019.mypat.presentation.store.StoreScreen
 import com.a0100019.mypat.presentation.main.world.WorldScreen
+import com.a0100019.mypat.presentation.neighbor.NeighborInformationScreen
 import com.a0100019.mypat.presentation.neighbor.NeighborScreen
 import com.a0100019.mypat.presentation.neighbor.board.BoardMessageScreen
 import com.a0100019.mypat.presentation.neighbor.board.BoardScreen
@@ -201,6 +202,15 @@ fun MainNavHost() {
 
         composable(route = MainRoute.ChatScreen.name) {
             ChatScreen(
+                popBackStack = { navController.popBackStack() },
+                onNavigateToNeighborInformationScreen = {
+                    navController.navigate(route = MainRoute.NeighborInformationScreen.name)
+                }
+            )
+        }
+
+        composable(route = MainRoute.NeighborInformationScreen.name) {
+            NeighborInformationScreen(
                 popBackStack = { navController.popBackStack() },
                 onNavigateToPrivateRoomScreen = {
                     navController.navigate(route = MainRoute.PrivateRoomScreen.name)

@@ -63,7 +63,7 @@ import kotlin.math.abs
 fun ChatScreen(
     chatViewModel: ChatViewModel = hiltViewModel(),
     popBackStack: () -> Unit = {},
-    onNavigateToPrivateRoomScreen: () -> Unit = {},
+    onNavigateToNeighborInformationScreen: () -> Unit = {},
 
     ) {
 
@@ -74,7 +74,7 @@ fun ChatScreen(
     chatViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
             is ChatSideEffect.Toast -> Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
-            ChatSideEffect.NavigateToPrivateRoomScreen -> onNavigateToPrivateRoomScreen()
+            ChatSideEffect.NavigateToNeighborInformationScreen -> onNavigateToNeighborInformationScreen()
 
         }
     }
@@ -91,11 +91,9 @@ fun ChatScreen(
         userDataList = chatState.userDataList,
         alertState = chatState.alertState,
         allAreaCount = chatState.allAreaCount,
-        dialogState = chatState.dialogState,
         text2 = chatState.text2,
         text3 = chatState.text3,
 
-        onLikeClick = chatViewModel::onLikeClick,
         onSituationChange = chatViewModel::onSituationChange,
         onChatTextChange = chatViewModel::onChatTextChange,
         onChatSubmitClick = chatViewModel::onChatSubmitClick,
@@ -103,11 +101,10 @@ fun ChatScreen(
         onBanClick = chatViewModel::onBanClick,
         alertStateChange = chatViewModel::alertStateChange,
         popBackStack = popBackStack,
-        onDialogChangeClick = chatViewModel::onDialogChangeClick,
         onCloseClick = chatViewModel::onCloseClick,
         onTextChange2 = chatViewModel::onTextChange2,
         onTextChange3 = chatViewModel::onTextChange3,
-        onPrivateChatStartClick = chatViewModel::onPrivateChatStartClick
+        onNeighborInformationClick = chatViewModel::onNeighborInformationClick
 
     )
 }
@@ -131,7 +128,6 @@ fun CommunityScreen(
     text3: String = "",
     anonymous: String = "0",
 
-    onLikeClick: () -> Unit = {},
     onSituationChange: (String) -> Unit = {},
     onChatTextChange: (String) -> Unit = {},
     onChatSubmitClick: () -> Unit = {},
@@ -139,11 +135,10 @@ fun CommunityScreen(
     onBanClick: (Int) -> Unit = {},
     alertStateChange: (String) -> Unit = {},
     popBackStack: () -> Unit = {},
-    onDialogChangeClick: (String) -> Unit = {},
     onCloseClick: () -> Unit = {},
     onTextChange2: (String) -> Unit = {},
     onTextChange3: (String) -> Unit = {},
-    onPrivateChatStartClick: () -> Unit = {},
+    onNeighborInformationClick: (String) -> Unit = {},
 
     ) {
 
@@ -151,15 +146,6 @@ fun CommunityScreen(
     val prefs = context.getSharedPreferences("bgm_prefs", Context.MODE_PRIVATE)
     val bgmOn = prefs.getBoolean("bgmOn", true)
 
-    when(dialogState) {
-        "privateChat" -> SimpleAlertDialog(
-            onConfirm = {
-                onPrivateChatStartClick()
-            },
-            onDismiss = onCloseClick,
-            text = "개인 채팅을 시작하시겠습니까?"
-        )
-    }
 
     if(clickAllUserData.tag != "0") {
         AppBgmManager.pause()
@@ -170,7 +156,6 @@ fun CommunityScreen(
             patDataList = patDataList,
             itemDataList = itemDataList,
             onLikeClick = {
-                onLikeClick()
             },
             onBanClick = {
                 alertStateChange("-1")
@@ -178,7 +163,6 @@ fun CommunityScreen(
             allUserDataList = allUserDataList,
             allMapCount = allAreaCount,
             onPrivateChatClick = {
-                onDialogChangeClick("privateChat")
             }
         )
     } else {
@@ -465,9 +449,9 @@ fun CommunityScreen(
                                                         Row {
                                                             Row(
                                                                 modifier = Modifier.clickable {
-                                                                    message.tag.toIntOrNull()?.let {
-                                                                        onUserRankClick(it)
-                                                                    }
+                                                                    onNeighborInformationClick(
+                                                                        message.tag
+                                                                    )
                                                                 }
                                                             ) {
                                                                 Text(

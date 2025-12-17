@@ -1,5 +1,6 @@
 package com.a0100019.mypat.presentation.index
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.a0100019.mypat.data.room.item.Item
@@ -8,7 +9,11 @@ import com.a0100019.mypat.data.room.area.Area
 import com.a0100019.mypat.data.room.area.AreaDao
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.pat.PatDao
+import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.world.WorldDao
+import com.a0100019.mypat.presentation.information.addMedalAction
+import com.a0100019.mypat.presentation.information.getMedalActionCount
+import com.a0100019.mypat.presentation.neighbor.chat.ChatSideEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -29,7 +34,8 @@ class IndexViewModel @Inject constructor(
     private val worldDao: WorldDao,
     private val patDao: PatDao,
     private val itemDao: ItemDao,
-    private val areaDao: AreaDao
+    private val areaDao: AreaDao,
+    private val userDao: UserDao
 ) : ViewModel(), ContainerHost<IndexState, IndexSideEffect> {
 
     override val container: Container<IndexState, IndexSideEffect> = container(
@@ -87,6 +93,122 @@ class IndexViewModel @Inject constructor(
     }
 
     fun onCardClick(index: Int) = intent {
+        Log.d("indexViewModel", "칭호 확인1 $index")
+
+        if(state.typeChange == "pat" && index == 29) {
+            var medalData = userDao.getAllUserData().find { it.id == "name" }!!.value2
+            medalData = addMedalAction(medalData, actionId = 15)
+            userDao.update(
+                id = "name",
+                value2 = medalData
+            )
+
+            Log.d("indexViewModel", "칭호 확인")
+
+            if(getMedalActionCount(medalData, actionId = 15) >= 10) {
+                //매달, medal, 칭호15
+                val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
+
+                val myMedalList: MutableList<Int> =
+                    myMedal
+                        .split("/")
+                        .mapNotNull { it.toIntOrNull() }
+                        .toMutableList()
+
+                // 🔥 여기 숫자 두개랑 위에 // 바꾸면 됨
+                if (!myMedalList.contains(15)) {
+                    myMedalList.add(15)
+
+                    // 다시 문자열로 합치기
+                    val updatedMedal = myMedalList.joinToString("/")
+
+                    // DB 업데이트
+                    userDao.update(
+                        id = "etc",
+                        value3 = updatedMedal
+                    )
+
+                    postSideEffect(IndexSideEffect.Toast("칭호를 획득했습니다!"))
+                }
+            }
+        }
+
+        if(state.typeChange == "pat" && index == 29) {
+            var medalData = userDao.getAllUserData().find { it.id == "name" }!!.value2
+            medalData = addMedalAction(medalData, actionId = 15)
+            userDao.update(
+                id = "name",
+                value2 = medalData
+            )
+
+            Log.d("indexViewModel", "칭호 확인")
+
+            if(getMedalActionCount(medalData, actionId = 15) >= 10) {
+                //매달, medal, 칭호15
+                val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
+
+                val myMedalList: MutableList<Int> =
+                    myMedal
+                        .split("/")
+                        .mapNotNull { it.toIntOrNull() }
+                        .toMutableList()
+
+                // 🔥 여기 숫자 두개랑 위에 // 바꾸면 됨
+                if (!myMedalList.contains(15)) {
+                    myMedalList.add(15)
+
+                    // 다시 문자열로 합치기
+                    val updatedMedal = myMedalList.joinToString("/")
+
+                    // DB 업데이트
+                    userDao.update(
+                        id = "etc",
+                        value3 = updatedMedal
+                    )
+
+                    postSideEffect(IndexSideEffect.Toast("칭호를 획득했습니다!"))
+                }
+            }
+        }
+
+        if(state.typeChange == "item" && index == 44) {
+            var medalData = userDao.getAllUserData().find { it.id == "name" }!!.value2
+            medalData = addMedalAction(medalData, actionId = 16)
+            userDao.update(
+                id = "name",
+                value2 = medalData
+            )
+
+            Log.d("indexViewModel", "칭호 확인")
+
+            if(getMedalActionCount(medalData, actionId = 16) >= 10) {
+                //매달, medal, 칭호16
+                val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
+
+                val myMedalList: MutableList<Int> =
+                    myMedal
+                        .split("/")
+                        .mapNotNull { it.toIntOrNull() }
+                        .toMutableList()
+
+                // 🔥 여기 숫자 두개랑 위에 // 바꾸면 됨
+                if (!myMedalList.contains(16)) {
+                    myMedalList.add(16)
+
+                    // 다시 문자열로 합치기
+                    val updatedMedal = myMedalList.joinToString("/")
+
+                    // DB 업데이트
+                    userDao.update(
+                        id = "etc",
+                        value3 = updatedMedal
+                    )
+
+                    postSideEffect(IndexSideEffect.Toast("칭호를 획득했습니다!"))
+                }
+            }
+        }
+
         reduce {
             when (state.typeChange) {
                 "pat" -> {
