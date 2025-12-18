@@ -35,50 +35,77 @@ fun WorldItemImage(
     xFloat: Float,
     yFloat: Float,
     sizeFloat: Float,
-    isPlaying: Boolean = true,   // ✅ 애니메이션 ON/OFF 변수 추가
+    isPlaying: Boolean = true,
     onClick: () -> Unit = {}
 ) {
-    val imageSize = surfaceWidthDp * sizeFloat
+    val imageSize = remember(surfaceWidthDp, sizeFloat) {
+        surfaceWidthDp * sizeFloat
+    }
 
-    // 클릭 효과 제거용 Modifier
-    val noEffectClickable = Modifier
-        .clickable(
-            interactionSource = remember { MutableInteractionSource() },
-            indication = null
-        ) { onClick() }
+    val modifier = remember(
+        surfaceWidthDp,
+        surfaceHeightDp,
+        xFloat,
+        yFloat,
+        imageSize
+    ) {
+        Modifier
+            .size(imageSize)
+            .offset(
+                x = surfaceWidthDp * xFloat,
+                y = surfaceHeightDp * yFloat
+            )
+    }
 
-    if (itemUrl.takeLast(4) == "json") {
+    val noEffectClickable = remember {
+        Modifier.clickable(
+            interactionSource = MutableInteractionSource(),
+            indication = null,
+            onClick = onClick
+        )
+    }
+
+    // =========================
+    // 🔥 LOTTIE ITEM
+    // =========================
+    if (itemUrl.endsWith(".json")) {
 
         val composition by rememberLottieComposition(LottieCache.get(itemUrl))
 
-        // ✅ 애니메이션 상태 제어
-        val progress by animateLottieCompositionAsState(
+        // 애니메이션 진행 중일 때만 계산
+        val animatedProgress by animateLottieCompositionAsState(
             composition = composition,
             isPlaying = isPlaying,
-            iterations = if (isPlaying) Int.MAX_VALUE else 1
+            iterations = Int.MAX_VALUE
         )
+
+        // 멈춘 시점 progress 고정
+        val frozenProgress = remember { mutableStateOf(0f) }
+
+        if (isPlaying) {
+            frozenProgress.value = animatedProgress
+        }
 
         LottieAnimation(
             composition = composition,
-            progress = { progress },
-            modifier = Modifier
-                .size(imageSize)
-                .offset(
-                    x = (surfaceWidthDp * xFloat),
-                    y = (surfaceHeightDp * yFloat)
-                )
-                .then(noEffectClickable)
+            progress = {
+                if (isPlaying) animatedProgress else frozenProgress.value
+            },
+            modifier = modifier.then(noEffectClickable)
         )
 
     } else {
-
+        // =========================
+        // 🖼️ BITMAP ITEM
+        // =========================
         val context = LocalContext.current
         var bitmap by remember { mutableStateOf<Bitmap?>(null) }
 
         LaunchedEffect(itemUrl) {
             bitmap = try {
-                val inputStream = context.assets.open(itemUrl)
-                BitmapFactory.decodeStream(inputStream)
+                context.assets.open(itemUrl).use {
+                    BitmapFactory.decodeStream(it)
+                }
             } catch (e: Exception) {
                 null
             }
@@ -88,22 +115,11 @@ fun WorldItemImage(
             Image(
                 bitmap = bitmap!!.asImageBitmap(),
                 contentDescription = null,
-                modifier = Modifier
-                    .size(imageSize)
-                    .offset(
-                        x = (surfaceWidthDp * xFloat),
-                        y = (surfaceHeightDp * yFloat)
-                    )
-                    .then(noEffectClickable)
+                modifier = modifier.then(noEffectClickable)
             )
         } else {
             Box(
-                modifier = Modifier
-                    .size(imageSize)
-                    .offset(
-                        x = (surfaceWidthDp * xFloat),
-                        y = (surfaceHeightDp * yFloat)
-                    ),
+                modifier = modifier,
                 contentAlignment = Alignment.Center
             ) {
                 Text("Loading...")

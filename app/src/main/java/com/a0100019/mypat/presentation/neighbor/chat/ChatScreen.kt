@@ -6,16 +6,15 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -104,7 +103,8 @@ fun ChatScreen(
         onCloseClick = chatViewModel::onCloseClick,
         onTextChange2 = chatViewModel::onTextChange2,
         onTextChange3 = chatViewModel::onTextChange3,
-        onNeighborInformationClick = chatViewModel::onNeighborInformationClick
+        onNeighborInformationClick = chatViewModel::onNeighborInformationClick,
+        onChatDeleteClick = chatViewModel::onChatDeleteClick
 
     )
 }
@@ -139,6 +139,7 @@ fun CommunityScreen(
     onTextChange2: (String) -> Unit = {},
     onTextChange3: (String) -> Unit = {},
     onNeighborInformationClick: (String) -> Unit = {},
+    onChatDeleteClick: (String) -> Unit = {},
 
     ) {
 
@@ -173,11 +174,11 @@ fun CommunityScreen(
 
     if(alertState != "") {
         SimpleAlertDialog(
-            onConfirm = {
+            onConfirmClick = {
                 onBanClick(alertState.toInt())
                 alertStateChange("")
             },
-            onDismiss = { alertStateChange("") },
+            onDismissClick = { alertStateChange("") },
             text = "신고하시겠습니까?"
         )
     }
@@ -446,7 +447,9 @@ fun CommunityScreen(
                                                             .padding(horizontal = 8.dp),
                                                         horizontalAlignment = if (isMine) Alignment.End else Alignment.Start
                                                     ) {
-                                                        Row {
+                                                        Row(
+
+                                                        ) {
                                                             Row(
                                                                 modifier = Modifier.clickable {
                                                                     onNeighborInformationClick(
@@ -485,11 +488,26 @@ fun CommunityScreen(
                                                                 style = MaterialTheme.typography.labelSmall,
                                                                 modifier = Modifier.padding(
                                                                     start = 4.dp,
-                                                                    bottom = 2.dp
+                                                                    bottom = 2.dp,
+                                                                    end = 4.dp
                                                                 )
                                                             )
 
-                                                            if (!isMine) {
+                                                            if (isMine) {
+                                                                Image(
+                                                                    painter = painterResource(id = R.drawable.cancel),
+                                                                    contentDescription = "별 아이콘",
+                                                                    modifier = Modifier
+                                                                        .rotate(270f)
+                                                                        .size(10.dp)
+                                                                        .clickable(
+                                                                            indication = null, // ← ripple 효과 제거
+                                                                            interactionSource = remember { MutableInteractionSource() } // ← 필수
+                                                                        ) {
+                                                                            onChatDeleteClick(message.timestamp.toString())
+                                                                        }
+                                                                )
+                                                            } else {
                                                                 JustImage(
                                                                     filePath = "etc/ban.png",
                                                                     modifier = Modifier
@@ -615,10 +633,10 @@ fun CommunityScreen(
 fun CommunityScreenPreview() {
     MypatTheme {
         CommunityScreen(
-            userDataList = listOf(User(id = "auth")),
+            userDataList = listOf(User(id = "auth", value2 = "1")),
             situation = "",
 //            chatMessages = emptyList()
-            chatMessages = listOf(ChatMessage(10202020, "a", "a", tag = "1", ban = "0", uid = "hello"), ChatMessage(10202020, "a11", "a11", tag = "2", ban = "0", uid = "assssssssssssssssssssssssssssssssssssssds".repeat(5)), ChatMessage(10202020, "a11", "a11", tag = "3", ban = "0", uid = "adssssssssssssssssssssssssssssssssssssssssssssssssssss".repeat(5)))
+            chatMessages = listOf(ChatMessage(10202020, "a", "a", tag = "13", ban = "0", uid = "hello"), ChatMessage(10202020, "a", "a", tag = "1", ban = "0", uid = "hello"), ChatMessage(10202020, "a11", "a11", tag = "2", ban = "0", uid = "assssssssssssssssssssssssssssssssssssssds".repeat(5)), ChatMessage(10202020, "a11", "a11", tag = "3", ban = "0", uid = "adssssssssssssssssssssssssssssssssssssssssssssssssssss".repeat(5)))
         )
     }
 }

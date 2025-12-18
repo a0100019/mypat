@@ -201,10 +201,10 @@ fun CommunityScreen(
 
     if(alertState != "") {
         SimpleAlertDialog(
-            onConfirm = {
+            onConfirmClick = {
                 alertStateChange("")
             },
-            onDismiss = { alertStateChange("") },
+            onDismissClick = { alertStateChange("") },
             text = "신고하시겠습니까?"
         )
     }

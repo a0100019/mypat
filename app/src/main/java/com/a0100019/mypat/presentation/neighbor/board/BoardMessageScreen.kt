@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,6 +42,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.R
+import com.a0100019.mypat.data.room.user.User
+import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
 import com.a0100019.mypat.presentation.neighbor.chat.getPastelColorForTag
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
@@ -57,6 +60,7 @@ fun BoardMessageScreen(
     boardMessageViewModel: BoardMessageViewModel = hiltViewModel(),
 
     popBackStack: () -> Unit = {},
+    onNavigateToBoardScreen: () -> Unit = {},
 
     ) {
 
@@ -76,12 +80,17 @@ fun BoardMessageScreen(
         text = boardMessageState.text,
         situation = boardMessageState.situation,
         anonymous = boardMessageState.anonymous,
+        userDataList = boardMessageState.userDataList,
 
         onClose = boardMessageViewModel::onClose,
         popBackStack = popBackStack,
         onAnonymousChange = boardMessageViewModel::onAnonymousChange,
         onTextChange = boardMessageViewModel::onTextChange,
-        onBoardChatSubmitClick = boardMessageViewModel::onBoardChatSubmitClick
+        onBoardChatSubmitClick = boardMessageViewModel::onBoardChatSubmitClick,
+        onSituationChange = boardMessageViewModel::onSituationChange,
+        onBoardDelete = boardMessageViewModel::onBoardDelete,
+        onNavigateToBoardScreen = onNavigateToBoardScreen,
+        onBoardChatDelete = boardMessageViewModel::onBoardChatDelete
     )
 }
 
@@ -90,6 +99,7 @@ fun BoardMessageScreen(
 fun BoardMessageScreen(
     boardData: BoardMessage = BoardMessage(),
     boardChat: List<BoardChatMessage> = emptyList(),
+    userDataList: List<User> = emptyList(),
     text: String = "",
     situation: String = "",
     anonymous: String = "0",
@@ -99,7 +109,27 @@ fun BoardMessageScreen(
     onAnonymousChange: (String) -> Unit = {},
     onTextChange: (String) -> Unit = {},
     onBoardChatSubmitClick: () -> Unit = {},
+    onSituationChange: (String) -> Unit = {},
+    onBoardDelete: () -> Unit = {},
+    onNavigateToBoardScreen: () -> Unit = {},
+    onBoardChatDelete: (String) -> Unit = {}
 ) {
+
+    when(situation) {
+        "boardDelete" -> SimpleAlertDialog(
+            onConfirmClick = onBoardDelete,
+            onDismissClick = {
+                onClose()
+            },
+            text = "게시물을 삭제하겠습니까?"
+        )
+        "deleteCheck" -> SimpleAlertDialog(
+            onDismissOn = false,
+            onConfirmClick = onNavigateToBoardScreen,
+            text = "게시물이 삭제되었습니다."
+        )
+    }
+
     Surface(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -122,6 +152,15 @@ fun BoardMessageScreen(
                     onClick = popBackStack,
                     text = "닫기"
                 )
+
+                if(boardData.tag == userDataList.find { it.id == "auth" }?.value2){
+                    MainButton(
+                        onClick = {
+                            onSituationChange("boardDelete")
+                        },
+                        text = "삭제"
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -196,12 +235,32 @@ fun BoardMessageScreen(
                                     )
                                     .padding(12.dp)
                             ) {
-                                Text(
-                                    text = displayName,
-                                    style = MaterialTheme.typography.labelMedium,
-                                    fontWeight = FontWeight.Bold
-                                )
-
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                    ,
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(
+                                        text = displayName,
+                                        style = MaterialTheme.typography.labelMedium,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    if(chat.tag == userDataList.find { it.id == "auth" }?.value2){
+                                        Image(
+                                            painter = painterResource(id = R.drawable.cancel),
+                                            contentDescription = "별 아이콘",
+                                            modifier = Modifier
+                                                .rotate(270f)
+                                                .clickable(
+                                                    indication = null, // ← ripple 효과 제거
+                                                    interactionSource = remember { MutableInteractionSource() } // ← 필수
+                                                ) {
+                                                    onBoardChatDelete(chat.timestamp.toString())
+                                                }
+                                        )
+                                    }
+                                }
                                 Spacer(modifier = Modifier.height(4.dp))
 
                                 Text(
@@ -254,7 +313,6 @@ fun BoardMessageScreen(
 
                     }
 
-
                     TextField(
                         value = text,
                         onValueChange = onTextChange,
@@ -305,7 +363,8 @@ fun BoardMessageScreen(
 fun BoardMessageScreenPreview() {
     MypatTheme {
         BoardMessageScreen(
-            boardData = BoardMessage()
+            boardData = BoardMessage(),
+            boardChat = listOf(BoardChatMessage())
         )
     }
 }

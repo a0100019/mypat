@@ -14,6 +14,7 @@ import com.a0100019.mypat.presentation.information.addMedalAction
 import com.a0100019.mypat.presentation.information.getMedalActionCount
 import com.a0100019.mypat.presentation.privateChat.PrivateRoom
 import com.google.firebase.Firebase
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.firestore
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -59,13 +60,20 @@ class BoardMessageViewModel @Inject constructor(
 
     //room에서 데이터 가져옴
     private fun loadData() = intent {
+        val userDataList = userDao.getAllUserData()
 
+        reduce {
+            state.copy(
+                userDataList = userDataList
+            )
+        }
     }
 
     fun onClose() = intent {
         reduce {
             state.copy(
-
+                situation = "",
+                text = ""
             )
         }
     }
@@ -261,6 +269,64 @@ class BoardMessageViewModel @Inject constructor(
         reduce {
             state.copy(text = "")
         }
+    }
+
+    fun onBoardDelete() = intent {
+
+        val userDataList = userDao.getAllUserData()
+        val boardTimestamp =
+            userDataList.find { it.id == "etc2" }?.value3 ?: return@intent
+
+        val boardRef = Firebase.firestore
+            .collection("chatting")
+            .document("board")
+            .collection("board")
+            .document(boardTimestamp)
+
+        boardRef
+            .delete()
+            .addOnSuccessListener {
+                Log.d("BoardDelete", "게시글 삭제 성공")
+
+                // 필요하면 상태 초기화
+                viewModelScope.launch {
+                    intent {
+                        reduce {
+                            state.copy(
+                                situation = "deleteCheck"
+                            )
+                        }
+                    }
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("BoardDelete", "게시글 삭제 실패: ${e.message}")
+            }
+    }
+
+    fun onBoardChatDelete(commentTimestamp: String) = intent {
+
+        val userDataList = userDao.getAllUserData()
+
+        val boardTimestamp =
+            userDataList.find { it.id == "etc2" }!!.value3  // 게시글 문서명
+
+        Firebase.firestore
+            .collection("chatting")
+            .document("board")
+            .collection("board")
+            .document(boardTimestamp)
+            .update(
+                mapOf(
+                    "answer.$commentTimestamp" to FieldValue.delete()
+                )
+            )
+            .addOnSuccessListener {
+                Log.d("BoardChatDelete", "댓글 삭제 성공")
+            }
+            .addOnFailureListener { e ->
+                Log.e("BoardChatDelete", "댓글 삭제 실패: ${e.message}")
+            }
     }
 
 

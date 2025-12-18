@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -27,8 +26,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,7 +41,6 @@ import com.a0100019.mypat.presentation.index.IndexItemDialog
 import com.a0100019.mypat.presentation.index.IndexAreaDialog
 import com.a0100019.mypat.presentation.index.IndexPatDialog
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
-import com.a0100019.mypat.presentation.ui.MusicPlayer
 import com.a0100019.mypat.presentation.ui.SfxPlayer
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
@@ -241,8 +237,8 @@ fun StoreScreen(
     if (simpleDialogState != "") {
         //다이얼로그 맨트 변경 시 얘도 바꿔야하는 거 주의!!!!!!!
         SimpleAlertDialog (
-            onDismiss = { onSimpleDialog("") },
-            onConfirm = {
+            onDismissClick = { onSimpleDialog("") },
+            onConfirmClick = {
                 when(simpleDialogState) {
                     "펫을 뽑으시겠습니까?" -> onPatStoreClick()
                     "아이템을 뽑으시겠습니까?" -> onItemStoreClick()

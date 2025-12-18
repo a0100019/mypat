@@ -1,43 +1,30 @@
 package com.a0100019.mypat.presentation.neighbor
 
 import android.widget.Toast
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -46,18 +33,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.data.room.allUser.AllUser
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pat.Pat
-import com.a0100019.mypat.presentation.information.IntroductionChangeDialog
-import com.a0100019.mypat.presentation.information.MedalChangeDialog
-import com.a0100019.mypat.presentation.information.medalName
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
-import com.a0100019.mypat.presentation.neighbor.chat.ChatSideEffect
 import com.a0100019.mypat.presentation.ui.MusicPlayer
 import com.a0100019.mypat.presentation.ui.component.MainButton
-import com.a0100019.mypat.presentation.ui.component.TextAutoResizeSingleLine
-import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
-import com.a0100019.mypat.presentation.ui.image.item.WorldItemImage
-import com.a0100019.mypat.presentation.ui.image.pat.PatImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -121,8 +100,8 @@ fun NeighborInformationScreen(
 
     when(situation) {
         "privateChat" -> SimpleAlertDialog(
-            onConfirm = onPrivateChatStartClick,
-            onDismiss = onClose,
+            onConfirmClick = onPrivateChatStartClick,
+            onDismissClick = onClose,
             text = "개인 채팅을 시작하시겠습니까?"
         )
     }
@@ -276,7 +255,7 @@ fun NeighborInformationScreen(
 
             MainButton(
                 text = "닫기",
-                onClick = onClose
+                onClick = popBackStack
             )
         }
 

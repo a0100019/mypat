@@ -16,6 +16,7 @@ import com.a0100019.mypat.data.room.world.WorldDao
 import com.a0100019.mypat.presentation.information.addMedalAction
 import com.a0100019.mypat.presentation.information.getMedalActionCount
 import com.a0100019.mypat.presentation.main.management.ManagementSideEffect
+import com.a0100019.mypat.presentation.neighbor.chat.ChatSideEffect
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Query
@@ -392,35 +393,15 @@ class CommunityViewModel @Inject constructor(
             4 -> state.allUserData4
             else -> AllUser()
         }
-        val selectedUserWorldDataList = when (clickUserNumber) {
-            1 -> state.allUserWorldDataList1
-            2 -> state.allUserWorldDataList2
-            3 -> state.allUserWorldDataList3
-            4 -> state.allUserWorldDataList4
-            else -> emptyList()
-        }
-        reduce {
-            state.copy(
-                clickAllUserData = selectedUser,
-                clickAllUserWorldDataList = selectedUserWorldDataList)
-        }
+        userDao.update(id = "etc2", value3 = selectedUser.tag)
+        postSideEffect(CommunitySideEffect.NavigateToNeighborInformationScreen)
     }
 
-    fun onUserRankClick(userTag: Int) = intent {
-        val selectedUser = state.allUserDataList
-            .find { it.tag == userTag.toString() }
-            ?: AllUser(tag = userTag.toString()) // 없으면 기본값
+    fun onNeighborInformationClick(neighborTag: String) = intent {
 
-        val selectedUserWorldDataList = selectedUser.worldData
-            .split("/")
-            .filter { it.isNotBlank() }
+        userDao.update(id = "etc2", value3 = neighborTag)
+        postSideEffect(CommunitySideEffect.NavigateToNeighborInformationScreen)
 
-        reduce {
-            state.copy(
-                clickAllUserData = selectedUser,
-                clickAllUserWorldDataList = selectedUserWorldDataList
-            )
-        }
     }
 
     //입력 가능하게 하는 코드
@@ -456,403 +437,6 @@ class CommunityViewModel @Inject constructor(
 //        }
     }
 
-    fun onBanClick(chatIndex: Int) = intent {
-
-        //신고자 UID
-        val fromUID = state.userDataList.find { it.id == "auth" }!!.value
-        //오늘 날짜
-        val todayDocId = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date())
-
-        Firebase.firestore
-            .collection("users")
-            .document(fromUID)
-            .get()
-            .addOnSuccessListener { document ->
-                val communityMap = document.get("community") as? Map<*, *>
-                val warningValue = communityMap?.get("warning") as? String
-
-                if (warningValue == "0") {
-                    // 🔽 warning 값이 "0"일 때 실행 되는 코드 = 0이 아니면 신고를 많이해서 막아놓은 것
-                    Log.d("Firestore", "warning = 0 -> 처리 실행")
-                    // 원하는 작업 수행
-
-                    //world신고
-                    if (chatIndex == -1) {
-
-                        val banData = mapOf(
-                            System.currentTimeMillis().toString() to mapOf(
-                                "fromUID" to fromUID,
-                                "name" to state.clickAllUserData.name,
-                            )
-
-                        )
-
-                        Firebase.firestore.collection("ban")
-                            .document(todayDocId)
-                            .set(mapOf(state.clickAllUserData.tag to banData), SetOptions.merge())
-                            .addOnSuccessListener {
-                                Log.d("BanSubmit", "벤 전송 성공 (merge)")
-                            }
-                            .addOnFailureListener { e ->
-                                Log.e("BanSubmit", "벤 전송 실패: ${e.message}")
-                            }
-
-                    } else { // 채팅 신고
-                        val messageData = state.chatMessages[state.chatMessages.lastIndex - chatIndex]
-                        // Step 1: ban 컬렉션 확인
-                        Firebase.firestore.collection("ban")
-                            .document(todayDocId)
-                            .get()
-                            .addOnSuccessListener { banSnapshot ->
-                                val banData = banSnapshot.data
-
-                                val matched = banData?.any { (_, nestedMap) ->
-                                    (nestedMap as? Map<*, *>)?.values?.any { value ->
-                                        val map = value as? Map<*, *>
-                                        val time = map?.get("time") as? Long
-                                        val firstFromUID = map?.get("fromUID") as? String
-
-                                        if (time == messageData.timestamp && firstFromUID == fromUID) {
-                                            viewModelScope.launch {
-                                                postSideEffect(CommunitySideEffect.Toast("이미 신고가 접수되었습니다."))
-                                            }
-                                            return@addOnSuccessListener  // 함수 조기 종료
-                                        }
-
-                                        time == messageData.timestamp
-                                    } == true
-                                } ?: false
-
-                                // 🔐 ban 1스택이 있을 때만 실행
-                                if (matched) {
-                                    Firebase.firestore.collection("chat")
-                                        .document(todayDocId)
-                                        .update(
-                                            messageData.timestamp.toString() + ".ban", "1"
-                                        )
-                                        .addOnSuccessListener {
-                                            Log.d("ChatUpdate", "ban 값 업데이트 성공")
-                                        }
-                                        .addOnFailureListener { e ->
-                                            Log.e("ChatUpdate", "ban 업데이트 실패: ${e.message}")
-                                        }
-                                }
-
-                                // 2. ban 컬렉션에 추가
-                                val banDataToSend = mapOf(
-                                    System.currentTimeMillis().toString() to mapOf(
-                                        "fromUID" to fromUID,
-                                        "message" to messageData.message,
-                                        "name" to state.clickAllUserData.name,
-                                        "time" to messageData.timestamp
-                                    )
-                                )
-
-                                Firebase.firestore.collection("ban")
-                                    .document(todayDocId)
-                                    .set(mapOf(state.clickAllUserData.tag to banDataToSend), SetOptions.merge())
-                                    .addOnSuccessListener {
-                                        Log.d("BanSubmit", "벤 전송 성공 (merge)")
-                                    }
-                                    .addOnFailureListener { e ->
-                                        Log.e("BanSubmit", "벤 전송 실패: ${e.message}")
-                                    }
-
-                            }
-                            .addOnFailureListener { e ->
-                                Log.e("BanCheck", "ban 문서 불러오기 실패: ${e.message}")
-                            }
-}
-
-                    viewModelScope.launch {
-                        postSideEffect(CommunitySideEffect.Toast("신고가 접수되었습니다"))
-                    }
-
-                }
-
-            }
-            .addOnFailureListener { e ->
-                Log.e("Firestore", "문서 가져오기 실패: ${e.message}")
-            }
-
-    }
-
-    fun alertStateChange(alertState: String) = intent {
-        reduce {
-            state.copy(
-                alertState = alertState
-            )
-        }
-    }
-
-    fun onLikeClick() = intent {
-
-        if(state.userDataList.find { it.id == "date" }!!.value2 != "1"){
-            val db = Firebase.firestore
-            val myUid = state.userDataList.find { it.id == "auth" }!!.value
-            val today =
-                LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")) // "20250516"
-            val docRef =
-                db.collection("users").document(myUid).collection("community").document(today)
-            val tag = state.clickAllUserData.tag
-
-            docRef.get()
-                .addOnSuccessListener { documentSnapshot ->
-                    if (documentSnapshot.exists()) {
-                        val likeList = documentSnapshot.get("like") as? List<String> ?: emptyList()
-
-                        //오늘 좋아요를 누르지 않은 사람
-                        if (!likeList.contains(tag)) {
-                            //FieldValue.arrayUnion(...): Firestore에서 배열에 중복 없이 값 추가할 때 사용.
-                            docRef.update("like", FieldValue.arrayUnion(tag))
-
-                            Firebase.firestore.collection("users")
-                                .whereEqualTo("tag", tag)
-                                .get()
-                                .addOnSuccessListener { querySnapshot ->
-                                    val document = querySnapshot.documents.firstOrNull()
-
-                                    if (document != null) {
-                                        val community = document.get("community") as? Map<*, *>
-                                        val likeValueStr = community?.get("like")?.toString()
-
-                                        // 숫자로 변환 시도
-                                        val likeValue = likeValueStr?.toIntOrNull()
-
-                                        if (likeValue != null) {
-                                            val newLikeValue = likeValue + 1
-                                            val updatedCommunity = community.toMutableMap()
-                                            updatedCommunity["like"] = newLikeValue.toString()
-
-                                            document.reference.update("community", updatedCommunity)
-                                                .addOnSuccessListener {
-                                                    Log.d(
-                                                        "TAG",
-                                                        "like 값이 $likeValue → $newLikeValue 으로 업데이트됨"
-                                                    )
-                                                    viewModelScope.launch {
-                                                        allUserDao.updateLikeByTag(
-                                                            tag = tag,
-                                                            newLike = newLikeValue.toString()
-                                                        )
-                                                        reduce {
-                                                            state.copy(
-                                                                clickAllUserData = state.clickAllUserData.copy(
-                                                                    like = (state.clickAllUserData.like.toInt() + 1).toString()
-                                                                )
-                                                            )
-                                                        }
-
-                                                        var medalData = state.userDataList.find { it.id == "name" }!!.value2
-                                                        medalData = addMedalAction(medalData, actionId = 11)
-                                                        userDao.update(
-                                                            id = "name",
-                                                            value2 = medalData
-                                                        )
-
-                                                        if(getMedalActionCount(medalData, actionId = 11) >= 100) {
-                                                            //매달, medal, 칭호11
-                                                            val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
-
-                                                            val myMedalList: MutableList<Int> =
-                                                                myMedal
-                                                                    .split("/")
-                                                                    .mapNotNull { it.toIntOrNull() }
-                                                                    .toMutableList()
-
-                                                            // 🔥 여기 숫자 두개랑 위에 // 바꾸면 됨
-                                                            if (!myMedalList.contains(11)) {
-                                                                myMedalList.add(11)
-
-                                                                // 다시 문자열로 합치기
-                                                                val updatedMedal = myMedalList.joinToString("/")
-
-                                                                // DB 업데이트
-                                                                userDao.update(
-                                                                    id = "etc",
-                                                                    value3 = updatedMedal
-                                                                )
-
-                                                                postSideEffect(CommunitySideEffect.Toast("칭호를 획득했습니다!"))
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                                .addOnFailureListener { e ->
-                                                    Log.e("TAG", "업데이트 실패: ${e.message}")
-                                                }
-                                        } else {
-                                            Log.w("TAG", "like 필드가 숫자가 아닙니다: $likeValueStr")
-                                        }
-                                    } else {
-                                        Log.w("TAG", "해당 태그를 가진 문서를 찾을 수 없습니다.")
-                                        viewModelScope.launch {
-                                            allUserDao.updateLikeByTag(
-                                                tag = tag,
-                                                newLike = (state.clickAllUserData.like.toInt() + 1).toString()
-                                            )
-                                            reduce {
-                                                state.copy(
-                                                    clickAllUserData = state.clickAllUserData.copy(
-                                                        like = (state.clickAllUserData.like.toInt() + 1).toString()
-                                                    )
-                                                )
-                                            }
-                                        }
-                                    }
-                                }
-                                .addOnFailureListener { e ->
-                                    Log.e("TAG", "문서 가져오기 실패: ${e.message}")
-                                }
-
-                            viewModelScope.launch {
-                                postSideEffect(CommunitySideEffect.Toast("좋아요를 눌렀습니다"))
-                            }
-                        } else {
-                            // 이미 존재할 때 Toast 띄우기
-                            viewModelScope.launch {
-                                postSideEffect(CommunitySideEffect.Toast("이미 좋아요를 눌렀습니다"))
-                            }
-                        }
-                    } else {
-                        //오늘 첫 좋아요
-                        val newData = hashMapOf(
-                            "like" to listOf(tag)
-                        )
-                        docRef.set(newData)
-
-                        Firebase.firestore.collection("users")
-                            .whereEqualTo("tag", tag)
-                            .get()
-                            .addOnSuccessListener { querySnapshot ->
-                                val document = querySnapshot.documents.firstOrNull()
-
-                                if (document != null) {
-                                    val community = document.get("community") as? Map<*, *>
-                                    val likeValueStr = community?.get("like")?.toString()
-
-                                    // 숫자로 변환 시도
-                                    val likeValue = likeValueStr?.toIntOrNull()
-
-                                    if (likeValue != null) {
-                                        val newLikeValue = likeValue + 1
-                                        val updatedCommunity = community.toMutableMap()
-                                        updatedCommunity["like"] = newLikeValue.toString()
-
-                                        document.reference.update("community", updatedCommunity)
-                                            .addOnSuccessListener {
-
-                                                Log.d(
-                                                    "TAG",
-                                                    "like 값이 $likeValue → $newLikeValue 으로 업데이트됨"
-                                                )
-                                                viewModelScope.launch {
-                                                    allUserDao.updateLikeByTag(
-                                                        tag = tag,
-                                                        newLike = newLikeValue.toString()
-                                                    )
-
-                                                    reduce {
-                                                        state.copy(
-                                                            clickAllUserData = state.clickAllUserData.copy(
-                                                                like = (state.clickAllUserData.like.toInt() + 1).toString()
-                                                            )
-                                                        )
-                                                    }
-
-                                                    userDao.update(
-                                                        id = "money",
-                                                        value2 = (state.userDataList.find { it.id == "money" }!!.value2.toInt() + 1000).toString()
-                                                    )
-
-                                                    var medalData = state.userDataList.find { it.id == "name" }!!.value2
-                                                    medalData = addMedalAction(medalData, actionId = 11)
-                                                    userDao.update(
-                                                        id = "name",
-                                                        value2 = medalData
-                                                    )
-
-                                                    if(getMedalActionCount(medalData, actionId = 11) >= 100) {
-                                                        //매달, medal, 칭호11
-                                                        val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
-
-                                                        val myMedalList: MutableList<Int> =
-                                                            myMedal
-                                                                .split("/")
-                                                                .mapNotNull { it.toIntOrNull() }
-                                                                .toMutableList()
-
-                                                        // 🔥 여기 숫자 두개랑 위에 // 바꾸면 됨
-                                                        if (!myMedalList.contains(11)) {
-                                                            myMedalList.add(11)
-
-                                                            // 다시 문자열로 합치기
-                                                            val updatedMedal = myMedalList.joinToString("/")
-
-                                                            // DB 업데이트
-                                                            userDao.update(
-                                                                id = "etc",
-                                                                value3 = updatedMedal
-                                                            )
-
-                                                            postSideEffect(CommunitySideEffect.Toast("칭호를 획득했습니다!"))
-                                                        }
-                                                    }
-                                                }
-
-                                            }
-                                            .addOnFailureListener { e ->
-                                                Log.e("TAG", "업데이트 실패: ${e.message}")
-                                            }
-                                    } else {
-                                        Log.w("TAG", "like 필드가 숫자가 아닙니다: $likeValueStr")
-                                    }
-                                } else {
-                                    Log.w("TAG", "해당 태그를 가진 문서를 찾을 수 없습니다.")
-                                    viewModelScope.launch {
-                                        allUserDao.updateLikeByTag(
-                                            tag = tag,
-                                            newLike = (state.clickAllUserData.like.toInt() + 1).toString()
-                                        )
-                                        reduce {
-                                            state.copy(
-                                                clickAllUserData = state.clickAllUserData.copy(
-                                                    like = (state.clickAllUserData.like.toInt() + 1).toString()
-                                                )
-                                            )
-                                        }
-
-                                        userDao.update(
-                                            id = "money",
-                                            value2 = (state.userDataList.find { it.id == "money" }!!.value2.toInt() + 1000).toString()
-                                        )
-
-                                    }
-
-                                }
-                            }
-                            .addOnFailureListener { e ->
-                                Log.e("TAG", "문서 가져오기 실패: ${e.message}")
-                            }
-
-                        viewModelScope.launch {
-                            postSideEffect(CommunitySideEffect.Toast("좋아요를 눌렀습니다 +1000달빛"))
-                        }
-                    }
-                }
-                .addOnFailureListener { e ->
-                    Log.e("Firebase", "Error accessing community document", e)
-                    viewModelScope.launch {
-                        postSideEffect(CommunitySideEffect.Toast("인터넷 오류"))
-                    }
-                }
-
-            loadData()
-        } else {
-            postSideEffect(CommunitySideEffect.Toast("좋아요는 내일부터 누를 수 있습니다"))
-        }
-    }
-
 }
 
 @Immutable
@@ -871,16 +455,13 @@ data class CommunityState(
     val allUserWorldDataList3: List<String> = emptyList(),
     val allUserWorldDataList4: List<String> = emptyList(),
     val situation: String = "world",
-    val clickAllUserData: AllUser = AllUser(),
-    val clickAllUserWorldDataList: List<String> = emptyList(),
     val allUserRankDataList: List<AllUser> = emptyList(),
     val newChat: String = "",
     val chatMessages: List<ChatMessage> = emptyList(),
-    val alertState: String = "",
     val allAreaCount: String = "",
-    val dialogState: String = "",
     val text2: String = "",
     val text3: String = "",
+    val dialogState: String = ""
 )
 
 @Immutable
@@ -893,10 +474,9 @@ data class ChatMessage(
     val uid: String
 )
 
-
 //상태와 관련없는 것
 sealed interface CommunitySideEffect{
     class Toast(val message:String): CommunitySideEffect
-//    data object NavigateToDailyActivity: LoadingSideEffect
+    data object NavigateToNeighborInformationScreen: CommunitySideEffect
 
 }

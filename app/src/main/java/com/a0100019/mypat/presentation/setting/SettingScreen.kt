@@ -83,6 +83,7 @@ fun SettingScreen(
         letterDataList = settingState.letterDataList,
         recommending = settingState.recommending,
         recommended = settingState.recommended,
+        donationList = settingState.donationList,
 
         onClose = settingViewModel::onCloseClick,
         onSignOutClick = settingViewModel::dataSave,
@@ -112,6 +113,7 @@ fun SettingScreen(
     clickLetterData: Letter,
     recommending : String = "-1",
     recommended : String = "-1",
+    donationList: List<Donation> = emptyList(),
 
     onSignOutClick: () -> Unit,
     onClose: () -> Unit,
@@ -127,7 +129,8 @@ fun SettingScreen(
     popBackStack: () -> Unit = {},
     onRecommendationClick: () -> Unit = {},
     onRecommendationSubmitClick: () -> Unit = {},
-    onMedal19Click: () -> Unit = {}
+    onMedal19Click: () -> Unit = {},
+
 
 ) {
 
@@ -176,6 +179,11 @@ fun SettingScreen(
 
         "explanation" -> ExplanationDialog(
             onClose = onClose
+        )
+
+        "donation" -> DonationDialog(
+            onClose = onClose,
+            donationList = donationList
         )
     }
 
@@ -273,7 +281,7 @@ fun SettingScreen(
                 Spacer(modifier = Modifier.size(12.dp))
 
                 MainButton(
-                    text = "만보기 기능 정지",
+                    text = "만보기 일시 정지",
                     onClick = {
                         val intent = Intent(context, StepForegroundService::class.java)
                         context.stopService(intent)
@@ -332,6 +340,12 @@ fun SettingScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
             Divider()
+
+            MainButton(
+                text = "방명록",
+                onClick = { onSituationChange("donation") },
+                modifier = Modifier.fillMaxWidth()
+            )
 
             Box(
                 modifier = Modifier

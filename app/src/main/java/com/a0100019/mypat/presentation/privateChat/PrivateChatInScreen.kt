@@ -9,10 +9,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -40,6 +42,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.user.User
+import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
+import com.a0100019.mypat.presentation.neighbor.chat.ChatSideEffect
 import com.a0100019.mypat.presentation.neighbor.chat.getPastelColorForTag
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
@@ -56,7 +60,8 @@ import java.util.Locale
 fun PrivateChatInScreen(
     privateChatInViewModel: PrivateChatInViewModel = hiltViewModel(),
     popBackStack: () -> Unit = {},
-    onNavigateToPrivateRoomScreen: () -> Unit = {}
+    onNavigateToPrivateRoomScreen: () -> Unit = {},
+    onNavigateToNeighborInformationScreen: () -> Unit = {},
 
 ) {
 
@@ -68,6 +73,7 @@ fun PrivateChatInScreen(
         when (sideEffect) {
             is PrivateChatInSideEffect.Toast -> Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
             PrivateChatInSideEffect.NavigateToPrivateRoomScreen -> onNavigateToPrivateRoomScreen()
+            PrivateChatInSideEffect.NavigateToNeighborInformationScreen -> onNavigateToNeighborInformationScreen()
 
         }
     }
@@ -77,11 +83,17 @@ fun PrivateChatInScreen(
         chatMessages = privateChatInState.chatMessages,
         text = privateChatInState.text,
         yourName = privateChatInState.yourName,
+        yourTag = privateChatInState.yourTag,
+        situation = privateChatInState.situation,
 
         popBackStack = popBackStack,
         onTextChange = privateChatInViewModel::onTextChange,
         onChatSubmitClick = privateChatInViewModel::onChatSubmitClick,
-        onNavigateToPrivateRoomScreen = onNavigateToPrivateRoomScreen
+        onNavigateToPrivateRoomScreen = onNavigateToPrivateRoomScreen,
+        onNeighborInformationClick = privateChatInViewModel::onNeighborInformationClick,
+        onSituationChange = privateChatInViewModel::onSituationChange,
+        onPrivateRoomDelete = privateChatInViewModel::onPrivateRoomDelete,
+        onClose = privateChatInViewModel::onClose
     )
 }
 
@@ -91,13 +103,34 @@ fun PrivateChatInScreen(
     userDataList: List<User> = emptyList(),
     chatMessages: List<PrivateChatMessage> = emptyList(),
     text: String = "",
-    yourName: String = "",
+    yourName: String = "이웃",
+    yourTag: String = "0",
+    situation: String = "",
 
     popBackStack: () -> Unit = {},
     onTextChange: (String) -> Unit = {},
     onChatSubmitClick: () -> Unit = {},
     onNavigateToPrivateRoomScreen: () -> Unit = {},
+    onNeighborInformationClick: () -> Unit = {},
+    onSituationChange: (String) -> Unit = {},
+    onPrivateRoomDelete: () -> Unit = {},
+    onClose: () -> Unit = {},
 ) {
+
+    when(situation) {
+        "roomDelete" -> SimpleAlertDialog(
+            onConfirmClick = onPrivateRoomDelete,
+            onDismissClick = {
+                onClose()
+            },
+            text = "대화방을 삭제하겠습니까?\n되돌릴 수 없습니다. 신중하게 생각하세요"
+        )
+        "deleteCheck" -> SimpleAlertDialog(
+            onDismissOn = false,
+            onConfirmClick = onNavigateToPrivateRoomScreen,
+            text = "대화방이 삭제되었습니다."
+        )
+    }
 
     Surface(
         modifier = Modifier
@@ -122,12 +155,38 @@ fun PrivateChatInScreen(
                     contentAlignment = Alignment.Center
                 ) {
 
-                    Text(
-                        text = yourName,
-                        style = MaterialTheme.typography.displayMedium,
-                        modifier = Modifier
+                    // 오른쪽 버튼
+                    MainButton(
+                        text = "삭제",
+                        onClick = {
+                            onSituationChange("roomDelete")
+                        },
+
+                        modifier = Modifier.align(Alignment.CenterStart)
                     )
 
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .clickable {
+                                onNeighborInformationClick()
+                            }
+                    ) {
+
+                        Text(
+                            text = yourName,
+                            style = MaterialTheme.typography.headlineMedium,
+                            modifier = Modifier
+                        )
+
+                        Spacer(modifier = Modifier.width(6.dp))
+
+                        Text(
+                            text = "#$yourTag",
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier
+                        )
+                    }
                     // 오른쪽 버튼
                     MainButton(
                         text = "닫기",

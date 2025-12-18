@@ -259,6 +259,27 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+    fun onChatDeleteClick(chatTimestamp: String) = intent {
+
+        val todayDocId =
+            SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date())
+
+        Firebase.firestore
+            .collection("chat")
+            .document(todayDocId)
+            .update(
+                mapOf(
+                    chatTimestamp to FieldValue.delete()
+                )
+            )
+            .addOnSuccessListener {
+                Log.d("ChatDelete", "채팅 삭제 성공")
+            }
+            .addOnFailureListener { e ->
+                Log.e("ChatDelete", "채팅 삭제 실패: ${e.message}")
+            }
+    }
+
     //입력 가능하게 하는 코드
     @OptIn(OrbitExperimental::class)
     fun onChatTextChange(chatText: String) = blockingIntent {

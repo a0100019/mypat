@@ -32,6 +32,7 @@ import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.domain.AppBgmManager
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
+import com.a0100019.mypat.presentation.neighbor.chat.ChatSideEffect
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
@@ -41,7 +42,8 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 @Composable
 fun CommunityScreen(
     communityViewModel: CommunityViewModel = hiltViewModel(),
-    popBackStack: () -> Unit = {}
+    popBackStack: () -> Unit = {},
+    onNavigateToNeighborInformationScreen: () -> Unit = {},
 
 ) {
 
@@ -52,6 +54,7 @@ fun CommunityScreen(
     communityViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
             is CommunitySideEffect.Toast -> Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
+            CommunitySideEffect.NavigateToNeighborInformationScreen -> onNavigateToNeighborInformationScreen()
         }
     }
 
@@ -68,32 +71,25 @@ fun CommunityScreen(
         allUserWorldDataList2 = communityState.allUserWorldDataList2,
         allUserWorldDataList3 = communityState.allUserWorldDataList3,
         allUserWorldDataList4 = communityState.allUserWorldDataList4,
-        clickAllUserData = communityState.clickAllUserData,
-        clickAllUserWorldDataList = communityState.clickAllUserWorldDataList,
         allUserRankDataList = communityState.allUserRankDataList,
         chatMessages = communityState.chatMessages,
         newChat = communityState.newChat,
         userDataList = communityState.userDataList,
-        alertState = communityState.alertState,
         allAreaCount = communityState.allAreaCount,
-        dialogState = communityState.dialogState,
         text2 = communityState.text2,
         text3 = communityState.text3,
 
         onPageUpClick = communityViewModel::opPageUpClick,
-        onUserWorldClick = communityViewModel::onUserWorldClick,
-        onLikeClick = communityViewModel::onLikeClick,
         onSituationChange = communityViewModel::onSituationChange,
         onChatTextChange = communityViewModel::onChatTextChange,
-        onUserRankClick = communityViewModel::onUserRankClick,
-        onBanClick = communityViewModel::onBanClick,
-        alertStateChange = communityViewModel::alertStateChange,
         onUpdateCheckClick = communityViewModel::onUpdateCheckClick,
         popBackStack = popBackStack,
         onDialogChangeClick = communityViewModel::onDialogChangeClick,
+        onNeighborInformationClick = communityViewModel::onNeighborInformationClick,
         onCloseClick = communityViewModel::onCloseClick,
         onTextChange2 = communityViewModel::onTextChange2,
         onTextChange3 = communityViewModel::onTextChange3,
+        onUserWorldClick = communityViewModel::onUserWorldClick
 
     )
 }
@@ -113,8 +109,6 @@ fun CommunityScreen(
     allUserWorldDataList2: List<String> = emptyList(),
     allUserWorldDataList3: List<String> = emptyList(),
     allUserWorldDataList4: List<String> = emptyList(),
-    clickAllUserData: AllUser = AllUser(),
-    clickAllUserWorldDataList: List<String> = emptyList(),
     allUserRankDataList: List<AllUser> = listOf(AllUser(), AllUser()),
     chatMessages: List<ChatMessage> = emptyList(),
     newChat: String = "",
@@ -126,48 +120,23 @@ fun CommunityScreen(
     text3: String = "",
 
     onPageUpClick: () -> Unit = {},
-    onUserWorldClick: (Int) -> Unit = {},
-    onLikeClick: () -> Unit = {},
     onSituationChange: (String) -> Unit = {},
     onChatTextChange: (String) -> Unit = {},
-    onUserRankClick: (Int) -> Unit = {},
-    onBanClick: (Int) -> Unit = {},
     alertStateChange: (String) -> Unit = {},
     onUpdateCheckClick: () -> Unit = {},
     popBackStack: () -> Unit = {},
     onDialogChangeClick: (String) -> Unit = {},
     onCloseClick: () -> Unit = {},
+    onNeighborInformationClick: (String) -> Unit = {},
     onTextChange2: (String) -> Unit = {},
     onTextChange3: (String) -> Unit = {},
+    onUserWorldClick: (Int) -> Unit = {},
 
     ) {
 
     val context = LocalContext.current
     val prefs = context.getSharedPreferences("bgm_prefs", Context.MODE_PRIVATE)
     val bgmOn = prefs.getBoolean("bgmOn", true)
-
-    if(clickAllUserData.tag != "0") {
-        AppBgmManager.pause()
-        CommunityUserDialog(
-            onClose = { onUserWorldClick(0) },
-            clickAllUserData = clickAllUserData,
-            clickAllUserWorldDataList = clickAllUserWorldDataList,
-            patDataList = patDataList,
-            itemDataList = itemDataList,
-            onLikeClick = {
-                onLikeClick()
-            },
-            onBanClick = {
-                alertStateChange("-1")
-            },
-            allUserDataList = allUserDataList,
-            allMapCount = allAreaCount
-        )
-    } else {
-        if (bgmOn) {
-            AppBgmManager.play()
-        }
-    }
 
     if(situation == "update") {
         CommunityUpdateCheckDialog(
@@ -177,17 +146,6 @@ fun CommunityScreen(
     } else if(situation == "updateLoading") {
         CommunityUpdateLoadingDialog(
             onDismissClick = popBackStack
-        )
-    }
-
-    if(alertState != "") {
-        SimpleAlertDialog(
-            onConfirm = {
-                onBanClick(alertState.toInt())
-                alertStateChange("")
-            },
-            onDismiss = { alertStateChange("") },
-            text = "신고하시겠습니까?"
         )
     }
 
@@ -352,7 +310,7 @@ fun CommunityScreen(
                                     userData = user,
                                     rank = index + 1,
                                     situation = situation,
-                                    onClick = { onUserRankClick(user.tag.toInt()) },
+                                    onClick = { onNeighborInformationClick(user.tag) },
                                     modifier = Modifier
                                         .weight(0.9f)
                                 )

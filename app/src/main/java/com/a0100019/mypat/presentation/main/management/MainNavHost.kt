@@ -137,7 +137,10 @@ fun MainNavHost() {
 
         composable(route = MainRoute.CommunityScreen.name) {
             CommunityScreen(
-                popBackStack = { navController.popBackStack() }
+                popBackStack = { navController.popBackStack() },
+                onNavigateToNeighborInformationScreen = {
+                    navController.navigate(route = MainRoute.NeighborInformationScreen.name)
+                }
             )
         }
 
@@ -256,6 +259,9 @@ fun MainNavHost() {
                         popUpTo(0) { inclusive = true } // 백스택 전체 제거
                         launchSingleTop = true // 같은 화면 여러 번 안 쌓이게
                     }
+                },
+                onNavigateToNeighborInformationScreen = {
+                    navController.navigate(route = MainRoute.NeighborInformationScreen.name)
                 }
             )
         }
@@ -281,12 +287,25 @@ fun MainNavHost() {
                 onNavigateToBoardMessageScreen = {
                     navController.navigate(route = MainRoute.BoardMessageScreen.name)
                 },
+                onNavigateToMainScreen = {
+                    navController.navigate(route = MainRoute.MainScreen.name) {
+                        popUpTo(0) { inclusive = true } // 백스택 전체 제거
+                        launchSingleTop = true // 같은 화면 여러 번 안 쌓이게
+                    }
+                }
+
             )
         }
 
         composable(route = MainRoute.BoardMessageScreen.name) {
             BoardMessageScreen(
-                popBackStack = { navController.popBackStack() }
+                popBackStack = { navController.popBackStack() },
+                onNavigateToBoardScreen = {
+                    navController.navigate(route = MainRoute.BoardScreen.name) {
+                        popUpTo(0) { inclusive = true } // 백스택 전체 제거
+                        launchSingleTop = true // 같은 화면 여러 번 안 쌓이게
+                    }
+                },
             )
         }
 

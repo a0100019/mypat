@@ -7,6 +7,7 @@ import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.presentation.neighbor.chat.ChatMessage
 import com.a0100019.mypat.presentation.daily.diary.DiarySideEffect
+import com.a0100019.mypat.presentation.neighbor.community.CommunitySideEffect
 import com.a0100019.mypat.presentation.setting.SettingSideEffect
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FieldPath
@@ -91,6 +92,10 @@ class PrivateChatInViewModel @Inject constructor(
                 val yourName =
                     if (myTag == user1) name2 else name1
 
+                // 🔥 상대 이름
+                val yourTag =
+                    if (myTag == user1) user2 else user1
+
                 // 🔥 내 last 필드 결정
                 val lastField = when (myTag) {
                     user1 -> "last1"
@@ -109,7 +114,12 @@ class PrivateChatInViewModel @Inject constructor(
                 // 🔥 상대 이름 state 반영
                 viewModelScope.launch {
                     intent {
-                        reduce { state.copy(yourName = yourName) }
+                        reduce {
+                            state.copy(
+                                yourName = yourName,
+                                yourTag = yourTag
+                            )
+                        }
                     }
 
                     if(messageCount >= 100) {
@@ -283,7 +293,6 @@ class PrivateChatInViewModel @Inject constructor(
         }
     }
 
-
     //입력 가능하게 하는 코드
     @OptIn(OrbitExperimental::class)
     fun onTextChange(text: String) = blockingIntent {
@@ -294,6 +303,75 @@ class PrivateChatInViewModel @Inject constructor(
 
     }
 
+    fun onNeighborInformationClick() = intent {
+
+        userDao.update(id = "etc2", value3 = state.yourTag)
+        postSideEffect(PrivateChatInSideEffect.NavigateToNeighborInformationScreen)
+
+    }
+
+    fun onSituationChange(situation: String) = intent {
+
+        reduce {
+            state.copy(
+                situation = situation
+            )
+        }
+    }
+
+    fun onClose() = intent {
+        reduce {
+            state.copy(
+                situation = "",
+                text = ""
+            )
+        }
+    }
+
+    fun onPrivateRoomDelete() = intent {
+
+        val userDataList = userDao.getAllUserData()
+        val roomId = userDataList.find { it.id == "etc2" }!!.value3
+
+        val roomRef = Firebase.firestore
+            .collection("chatting")
+            .document("privateChat")
+            .collection("privateChat")
+            .document(roomId)
+
+        // 1️⃣ message 하위 컬렉션 먼저 삭제
+        roomRef.collection("message")
+            .get()
+            .addOnSuccessListener { snapshot ->
+
+                val batch = Firebase.firestore.batch()
+
+                for (doc in snapshot.documents) {
+                    batch.delete(doc.reference)
+                }
+
+                // 2️⃣ batch 실행
+                batch.commit()
+                    .addOnSuccessListener {
+
+                        // 3️⃣ room 문서 삭제
+                        roomRef.delete()
+                            .addOnSuccessListener {
+                                Log.d("PrivateRoomDelete", "개인 채팅방 삭제 성공")
+                                intent { reduce { state.copy(situation = "deleteCheck") } }
+                            }
+                            .addOnFailureListener { e ->
+                                Log.e("PrivateRoomDelete", "방 문서 삭제 실패: ${e.message}")
+                            }
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("PrivateRoomDelete", "메시지 삭제 실패: ${e.message}")
+                    }
+            }
+            .addOnFailureListener { e ->
+                Log.e("PrivateRoomDelete", "message 컬렉션 로드 실패: ${e.message}")
+            }
+    }
 
 }
 
@@ -303,6 +381,8 @@ data class PrivateChatInState(
     val chatMessages: List<PrivateChatMessage> = emptyList(),
     val text: String = "",
     val yourName: String = "",
+    val yourTag: String = "",
+    val situation: String = "",
     )
 
 @Immutable
@@ -318,5 +398,6 @@ sealed interface PrivateChatInSideEffect{
     class Toast(val message:String): PrivateChatInSideEffect
 
     data object NavigateToPrivateRoomScreen: PrivateChatInSideEffect
+    data object NavigateToNeighborInformationScreen: PrivateChatInSideEffect
 
 }

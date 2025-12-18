@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -137,10 +136,10 @@ fun ThirdGameScreen(
             level = level
         )
         "newGame" -> SimpleAlertDialog(
-            onConfirm = {
+            onConfirmClick = {
                 newGame()
                 },
-            onDismiss = {
+            onDismissClick = {
                 onStateChangeClick("")
             },
             text = "게임을 새로 시작하시겠습니까?"

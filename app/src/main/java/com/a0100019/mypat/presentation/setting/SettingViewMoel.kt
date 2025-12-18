@@ -93,6 +93,7 @@ class SettingViewModel @Inject constructor(
     // 뷰 모델 초기화 시 모든 user 데이터를 로드
     init {
         loadData()
+        loadDonationList()
     }
 
     //room에서 데이터 가져옴
@@ -949,6 +950,55 @@ class SettingViewModel @Inject constructor(
         }
     }
 
+    private fun loadDonationList() = intent {
+
+        Firebase.firestore
+            .collection("code")
+            .document("donation")
+            .get()
+            .addOnSuccessListener { snap ->
+
+                if (!snap.exists()) return@addOnSuccessListener
+
+                val list = mutableListOf<Donation>()
+
+                snap.data?.forEach { (key, value) ->
+
+                    val number = key.toIntOrNull() ?: return@forEach
+                    val map = value as? Map<*, *> ?: return@forEach
+
+                    val date = map["date"] as? String ?: ""
+                    val message = map["message"] as? String ?: ""
+                    val tag = map["tag"] as? String ?: ""
+                    val name = map["name"] as? String ?: ""
+
+                    list.add(
+                        Donation(
+                            number = number,
+                            date = date,
+                            message = message,
+                            tag = tag,
+                            name = name
+                        )
+                    )
+                }
+
+                val sorted = list.sortedByDescending { it.number }
+
+                viewModelScope.launch {
+                    intent {
+                        reduce {
+                            state.copy(donationList = sorted)
+                        }
+                    }
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("DonationLoad", "후원 목록 로드 실패: ${e.message}")
+            }
+    }
+
+
 }
 
 
@@ -971,8 +1021,19 @@ data class SettingState(
     val sudokuDataList: List<Sudoku> = emptyList(),
     val areaDataList: List<Area> = emptyList(),
     val recommending: String = "-1",
-    val recommended: String = "-1"
+    val recommended: String = "-1",
+    val donationList: List<Donation> = emptyList(),
     )
+
+@Immutable
+data class Donation(
+    val number: Int = 0,
+    val date: String = "2025-01-01",
+    val message: String = "",
+    val tag: String = "0",
+    val name: String = "0",
+)
+
 
 
 sealed interface SettingSideEffect {

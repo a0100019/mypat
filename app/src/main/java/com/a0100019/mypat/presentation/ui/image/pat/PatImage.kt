@@ -25,13 +25,17 @@ fun PatImage(
     xFloat: Float,
     yFloat: Float,
     sizeFloat: Float,
-    isPlaying: Boolean = true,          // ✅ 애니메이션 ON/OFF 변수
+    isPlaying: Boolean = true,
     onClick: (() -> Unit)? = null
 ) {
+    // composition 캐싱
     val composition by rememberLottieComposition(LottieCache.get(patUrl))
 
-    val imageSize = surfaceWidthDp * sizeFloat
+    val imageSize = remember(surfaceWidthDp, sizeFloat) {
+        surfaceWidthDp * sizeFloat
+    }
 
+    // effect 계산도 고정
     PatEffectImage(
         surfaceWidthDp = surfaceWidthDp,
         surfaceHeightDp = surfaceHeightDp,
@@ -39,34 +43,54 @@ fun PatImage(
         xFloat = xFloat,
         yFloat = yFloat,
         sizeFloat = sizeFloat,
+        isPlaying = isPlaying
     )
 
-    val modifier = Modifier
-        .size(imageSize)
-        .offset(
-            x = (surfaceWidthDp * xFloat),
-            y = (surfaceHeightDp * yFloat)
-        )
-        .let {
-            if (onClick != null) {
-                it.clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null,
-                    onClick = onClick
-                )
-            } else it
-        }
+    // modifier 고정
+    val modifier = remember(
+        surfaceWidthDp,
+        surfaceHeightDp,
+        xFloat,
+        yFloat,
+        imageSize,
+        onClick
+    ) {
+        Modifier
+            .size(imageSize)
+            .offset(
+                x = surfaceWidthDp * xFloat,
+                y = surfaceHeightDp * yFloat
+            )
+            .let {
+                if (onClick != null) {
+                    it.clickable(
+                        interactionSource = MutableInteractionSource(),
+                        indication = null,
+                        onClick = onClick
+                    )
+                } else it
+            }
+    }
 
-    // ✅ 애니메이션 상태 제어
-    val progress by animateLottieCompositionAsState(
+    // 🔥 핵심: 멈춰 있을 때 progress 계산 완전 중단
+    val animatedProgress by animateLottieCompositionAsState(
         composition = composition,
         isPlaying = isPlaying,
-        iterations = if (isPlaying) Int.MAX_VALUE else 1
+        iterations = Int.MAX_VALUE
     )
+
+    // 멈춘 순간의 progress 고정
+    val frozenProgress = remember { androidx.compose.runtime.mutableStateOf(0f) }
+
+    if (isPlaying) {
+        frozenProgress.value = animatedProgress
+    }
 
     LottieAnimation(
         composition = composition,
-        progress = { progress },
+        progress = {
+            if (isPlaying) animatedProgress else frozenProgress.value
+        },
         modifier = modifier
     )
 }
