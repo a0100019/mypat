@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.a0100019.mypat.data.room.allUser.AllUser
 import com.a0100019.mypat.data.room.allUser.AllUserDao
 import com.a0100019.mypat.data.room.diary.Diary
 import com.a0100019.mypat.data.room.diary.DiaryDao
@@ -26,6 +27,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.firestore
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -261,6 +263,10 @@ class LoginViewModel @Inject constructor(
                             val introduction = communityMap["introduction"]
                             if (medal != null && introduction != null) {
                                 userDao.update(id = "etc", value = introduction, value3 = medal)
+                            }
+                            val medalQuest = communityMap["medalQuest"]
+                            if (medalQuest != null) {
+                                userDao.update(id = "name", value2 = medalQuest)
                             }
 
                             val dateMap = userDoc.get("date") as Map<String, String>
@@ -647,6 +653,7 @@ class LoginViewModel @Inject constructor(
 //                "like" to userDataList.find { it.id == "community"}!!.value,
                     "warning" to userDataList.find {it.id == "community"}!!.value2,
                     "medal" to userDataList.find { it.id == "etc"}!!.value3,
+                    "medalQuest" to userDataList.find { it.id == "name"}!!.value2,
                     "introduction" to userDataList.find { it.id == "etc"}!!.value,
                 ),
 

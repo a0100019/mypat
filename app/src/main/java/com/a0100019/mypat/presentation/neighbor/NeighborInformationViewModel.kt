@@ -250,7 +250,7 @@ class NeighborInformationViewModel @Inject constructor(
                     // 🔥 이미 방이 존재
                     viewModelScope.launch {
                         intent {
-                            postSideEffect(NeighborInformationSideEffect.Toast("이미 채팅방이 존재합니다."))
+                            postSideEffect(NeighborInformationSideEffect.Toast("이미 친구입니다."))
                             postSideEffect(NeighborInformationSideEffect.NavigateToPrivateRoomScreen)
 
                         }
@@ -282,7 +282,7 @@ class NeighborInformationViewModel @Inject constructor(
                     .addOnSuccessListener {
                         viewModelScope.launch {
                             intent {
-                                postSideEffect(NeighborInformationSideEffect.Toast("채팅방 생성 완료!"))
+                                postSideEffect(NeighborInformationSideEffect.Toast("친구를 맺었습니다"))
                                 postSideEffect(NeighborInformationSideEffect.NavigateToPrivateRoomScreen)
                             }
                         }
@@ -290,7 +290,7 @@ class NeighborInformationViewModel @Inject constructor(
                     .addOnFailureListener {
                         viewModelScope.launch {
                             intent {
-                                postSideEffect(NeighborInformationSideEffect.Toast("채팅방 생성 실패"))
+                                postSideEffect(NeighborInformationSideEffect.Toast("친구 실패"))
                             }
                         }
                     }

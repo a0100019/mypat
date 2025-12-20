@@ -254,12 +254,41 @@ class MainViewModel @Inject constructor(
 
         val letterData = state.showLetterData
 
-        if(letterData.reward == "money") {
-            postSideEffect(MainSideEffect.Toast("햇살 +${letterData.amount}"))
-            userDao.update(id = "money", value = (state.userDataList.find { it.id == "money" }!!.value.toInt() + letterData.amount.toInt()).toString())
-        } else {
-            postSideEffect(MainSideEffect.Toast("달빛 +${letterData.amount}"))
-            userDao.update(id = "money", value2 = (state.userDataList.find { it.id == "money" }!!.value2.toInt() + letterData.amount.toInt()).toString())
+        when (letterData.reward) {
+            "money" -> {
+                postSideEffect(MainSideEffect.Toast("햇살 +${letterData.amount}"))
+                userDao.update(id = "money", value = (state.userDataList.find { it.id == "money" }!!.value.toInt() + letterData.amount.toInt()).toString())
+            }
+            "cash" -> {
+                postSideEffect(MainSideEffect.Toast("달빛 +${letterData.amount}"))
+                userDao.update(id = "money", value2 = (state.userDataList.find { it.id == "money" }!!.value2.toInt() + letterData.amount.toInt()).toString())
+            }
+            else -> {
+                //매달, medal, 칭호
+                val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
+
+                val myMedalList: MutableList<Int> =
+                    myMedal
+                        .split("/")
+                        .mapNotNull { it.toIntOrNull() }
+                        .toMutableList()
+
+                // 🔥 여기 숫자 두개 바꾸면 됨
+                if (!myMedalList.contains(letterData.reward.toInt())) {
+                    myMedalList.add(letterData.reward.toInt())
+
+                    // 다시 문자열로 합치기
+                    val updatedMedal = myMedalList.joinToString("/")
+
+                    // DB 업데이트
+                    userDao.update(
+                        id = "etc",
+                        value3 = updatedMedal
+                    )
+
+                    postSideEffect(MainSideEffect.Toast("칭호를 획득했습니다!"))
+                }
+            }
         }
 
         letterData.state = "read"

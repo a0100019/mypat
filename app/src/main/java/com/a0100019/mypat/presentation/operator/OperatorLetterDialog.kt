@@ -105,7 +105,7 @@ fun OperatorLetterDialog(
                     label = { Text("보상종류") },
                     placeholder = { Text(
                         textAlign = TextAlign.Center,
-                        text = "money햇살, cash달빛") },
+                        text = "money햇살, cash달빛, 숫자칭호") },
                     shape = RoundedCornerShape(8.dp), // 테두리를 둥글게
                     modifier = Modifier
                         .fillMaxWidth()

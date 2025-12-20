@@ -1,15 +1,18 @@
 package com.a0100019.mypat.presentation.privateChat
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
-import com.a0100019.mypat.presentation.setting.SettingSideEffect
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
+import org.orbitmvi.orbit.annotation.OrbitExperimental
+import org.orbitmvi.orbit.syntax.simple.blockingIntent
 import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
@@ -183,6 +186,107 @@ class PrivateRoomViewModel @Inject constructor(
 
     }
 
+    fun onPrivateChatStartClick() = intent {
+        val myTag = state.userDataList.find { it.id == "auth" }!!.value2
+        val yourTag = state.yourTag
+
+        val myNum = myTag.toLongOrNull() ?: 0L
+        val yourNum = yourTag.toLongOrNull() ?: 0L
+
+        // 🔻 작은 숫자가 앞으로 오도록
+        val docId = if (myNum < yourNum) "${myTag}_${yourTag}" else "${yourTag}_${myTag}"
+
+        val docRef = Firebase.firestore
+            .collection("chatting")
+            .document("privateChat")
+            .collection("privateChat")
+            .document(docId)
+
+        // 🔍 문서 존재 여부 확인
+        docRef.get()
+            .addOnSuccessListener { snapshot ->
+                if (snapshot.exists()) {
+                    // 🔥 이미 방이 존재
+                    viewModelScope.launch {
+                        intent {
+                            postSideEffect(PrivateRoomSideEffect.Toast("이미 친구입니다."))
+                        }
+                    }
+                    return@addOnSuccessListener
+                }
+
+                // 📌 participants 배열 생성
+                val u1 = if (myNum < yourNum) myTag else yourTag
+                val u2 = if (myNum < yourNum) yourTag else myTag
+
+                // 📌 방 생성 데이터
+                val chatInitData = mapOf(
+                    "user1" to u1,
+                    "user2" to u2,
+                    "participants" to listOf(u1, u2),   // ⬅⬅⬅ 핵심 추가!
+                    "createdAt" to System.currentTimeMillis(),
+                    "last1" to System.currentTimeMillis(),
+                    "last2" to System.currentTimeMillis(),
+                    "lastMessage" to "",
+                    "name1" to state.userDataList.find { it.id == "name" }!!.value,
+                    "name2" to "이웃",
+                    "createUser" to state.userDataList.find { it.id == "auth" }!!.value,
+                    "messageCount" to 0
+                )
+
+                // 문서 생성
+                docRef.set(chatInitData)
+                    .addOnSuccessListener {
+                        viewModelScope.launch {
+                            intent {
+                                postSideEffect(PrivateRoomSideEffect.Toast("친구 완료!"))
+                            }
+                        }
+                    }
+                    .addOnFailureListener {
+                        viewModelScope.launch {
+                            intent {
+                                postSideEffect(PrivateRoomSideEffect.Toast("친구 실패"))
+                            }
+                        }
+                    }
+            }
+            .addOnFailureListener {
+                viewModelScope.launch {
+                    intent {
+                        postSideEffect(PrivateRoomSideEffect.Toast("오류 발생"))
+                    }
+                }
+            }
+    }
+
+    //입력 가능하게 하는 코드
+    @OptIn(OrbitExperimental::class)
+    fun onYourTagChange(text: String) = blockingIntent {
+
+        reduce {
+            state.copy(yourTag = text)
+        }
+
+    }
+
+    fun onSituationChange(text: String) = intent {
+        reduce {
+            state.copy(
+                situation = text
+            )
+        }
+    }
+
+    fun onClose() = intent {
+        reduce {
+            state.copy(
+                situation = "",
+                yourTag = "",
+            )
+        }
+    }
+
 }
 
 @Immutable
@@ -190,7 +294,8 @@ data class PrivateRoomState(
     val userDataList: List<User> = emptyList(),
     val chatMessages: List<PrivateChatMessage> = emptyList(),
     val roomList: List<PrivateRoom> = emptyList(),
-
+    val yourTag: String = "",
+    val situation: String = "",
     )
 
 @Immutable

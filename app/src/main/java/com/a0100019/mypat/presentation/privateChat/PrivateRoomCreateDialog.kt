@@ -1,4 +1,4 @@
-package com.a0100019.mypat.presentation.information
+package com.a0100019.mypat.presentation.privateChat
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -18,19 +19,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
 @Composable
-fun IntroductionChangeDialog(
-    onClose: () -> Unit,
-    onTextChange: (String) -> Unit,
-    text: String = "",
-    onConfirmClick: () -> Unit,
+fun PrivateRoomCreateDialog(
+    onClose: () -> Unit = {},
+    onTextChange: (String) -> Unit = {},
+    yourTag: String = "",
+    onConfirmClick: () -> Unit = {},
 ) {
 
     Dialog(
@@ -61,34 +64,36 @@ fun IntroductionChangeDialog(
             ) {
 
                 Text(
-                    text = "인삿말 변경",
+                    text = "친구 찾기",
                     style = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier.padding(16.dp),
                 )
 
+                Text(text = "친구하고 싶은 이웃의 태그를 입력해주세요")
+
                 OutlinedTextField(
-                    value = text,
-                    onValueChange = {
-                        if (it.length <= 100) onTextChange(it)
+                    value = yourTag,
+                    onValueChange = { input ->
+                        // 숫자만 허용 + 최대 10자리
+                        if (input.all { it.isDigit() } && input.length <= 10) {
+                            onTextChange(input)
+                        }
                     },
-                    label = { Text("인삿말") },
-                    placeholder = { Text("최대 100자 작성할 수 있습니다.") },
+                    label = { Text("태그") },
+                    placeholder = { Text("상대방의 태그를 입력하세요.") },
                     singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number
+                    ),
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(8.dp)
                 )
 
+
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text(
-                    text = "부적절한 내용을 포함할 경우, 경고 없이 제제를 받을 수 있습니다",
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier
-                        .padding(start = 6.dp, end = 6.dp)
-                )
 
                 // 추가로 원하는 Composable 요소
 
@@ -113,15 +118,14 @@ fun IntroductionChangeDialog(
     }
 }
 
+
 @Preview(showBackground = true)
 @Composable
-fun IntroductionChangeDialogPreview() {
+fun PrivateRoomCreateDialogPreview() {
     MypatTheme {
-        IntroductionChangeDialog(
+        PrivateRoomCreateDialog(
             onClose = {},
-            onTextChange = {},
             onConfirmClick = {},
-            text = "",
         )
     }
 }

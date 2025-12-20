@@ -97,9 +97,9 @@ class ManagementViewModel @Inject constructor(
                         todayDate = currentDate
                     )
 
-                    //매달, medal, 칭호1
+                    //매달, medal, 칭호22
                     50 -> {
-                        //매달, medal, 칭호1
+                        //매달, medal, 칭호22
                         val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
 
                         val myMedalList: MutableList<Int> =
@@ -109,8 +109,8 @@ class ManagementViewModel @Inject constructor(
                                 .toMutableList()
 
                         // 🔥 여기 숫자 두개 바꾸면 됨
-                        if (!myMedalList.contains(1)) {
-                            myMedalList.add(1)
+                        if (!myMedalList.contains(22)) {
+                            myMedalList.add(22)
 
                             // 다시 문자열로 합치기
                             val updatedMedal = myMedalList.joinToString("/")
@@ -174,6 +174,31 @@ class ManagementViewModel @Inject constructor(
         if(itemDao.getAllCloseItemData().isEmpty()) {
             val today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
             letterDao.updateDateByTitle(title = "모든 아이템 획득 축하 편지", todayDate = today)
+        }
+
+        //매달, medal, 칭호1
+        val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
+
+        val myMedalList: MutableList<Int> =
+            myMedal
+                .split("/")
+                .mapNotNull { it.toIntOrNull() }
+                .toMutableList()
+
+        // 🔥 여기 숫자 두개 바꾸면 됨
+        if (!myMedalList.contains(1)) {
+            myMedalList.add(1)
+
+            // 다시 문자열로 합치기
+            val updatedMedal = myMedalList.joinToString("/")
+
+            // DB 업데이트
+            userDao.update(
+                id = "etc",
+                value3 = updatedMedal
+            )
+
+            postSideEffect(ManagementSideEffect.Toast("칭호를 획득했습니다!"))
         }
 
 

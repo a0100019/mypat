@@ -3,7 +3,7 @@ package com.a0100019.mypat.presentation.information
 fun medalName(type: Int): String =
     when (type) {
         0 -> "없음"
-        1 -> "꾸준한 관리인"
+        1 -> "신입 관리인"
         //칭호 설명
         2 -> "동물 사랑꾼"
         3 -> "동물 레벨 100"
@@ -25,6 +25,7 @@ fun medalName(type: Int): String =
         19 -> "꼼꼬미"
         20 -> "개인 채팅 수 10개"
         21 -> "친구와 채팅 100개 이상"
+        22 -> "꾸준한 관리인"
         else -> "알 수 없음"
     }
 
@@ -34,7 +35,7 @@ fun medalName(type: Int): String =
 fun medalExplain(type: Int): String =
     when (type) {
         0 -> "없음"
-        1 -> "하루마을 출석 50일 달성"
+        1 -> "하루마을 출석"
         //칭호 설명
         2 -> "동물 레벨 50"
         3 -> "동물 레벨 100"
@@ -51,6 +52,12 @@ fun medalExplain(type: Int): String =
         14 -> "뾰로롱"
         15 -> "뾰로롱"
         16 -> "뾰로롱"
+        17 -> "대나무숲 1회 작성"
+        18 -> "스토리 3번 읽기"
+        19 -> "꼼꼬미"
+        20 -> "개인 채팅 수 10개"
+        21 -> "친구와 채팅 100개 이상"
+        22 -> "꾸준한 관리인"
         else -> "알 수 없음"
     }
 
@@ -93,3 +100,7 @@ fun getMedalActionCount(medalData: String, actionId: Int): Int {
         ?: 0
 }
 
+fun totalMedalCount(): Int {
+    return (1..500) // 충분히 큰 범위
+        .count { medalName(it) != "알 수 없음" }
+}

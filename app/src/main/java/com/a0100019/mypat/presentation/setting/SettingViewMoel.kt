@@ -40,6 +40,7 @@ import com.a0100019.mypat.domain.AppBgmManager
 import com.a0100019.mypat.presentation.index.IndexSideEffect
 import com.a0100019.mypat.presentation.information.addMedalAction
 import com.a0100019.mypat.presentation.information.getMedalActionCount
+import com.a0100019.mypat.presentation.main.MainSideEffect
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
@@ -265,8 +266,8 @@ class SettingViewModel @Inject constructor(
                 "warning" to userDataList.find {it.id == "community"}!!.value2,
                 "medal" to userDataList.find { it.id == "etc"}!!.value3,
                 "introduction" to userDataList.find { it.id == "etc"}!!.value,
+                "medalQuest" to userDataList.find { it.id == "name"}!!.value2
             ),
-
 
             "date" to mapOf(
                 "firstDate" to userDataList.find { it.id == "date"}!!.value3,
@@ -808,18 +809,42 @@ class SettingViewModel @Inject constructor(
         val letterData = state.clickLetterData
 
         if(letterData.state == "open"){
-            if (letterData.reward == "money") {
-                userDao.update(
-                    id = "money",
-                    value = (state.userDataList.find { it.id == "money" }!!.value.toInt() + letterData.amount.toInt()).toString()
-                )
-            } else {
-                userDao.update(
-                    id = "money",
-                    value2 = (state.userDataList.find { it.id == "money" }!!.value2.toInt() + letterData.amount.toInt()).toString()
-                )
+            when (letterData.reward) {
+                "money" -> {
+                    postSideEffect(SettingSideEffect.Toast("햇살 +${letterData.amount}"))
+                    userDao.update(id = "money", value = (state.userDataList.find { it.id == "money" }!!.value.toInt() + letterData.amount.toInt()).toString())
+                }
+                "cash" -> {
+                    postSideEffect(SettingSideEffect.Toast("달빛 +${letterData.amount}"))
+                    userDao.update(id = "money", value2 = (state.userDataList.find { it.id == "money" }!!.value2.toInt() + letterData.amount.toInt()).toString())
+                }
+                else -> {
+                    //매달, medal, 칭호
+                    val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
+
+                    val myMedalList: MutableList<Int> =
+                        myMedal
+                            .split("/")
+                            .mapNotNull { it.toIntOrNull() }
+                            .toMutableList()
+
+                    // 🔥 여기 숫자 두개 바꾸면 됨
+                    if (!myMedalList.contains(letterData.reward.toInt())) {
+                        myMedalList.add(letterData.reward.toInt())
+
+                        // 다시 문자열로 합치기
+                        val updatedMedal = myMedalList.joinToString("/")
+
+                        // DB 업데이트
+                        userDao.update(
+                            id = "etc",
+                            value3 = updatedMedal
+                        )
+
+                        postSideEffect(SettingSideEffect.Toast("칭호를 획득했습니다!"))
+                    }
+                }
             }
-            postSideEffect(SettingSideEffect.Toast("보상 획득 : ${letterData.reward} +${letterData.amount}"))
 
             letterData.state = "read"
             letterDao.update(letterData)

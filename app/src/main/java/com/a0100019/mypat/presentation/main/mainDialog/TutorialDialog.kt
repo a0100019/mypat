@@ -94,10 +94,10 @@ fun TutorialDialog(
                         )
 
                         when(state){
-                            "미션" -> {
+                            "커뮤니티" -> {
 
                                 Text(
-                                    text = "(1/5)",
+                                    text = "(1/3)",
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = Color.Black
                                 )
@@ -105,8 +105,41 @@ fun TutorialDialog(
                                 Spacer(modifier = Modifier.size(12.dp))
 
                                 Text(
-                                    text = "하루마을에 오신 것을 환영합니다!\n\n하루마을의 에너지원은 바로 관리인의 성실함입니다. " +
-                                            "하루 미션 버튼을 눌러 원하는 미션을 완료하고 햇살을 얻어주세요\n\n목표 : 하루 미션 한 개 완료하기",
+                                    text = "하루마을에 오신 것을 환영합니다!\n" +
+                                            "\n하루마을은 힐링을 지향하는 작은 세상입니다.\n" +
+                                            "게시판과 채팅에서의 따뜻한 말 한마디와 배려가 " +
+                                            "하루마을을 더욱 포근하게 채워갑니다.\n" +
+                                            "서로를 존중하며 평화로운 하루마을의 역사를 함께 써 내려가요.\n" +
+                                            "\n" +
+                                            "목표 : 커뮤니티 기능 둘러보기"
+                                    ,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.padding(bottom = 16.dp),
+                                    color = Color.Black
+                                )
+
+                                MainButton(
+                                    onClick = {
+                                        onChatClick()
+                                    },
+                                    text = "   커뮤니티   "
+                                )
+
+                            }
+                            "미션" -> {
+
+                                Text(
+                                    text = "(2/3)",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = Color.Black
+                                )
+
+                                Spacer(modifier = Modifier.size(12.dp))
+
+                                Text(
+                                    text = "하루마을의 에너지원은 바로 관리인의 성실함입니다. " +
+                                            "하루 미션 버튼을 눌러 원하는 미션을 완료하고 햇살을 얻어보세요\n\n목표 : 하루 미션 둘러보기",
                                     style = MaterialTheme.typography.bodyMedium,
                                     textAlign = TextAlign.Center,
                                     modifier = Modifier.padding(bottom = 16.dp),
@@ -120,92 +153,10 @@ fun TutorialDialog(
                                     text = "     하루 미션     "
                                 )
                             }
-                            "커뮤니티" -> {
-
-                                Text(
-                                    text = "(2/5)",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = Color.Black
-                                )
-
-                                Spacer(modifier = Modifier.size(12.dp))
-
-                                Text(
-                                    text = "커뮤니티 기능을 이용해보세요! 채팅으로 대화를 하거나 이웃 마을을 구경할 수 있습니다. 그리고 미니 게임에서 높은 순위를 차지하여 이름을 남겨보세요!\n" +
-                                            "\n" +
-                                            "목표 : 채팅 기능 둘러보기"
-                                    ,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier.padding(bottom = 16.dp),
-                                    color = Color.Black
-                                )
-
-                                MainButton(
-                                    onClick = {
-                                        onChatClick()
-                                    },
-                                    text = "   채팅   "
-                                )
-
-                            }
-                            "상점" -> {
-
-                                Text(
-                                    text = "(3/5)",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = Color.Black
-                                )
-
-                                Spacer(modifier = Modifier.size(12.dp))
-
-                                Text(
-                                    text = "상점에서 펫과 아이템을 구매할 수 있습니다. 햇살은 하루 미션, 달빛은 주로 미니 게임을 통해 얻을 수 있으며 " +
-                                            "햇살은 달빛으로 교환할 수 있습니다\n\n목표 : 상점 이용하기",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier.padding(bottom = 16.dp),
-                                    color = Color.Black
-                                )
-
-                                MainButton(
-                                    onClick = {
-                                        onStoreClick()
-                                    },
-                                    text = "     상점     "
-                                )
-                            }
-
-                            "꾸미기" -> {
-
-                                Text(
-                                    text = "(4/5)",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = Color.Black
-                                )
-
-                                Spacer(modifier = Modifier.size(12.dp))
-
-                                Text(
-                                    text = "꾸미기 모드에서 펫과 아이템을 배치하고 맵을 바꿀 수 있습니다. 펫을 클릭하여 크기를 조정할 수 있으니 나만의 멋진 마을을 만들어보세요!\n\n목표 : 꾸미기 완료하기",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier.padding(bottom = 16.dp),
-                                    color = Color.Black
-                                )
-
-                                MainButton(
-                                    onClick = {
-                                        onDesignClick()
-                                    },
-                                    text = "    꾸미기 모드    "
-                                )
-                            }
-
                             "펫" -> {
 
                                 Text(
-                                    text = "(5/5)",
+                                    text = "(3/3)",
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = Color.Black
                                 )
@@ -229,7 +180,7 @@ fun TutorialDialog(
                                 )
 
                                 Text(
-                                    text = "또한 펫을 클릭하면 미니 게임을 통해 펫과 놀아줄 수 있고 달빛을 많이 얻을 수 있습니다. \n\n드디어 튜토리얼이 끝났습니다! 이제부터는 하루 마을의 주인이 되어 꾸준히 멋진 마을을 만들어주세요! 마지막으로 아래의 펫을 눌러주세요"
+                                    text = "또한 펫을 클릭하면 미니 게임을 통해 펫과 놀아줄 수 있으며, 높은 순위를 차지해보세요! \n\n튜토리얼이 끝났습니다!\n이제부터는 마을의 관리인이 되어 마을의 다양한 기능들을 둘러보고 꾸준히 멋진 마을을 만들어보세요!\n마지막으로 아래의 펫을 눌러주세요"
                                             ,
                                     style = MaterialTheme.typography.bodyMedium,
                                     textAlign = TextAlign.Center,
@@ -281,7 +232,7 @@ fun TutorialDialog(
 fun TutorialDialogPreview() {
     MypatTheme {
         TutorialDialog(
-            state = "미션"
+            state = "펫"
         )
     }
 }

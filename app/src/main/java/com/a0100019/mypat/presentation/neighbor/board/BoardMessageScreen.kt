@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -40,6 +41,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.user.User
@@ -146,13 +148,8 @@ fun BoardMessageScreen(
             /* ---------- 상단 닫기 버튼 ---------- */
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Start
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                MainButton(
-                    onClick = popBackStack,
-                    text = "닫기"
-                )
-
                 if(boardData.tag == userDataList.find { it.id == "auth" }?.value2){
                     MainButton(
                         onClick = {
@@ -161,46 +158,132 @@ fun BoardMessageScreen(
                         text = "삭제"
                     )
                 }
+
+                // 📌 게시판 타입 뱃지
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    val (boardTitle, boardColor) = when (boardData.type) {
+                        "congratulation" -> "축하 게시판" to Color(0xFFFFF3E0)
+                        "worry" -> "고민 게시판" to Color(0xFFE3F2FD)
+                        else -> "자유 게시판" to Color(0xFFF1F8E9)
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .background(boardColor, RoundedCornerShape(8.dp))
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                    ) {
+                        Text(
+                            text = boardTitle,
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.DarkGray
+                        )
+                    }
+                }
+
+                MainButton(
+                    onClick = popBackStack,
+                    text = "닫기"
+                )
+
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            /* ---------- 게시판 정보 ---------- */
-            Column(
-                modifier = Modifier.fillMaxWidth()
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .background(
+                        color = when (boardData.type) {
+                            "congratulation" -> Color(0xFFFFF3E0) // 🎉 축하
+                            "worry" -> Color(0xFFE3F2FD)           // 💙 고민
+                            else -> Color(0xFFF1F8E9)              // 🌿 자유
+                        },
+                        shape = RoundedCornerShape(14.dp)
+                    )
+                    .padding(top = 16.dp, start = 16.dp, end = 16.dp)
             ) {
-                Text(
-                    text = when (boardData.type) {
-                        "0" -> "자유 게시판"
-                        "1" -> "고민 게시판"
-                        else -> "게시판"
-                    },
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                // 👤 작성자 + 타입 뱃지
+                item {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
 
-                Text(
-                    text = boardData.message,
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                        Text(
+                            text = if (boardData.anonymous == "1") "익명" else boardData.name,
+                            fontSize = 20.sp,
+                            color = when (boardData.type) {
+                                "congratulation" -> Color(0xFF6D4C41)
+                                "worry" -> Color(0xFF0D47A1)
+                                else -> Color(0xFF33691E)
+                            }
+                        )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                        if (boardData.anonymous != "1") {
+                            Text(
+                                text = " #${boardData.tag}",
+                                fontSize = 15.sp,
+                                color = when (boardData.type) {
+                                    "congratulation" -> Color(0xFF6D4C41).copy(alpha = 0.7f)
+                                    "worry" -> Color(0xFF0D47A1).copy(alpha = 0.7f)
+                                    else -> Color(0xFF33691E).copy(alpha = 0.7f)
+                                }
+                            )
+                        }
 
-                Text(
-                    text = if (boardData.anonymous == "1") "익명" else boardData.name,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = Color.Gray
-                )
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        // 📌 타입 뱃지
+                        Box(
+                            modifier = Modifier
+                                .background(
+                                    color = when (boardData.type) {
+                                        "congratulation" -> Color(0xFFFFCC80)
+                                        "worry" -> Color(0xFF90CAF9)
+                                        else -> Color(0xFFAED581)
+                                    },
+                                    shape = RoundedCornerShape(8.dp)
+                                )
+                                .padding(horizontal = 8.dp, vertical = 3.dp)
+                        ) {
+                            Text(
+                                text = when (boardData.type) {
+                                    "congratulation" -> "축하"
+                                    "worry" -> "고민"
+                                    else -> "자유"
+                                },
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color.White
+                            )
+                        }
+                    }
+                }
+
+                item { Spacer(modifier = Modifier.height(12.dp)) }
+
+                // 📝 게시글 내용
+                item {
+                    Text(
+                        text = boardData.message,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color(0xFF333333),
+                        lineHeight = 20.sp
+                    )
+                }
             }
+
 
             Spacer(modifier = Modifier.height(16.dp))
 
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 20.dp)
+                    .padding(start = 8.dp, end = 8.dp, top = 8.dp, bottom = 20.dp)
                     .border(
                         width = 2.dp,
                         color = MaterialTheme.colorScheme.outline,
@@ -226,50 +309,108 @@ fun BoardMessageScreen(
                             val displayName =
                                 if (chat.anonymous == "1") "익명" else chat.name
 
+                            // ⏰ timestamp → 7/24 12:15
+                            val timeText = remember(chat.timestamp) {
+                                try {
+                                    val date = Date(chat.timestamp)
+                                    val format = SimpleDateFormat(
+                                        "M/dd HH:mm",
+                                        Locale.getDefault()
+                                    )
+                                    format.format(date)
+                                } catch (e: Exception) {
+                                    ""
+                                }
+                            }
+
+                            val bubbleColor = getPastelColorForTag(chat.tag)
+
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .background(
-                                        Color(0xFFF2F2F2),
-                                        RoundedCornerShape(8.dp)
+                                        color = if (chat.anonymous == "1") {
+                                            Color(0xFFF2F2F2).copy(alpha = 0.7f)   // 익명: 살짝 투명
+                                        } else {
+                                            bubbleColor.copy(alpha = 0.7f)       // 비익명: 파스텔 + 은은함
+                                        },
+                                        shape = RoundedCornerShape(16.dp)
                                     )
-                                    .padding(12.dp)
+                                    .padding(horizontal = 14.dp, vertical = 12.dp)
                             ) {
+
+
+                                // 👤 상단: 이름 · 태그 / 시간 · 삭제
                                 Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                    ,
-                                    horizontalArrangement = Arrangement.SpaceBetween
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Text(
-                                        text = displayName,
-                                        style = MaterialTheme.typography.labelMedium,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                    if(chat.tag == userDataList.find { it.id == "auth" }?.value2){
-                                        Image(
-                                            painter = painterResource(id = R.drawable.cancel),
-                                            contentDescription = "별 아이콘",
-                                            modifier = Modifier
-                                                .rotate(270f)
-                                                .clickable(
-                                                    indication = null, // ← ripple 효과 제거
-                                                    interactionSource = remember { MutableInteractionSource() } // ← 필수
-                                                ) {
-                                                    onBoardChatDelete(chat.timestamp.toString())
-                                                }
+
+                                    // 왼쪽: 이름 + 태그
+                                    Row(
+                                        modifier = Modifier.weight(1f),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = displayName,
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = Color(0xFF333333) // ⭐ 글자색 고정
                                         )
+
+                                        if (chat.anonymous != "1") {
+                                            Spacer(modifier = Modifier.width(6.dp))
+
+                                            Text(
+                                                text = "#${chat.tag}",
+                                                fontSize = 11.sp,
+                                                color = Color(0xFF333333) // ⭐ 동일
+                                            )
+                                        }
+                                    }
+
+                                    // 오른쪽: 시간 + 삭제
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = timeText,
+                                            fontSize = 10.sp,
+                                            color = Color(0xFF333333) // ⭐ 동일
+                                        )
+
+                                        if (chat.tag == userDataList.find { it.id == "auth" }?.value2) {
+                                            Spacer(modifier = Modifier.width(8.dp))
+
+                                            Image(
+                                                painter = painterResource(id = R.drawable.cancel),
+                                                contentDescription = "삭제",
+                                                modifier = Modifier
+                                                    .size(13.dp)
+                                                    .rotate(270f)
+                                                    .clickable(
+                                                        indication = null,
+                                                        interactionSource = remember { MutableInteractionSource() }
+                                                    ) {
+                                                        onBoardChatDelete(chat.timestamp.toString())
+                                                    }
+                                            )
+                                        }
                                     }
                                 }
-                                Spacer(modifier = Modifier.height(4.dp))
 
+                                Spacer(modifier = Modifier.height(8.dp))
+
+                                // 💬 댓글 내용
                                 Text(
                                     text = chat.message,
-                                    style = MaterialTheme.typography.bodyMedium
+                                    fontSize = 14.sp,
+                                    color = Color(0xFF333333), // ⭐ 고정
+                                    lineHeight = 20.sp
                                 )
                             }
-                        }
 
+                        }
                     }
 
                 } else {

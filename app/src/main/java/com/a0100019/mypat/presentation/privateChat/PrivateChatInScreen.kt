@@ -123,12 +123,12 @@ fun PrivateChatInScreen(
             onDismissClick = {
                 onClose()
             },
-            text = "대화방을 삭제하겠습니까?\n되돌릴 수 없습니다. 신중하게 생각하세요"
+            text = "친구 삭제하겠습니까?\n되돌릴 수 없습니다. 신중하게 생각하세요"
         )
         "deleteCheck" -> SimpleAlertDialog(
             onDismissOn = false,
             onConfirmClick = onNavigateToPrivateRoomScreen,
-            text = "대화방이 삭제되었습니다."
+            text = "삭제되었습니다."
         )
     }
 

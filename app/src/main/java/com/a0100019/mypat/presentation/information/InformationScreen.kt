@@ -1,6 +1,12 @@
 package com.a0100019.mypat.presentation.information
 
 import android.widget.Toast
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -14,6 +20,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -30,20 +37,26 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.area.Area
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.world.World
+import com.a0100019.mypat.presentation.neighbor.chat.getPastelColorForTag
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.component.TextAutoResizeSingleLine
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
@@ -117,7 +130,7 @@ fun InformationScreen(
 
     ) {
 
-    var page by remember { mutableIntStateOf(1) }
+    var page by remember { mutableIntStateOf(0) }
 
     val myMedalString = userDataList.find { it.id == "etc" }?.value3 ?: ""
 
@@ -197,7 +210,9 @@ fun InformationScreen(
 
             if(page == 0) {
                 Text(
-                    text = medalName(myMedalList[0])
+                    text = myMedalList.firstOrNull()
+                        ?.let { medalName(it) }
+                        ?: ""
                 )
 
                 // 미니맵 뷰
@@ -282,6 +297,7 @@ fun InformationScreen(
                     Surface(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .height(100.dp) // ⭐ 3줄 정도 들어가는 고정 높이
                             .border(
                                 width = 2.dp,
                                 color = MaterialTheme.colorScheme.primaryContainer,
@@ -292,18 +308,18 @@ fun InformationScreen(
                         color = MaterialTheme.colorScheme.scrim
                     ) {
 
-                        Column(
+                        Box(
                             modifier = Modifier
-                                .padding(12.dp)
+                                .fillMaxSize()
+                                .padding(12.dp),
+                            contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = userDataList.find { it.id == "etc" }?.value ?: "",
+                                text = userDataList.find { it.id == "etc" }?.value.orEmpty(),
                                 textAlign = TextAlign.Center,
-                                modifier = Modifier
-                                    .fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth()
                             )
                         }
-
                     }
                 }
 
@@ -343,55 +359,128 @@ fun InformationScreen(
                 }
             } else {
 
+                Text(
+                    text = "칭호 ${myMedalList.size-1}/${totalMedalCount()}"
+                    ,
+                    style = MaterialTheme.typography.titleLarge,
+                )
+
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
                         .aspectRatio(1f / 1.25f)
-                        .padding(6.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    color = Color(0xFFFFF8E7),
-                    border = BorderStroke(2.dp, MaterialTheme.colorScheme.primaryContainer),
+                        .padding(start = 6.dp, end = 6.dp, bottom = 6.dp),
+                    shape = RoundedCornerShape(18.dp),
+                    color = Color(0xFFFFF9ED),
+                    border = BorderStroke(2.dp, Color(0xFFE6D7B9)),
                 ) {
                     LazyVerticalGrid(
-                        columns = GridCells.Fixed(3), // 한 줄에 3개
+                        columns = GridCells.Fixed(3),
                         modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                        contentPadding = PaddingValues(10.dp),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
 
-                        //칭호개수 +1 만큼 아이템크기
-                        items(16) { index ->
+                        items(totalMedalCount()) { index ->
+
+                            val medalType = index + 1
+                            val isOwned = myMedalList.contains(medalType)
+
+                            val bubbleColor = getPastelColorForTag((index * 16).toString())
+
+                            // ✨ 반짝임 애니메이션
+                            val shimmerX by rememberInfiniteTransition(label = "shimmer").animateFloat(
+                                initialValue = -0.4f,
+                                targetValue = 1.4f,
+                                animationSpec = infiniteRepeatable(
+                                    animation = tween(durationMillis = 2200, easing = LinearEasing),
+                                    repeatMode = RepeatMode.Restart
+                                ),
+                                label = "shimmerX"
+                            )
+
+// 🎨 획득용 파스텔 베이스
+                            val pastelBase = lerp(
+                                bubbleColor,
+                                Color.White,
+                                0.6f
+                            )
+
+// ⭐ 테두리용 "쨍한" 컬러 (핵심 포인트)
+                            val strongBorderColor = lerp(
+                                bubbleColor,
+                                Color.Black,
+                                0.15f        // 살짝만 어둡게 → 채도 유지 + 선명
+                            )
+
+// ✨ 반짝임 색
+                            val shimmerColor = Color.White.copy(alpha = 0.45f)
+
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
+                                    .aspectRatio(1f / 0.47f)
                                     .background(
-                                        color = MaterialTheme.colorScheme.surface,
-                                        shape = RoundedCornerShape(12.dp)
+                                        brush = if (isOwned) {
+                                            Brush.verticalGradient(
+                                                colors = listOf(
+                                                    pastelBase.copy(alpha = 0.95f),
+                                                    pastelBase.copy(alpha = 0.75f)
+                                                )
+                                            )
+                                        } else {
+                                            // ❌ 미획득 → 완전 회색 통일
+                                            Brush.verticalGradient(
+                                                colors = listOf(
+                                                    Color(0xFFF1F1F1),
+                                                    Color(0xFFF1F1F1)
+                                                )
+                                            )
+                                        },
+                                        shape = RoundedCornerShape(14.dp)
                                     )
                                     .border(
-                                        1.dp,
-                                        MaterialTheme.colorScheme.outline,
-                                        RoundedCornerShape(12.dp)
+                                        width = if (isOwned) 0.8.dp else 0.4.dp,
+                                        color = if (isOwned)
+                                            strongBorderColor      // ⭐ 쨍한 테두리
+                                        else
+                                            Color(0xFFD0D0D0),
+                                        shape = RoundedCornerShape(14.dp)
                                     )
-                                    .padding(vertical = 12.dp),
+                                    .clip(RoundedCornerShape(14.dp))
+                                    .padding(horizontal = 2.dp, vertical = 2.dp),
                                 contentAlignment = Alignment.Center
                             ) {
-                                TextAutoResizeSingleLine(
-                                    text = medalName(index+1),
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                )
-                                if (myMedalList.contains(index+1)) {
-                                    Text(
-                                        text = "획득",
-                                        style = MaterialTheme.typography.titleMedium,
+
+                                // ✨ 반짝임 (획득만)
+                                if (isOwned) {
+                                    Box(
+                                        modifier = Modifier
+                                            .matchParentSize()
+                                            .background(
+                                                brush = Brush.linearGradient(
+                                                    colorStops = arrayOf(
+                                                        (shimmerX - 0.18f) to Color.Transparent,
+                                                        shimmerX to shimmerColor,
+                                                        (shimmerX + 0.18f) to Color.Transparent
+                                                    )
+                                                )
+                                            )
                                     )
                                 }
+
+                                TextAutoResizeSingleLine(
+                                    text = medalName(medalType),
+                                    modifier = Modifier.fillMaxWidth(),
+                                )
                             }
+
                         }
                     }
                 }
+
+
 
                 Column(
                     modifier = Modifier,
@@ -656,7 +745,12 @@ fun InformationScreen(
 
             }
 
-            Row{
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                ,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ){
                 MainButton(
                     text = "칭호 변경하기",
                     onClick = {
@@ -692,7 +786,7 @@ fun InformationScreenPreview() {
             allPatDataList = listOf(Pat(url = "pat/cat.json")),
             allItemDataList = listOf(Item(url = "item/airplane.json")),
             allAreaDataList = listOf(Area(url = "area/forest.png")),
-            userDataList = listOf(User(id = "firstGame"))
+            userDataList = listOf(User(id = "etc", value3 = "1/1/12/3/4/5/6/7/21")),
         )
     }
 }

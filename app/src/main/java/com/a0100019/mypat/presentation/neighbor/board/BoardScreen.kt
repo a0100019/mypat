@@ -2,8 +2,10 @@ package com.a0100019.mypat.presentation.neighbor.board
 
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,24 +13,25 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.a0100019.mypat.presentation.neighbor.chat.ChatMessage
-import com.a0100019.mypat.presentation.privateChat.PrivateRoomSideEffect
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
@@ -39,11 +42,11 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 fun BoardScreen(
     boardViewModel: BoardViewModel = hiltViewModel(),
     onNavigateToBoardMessageScreen: () -> Unit = {},
-    onNavigateToMainScreen: () -> Unit = {},
+    onNavigateToNeighborScreen: () -> Unit = {},
 
     popBackStack: () -> Unit = {},
 
-) {
+    ) {
 
     val boardState : BoardState = boardViewModel.collectAsState().value
 
@@ -74,7 +77,7 @@ fun BoardScreen(
         onTextChange = boardViewModel::onTextChange,
         onBoardSubmitClick = boardViewModel::onBoardSubmitClick,
         loadBoardMessages = boardViewModel::loadBoardMessages,
-        onNavigateToMainScreen = onNavigateToMainScreen
+        onNavigateToNeighborScreen = onNavigateToNeighborScreen
     )
 }
 
@@ -96,7 +99,7 @@ fun BoardScreen(
     onTextChange: (String) -> Unit = {},
     onBoardSubmitClick: () -> Unit = {},
     loadBoardMessages: () -> Unit = {},
-    onNavigateToMainScreen: () -> Unit = {}
+    onNavigateToNeighborScreen: () -> Unit = {}
 
 ) {
 
@@ -134,12 +137,9 @@ fun BoardScreen(
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Start
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                MainButton(
-                    onClick = onNavigateToMainScreen,
-                    text = "닫기"
-                )
+
                 MainButton(
                     onClick = {
                         onSituationChange("boardSubmit")
@@ -151,6 +151,10 @@ fun BoardScreen(
                         if(situation == "myBoard") onSituationChange("") else onSituationChange("myBoard")
                     },
                     text = if(situation == "myBoard") "전체 게시물 보기" else "내 게시물 보기"
+                )
+                MainButton(
+                    onClick = popBackStack,
+                    text = "닫기"
                 )
             }
 
@@ -170,46 +174,123 @@ fun BoardScreen(
                     val isAnonymous = message.anonymous == "1"
                     val displayName = if (isAnonymous) "익명" else message.name
 
+                    // ⏰ 타임스탬프 텍스트 (함수 분리 없이 inline)
+                    val timeText = remember(message.timestamp) {
+                        val sdf = java.text.SimpleDateFormat("M/d HH:mm", java.util.Locale.getDefault())
+                        sdf.format(java.util.Date(message.timestamp))
+                    }
+
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(
-                                color = Color(0xFFF4F4F4),
-                                shape = RoundedCornerShape(12.dp)
+                                color = Color(0xFFF8F8F8),
+                                shape = RoundedCornerShape(14.dp)
+                            )
+                            .border(
+                                width = 1.dp,
+                                color = Color(0xFFE6E6E6),
+                                shape = RoundedCornerShape(14.dp)
                             )
                             .clickable {
                                 onBoardMessageClick(message.timestamp.toString())
                             }
-                            .padding(12.dp)
+                            .padding(14.dp)
                     ) {
 
-                        // 상단: 이름 + 타입
+                        // ── 상단: 👤 작성자 · 태그 / 타입 · ⏰ 시간 ──
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(
-                                text = displayName,
-                                style = MaterialTheme.typography.bodyMedium.copy(
-                                    fontWeight = FontWeight.Bold
-                                )
-                            )
 
-                            Text(
-                                text = message.type,
-                                style = MaterialTheme.typography.labelSmall,
-                                color = Color.Gray
-                            )
+                            // 왼쪽: 👤 이름 + 태그
+                            Row(
+                                modifier = Modifier.weight(1f),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = displayName,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = Color(0xFF2F2F2F)
+                                )
+
+                                if (message.anonymous != "1") {
+                                    Spacer(modifier = Modifier.width(6.dp))
+
+                                    Text(
+                                        text = "#${message.tag}",
+                                        fontSize = 12.sp,
+                                        color = Color(0xFF777777)
+                                    )
+                                }
+                            }
+
+                            // 오른쪽: 타입 뱃지 + 시간
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+
+                                val typeEmoji = when (message.type) {
+                                    "congratulation" -> "🎉"
+                                    "worry" -> "💭"
+                                    else -> "🌱"
+                                }
+
+                                val typeBackgroundColor = when (message.type) {
+                                    "congratulation" -> Color(0xFFFFF1CC)
+                                    "worry" -> Color(0xFFE6F1FB)
+                                    else -> Color(0xFFEAF4EC)
+                                }
+
+                                val typeText = when (message.type) {
+                                    "congratulation" -> "축하"
+                                    "worry" -> "고민"
+                                    else -> "자유"
+                                }
+
+                                Box(
+                                    modifier = Modifier
+                                        .background(
+                                            color = typeBackgroundColor,
+                                            shape = RoundedCornerShape(8.dp)
+                                        )
+                                        .padding(horizontal = 8.dp, vertical = 3.dp)
+                                ) {
+                                    Text(
+                                        text = "$typeEmoji $typeText",
+                                        fontSize = 11.sp,
+                                        color = Color(0xFF555555)
+                                    )
+                                }
+
+                                Spacer(modifier = Modifier.width(8.dp))
+
+                                // ⏰ 날짜·시간
+                                Text(
+                                    text = timeText,
+                                    fontSize = 11.sp,
+                                    color = Color(0xFF999999)
+                                )
+                            }
                         }
 
-                        Spacer(modifier = Modifier.height(6.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
 
-                        // 메시지 본문
+                        // ── 메시지 본문 (4줄 제한) ──
                         Text(
                             text = message.message,
-                            style = MaterialTheme.typography.bodyMedium
+                            fontSize = 14.sp,
+                            color = Color(0xFF333333),
+                            lineHeight = 20.sp,
+                            maxLines = 4,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
+
+
+
                 }
             }
         }

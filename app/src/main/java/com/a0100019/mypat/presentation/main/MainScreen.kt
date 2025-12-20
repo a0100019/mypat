@@ -179,6 +179,7 @@ fun MainScreen(
     timer: String,
     itemDataWithShadowList: List<Item> = emptyList(),
     musicTrigger: Int = 0,
+
     ) {
 
     val context = LocalContext.current
@@ -192,43 +193,25 @@ fun MainScreen(
     }
 
     val tutorialPrefs = context.getSharedPreferences("tutorial_prefs", Context.MODE_PRIVATE)
-    val tutorial = tutorialPrefs.getString("tutorial", "미션")
+    val tutorial = tutorialPrefs.getString("tutorial", "커뮤니티")
     var tutorialText by remember { mutableStateOf("진행") }
 
     if(tutorialText == "진행"){
         when (tutorial) {
-            "미션" -> TutorialDialog(
-                state = "미션",
-                onDailyClick = {
-                    tutorialText = "완료"
-                    onDailyNavigateClick()
-                    tutorialPrefs.edit().putString("tutorial", "커뮤니티").apply()
-                }
-            )
-
             "커뮤니티" -> TutorialDialog(
                 state = "커뮤니티",
                 onChatClick = {
                     tutorialText = "완료"
                     onNeighborNavigateClick()
-                    tutorialPrefs.edit().putString("tutorial", "상점").apply()
+                    tutorialPrefs.edit().putString("tutorial", "미션").apply()
                 }
             )
 
-            "상점" -> TutorialDialog(
-                state = "상점",
-                onStoreClick = {
+            "미션" -> TutorialDialog(
+                state = "미션",
+                onDailyClick = {
                     tutorialText = "완료"
-                    onStoreNavigateClick()
-                    tutorialPrefs.edit().putString("tutorial", "꾸미기").apply()
-                }
-            )
-
-            "꾸미기" -> TutorialDialog(
-                state = "꾸미기",
-                onDesignClick = {
-                    tutorialText = "완료"
-                    onWorldNavigateClick()
+                    onDailyNavigateClick()
                     tutorialPrefs.edit().putString("tutorial", "펫").apply()
                 }
             )
@@ -408,11 +391,11 @@ fun MainScreen(
                         )
                     }
                     MainButton(
-                        text = "개인 채팅",
+                        text = "친구",
                         onClick = onPrivateRoomNavigateClick
                     )
                     MainButton(
-                        text = "이웃",
+                        text = "커뮤니티",
                         onClick = onNeighborNavigateClick
                     )
                     MainButton(

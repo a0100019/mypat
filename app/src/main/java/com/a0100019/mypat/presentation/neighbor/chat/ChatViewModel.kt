@@ -449,7 +449,6 @@ class ChatViewModel @Inject constructor(
 
     }
 
-
 }
 
 @Immutable

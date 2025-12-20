@@ -182,7 +182,6 @@ class BoardViewModel @Inject constructor(
             }
     }
 
-
     fun onBoardMessageClick(boardTimestamp: String) = intent {
 
         userDao.update(id = "etc2", value3 = boardTimestamp)

@@ -138,7 +138,13 @@ fun LetterViewDialog(
                                     text = if (clickLetterData.state == "read") {
                                         " 확인 "
                                     } else {
-                                        " 확인 (${if(clickLetterData.reward == "money") "햇살" else "달빛"} +${clickLetterData.amount}) "
+                                        if(clickLetterData.reward == "money") {
+                                            " 확인 (햇살 +${clickLetterData.amount}) "
+                                        } else if(clickLetterData.reward == "cash"){
+                                            " 확인 (달빛 +${clickLetterData.amount}) "
+                                        } else {
+                                            "칭호 획득"
+                                        }
                                     }
 
                                 )
@@ -177,7 +183,7 @@ fun LetterViewDialogPreview() {
     MypatTheme {
         LetterViewDialog(
             onClose = {},
-            clickLetterData = Letter(state = "open", title = "첫 편지", message = "안녕하세요 저는 이유빈입니다.".repeat(50), link = "naver.com", reward = "cash", amount = "100" ),
+            clickLetterData = Letter(state = "open", title = "첫 편지", message = "안녕하세요 저는 이유빈입니다.".repeat(5), link = "naver.com", reward = "cash", amount = "100" ),
             onLetterLinkClick = {},
             onLetterConfirmClick = {}
 

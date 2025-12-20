@@ -468,54 +468,6 @@ fun DailyScreen(
                     }
                 }
 
-//                item {
-//                    //버튼 기본 설정
-//                    val interactionSource = remember { MutableInteractionSource() }
-//                    val isPressed by interactionSource.collectIsPressedAsState()
-//                    val scale by animateFloatAsState(
-//                        targetValue = if (isPressed) 0.95f else 1f,
-//                        label = "scale"
-//                    )
-//
-//                    Surface(
-//                        shape = RoundedCornerShape(16.dp),
-//                        color = MaterialTheme.colorScheme.scrim,
-//                        border = BorderStroke(3.dp, MaterialTheme.colorScheme.primaryContainer),
-//                        modifier = Modifier
-//                            .graphicsLayer {
-//                                scaleX = scale
-//                                scaleY = scale
-//                            }
-//                            .clickable(
-//                                interactionSource = interactionSource,
-//                                indication = rememberRipple(bounded = true, color = Color.White),
-//                                onClick = {  }
-//                            )
-//                            .padding(start = 12.dp, end = 12.dp, top = 6.dp, bottom = 6.dp)
-//                    ) {
-//                        Box {
-//
-//                            Column(
-//                                modifier = Modifier
-//                                    .padding(8.dp)
-//                                    .fillMaxWidth(),
-//                                verticalArrangement = Arrangement.Center,
-//                                horizontalAlignment = Alignment.CenterHorizontally
-//                            ) {
-//                                Text(
-//                                    text = "준비중...",
-//                                    style = MaterialTheme.typography.headlineMedium,
-//                                    modifier = Modifier
-//                                        .padding(top = 20.dp, bottom = 20.dp)
-//                                    ,
-//                                )
-//
-//                            }
-//                        }
-//
-//                    }
-//                }
-
             }
 
             Text(
