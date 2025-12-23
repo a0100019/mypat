@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -32,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -53,6 +55,8 @@ import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 
@@ -85,6 +89,7 @@ fun PrivateChatInScreen(
         yourName = privateChatInState.yourName,
         yourTag = privateChatInState.yourTag,
         situation = privateChatInState.situation,
+        privateChatData = privateChatInState.privateChatData,
 
         popBackStack = popBackStack,
         onTextChange = privateChatInViewModel::onTextChange,
@@ -106,6 +111,7 @@ fun PrivateChatInScreen(
     yourName: String = "이웃",
     yourTag: String = "0",
     situation: String = "",
+    privateChatData: PrivateChatData = PrivateChatData(),
 
     popBackStack: () -> Unit = {},
     onTextChange: (String) -> Unit = {},
@@ -195,10 +201,172 @@ fun PrivateChatInScreen(
                     )
                 }
 
+
+//                    // ── 💬 총 메시지 수 ──
+//                    Text(
+//                        text = "대화 수 ${privateChatData.messageCount}",
+//                        fontSize = 14.sp,
+//                        fontWeight = FontWeight.SemiBold,
+//                        color = Color(0xFF4A6CF7)
+//                    )
+//
+//                    Spacer(modifier = Modifier.height(12.dp))
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp)
+                        .background(
+                            color = Color(0xFFF8FAFF),
+                            shape = RoundedCornerShape(14.dp)
+                        )
+                        .border(
+                            width = 1.dp,
+                            color = Color(0xFFE1E7F5),
+                            shape = RoundedCornerShape(14.dp)
+                        )
+                        .padding(12.dp)
+                ) {
+
+                    // ── 1️⃣ 상단 한 줄: 최고 / 타이틀 / 누적 ──
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+
+                        Text(
+                            text = "최고 점수 ${privateChatData.highScore}",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        Text(
+                            text = "보스 잡기!",
+                            fontSize = 24.sp,
+                        )
+
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        Text(
+                            text = "누적 점수 ${privateChatData.totalScore}",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // ── 2️⃣ 하단 한 줄: 오늘 점수 + 액션 ──
+                    val todayDate =
+                        LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+
+                    val todayScore1 =
+                        if (privateChatData.lastGame1 == todayDate) privateChatData.todayScore1 else 0
+                    val todayScore2 =
+                        if (privateChatData.lastGame2 == todayDate) privateChatData.todayScore2 else 0
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+
+                        val bgColor1 = lerp(
+                            getPastelColorForTag(privateChatData.user1),
+                            Color.White,
+                            0.4f   // 연하면 0.3f / 진하면 0.2f
+                        )
+
+                        Box(
+                            modifier = Modifier
+                                .background(
+                                    color = bgColor1,
+                                    shape = RoundedCornerShape(8.dp) // 네모지만 살짝 둥글게
+                                )
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                        ) {
+                            Text(
+                                text = "${privateChatData.name1} $todayScore1",
+                                fontSize = 13.sp,
+                            )
+                        }
+
+
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        // 오늘 총합
+                        Text(
+                            text = "오늘\n${(todayScore1 + todayScore2)}",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center
+                        )
+
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        val bgColor2 = lerp(
+                            getPastelColorForTag(privateChatData.user2),
+                            Color.White,
+                            0.4f   // 연하면 0.3f / 진하면 0.2f
+                        )
+
+                        Box(
+                            modifier = Modifier
+                                .background(
+                                    color = bgColor2,
+                                    shape = RoundedCornerShape(8.dp) // 네모지만 살짝 둥글게
+                                )
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                        ) {
+                            Text(
+                                text = "${privateChatData.name2} $todayScore2",
+                                fontSize = 13.sp,
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.width(12.dp))
+
+                        // 액션
+                        if (privateChatData.attacker != yourTag) {
+                            MainButton(
+                                text = "⚔️ 공격",
+                                onClick = {
+                                    // 공격 로직
+                                }
+                            )
+                        } else {
+                            Box(
+                                modifier = Modifier
+                                    .background(
+                                        color = Color(0xFFEDEDED), // 연한 회색
+                                        shape = RoundedCornerShape(12.dp)
+                                    )
+                                    .border(
+                                        width = 1.dp,
+                                        color = Color(0xFFD6D6D6),
+                                        shape = RoundedCornerShape(12.dp)
+                                    )
+                                    .padding(4.dp)
+                                ,
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "⏳ 대기 중",
+                                    fontSize = 13.sp,
+                                    color = Color(0xFF9A9A9A),
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
+                        }
+
+                    }
+                }
+
                 Column(
                     modifier = Modifier
                         .weight(1f)
-                        .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 70.dp)
+                        .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 16.dp)
                         .border(
                             width = 2.dp,
                             color = MaterialTheme.colorScheme.outline,

@@ -29,7 +29,8 @@ fun SimpleAlertDialog(
     onConfirmClick: () -> Unit = {},
     onDismissClick: () -> Unit = {},
     text: String = "이 작업을 수행하시겠습니까?",
-    onDismissOn: Boolean = true
+    onDismissOn: Boolean = true,
+    title: String = "확인"
 ) {
 
     Dialog(
@@ -58,7 +59,7 @@ fun SimpleAlertDialog(
             ) {
 
                 Text(
-                    text = "확인",
+                    text = title,
                     style = MaterialTheme.typography.headlineMedium
                 )
 

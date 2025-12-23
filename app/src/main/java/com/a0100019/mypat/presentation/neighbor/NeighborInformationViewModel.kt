@@ -274,7 +274,14 @@ class NeighborInformationViewModel @Inject constructor(
                     "name1" to state.userDataList.find { it.id == "name" }!!.value,
                     "name2" to state.clickAllUserData.name,
                     "createUser" to state.userDataList.find { it.id == "auth" }!!.value,
-                    "messageCount" to 0
+                    "messageCount" to 0,
+                    "attacker" to state.userDataList.find { it.id == "auth" }!!.value2,
+                    "highScore" to 0,
+                    "lastGame1" to "2001-01-01",
+                    "lastGame2" to "2001-01-01",
+                    "todayScore1" to 0,
+                    "todayScore2" to 0,
+                    "totalScore" to 0,
                 )
 
                 // 문서 생성

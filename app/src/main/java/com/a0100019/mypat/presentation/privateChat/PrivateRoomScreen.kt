@@ -278,9 +278,12 @@ fun PrivateRoomScreen(
                     }
                 }
             } else {
-                Column {
+                Box(
+                    modifier = Modifier.fillMaxSize()
+                ) {
                     Text(
-                        text = "친구를 만들어보세요!"
+                        text = "친구를 만들어보세요!",
+                        modifier = Modifier.align(Alignment.Center)
                     )
                 }
             }

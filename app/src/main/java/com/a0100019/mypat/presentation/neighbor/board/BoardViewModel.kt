@@ -135,7 +135,8 @@ class BoardViewModel @Inject constructor(
                         ban = data["ban"] as String,
                         uid = data["uid"] as String,
                         type = data["type"] as String,
-                        anonymous = data["anonymous"] as String
+                        anonymous = data["anonymous"] as String,
+                        answerCount = (data["answer"] as? Map<*, *>)?.size ?: 0
                     )
                 }.sortedBy { it.timestamp }
 
@@ -332,7 +333,8 @@ data class BoardMessage(
     val ban: String = "0",
     val uid: String = "",
     val type: String = "",
-    val anonymous: String = "0"
+    val anonymous: String = "0",
+    val answerCount: Int = 0
 )
 
 //상태와 관련없는 것

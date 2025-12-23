@@ -5,12 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
-import com.a0100019.mypat.presentation.neighbor.chat.ChatMessage
-import com.a0100019.mypat.presentation.daily.diary.DiarySideEffect
-import com.a0100019.mypat.presentation.neighbor.community.CommunitySideEffect
-import com.a0100019.mypat.presentation.setting.SettingSideEffect
 import com.google.firebase.Firebase
-import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.firestore
@@ -78,129 +73,133 @@ class PrivateChatInViewModel @Inject constructor(
             .collection("privateChat")
             .document(roomId)
 
-        // 🔥 방 정보 먼저 불러오기
-        roomRef.get()
-            .addOnSuccessListener { roomSnap ->
+        // 🔥 채팅방 정보 구독
+        roomRef.addSnapshotListener { roomSnap, error ->
 
-                val user1 = roomSnap.getString("user1") ?: ""
-                val user2 = roomSnap.getString("user2") ?: ""
-                val name1 = roomSnap.getString("name1") ?: ""
-                val name2 = roomSnap.getString("name2") ?: ""
-                val messageCount = (roomSnap.getLong("messageCount") ?: 0L).toInt()
+            if (error != null || roomSnap == null || !roomSnap.exists()) {
+                Log.e("PrivateChatIn", "채팅방 구독 실패: ${error?.message}")
+                return@addSnapshotListener
+            }
 
-                // 🔥 상대 이름
-                val yourName =
-                    if (myTag == user1) name2 else name1
+            val privateChatData = PrivateChatData(
+                roomId = roomId,
+                user1 = roomSnap.getString("user1") ?: "",
+                user2 = roomSnap.getString("user2") ?: "",
+                name1 = roomSnap.getString("name1") ?: "",
+                name2 = roomSnap.getString("name2") ?: "",
+                lastTimestamp = roomSnap.getLong("lastTimestamp") ?: 0L,
+                lastMessage = roomSnap.getString("lastMessage") ?: "",
+                messageCount = (roomSnap.getLong("messageCount") ?: 0L).toInt(),
+                attacker = roomSnap.getString("attacker") ?: "",
+                highScore = (roomSnap.getLong("highScore") ?: 0L).toInt(),
+                lastGame1 = roomSnap.getString("lastGame1") ?: "2001-01-01",
+                lastGame2 = roomSnap.getString("lastGame2") ?: "2001-01-01",
+                todayScore1 = (roomSnap.getLong("todayScore1") ?: 0L).toInt(),
+                todayScore2 = (roomSnap.getLong("todayScore2") ?: 0L).toInt(),
+                totalScore = (roomSnap.getLong("totalScore") ?: 0L).toInt()
+            )
 
-                // 🔥 상대 이름
-                val yourTag =
-                    if (myTag == user1) user2 else user1
+            val yourName =
+                if (myTag == privateChatData.user1)
+                    privateChatData.name2
+                else
+                    privateChatData.name1
 
-                // 🔥 내 last 필드 결정
-                val lastField = when (myTag) {
-                    user1 -> "last1"
-                    user2 -> "last2"
-                    else -> null
+            val yourTag =
+                if (myTag == privateChatData.user1)
+                    privateChatData.user2
+                else
+                    privateChatData.user1
+
+            viewModelScope.launch {
+                intent {
+                    reduce {
+                        state.copy(
+                            privateChatData = privateChatData,
+                            yourName = yourName,
+                            yourTag = yourTag
+                        )
+                    }
+                }
+            }
+
+            // 🔹 메시지 100개 이상 시 칭호 지급 (중복 방지용 체크 필요하면 flag 추가 가능)
+            viewModelScope.launch {
+                if (privateChatData.messageCount >= 100) {
+
+                    val myMedal = userDao.getAllUserData()
+                        .find { it.id == "etc" }!!.value3
+
+                    val myMedalList = myMedal
+                        .split("/")
+                        .mapNotNull { it.toIntOrNull() }
+                        .toMutableList()
+
+                    if (!myMedalList.contains(21)) {
+                        myMedalList.add(21)
+
+                        userDao.update(
+                            id = "etc",
+                            value3 = myMedalList.joinToString("/")
+                        )
+
+                        postSideEffect(
+                            PrivateChatInSideEffect.Toast("칭호를 획득했습니다!")
+                        )
+                    }
+                }
+            }
+        }
+
+        // 🔥 채팅방 진입 last 업데이트 (1회)
+        val lastField = when (myTag) {
+            userDataList.find { it.id == "auth" }!!.value2 -> "last1"
+            else -> "last2"
+        }
+
+        roomRef.update(lastField, System.currentTimeMillis())
+
+        // 🔥 메시지 구독
+        roomRef.collection("message")
+            .addSnapshotListener { snapshot, error ->
+
+                if (error != null || snapshot == null) {
+                    Log.e("PrivateChatIn", "메시지 스냅샷 에러: ${error?.message}")
+                    return@addSnapshotListener
                 }
 
-                // 🔥 채팅방 진입 시 last 업데이트
-                if (lastField != null) {
-                    roomRef.update(lastField, System.currentTimeMillis())
-                        .addOnFailureListener {
-                            Log.e("PrivateChatIn", "last 업데이트 실패: ${it.message}")
-                        }
+                val allMessages = mutableListOf<PrivateChatMessage>()
+
+                for (dateDoc in snapshot.documents) {
+                    val data = dateDoc.data ?: continue
+
+                    for ((timestampKey, value) in data) {
+                        val timestamp = timestampKey.toLongOrNull() ?: continue
+                        val map = value as? Map<*, *> ?: continue
+
+                        allMessages.add(
+                            PrivateChatMessage(
+                                timestamp = timestamp,
+                                message = map["message"] as? String ?: "",
+                                name = map["name"] as? String ?: "",
+                                tag = map["tag"] as? String ?: ""
+                            )
+                        )
+                    }
                 }
 
-                // 🔥 상대 이름 state 반영
+                val sortedMessages = allMessages.sortedBy { it.timestamp }
+
                 viewModelScope.launch {
                     intent {
                         reduce {
-                            state.copy(
-                                yourName = yourName,
-                                yourTag = yourTag
-                            )
-                        }
-                    }
-
-                    if(messageCount >= 100) {
-                        //매달, medal, 칭호21
-                        val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
-
-                        val myMedalList: MutableList<Int> =
-                            myMedal
-                                .split("/")
-                                .mapNotNull { it.toIntOrNull() }
-                                .toMutableList()
-
-                        // 🔥 여기 숫자 두개랑 위에 // 바꾸면 됨
-                        if (!myMedalList.contains(21)) {
-                            myMedalList.add(21)
-
-                            // 다시 문자열로 합치기
-                            val updatedMedal = myMedalList.joinToString("/")
-
-                            // DB 업데이트
-                            userDao.update(
-                                id = "etc",
-                                value3 = updatedMedal
-                            )
-
-                            postSideEffect(PrivateChatInSideEffect.Toast("칭호를 획득했습니다!"))
+                            state.copy(chatMessages = sortedMessages)
                         }
                     }
                 }
-
-                // 🔥 메시지 스냅샷 리스너
-                roomRef.collection("message")
-                    .addSnapshotListener { snapshot, error ->
-
-                        if (error != null) {
-                            Log.e("PrivateChatIn", "메시지 스냅샷 에러: ${error.message}")
-                            return@addSnapshotListener
-                        }
-
-                        if (snapshot == null || snapshot.isEmpty) {
-                            Log.w("PrivateChatIn", "메시지 없음")
-                            return@addSnapshotListener
-                        }
-
-                        val allMessages = mutableListOf<PrivateChatMessage>()
-
-                        // 날짜 문서 반복
-                        for (dateDoc in snapshot.documents) {
-                            val data = dateDoc.data ?: continue
-
-                            // timestamp 필드 반복
-                            for ((timestampKey, value) in data) {
-
-                                val timestamp = timestampKey.toLongOrNull() ?: continue
-                                val map = value as? Map<*, *> ?: continue
-
-                                val message = map["message"] as? String ?: continue
-                                val name = map["name"] as? String ?: continue
-                                val tag = map["tag"] as? String ?: continue
-
-                                allMessages.add(
-                                    PrivateChatMessage(
-                                        timestamp = timestamp,
-                                        message = message,
-                                        name = name,
-                                        tag = tag
-                                    )
-                                )
-                            }
-                        }
-
-                        val sorted = allMessages.sortedBy { it.timestamp }
-
-                        viewModelScope.launch {
-                            intent {
-                                reduce { state.copy(chatMessages = sorted) }
-                            }
-                        }
-                    }
             }
     }
+
 
     fun onChatSubmitClick() = intent {
 
@@ -384,14 +383,35 @@ data class PrivateChatInState(
     val yourName: String = "",
     val yourTag: String = "",
     val situation: String = "",
+    val privateChatData: PrivateChatData = PrivateChatData()
     )
 
 @Immutable
 data class PrivateChatMessage(
-    val timestamp: Long,
-    val message: String,
-    val name: String,
-    val tag: String,
+    val timestamp: Long = 0L,
+    val message: String = "",
+    val name: String = "",
+    val tag: String = "",
+)
+
+@Immutable
+data class PrivateChatData(
+    val roomId: String = "",
+    val user1: String = "",
+    val user2: String = "",
+    val name1: String = "",
+    val name2: String = "",
+    val lastTimestamp: Long = 0L,
+    val lastMessage: String = "",
+    val messageCount: Int = 0,
+    val attacker: String = "",
+    val highScore: Int = 0,
+    val lastGame1: String = "2001-01-01",
+    val lastGame2: String = "2001-01-01",
+    val todayScore1: Int = 0,
+    val todayScore2: Int = 0,
+    val totalScore: Int = 0,
+    val todayScoreSum: Int = 0,
 )
 
 //상태와 관련없는 것

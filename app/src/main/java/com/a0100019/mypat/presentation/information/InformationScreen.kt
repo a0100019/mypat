@@ -1,5 +1,6 @@
 package com.a0100019.mypat.presentation.information
 
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -10,6 +11,8 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -56,8 +59,10 @@ import com.a0100019.mypat.data.room.area.Area
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.world.World
+import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
 import com.a0100019.mypat.presentation.neighbor.chat.getPastelColorForTag
 import com.a0100019.mypat.presentation.ui.component.MainButton
+import com.a0100019.mypat.presentation.ui.component.SimpleInformationDialog
 import com.a0100019.mypat.presentation.ui.component.TextAutoResizeSingleLine
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.image.item.WorldItemImage
@@ -96,17 +101,20 @@ fun InformationScreen(
         worldDataList = informationState.worldDataList,
         text = informationState.text,
         situation = informationState.situation,
+        medalExplain = informationState.medalExplain,
 
         popBackStack = popBackStack,
         onTextChange = informationViewModel::onTextChange,
         onSituationChange = informationViewModel::onSituationChange,
         onClose = informationViewModel::onClose,
         onIntroductionChangeClick = informationViewModel::onIntroductionChangeClick,
-        onMedalChangeClick = informationViewModel::onMedalChangeClick
+        onMedalChangeClick = informationViewModel::onMedalChangeClick,
+        onMedalExplainClick = informationViewModel::onMedalExplainClick
 
         )
 }
 
+@SuppressLint("RememberReturnType")
 @Composable
 fun InformationScreen(
     areaUrl : String,
@@ -120,6 +128,7 @@ fun InformationScreen(
     gameRankList: List<String> = listOf("-", "-", "-", "-", "-"),
     text: String = "",
     situation: String = "",
+    medalExplain: String = "",
 
     popBackStack: () -> Unit = {},
     onTextChange: (String) -> Unit = {},
@@ -127,6 +136,7 @@ fun InformationScreen(
     onClose: () -> Unit = {},
     onIntroductionChangeClick: () -> Unit = {},
     onMedalChangeClick: (Int) -> Unit = {},
+    onMedalExplainClick: (Int) -> Unit = {}
 
     ) {
 
@@ -153,6 +163,14 @@ fun InformationScreen(
                 onTextChange = onTextChange,
                 text = text,
                 onConfirmClick = onIntroductionChangeClick
+            )
+        }
+        "medalExplain" -> {
+            SimpleAlertDialog(
+                onConfirmClick = onClose,
+                text = medalExplain,
+                onDismissOn = false,
+                title = "칭호 설명"
             )
         }
     }
@@ -209,11 +227,79 @@ fun InformationScreen(
             }
 
             if(page == 0) {
-                Text(
-                    text = myMedalList.firstOrNull()
-                        ?.let { medalName(it) }
-                        ?: ""
+                // ✨ 반짝임 애니메이션
+                val shimmerX by rememberInfiniteTransition(label = "shimmer").animateFloat(
+                    initialValue = -0.4f,
+                    targetValue = 1.4f,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(durationMillis = 2200, easing = LinearEasing),
+                        repeatMode = RepeatMode.Restart
+                    ),
+                    label = "shimmerX"
                 )
+
+// 🌸 빨강 파스텔 팔레트
+                val pastelTop = Color(0xFFFFE3E3)      // 아주 연한 로즈 레드
+                val pastelBottom = Color(0xFFFFC1C1)   // 부드러운 코랄 레드
+                val strongBorderColor = Color(0xFFE57373) // 쨍하지만 과하지 않은 레드
+                val shimmerColor = Color.White.copy(alpha = 0.5f)
+
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp) // 🎖️ 배너 높이 고정
+                        .background(
+                            brush = Brush.verticalGradient(
+                                colors = listOf(
+                                    pastelTop,
+                                    pastelTop
+                                )
+                            ),
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                        .border(
+                            width = 2.dp,
+                            color = strongBorderColor,
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                        .clip(RoundedCornerShape(16.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+
+                    // ✨ 반짝임 레이어 (유리 느낌)
+                    Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .background(
+                                brush = Brush.linearGradient(
+                                    colorStops = arrayOf(
+                                        (shimmerX - 0.18f) to Color.Transparent,
+                                        shimmerX to shimmerColor,
+                                        (shimmerX + 0.18f) to Color.Transparent
+                                    )
+                                )
+                            )
+                    )
+
+                    val medal = myMedalList.firstOrNull()
+
+                    Text(
+                        text = when (medal) {
+                            null -> ""
+                            0 -> "칭호 없음"
+                            else -> medalName(medal)
+                        },
+                        style = MaterialTheme.typography.titleMedium,
+                        color = Color(0xFF6B1F1F),
+                        textAlign = TextAlign.Center,
+                        maxLines = 1
+                    )
+
+
+
+                }
+
 
                 // 미니맵 뷰
                 Surface(
@@ -297,15 +383,14 @@ fun InformationScreen(
                     Surface(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(100.dp) // ⭐ 3줄 정도 들어가는 고정 높이
-                            .border(
-                                width = 2.dp,
-                                color = MaterialTheme.colorScheme.primaryContainer,
-                                shape = RoundedCornerShape(16.dp)
-                            ),
+                            .height(100.dp), // ⭐ 3줄 정도 들어가는 고정 높이
                         shape = RoundedCornerShape(16.dp),
                         tonalElevation = 2.dp,
-                        color = MaterialTheme.colorScheme.scrim
+                        color = Color(0xFFEAF2FF), // 💠 연한 파스텔 블루 배경
+                        border = BorderStroke(
+                            width = 2.dp,
+                            color = Color(0xFF6FA8DC) // 🔷 선명하지만 부드러운 블루
+                        )
                     ) {
 
                         Box(
@@ -314,14 +399,24 @@ fun InformationScreen(
                                 .padding(12.dp),
                             contentAlignment = Alignment.Center
                         ) {
+                            val rawText = userDataList.find { it.id == "etc" }?.value
+
                             Text(
-                                text = userDataList.find { it.id == "etc" }?.value.orEmpty(),
+                                text = if (rawText == null || rawText == "0") {
+                                    "안녕하세요 :)"
+                                } else {
+                                    rawText
+                                },
                                 textAlign = TextAlign.Center,
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth(),
+                                color = Color(0xFF1F4E79), // 🌊 가독성 좋은 딥블루
+                                maxLines = 3
                             )
                         }
                     }
                 }
+
+
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -420,6 +515,13 @@ fun InformationScreen(
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
+                                    .clickable(
+                                        enabled = isOwned,
+                                        indication = null, // ✨ 클릭 효과(리플) 제거
+                                        interactionSource = remember { MutableInteractionSource() }
+                                    ) {
+                                        onMedalExplainClick(index + 1)
+                                    }
                                     .aspectRatio(1f / 0.47f)
                                     .background(
                                         brush = if (isOwned) {

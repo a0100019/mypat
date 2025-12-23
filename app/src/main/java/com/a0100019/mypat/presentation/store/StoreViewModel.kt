@@ -201,7 +201,7 @@ class StoreViewModel @Inject constructor(
     }
 
     fun onNameChangeConfirm() = intent {
-        val newName = state.newName
+        val newName = state.newName.trim()
 
         when {
             newName.isBlank() -> {

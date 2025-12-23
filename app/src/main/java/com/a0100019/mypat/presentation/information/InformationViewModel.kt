@@ -158,7 +158,8 @@ class InformationViewModel @Inject constructor(
         reduce {
             state.copy(
                 situation = "",
-                text = ""
+                text = "",
+                medalExplain = ""
             )
         }
     }
@@ -205,6 +206,15 @@ class InformationViewModel @Inject constructor(
         loadData()
     }
 
+    fun onMedalExplainClick(index: Int) = intent {
+        reduce {
+            state.copy(
+                situation = "medalExplain",
+                medalExplain = medalExplain(index)
+            )
+        }
+    }
+
 
 }
 
@@ -222,7 +232,8 @@ data class InformationState(
 
     val areaData: World? = null,
     val text: String = "",
-    val situation: String = ""
+    val situation: String = "",
+    val medalExplain: String = ""
 
     )
 

@@ -250,6 +250,14 @@ fun BoardScreen(
                                     else -> "자유"
                                 }
 
+                                Text(
+                                    text = "💬 ${message.answerCount}",
+                                    fontSize = 12.sp,
+                                    color = Color(0xFF888888)
+                                )
+
+                                Spacer(modifier = Modifier.width(8.dp))
+
                                 Box(
                                     modifier = Modifier
                                         .background(
@@ -287,9 +295,8 @@ fun BoardScreen(
                             maxLines = 4,
                             overflow = TextOverflow.Ellipsis
                         )
+
                     }
-
-
 
                 }
             }
