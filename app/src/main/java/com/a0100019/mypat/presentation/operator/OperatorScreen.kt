@@ -225,7 +225,6 @@ fun CommunityScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-
                 // 오른쪽 버튼
                 MainButton(
                     text = "닫기",

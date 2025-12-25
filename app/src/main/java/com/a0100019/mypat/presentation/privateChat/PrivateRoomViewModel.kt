@@ -1,10 +1,12 @@
 package com.a0100019.mypat.presentation.privateChat
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import com.google.firebase.Firebase
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -86,18 +88,25 @@ class PrivateRoomViewModel @Inject constructor(
                 snapshot.documents.forEach { doc ->
 
                     val roomId = doc.id
+
                     val user1 = doc.getString("user1") ?: ""
                     val user2 = doc.getString("user2") ?: ""
                     val name1 = doc.getString("name1") ?: ""
                     val name2 = doc.getString("name2") ?: ""
+
                     val last1 = doc.getLong("last1") ?: 0L
                     val last2 = doc.getLong("last2") ?: 0L
+
                     val lastMessage = doc.getString("lastMessage") ?: ""
 
-                    // 🔥 내가 user1인지 user2인지 판별 후 기준 last 값 결정
+                    val highScore = (doc.getLong("highScore") ?: 0L).toInt()
+                    val totalScore = (doc.getLong("totalScore") ?: 0L).toInt()
+                    val attacker = doc.getString("attacker") ?: ""
+
+                    // 🔥 내가 user1인지 user2인지 판별
                     val myLast = if (myTag == user1) last1 else last2
 
-                    // 🔥 message 컬렉션의 날짜문서 읽기
+                    // 🔥 message 컬렉션에서 안 읽은 메시지 개수 계산
                     Firebase.firestore
                         .collection("chatting")
                         .document("privateChat")
@@ -107,20 +116,15 @@ class PrivateRoomViewModel @Inject constructor(
                         .get()
                         .addOnSuccessListener { dateDocs ->
 
-                            var messageCount = 0
+                            var unreadCount = 0
 
                             dateDocs.documents.forEach { dateDoc ->
-
                                 val data = dateDoc.data ?: emptyMap<String, Any>()
 
-                                // 날짜문서 안의 timestamp map들을 순회하며 last 기준으로 필터링
-                                data.forEach { (key, value) ->
-
+                                data.forEach { (key, _) ->
                                     val timestamp = key.toLongOrNull() ?: return@forEach
-
-                                    // 🔥 last1 또는 last2 보다 최신 것만 카운트
                                     if (timestamp > myLast) {
-                                        messageCount++
+                                        unreadCount++
                                     }
                                 }
                             }
@@ -133,7 +137,10 @@ class PrivateRoomViewModel @Inject constructor(
                                 name2 = name2,
                                 lastTimestamp = maxOf(last1, last2),
                                 lastMessage = lastMessage,
-                                messageCount = messageCount
+                                messageCount = unreadCount,
+                                highScore = highScore,
+                                totalScore = totalScore,
+                                attacker = attacker
                             )
 
                             roomsList.add(roomItem)
@@ -149,35 +156,32 @@ class PrivateRoomViewModel @Inject constructor(
                 }
             }
 
-        if(roomCount >= 10) {
-            //매달, medal, 칭호20
-            val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
+        // 🔥 방 10개 이상 → 칭호 지급
+        if (roomCount >= 10) {
 
-            val myMedalList: MutableList<Int> =
-                myMedal
-                    .split("/")
+            val myMedal = userDao.getAllUserData()
+                .find { it.id == "etc" }!!.value3
+
+            val myMedalList =
+                myMedal.split("/")
                     .mapNotNull { it.toIntOrNull() }
                     .toMutableList()
 
-            // 🔥 여기 숫자 두개랑 위에 // 바꾸면 됨
             if (!myMedalList.contains(20)) {
                 myMedalList.add(20)
 
-                // 다시 문자열로 합치기
-                val updatedMedal = myMedalList.joinToString("/")
-
-                // DB 업데이트
                 userDao.update(
                     id = "etc",
-                    value3 = updatedMedal
+                    value3 = myMedalList.joinToString("/")
                 )
 
-                postSideEffect(PrivateRoomSideEffect.Toast("칭호를 획득했습니다!"))
+                postSideEffect(
+                    PrivateRoomSideEffect.Toast("칭호를 획득했습니다!")
+                )
             }
-
         }
-
     }
+
 
     fun onPrivateChatRoomClick(roomId: String) = intent {
 
@@ -287,13 +291,113 @@ class PrivateRoomViewModel @Inject constructor(
         }
     }
 
+    fun onRankClick() = intent {
+
+        val roomRef = Firebase.firestore
+            .collection("chatting")
+            .document("privateChat")
+            .collection("privateChat")
+
+        roomRef
+            .orderBy("highScore", Query.Direction.DESCENDING)
+            .limit(100)
+            .get()
+            .addOnSuccessListener { snapshot ->
+
+                if (snapshot.isEmpty) {
+                    intent {
+                        reduce {
+                            state.copy(roomListRank = emptyList())
+                        }
+                    }
+                    return@addOnSuccessListener
+                }
+
+                val rankList = snapshot.documents.map { doc ->
+
+                    PrivateRoom(
+                        roomId = doc.id,
+                        user1 = doc.getString("user1") ?: "",
+                        user2 = doc.getString("user2") ?: "",
+                        name1 = doc.getString("name1") ?: "",
+                        name2 = doc.getString("name2") ?: "",
+                        lastTimestamp = maxOf(
+                            doc.getLong("last1") ?: 0L,
+                            doc.getLong("last2") ?: 0L
+                        ),
+                        lastMessage = doc.getString("lastMessage") ?: "",
+                        messageCount = (doc.getLong("messageCount") ?: 0L).toInt(),
+                        highScore = (doc.getLong("highScore") ?: 0L).toInt(),
+                        totalScore = (doc.getLong("totalScore") ?: 0L).toInt(),
+                        attacker = doc.getString("attacker") ?: ""
+                    )
+                }
+
+                intent {
+                    reduce {
+                        state.copy(roomListRank = rankList)
+                    }
+                }
+            }
+            .addOnFailureListener {
+                Log.e("Rank", "랭킹 불러오기 실패: ${it.message}")
+            }
+
+        roomRef
+            .orderBy("totalScore", Query.Direction.DESCENDING)
+            .limit(100)
+            .get()
+            .addOnSuccessListener { snapshot ->
+
+                if (snapshot.isEmpty) {
+                    intent {
+                        reduce {
+                            state.copy(roomListRank = emptyList())
+                        }
+                    }
+                    return@addOnSuccessListener
+                }
+
+                val rankList = snapshot.documents.map { doc ->
+
+                    PrivateRoom(
+                        roomId = doc.id,
+                        user1 = doc.getString("user1") ?: "",
+                        user2 = doc.getString("user2") ?: "",
+                        name1 = doc.getString("name1") ?: "",
+                        name2 = doc.getString("name2") ?: "",
+                        lastTimestamp = maxOf(
+                            doc.getLong("last1") ?: 0L,
+                            doc.getLong("last2") ?: 0L
+                        ),
+                        lastMessage = doc.getString("lastMessage") ?: "",
+                        messageCount = (doc.getLong("messageCount") ?: 0L).toInt(),
+                        highScore = (doc.getLong("highScore") ?: 0L).toInt(),
+                        totalScore = (doc.getLong("totalScore") ?: 0L).toInt(),
+                        attacker = doc.getString("attacker") ?: ""
+                    )
+                }
+
+                intent {
+                    reduce {
+                        state.copy(roomListTotalRank = rankList)
+                    }
+                }
+            }
+            .addOnFailureListener {
+                Log.e("Rank", "랭킹 불러오기 실패: ${it.message}")
+            }
+    }
+
+
 }
 
 @Immutable
 data class PrivateRoomState(
     val userDataList: List<User> = emptyList(),
-    val chatMessages: List<PrivateChatMessage> = emptyList(),
     val roomList: List<PrivateRoom> = emptyList(),
+    val roomListRank: List<PrivateRoom> = emptyList(),
+    val roomListTotalRank: List<PrivateRoom> = emptyList(),
     val yourTag: String = "",
     val situation: String = "",
     )
@@ -308,8 +412,10 @@ data class PrivateRoom(
     val lastTimestamp: Long = 0L,
     val lastMessage: String = "",
     val messageCount: Int = 0,
+    val highScore: Int = 0,
+    val totalScore: Int = 0,
+    val attacker: String = "",
 )
-
 
 //상태와 관련없는 것
 sealed interface PrivateRoomSideEffect{
@@ -317,6 +423,5 @@ sealed interface PrivateRoomSideEffect{
 
     data object NavigateToPrivateChatInScreen: PrivateRoomSideEffect
     data object NavigateToMainScreen: PrivateRoomSideEffect
-
 
 }

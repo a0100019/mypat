@@ -49,14 +49,27 @@ class LoadingViewModel @Inject constructor(
 
     //room에서 데이터 가져옴
     private fun loadData() = intent {
+        val userDataList = userDao.getAllUserData()
 
+        reduce {
+            state.copy(
+                userDataList = userDataList
+            )
         }
-
+    }
 
     fun onClose() = intent {
         reduce {
             state.copy(
+                situation = ""
+            )
+        }
+    }
 
+    fun onSituationChange(situation: String) = intent {
+        reduce {
+            state.copy(
+                situation = situation
             )
         }
     }
@@ -68,7 +81,8 @@ class LoadingViewModel @Inject constructor(
 
 @Immutable
 data class LoadingState(
-    val userDataList: List<User> = emptyList()
+    val userDataList: List<User> = emptyList(),
+    val situation: String = ""
 )
 
 

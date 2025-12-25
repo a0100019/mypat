@@ -46,7 +46,7 @@ fun LoadingScreen(
     }
 
     LoadingScreen(
-        value = "스크린 나누기",
+        situation = loadingState.situation,
 
         onClose = loadingViewModel::onClose,
         popBackStack = popBackStack
@@ -55,7 +55,7 @@ fun LoadingScreen(
 
 @Composable
 fun LoadingScreen(
-    value : String = "",
+    situation: String = "",
 
     onClose : () -> Unit = {},
     popBackStack: () -> Unit = {},
@@ -91,7 +91,7 @@ fun LoadingScreen(
 fun SelectScreenPreview() {
     MypatTheme {
         LoadingScreen(
-            value = ""
+            situation = ""
         )
     }
 }

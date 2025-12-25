@@ -92,6 +92,7 @@ fun ChatScreen(
         allAreaCount = chatState.allAreaCount,
         text2 = chatState.text2,
         text3 = chatState.text3,
+        anonymous = chatState.anonymous,
 
         onSituationChange = chatViewModel::onSituationChange,
         onChatTextChange = chatViewModel::onChatTextChange,
@@ -104,7 +105,8 @@ fun ChatScreen(
         onTextChange2 = chatViewModel::onTextChange2,
         onTextChange3 = chatViewModel::onTextChange3,
         onNeighborInformationClick = chatViewModel::onNeighborInformationClick,
-        onChatDeleteClick = chatViewModel::onChatDeleteClick
+        onChatDeleteClick = chatViewModel::onChatDeleteClick,
+        onAnonymousChange = chatViewModel::onAnonymousChange
 
     )
 }
@@ -140,6 +142,7 @@ fun CommunityScreen(
     onTextChange3: (String) -> Unit = {},
     onNeighborInformationClick: (String) -> Unit = {},
     onChatDeleteClick: (String) -> Unit = {},
+    onAnonymousChange: (String) -> Unit = {}
 
     ) {
 
@@ -264,7 +267,9 @@ fun CommunityScreen(
                                         else -> Arrangement.Start
                                     }
 
-                                    val bubbleColor = getPastelColorForTag(message.tag)
+                                    val bubbleColor = if(message.anonymous == "0") getPastelColorForTag(message.tag) else Color(
+                                        0xFFFFFFFF
+                                    )
 
                                     val textColor = Color.Black
 
@@ -457,22 +462,33 @@ fun CommunityScreen(
                                                                     )
                                                                 }
                                                             ) {
-                                                                Text(
-                                                                    text = message.name,
-                                                                    style = MaterialTheme.typography.labelSmall,
-                                                                    modifier = Modifier.padding(
-                                                                        start = 4.dp,
-                                                                        bottom = 2.dp
+                                                                if(message.anonymous == "0"){
+                                                                    Text(
+                                                                        text = message.name,
+                                                                        style = MaterialTheme.typography.labelSmall,
+                                                                        modifier = Modifier.padding(
+                                                                            start = 4.dp,
+                                                                            bottom = 2.dp
+                                                                        )
                                                                     )
-                                                                )
-                                                                Text(
-                                                                    text = "#" + message.tag,
-                                                                    style = MaterialTheme.typography.labelSmall,
-                                                                    modifier = Modifier.padding(
-                                                                        start = 4.dp,
-                                                                        bottom = 2.dp
+                                                                    Text(
+                                                                        text = "#" + message.tag,
+                                                                        style = MaterialTheme.typography.labelSmall,
+                                                                        modifier = Modifier.padding(
+                                                                            start = 4.dp,
+                                                                            bottom = 2.dp
+                                                                        )
                                                                     )
-                                                                )
+                                                                } else {
+                                                                    Text(
+                                                                        text = "익명",
+                                                                        style = MaterialTheme.typography.labelSmall,
+                                                                        modifier = Modifier.padding(
+                                                                            start = 4.dp,
+                                                                            bottom = 2.dp
+                                                                        )
+                                                                    )
+                                                                }
                                                             }
 
                                                             val time = remember(message.timestamp) {
@@ -504,7 +520,9 @@ fun CommunityScreen(
                                                                             indication = null, // ← ripple 효과 제거
                                                                             interactionSource = remember { MutableInteractionSource() } // ← 필수
                                                                         ) {
-                                                                            onChatDeleteClick(message.timestamp.toString())
+                                                                            onChatDeleteClick(
+                                                                                message.timestamp.toString()
+                                                                            )
                                                                         }
                                                                 )
                                                             } else {
@@ -573,7 +591,7 @@ fun CommunityScreen(
                                 Checkbox(
                                     checked = anonymous == "1",
                                     onCheckedChange = {
-//                                        onChangeAnonymousClick(if (it) "1" else "0")
+                                        onAnonymousChange(if (it) "1" else "0")
                                     }
                                 )
 
@@ -636,7 +654,7 @@ fun CommunityScreenPreview() {
             userDataList = listOf(User(id = "auth", value2 = "1")),
             situation = "",
 //            chatMessages = emptyList()
-            chatMessages = listOf(ChatMessage(10202020, "a", "a", tag = "13", ban = "0", uid = "hello"), ChatMessage(10202020, "a", "a", tag = "1", ban = "0", uid = "hello"), ChatMessage(10202020, "a11", "a11", tag = "2", ban = "0", uid = "assssssssssssssssssssssssssssssssssssssds".repeat(5)), ChatMessage(10202020, "a11", "a11", tag = "3", ban = "0", uid = "adssssssssssssssssssssssssssssssssssssssssssssssssssss".repeat(5)))
+            chatMessages = listOf(ChatMessage(10202020, "a", "a", tag = "13", ban = "0", uid = "hello", anonymous = "1"), ChatMessage(10202020, "a", "a", tag = "1", ban = "0", uid = "hello"), ChatMessage(10202020, "a11", "a11", tag = "2", ban = "0", uid = "assssssssssssssssssssssssssssssssssssssds".repeat(5)), ChatMessage(10202020, "a11", "a11", tag = "3", ban = "0", uid = "adssssssssssssssssssssssssssssssssssssssssssssssssssss".repeat(5)))
         )
     }
 }

@@ -92,8 +92,7 @@ class PrivateChatInViewModel @Inject constructor(
                 messageCount = (roomSnap.getLong("messageCount") ?: 0L).toInt(),
                 attacker = roomSnap.getString("attacker") ?: "",
                 highScore = (roomSnap.getLong("highScore") ?: 0L).toInt(),
-                lastGame1 = roomSnap.getString("lastGame1") ?: "2001-01-01",
-                lastGame2 = roomSnap.getString("lastGame2") ?: "2001-01-01",
+                lastGame = roomSnap.getString("lastGame") ?: "2001-01-01",
                 todayScore1 = (roomSnap.getLong("todayScore1") ?: 0L).toInt(),
                 todayScore2 = (roomSnap.getLong("todayScore2") ?: 0L).toInt(),
                 totalScore = (roomSnap.getLong("totalScore") ?: 0L).toInt()
@@ -135,6 +134,7 @@ class PrivateChatInViewModel @Inject constructor(
                         .mapNotNull { it.toIntOrNull() }
                         .toMutableList()
 
+                    //매달, medal, 칭호21
                     if (!myMedalList.contains(21)) {
                         myMedalList.add(21)
 
@@ -148,6 +148,60 @@ class PrivateChatInViewModel @Inject constructor(
                         )
                     }
                 }
+
+                if((roomSnap.getLong("highScore") ?: 0L).toInt() >= 100) {//매달, medal, 칭호24
+                    val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
+
+                    val myMedalList: MutableList<Int> =
+                        myMedal
+                            .split("/")
+                            .mapNotNull { it.toIntOrNull() }
+                            .toMutableList()
+
+                    // 🔥 여기 숫자 두개 바꾸면 됨
+                    if (!myMedalList.contains(24)) {
+                        myMedalList.add(24)
+
+                        // 다시 문자열로 합치기
+                        val updatedMedal = myMedalList.joinToString("/")
+
+                        // DB 업데이트
+                        userDao.update(
+                            id = "etc",
+                            value3 = updatedMedal
+                        )
+
+                        postSideEffect(PrivateChatInSideEffect.Toast("칭호를 획득했습니다!"))
+                    }
+                }
+
+                if((roomSnap.getLong("totalScore") ?: 0L).toInt() >= 1000) {
+                    //매달, medal, 칭호25
+                    val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
+
+                    val myMedalList: MutableList<Int> =
+                        myMedal
+                            .split("/")
+                            .mapNotNull { it.toIntOrNull() }
+                            .toMutableList()
+
+                    // 🔥 여기 숫자 두개 바꾸면 됨
+                    if (!myMedalList.contains(25)) {
+                        myMedalList.add(25)
+
+                        // 다시 문자열로 합치기
+                        val updatedMedal = myMedalList.joinToString("/")
+
+                        // DB 업데이트
+                        userDao.update(
+                            id = "etc",
+                            value3 = updatedMedal
+                        )
+
+                        postSideEffect(PrivateChatInSideEffect.Toast("칭호를 획득했습니다!"))
+                    }
+                }
+
             }
         }
 
@@ -406,8 +460,7 @@ data class PrivateChatData(
     val messageCount: Int = 0,
     val attacker: String = "",
     val highScore: Int = 0,
-    val lastGame1: String = "2001-01-01",
-    val lastGame2: String = "2001-01-01",
+    val lastGame: String = "2001-01-01",
     val todayScore1: Int = 0,
     val todayScore2: Int = 0,
     val totalScore: Int = 0,

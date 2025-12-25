@@ -45,6 +45,7 @@ import com.a0100019.mypat.data.room.letter.Letter
 import com.a0100019.mypat.domain.AppBgmManager
 import com.a0100019.mypat.presentation.daily.walk.StepForegroundService
 import com.a0100019.mypat.presentation.login.ExplanationDialog
+import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
@@ -99,7 +100,8 @@ fun SettingScreen(
         onRecommendationClick = settingViewModel::onRecommendationClick,
         onRecommendationSubmitClick = settingViewModel::onRecommendationSubmitClick,
         onMedal19Click = settingViewModel::onMedal19Click,
-        popBackStack = popBackStack
+        popBackStack = popBackStack,
+        onReviewClick = settingViewModel::onReviewClick
     )
 }
 
@@ -130,7 +132,7 @@ fun SettingScreen(
     onRecommendationClick: () -> Unit = {},
     onRecommendationSubmitClick: () -> Unit = {},
     onMedal19Click: () -> Unit = {},
-
+    onReviewClick: () -> Unit = {}
 
 ) {
 
@@ -184,6 +186,12 @@ fun SettingScreen(
         "donation" -> DonationDialog(
             onClose = onClose,
             donationList = donationList
+        )
+
+        "review" -> SimpleAlertDialog(
+            onConfirmClick = onReviewClick,
+            onDismissClick = onClose,
+            text = "리뷰는 개발자에게 큰 힘이 됩니다..! 리뷰를 작성하고 칭호를 획득하겠습니까?",
         )
     }
 
@@ -242,14 +250,14 @@ fun SettingScreen(
             )
 
             MainButton(
-                text = "쿠폰 코드",
-                onClick = { onSituationChange("coupon") },
+                text = "대나무 숲",
+                onClick = { onSituationChange("settingTalk") },
                 modifier = Modifier.fillMaxWidth()
             )
 
             MainButton(
-                text = "대나무 숲",
-                onClick = { onSituationChange("settingTalk") },
+                text = "리뷰쓰고 칭호받기",
+                onClick = { onSituationChange("review") },
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -257,12 +265,26 @@ fun SettingScreen(
             Divider()
             Spacer(modifier = Modifier.height(12.dp))
 
-            // 기타 정보
-            MainButton(
-                text = "이용약관 & 개인정보 처리방침",
-                onClick = { onSituationChange("terms") },
-                modifier = Modifier.fillMaxWidth()
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ){
+                // 기타 정보
+                MainButton(
+                    text = "이용약관 & 개인정보 처리방침",
+                    onClick = { onSituationChange("terms") },
+                    modifier = Modifier.weight(1f)
+                )
+
+                Spacer(modifier = Modifier.size(12.dp))
+
+                MainButton(
+                    text = "쿠폰 코드",
+                    onClick = { onSituationChange("coupon") },
+                    modifier = Modifier.weight(1f)
+                )
+
+            }
 
             val context = LocalContext.current
             val prefs = context.getSharedPreferences("bgm_prefs", Context.MODE_PRIVATE)

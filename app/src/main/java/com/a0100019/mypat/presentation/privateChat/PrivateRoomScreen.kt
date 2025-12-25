@@ -67,6 +67,8 @@ fun PrivateRoomScreen(
         userDataList = privateRoomState.userDataList,
         situation = privateRoomState.situation,
         yourTag = privateRoomState.yourTag,
+        roomListRank = privateRoomState.roomListRank,
+        roomListTotalRank = privateRoomState.roomListTotalRank,
 
         popBackStack = popBackStack,
         onPrivateChatRoomClick = privateRoomViewModel::onPrivateChatRoomClick,
@@ -75,13 +77,16 @@ fun PrivateRoomScreen(
         onClose = privateRoomViewModel::onClose,
         onYourTagChange = privateRoomViewModel::onYourTagChange,
         loadMyRooms = privateRoomViewModel::loadMyRooms,
-        onPrivateChatStartClick = privateRoomViewModel::onPrivateChatStartClick
+        onPrivateChatStartClick = privateRoomViewModel::onPrivateChatStartClick,
+        onRankClick = privateRoomViewModel::onRankClick
     )
 }
 
 @Composable
 fun PrivateRoomScreen(
     roomList: List<PrivateRoom> = emptyList(),
+    roomListRank: List<PrivateRoom> = emptyList(),
+    roomListTotalRank: List<PrivateRoom> = emptyList(),
     userDataList: List<User> = emptyList(),
     situation: String = "",
     yourTag: String = "",
@@ -94,6 +99,7 @@ fun PrivateRoomScreen(
     onYourTagChange: (String) -> Unit = {},
     loadMyRooms: () -> Unit = {},
     onPrivateChatStartClick: () -> Unit = {},
+    onRankClick: () -> Unit = {}
 ) {
 
     when(situation) {
@@ -116,6 +122,11 @@ fun PrivateRoomScreen(
             onDismissOn = false,
             text = "친구를 맺었습니다"
         )
+        "rank" -> PrivateChatGameRankDialog(
+            onClose = onClose,
+            privateChatRankList = roomListRank,
+            privateChatTotalRankList = roomListTotalRank
+        )
     }
 
     Surface(
@@ -132,6 +143,8 @@ fun PrivateRoomScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(12.dp)
+                ,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
 
                 MainButton(
@@ -141,7 +154,13 @@ fun PrivateRoomScreen(
                     text = "친구 찾기"
                 )
 
-                Spacer(modifier = Modifier.weight(1f))
+                MainButton(
+                    onClick = {
+                        onRankClick()
+                        onSituationChange("rank")
+                    },
+                    text = "랭킹 보기"
+                )
 
                 MainButton(
                     onClick = onNavigateToMainScreen,
@@ -246,6 +265,35 @@ fun PrivateRoomScreen(
                                         overflow = TextOverflow.Ellipsis
                                     )
                                 }
+
+                                // 🔔 안 읽은 메시지 수
+                                if (room.attacker == userDataList.find { it.id == "auth" }?.value2) {
+
+                                    Box(
+                                            modifier = Modifier
+                                                .border(
+                                                    width = 1.dp,
+                                                    color = Color(0xFFE57373), // 파스텔 레드 테두리
+                                                    shape = CircleShape
+                                                )
+                                                .background(
+                                                    color = Color(0xFFFFEBEE), // 아주 연한 파스텔 레드 배경
+                                                    shape = CircleShape
+                                                )
+                                                .padding(horizontal = 8.dp, vertical = 4.dp),
+                                    contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            text = "⚔️",
+                                            color = Color(0xFF388E3C), // 진한 그린 글자
+                                            fontSize = 12.sp,
+                                            fontWeight = FontWeight.SemiBold
+                                        )
+                                    }
+
+                                }
+
+                                Spacer(modifier = Modifier.width(6.dp))
 
                                 // 🔔 안 읽은 메시지 수
                                 if (room.messageCount > 0) {

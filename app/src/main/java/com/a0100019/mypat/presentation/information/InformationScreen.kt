@@ -140,7 +140,7 @@ fun InformationScreen(
 
     ) {
 
-    var page by remember { mutableIntStateOf(0) }
+    var page by remember { mutableIntStateOf(1) }
 
     val myMedalString = userDataList.find { it.id == "etc" }?.value3 ?: ""
 
@@ -416,8 +416,6 @@ fun InformationScreen(
                     }
                 }
 
-
-
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceAround
@@ -427,32 +425,40 @@ fun InformationScreen(
                     ) {
                         Text(
                             text = "마을 탄생일",
-                            style = MaterialTheme.typography.labelMedium,
+                            style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier
                                 .padding(end = 6.dp)
                         )
                         Text(
                             text = userDataList.find { it.id == "date" }?.value3 ?: "2015-03-12",
-                            style = MaterialTheme.typography.labelMedium
+                            style = MaterialTheme.typography.bodyMedium
                         )
                     }
+
+                    Text(
+                        text = "칭호 개수 ${myMedalList.size-1}/${totalMedalCount()}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier
+                            .padding(end = 6.dp)
+                    )
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
                             text = "접속일",
-                            style = MaterialTheme.typography.labelMedium,
+                            style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier
                                 .padding(end = 6.dp)
                         )
                         Text(
                             text = "${userDataList.find { it.id == "date" }?.value2 ?: "-"}일",
-                            style = MaterialTheme.typography.labelMedium
+                            style = MaterialTheme.typography.bodyMedium
                         )
                     }
                 }
             } else {
+                // 상세 페이지 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 
                 Text(
                     text = "칭호 ${myMedalList.size-1}/${totalMedalCount()}"
@@ -808,41 +814,6 @@ fun InformationScreen(
                         }
                     }
 
-                }
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround
-                ) {// 접속 정보
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "마을 탄생일",
-                            style = MaterialTheme.typography.labelMedium,
-                            modifier = Modifier
-                                .padding(end = 6.dp)
-                        )
-                        Text(
-                            text = userDataList.find { it.id == "date" }?.value3 ?: "2015-03-12",
-                            style = MaterialTheme.typography.labelMedium
-                        )
-                    }
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "접속일",
-                            style = MaterialTheme.typography.labelMedium,
-                            modifier = Modifier
-                                .padding(end = 6.dp)
-                        )
-                        Text(
-                            text = "${userDataList.find { it.id == "date" }?.value2 ?: "-"}일",
-                            style = MaterialTheme.typography.labelMedium
-                        )
-                    }
                 }
 
             }

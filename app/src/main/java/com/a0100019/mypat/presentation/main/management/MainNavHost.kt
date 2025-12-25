@@ -27,6 +27,7 @@ import com.a0100019.mypat.presentation.neighbor.NeighborScreen
 import com.a0100019.mypat.presentation.neighbor.board.BoardMessageScreen
 import com.a0100019.mypat.presentation.neighbor.board.BoardScreen
 import com.a0100019.mypat.presentation.operator.OperatorScreen
+import com.a0100019.mypat.presentation.privateChat.PrivateChatGameScreen
 import com.a0100019.mypat.presentation.privateChat.PrivateChatInScreen
 import com.a0100019.mypat.presentation.privateChat.PrivateRoomScreen
 
@@ -262,7 +263,10 @@ fun MainNavHost() {
                 },
                 onNavigateToNeighborInformationScreen = {
                     navController.navigate(route = MainRoute.NeighborInformationScreen.name)
-                }
+                },
+                onNavigateToPrivateChatGameScreen = {
+                    navController.navigate(route = MainRoute.PrivateChatGameScreen.name)
+                },
             )
         }
 
@@ -308,6 +312,13 @@ fun MainNavHost() {
                 },
             )
         }
+
+        composable(route = MainRoute.PrivateChatGameScreen.name) {
+            PrivateChatGameScreen(
+                popBackStack = { navController.popBackStack() }
+            )
+        }
+
 
 //
 //        composable(route = LoginRoute.SignUpScreen.name) {

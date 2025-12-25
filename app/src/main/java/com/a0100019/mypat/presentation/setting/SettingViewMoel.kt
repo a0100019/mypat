@@ -730,12 +730,22 @@ class SettingViewModel @Inject constructor(
     }
 
     fun onSettingTalkConfirmClick() = intent {
-        val db = Firebase.firestore
-        db.collection("settingTalk")
+        val now = LocalDateTime.now().toString()
+
+        val messageMap = mapOf(
+            "message" to state.editText,
+            "name" to state.userDataList.find { it.id == "name" }?.value.orEmpty(),
+            "tag" to state.userDataList.find { it.id == "auth" }?.value2.orEmpty(),
+        )
+
+        Firebase.firestore
+            .collection("code")
+            .document("settingTalk")
+            .collection("settingTalk")
             .document(state.userDataList.find { it.id == "auth" }!!.value)
             .set(
-                mapOf(LocalDateTime.now().toString() to state.editText),
-                SetOptions.merge() // 기존 데이터 유지 + 필드 추가
+                mapOf(now to messageMap),
+                SetOptions.merge()
             )
             .addOnSuccessListener {
                 viewModelScope.launch {
@@ -1021,6 +1031,42 @@ class SettingViewModel @Inject constructor(
             .addOnFailureListener { e ->
                 Log.e("DonationLoad", "후원 목록 로드 실패: ${e.message}")
             }
+    }
+
+    fun onReviewClick() = intent {
+
+        //매달, medal, 칭호23
+        val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
+
+        val myMedalList: MutableList<Int> =
+            myMedal
+                .split("/")
+                .mapNotNull { it.toIntOrNull() }
+                .toMutableList()
+
+        // 🔥 여기 숫자 두개 바꾸면 됨
+        if (!myMedalList.contains(23)) {
+            myMedalList.add(23)
+
+            // 다시 문자열로 합치기
+            val updatedMedal = myMedalList.joinToString("/")
+
+            // DB 업데이트
+            userDao.update(
+                id = "etc",
+                value3 = updatedMedal
+            )
+
+            val url = "https://play.google.com/store/apps/details?id=com.a0100019.mypat"
+            postSideEffect(SettingSideEffect.OpenUrl(url))
+        } else {
+            postSideEffect(SettingSideEffect.Toast("이미 칭호를 획득하였습니다!"))
+        }
+
+        reduce {
+            state.copy(settingSituation = "")
+        }
+
     }
 
 

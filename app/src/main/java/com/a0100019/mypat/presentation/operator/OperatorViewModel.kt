@@ -295,7 +295,10 @@ class OperatorViewModel @Inject constructor(
             "uid" to ""
         )
 
-        Firebase.firestore.collection("chat")
+        Firebase.firestore
+            .collection("chatting")
+            .document("totalChat")
+            .collection("totalChat")
             .document(todayDocId)
             .set(mapOf(timestamp.toString() to chatData), SetOptions.merge())
             .addOnSuccessListener {

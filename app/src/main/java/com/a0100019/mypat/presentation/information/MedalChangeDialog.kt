@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -84,55 +85,60 @@ fun MedalChangeDialog(
                         .padding(6.dp),
                     shape = RoundedCornerShape(16.dp),
                     color = Color(0xFFFFF8E7),
-                    border = BorderStroke(2.dp, MaterialTheme.colorScheme.primaryContainer),
+                    border = BorderStroke(
+                        2.dp,
+                        MaterialTheme.colorScheme.primaryContainer
+                    ),
                 ) {
                     LazyVerticalGrid(
-                        columns = GridCells.Fixed(3), // 한 줄에 3개
+                        columns = GridCells.Fixed(2), // 한 줄에 3개
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(8.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
 
-                        val myMedalString = userDataList.find { it.id == "etc" }?.value3 ?: ""
+                        val myMedalString =
+                            userDataList.find { it.id == "etc" }?.value3 ?: ""
 
                         val myMedalList: List<Int> =
                             myMedalString
-                                .split("/")              // ["1","3","12","5"]
-                                .mapNotNull { it.toIntOrNull() } // [1,3,12,5]
+                                .split("/")
+                                .mapNotNull { it.toIntOrNull() }
+                                .drop(1)
 
-                        items(16) { index ->
-                            if (myMedalList.contains(index+1)) {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .background(
-                                            color = MaterialTheme.colorScheme.surface,
-                                            shape = RoundedCornerShape(12.dp)
-                                        )
-                                        .border(
-                                            1.dp,
-                                            MaterialTheme.colorScheme.outline,
-                                            RoundedCornerShape(12.dp)
-                                        )
-                                        .padding(vertical = 12.dp)
-                                        .clickable {
-                                            onMedalClick(index+1)
-                                        }
-                                    ,
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    TextAutoResizeSingleLine(
-                                        text = medalName(index+1),
-                                        modifier = Modifier
-                                            .fillMaxWidth()
+                        // 🔥 가진 메달만 Grid에 표시
+                        items(myMedalList) { medalId ->
+
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .aspectRatio(1f / 0.4f)
+                                    .border(
+                                        1.dp,
+                                        MaterialTheme.colorScheme.outline,
+                                        RoundedCornerShape(12.dp)
                                     )
-                                }
+                                    .clickable {
+                                        onMedalClick(medalId)
+                                    }
+                                    .background(
+                                        color = MaterialTheme.colorScheme.surface,
+                                        shape = RoundedCornerShape(12.dp)
+                                    )
+                                    .padding(vertical = 12.dp)
+                                    ,
+                                contentAlignment = Alignment.Center
+                            ) {
+                                TextAutoResizeSingleLine(
+                                    text = medalName(medalId),
+                                    modifier = Modifier.fillMaxWidth()
+                                )
                             }
                         }
                     }
                 }
-
+                
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // 추가로 원하는 Composable 요소

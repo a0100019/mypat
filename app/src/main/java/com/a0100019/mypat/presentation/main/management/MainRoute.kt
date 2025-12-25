@@ -47,6 +47,8 @@ sealed class MainRoute(
 
     object NeighborInformationScreen : MainRoute("NeighborInformationScreen")
 
+    object PrivateChatGameScreen : MainRoute("PrivateChatGameScreen")
+
 }
 
 

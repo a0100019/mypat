@@ -98,7 +98,10 @@ class ChatViewModel @Inject constructor(
     }
 
     private fun loadChatMessages() {
-        Firebase.firestore.collection("chat")
+        Firebase.firestore
+            .collection("chatting")
+            .document("totalChat")
+            .collection("totalChat")
             .addSnapshotListener { snapshot, error ->
                 Log.d("CommunityViewModel", "전체 채팅 스냅샷 수신됨")
 
@@ -123,10 +126,11 @@ class ChatViewModel @Inject constructor(
                             val tag = map["tag"] as? String
                             val ban = map["ban"] as? String
                             val uid = map["uid"] as? String
+                            val anonymous = map["anonymous"] as? String
 
 
-                            if (message != null && name != null && tag != null && ban != null && uid != null) {
-                                ChatMessage(timestamp, message, name, tag, ban, uid)
+                            if (message != null && name != null && tag != null && ban != null && uid != null && anonymous != null) {
+                                ChatMessage(timestamp, message, name, tag, ban, uid, anonymous)
                             } else null
 
                         }
@@ -203,10 +207,14 @@ class ChatViewModel @Inject constructor(
             "name" to userName,
             "ban" to userBan,
             "tag" to userTag,
-            "uid" to userId
+            "uid" to userId,
+            "anonymous" to state.anonymous
         )
 
-        Firebase.firestore.collection("chat")
+        Firebase.firestore
+            .collection("chatting")
+            .document("totalChat")
+            .collection("totalChat")
             .document(todayDocId)
             .set(mapOf(timestamp.toString() to chatData), SetOptions.merge())
             .addOnSuccessListener {
@@ -265,7 +273,9 @@ class ChatViewModel @Inject constructor(
             SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date())
 
         Firebase.firestore
-            .collection("chat")
+            .collection("chatting")
+            .document("totalChat")
+            .collection("totalChat")
             .document(todayDocId)
             .update(
                 mapOf(
@@ -344,7 +354,10 @@ class ChatViewModel @Inject constructor(
 
                         )
 
-                        Firebase.firestore.collection("ban")
+                        Firebase.firestore
+                            .collection("code")
+                            .document("ban")
+                            .collection("ban")
                             .document(todayDocId)
                             .set(mapOf(state.clickAllUserData.tag to banData), SetOptions.merge())
                             .addOnSuccessListener {
@@ -357,7 +370,10 @@ class ChatViewModel @Inject constructor(
                     } else { // 채팅 신고
                         val messageData = state.chatMessages[state.chatMessages.lastIndex - chatIndex]
                         // Step 1: ban 컬렉션 확인
-                        Firebase.firestore.collection("ban")
+                        Firebase.firestore
+                            .collection("code")
+                            .document("ban")
+                            .collection("ban")
                             .document(todayDocId)
                             .get()
                             .addOnSuccessListener { banSnapshot ->
@@ -382,7 +398,10 @@ class ChatViewModel @Inject constructor(
 
                                 // 🔐 ban 1스택이 있을 때만 실행
                                 if (matched) {
-                                    Firebase.firestore.collection("chat")
+                                    Firebase.firestore
+                                        .collection("chatting")
+                                        .document("totalChat")
+                                        .collection("totalChat")
                                         .document(todayDocId)
                                         .update(
                                             messageData.timestamp.toString() + ".ban", "1"
@@ -405,7 +424,10 @@ class ChatViewModel @Inject constructor(
                                     )
                                 )
 
-                                Firebase.firestore.collection("ban")
+                                Firebase.firestore
+                                    .collection("code")
+                                    .document("ban")
+                                    .collection("ban")
                                     .document(todayDocId)
                                     .set(mapOf(state.clickAllUserData.tag to banDataToSend), SetOptions.merge())
                                     .addOnSuccessListener {
@@ -449,6 +471,15 @@ class ChatViewModel @Inject constructor(
 
     }
 
+    fun onAnonymousChange(anonymous: String) = intent {
+
+        reduce {
+            state.copy(
+                anonymous = anonymous
+            )
+        }
+    }
+
 }
 
 @Immutable
@@ -466,16 +497,18 @@ data class ChatState(
     val allAreaCount: String = "",
     val text2: String = "",
     val text3: String = "",
+    val anonymous: String = "0",
 )
 
 @Immutable
 data class ChatMessage(
-    val timestamp: Long,
-    val message: String,
-    val name: String,
-    val tag: String,
-    val ban: String,
-    val uid: String,
+    val timestamp: Long = 0L,
+    val message: String = "",
+    val name: String = "",
+    val tag: String = "",
+    val ban: String = "0",
+    val uid: String = "",
+    val anonymous: String = "0",
 )
 
 //상태와 관련없는 것

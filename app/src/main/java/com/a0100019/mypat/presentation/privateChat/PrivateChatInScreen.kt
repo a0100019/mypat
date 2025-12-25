@@ -66,7 +66,7 @@ fun PrivateChatInScreen(
     popBackStack: () -> Unit = {},
     onNavigateToPrivateRoomScreen: () -> Unit = {},
     onNavigateToNeighborInformationScreen: () -> Unit = {},
-
+    onNavigateToPrivateChatGameScreen: () -> Unit = {}
 ) {
 
     val privateChatInState : PrivateChatInState = privateChatInViewModel.collectAsState().value
@@ -98,6 +98,7 @@ fun PrivateChatInScreen(
         onNeighborInformationClick = privateChatInViewModel::onNeighborInformationClick,
         onSituationChange = privateChatInViewModel::onSituationChange,
         onPrivateRoomDelete = privateChatInViewModel::onPrivateRoomDelete,
+        onNavigateToPrivateChatGameScreen = onNavigateToPrivateChatGameScreen,
         onClose = privateChatInViewModel::onClose
     )
 }
@@ -120,8 +121,17 @@ fun PrivateChatInScreen(
     onNeighborInformationClick: () -> Unit = {},
     onSituationChange: (String) -> Unit = {},
     onPrivateRoomDelete: () -> Unit = {},
+    onNavigateToPrivateChatGameScreen: () -> Unit = {},
     onClose: () -> Unit = {},
 ) {
+
+    val today =
+        LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+
+    val todayScore1 = if(privateChatData.lastGame == today) privateChatData.todayScore1 else 0
+    val todayScore2 = if(privateChatData.lastGame == today) privateChatData.todayScore2 else 0
+    val todayScore = if(privateChatData.lastGame == today) privateChatData.todayScore1 + privateChatData.todayScore2 else 0
+    val totalScore = if(privateChatData.lastGame == today) privateChatData.totalScore + todayScore else privateChatData.totalScore
 
     when(situation) {
         "roomDelete" -> SimpleAlertDialog(
@@ -250,22 +260,13 @@ fun PrivateChatInScreen(
                         Spacer(modifier = Modifier.weight(1f))
 
                         Text(
-                            text = "누적 점수 ${privateChatData.totalScore}",
+                            text = "누적 점수 $totalScore",
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Medium
                         )
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))
-
-                    // ── 2️⃣ 하단 한 줄: 오늘 점수 + 액션 ──
-                    val todayDate =
-                        LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-
-                    val todayScore1 =
-                        if (privateChatData.lastGame1 == todayDate) privateChatData.todayScore1 else 0
-                    val todayScore2 =
-                        if (privateChatData.lastGame2 == todayDate) privateChatData.todayScore2 else 0
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -297,7 +298,7 @@ fun PrivateChatInScreen(
 
                         // 오늘 총합
                         Text(
-                            text = "오늘\n${(todayScore1 + todayScore2)}",
+                            text = "오늘\n$todayScore",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             textAlign = TextAlign.Center
@@ -332,7 +333,7 @@ fun PrivateChatInScreen(
                             MainButton(
                                 text = "⚔️ 공격",
                                 onClick = {
-                                    // 공격 로직
+                                    onNavigateToPrivateChatGameScreen()
                                 }
                             )
                         } else {
@@ -378,7 +379,7 @@ fun PrivateChatInScreen(
                         )
                 ) {
 
-                    if(chatMessages.isNotEmpty()){
+                    if (chatMessages.isNotEmpty()) {
                         LazyColumn(
                             modifier = Modifier
                                 .weight(1f)
@@ -389,7 +390,9 @@ fun PrivateChatInScreen(
                         ) {
                             itemsIndexed(chatMessages.reversed()) { index, message ->
 
-                                val isMine = message.tag == userDataList.find { it.id == "auth" }!!.value2
+                                val myTag = userDataList.find { it.id == "auth" }!!.value2
+                                val isMine = message.tag == myTag
+                                val isSystem = message.tag == "0"
 
                                 val alignment = when {
                                     isMine -> Arrangement.End
@@ -397,8 +400,6 @@ fun PrivateChatInScreen(
                                 }
 
                                 val bubbleColor = getPastelColorForTag(message.tag)
-
-                                val textColor = Color.Black
 
                                 val dateFormat = SimpleDateFormat("yyyyMMdd", Locale.getDefault())
                                 val today = dateFormat.format(Date())
@@ -425,7 +426,43 @@ fun PrivateChatInScreen(
                                     }
                                 }
 
-                                    // 일반 채팅
+                                // ==========================
+                                // 📢 시스템 공지 (tag == 0)
+                                // ==========================
+                                if (isSystem) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = 6.dp),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .background(
+                                                    color = Color(0xFFEAF2FF),
+                                                    shape = RoundedCornerShape(14.dp)
+                                                )
+                                                .border(
+                                                    width = 1.dp,
+                                                    color = Color(0xFFB6CCF5),
+                                                    shape = RoundedCornerShape(14.dp)
+                                                )
+                                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                                        ) {
+                                            Text(
+                                                text = message.message,
+                                                color = Color(0xFF2F5FB3),
+                                                fontSize = 12.sp,
+                                                fontWeight = FontWeight.Medium,
+                                                textAlign = TextAlign.Center
+                                            )
+                                        }
+                                    }
+
+                                } else {
+                                    // ==========================
+                                    // 💬 일반 채팅
+                                    // ==========================
                                     Row(
                                         modifier = Modifier
                                             .fillMaxWidth()
@@ -436,12 +473,14 @@ fun PrivateChatInScreen(
                                             modifier = Modifier
                                                 .widthIn(max = 280.dp)
                                                 .padding(horizontal = 8.dp),
-                                            horizontalAlignment = if (isMine) Alignment.End else Alignment.Start
+                                            horizontalAlignment =
+                                            if (isMine) Alignment.End else Alignment.Start
                                         ) {
+
                                             Row {
                                                 Row(
                                                     modifier = Modifier.clickable {
-//                                                        onUserRankClick(message.tag.toInt())
+                                                        if (!isMine) onNeighborInformationClick()
                                                     }
                                                 ) {
                                                     Text(
@@ -450,15 +489,17 @@ fun PrivateChatInScreen(
                                                         modifier = Modifier.padding(start = 4.dp, bottom = 2.dp)
                                                     )
                                                     Text(
-                                                        text = "#" + message.tag,
+                                                        text = "#${message.tag}",
                                                         style = MaterialTheme.typography.labelSmall,
                                                         modifier = Modifier.padding(start = 4.dp, bottom = 2.dp)
                                                     )
                                                 }
 
                                                 val time = remember(message.timestamp) {
-                                                    SimpleDateFormat("MM/dd HH:mm", Locale.getDefault())
-                                                        .format(Date(message.timestamp))
+                                                    SimpleDateFormat(
+                                                        "MM/dd HH:mm",
+                                                        Locale.getDefault()
+                                                    ).format(Date(message.timestamp))
                                                 }
 
                                                 Text(
@@ -466,7 +507,6 @@ fun PrivateChatInScreen(
                                                     style = MaterialTheme.typography.labelSmall,
                                                     modifier = Modifier.padding(start = 4.dp, bottom = 2.dp)
                                                 )
-
                                             }
 
                                             Box(
@@ -477,14 +517,16 @@ fun PrivateChatInScreen(
                                                     )
                                                     .padding(8.dp)
                                             ) {
-                                                Text(text = message.message)
+                                                Text(
+                                                    text = message.message,
+                                                    color = Color.Black
+                                                )
                                             }
                                         }
                                     }
                                 }
-
                             }
-
+                        }
                     } else {
                         Box(
                             modifier = Modifier
@@ -565,7 +607,10 @@ fun PrivateChatScreenInPreview() {
 
             userDataList = listOf(
                 User(id = "auth", value2 = "1")
-            )
+            ),
+            chatMessages = listOf(
+                PrivateChatMessage(tag = "0", message = "aaaa"),
+                PrivateChatMessage(tag = "1", message = "aaaa"), PrivateChatMessage(tag = "2", message = "aaaa"))
 
         )
     }

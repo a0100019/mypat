@@ -136,7 +136,10 @@ class NeighborInformationViewModel @Inject constructor(
 
                         )
 
-                        Firebase.firestore.collection("ban")
+                        Firebase.firestore
+                            .collection("code")
+                            .document("ban")
+                            .collection("ban")
                             .document(todayDocId)
                             .set(mapOf(state.clickAllUserData.tag to banData), SetOptions.merge())
                             .addOnSuccessListener {
@@ -149,7 +152,10 @@ class NeighborInformationViewModel @Inject constructor(
                     } else { // 채팅 신고
                         val messageData = state.chatMessages[state.chatMessages.lastIndex - chatIndex]
                         // Step 1: ban 컬렉션 확인
-                        Firebase.firestore.collection("ban")
+                        Firebase.firestore
+                            .collection("code")
+                            .document("ban")
+                            .collection("ban")
                             .document(todayDocId)
                             .get()
                             .addOnSuccessListener { banSnapshot ->
@@ -174,7 +180,10 @@ class NeighborInformationViewModel @Inject constructor(
 
                                 // 🔐 ban 1스택이 있을 때만 실행
                                 if (matched) {
-                                    Firebase.firestore.collection("chat")
+                                    Firebase.firestore
+                                        .collection("chatting")
+                                        .document("totalChat")
+                                        .collection("totalChat")
                                         .document(todayDocId)
                                         .update(
                                             messageData.timestamp.toString() + ".ban", "1"
@@ -197,7 +206,10 @@ class NeighborInformationViewModel @Inject constructor(
                                     )
                                 )
 
-                                Firebase.firestore.collection("ban")
+                                Firebase.firestore
+                                    .collection("code")
+                                    .document("ban")
+                                    .collection("ban")
                                     .document(todayDocId)
                                     .set(mapOf(state.clickAllUserData.tag to banDataToSend), SetOptions.merge())
                                     .addOnSuccessListener {
@@ -579,6 +591,16 @@ class NeighborInformationViewModel @Inject constructor(
             postSideEffect(NeighborInformationSideEffect.Toast("좋아요는 내일부터 누를 수 있습니다"))
         }
     }
+
+    fun onSituationChange(situation: String) = intent {
+        reduce {
+            state.copy(
+                situation = situation
+            )
+        }
+    }
+
+
 }
 
 @Immutable
