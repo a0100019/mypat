@@ -457,9 +457,11 @@ fun CommunityScreen(
                                                         ) {
                                                             Row(
                                                                 modifier = Modifier.clickable {
-                                                                    onNeighborInformationClick(
-                                                                        message.tag
-                                                                    )
+                                                                    if(message.anonymous == "0"){
+                                                                        onNeighborInformationClick(
+                                                                            message.tag
+                                                                        )
+                                                                    }
                                                                 }
                                                             ) {
                                                                 if(message.anonymous == "0"){

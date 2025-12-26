@@ -42,7 +42,7 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 fun BoardScreen(
     boardViewModel: BoardViewModel = hiltViewModel(),
     onNavigateToBoardMessageScreen: () -> Unit = {},
-    onNavigateToNeighborScreen: () -> Unit = {},
+    onNavigateToMainScreen: () -> Unit = {},
 
     popBackStack: () -> Unit = {},
 
@@ -77,7 +77,7 @@ fun BoardScreen(
         onTextChange = boardViewModel::onTextChange,
         onBoardSubmitClick = boardViewModel::onBoardSubmitClick,
         loadBoardMessages = boardViewModel::loadBoardMessages,
-        onNavigateToNeighborScreen = onNavigateToNeighborScreen
+        onNavigateToMainScreen = onNavigateToMainScreen
     )
 }
 
@@ -99,7 +99,7 @@ fun BoardScreen(
     onTextChange: (String) -> Unit = {},
     onBoardSubmitClick: () -> Unit = {},
     loadBoardMessages: () -> Unit = {},
-    onNavigateToNeighborScreen: () -> Unit = {}
+    onNavigateToMainScreen: () -> Unit = {},
 
 ) {
 
@@ -135,6 +135,14 @@ fun BoardScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
+            Text(
+                text = "게시판",
+                style = MaterialTheme.typography.displayMedium,
+                modifier = Modifier
+                    .padding(bottom = 6.dp)
+            )
+
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -153,7 +161,7 @@ fun BoardScreen(
                     text = if(situation == "myBoard") "전체 게시물 보기" else "내 게시물 보기"
                 )
                 MainButton(
-                    onClick = popBackStack,
+                    onClick = onNavigateToMainScreen,
                     text = "닫기"
                 )
             }

@@ -1,14 +1,10 @@
 @@지금 할일
 
-디자인
-광고넣기
-이용약관 업데이트
-음악관리
-칭호 마지막
-후원하기 칭호
 튜토리얼부터 전부 확인
+광고주소진짜로
 
 @@나중에 할일
+인앱구매
 설명서
 퀘스쳔마크
 bgm 자기마음대로
@@ -24,6 +20,8 @@ bgm 자기마음대로
 밴관리마지막에
 첫화면
 벤이면 게시글 게시글 댓글 안보이게
+게시글 광고
+후원하기 칭호
 
 칭호
 광고 매니아, 후원자, 마당발
@@ -74,7 +72,7 @@ if (!myMedalList.contains(1)) {
 
 
 
-var medalData = state.userDataList.find { it.id == "name" }!!.value2
+var medalData = userDao.getAllUserData().find { it.id == "name" }!!.value2
 medalData = addMedalAction(medalData, actionId = 11)
 userDao.update(
     id = "name",

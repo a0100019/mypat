@@ -49,7 +49,6 @@ class WalkViewModel @Inject constructor(
     private fun loadData() = intent {
         Log.d("WalkViewModel", "loadData 호출")
         val userDataList = userDao.getAllUserData()
-        val walkDataList = walkDao.getAllWalkData()
 
         val today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
 
@@ -66,7 +65,6 @@ class WalkViewModel @Inject constructor(
         reduce {
             state.copy(
                 userDataList = userDataList,
-                walkDataList = walkDataList,
                 stepsRaw = stepsRaw,
                 saveSteps = saveSteps,
                 today = today,
@@ -219,7 +217,6 @@ class WalkViewModel @Inject constructor(
 @Immutable
 data class WalkState(
     val userDataList: List<User> = emptyList(),
-    val walkDataList: List<Walk> = emptyList(),
 
     val saveSteps: Int = 0, // ✅ 걸음 수 저장 (초기값 0)
     val stepsRaw: String = "",

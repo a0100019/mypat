@@ -248,7 +248,10 @@ fun MainNavHost() {
                         popUpTo(0) { inclusive = true } // 백스택 전체 제거
                         launchSingleTop = true // 같은 화면 여러 번 안 쌓이게
                     }
-                }
+                },
+                onNavigateToNeighborInformationScreen = {
+                    navController.navigate(route = MainRoute.NeighborInformationScreen.name)
+                },
             )
         }
 
@@ -291,13 +294,12 @@ fun MainNavHost() {
                 onNavigateToBoardMessageScreen = {
                     navController.navigate(route = MainRoute.BoardMessageScreen.name)
                 },
-                onNavigateToNeighborScreen = {
-                    navController.navigate(route = MainRoute.NeighborScreen.name) {
+                onNavigateToMainScreen = {
+                    navController.navigate(route = MainRoute.MainScreen.name) {
                         popUpTo(0) { inclusive = true } // 백스택 전체 제거
                         launchSingleTop = true // 같은 화면 여러 번 안 쌓이게
                     }
-                }
-
+                },
             )
         }
 

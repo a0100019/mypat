@@ -146,6 +146,11 @@ fun PrivateChatInScreen(
             onConfirmClick = onNavigateToPrivateRoomScreen,
             text = "삭제되었습니다."
         )
+        "gameQuestion" -> SimpleAlertDialog(
+            onConfirmClick = {onSituationChange("")},
+            onDismissOn = false,
+            text = "친구와 보스를 공격하세요!\n\n1. 서로 번갈아 가며 공격할 수 있습니다.\n\n2. 두 명의 최고 점수 합이 오늘의 점수가 되고 누적 점수에 포함되며, 오늘 점수는 내일 초기화 됩니다.\n\n3. 친구와 함께 높은 점수를 차지하여 순위에 올라보세요! 이후 다양한 보상이 추가될 예정입니다"
+        )
     }
 
     Surface(
@@ -252,10 +257,23 @@ fun PrivateChatInScreen(
 
                         Spacer(modifier = Modifier.weight(1f))
 
-                        Text(
-                            text = "보스 잡기!",
-                            fontSize = 24.sp,
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "보스 잡기!",
+                                fontSize = 24.sp,
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            JustImage(
+                                filePath = "etc/question.png",
+                                modifier = Modifier
+                                    .size(15.dp)
+                                    .clickable {
+                                        onSituationChange("medalQuestion")
+                                    }
+                            )
+                        }
 
                         Spacer(modifier = Modifier.weight(1f))
 

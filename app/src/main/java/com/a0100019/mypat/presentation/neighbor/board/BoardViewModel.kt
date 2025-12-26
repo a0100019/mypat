@@ -85,10 +85,8 @@ class BoardViewModel @Inject constructor(
         reduce {
             state.copy(
                 situation = "",
-                text = "",
                 boardAnonymous = "0",
                 boardType = "free",
-
             )
         }
     }

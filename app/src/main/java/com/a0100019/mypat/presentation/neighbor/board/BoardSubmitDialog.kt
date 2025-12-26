@@ -132,22 +132,17 @@ fun BoardSubmitDialog(
 
                 OutlinedTextField(
                     value = text,
-                    onValueChange = {
-                        onTextChange(it)
-                    },
+                    onValueChange = onTextChange,
                     label = { Text("내용") },
                     placeholder = { Text("내용을 입력하세요.") },
-//                    singleLine = true,
-//                    isError = !isNameValid, // ❗ 에러 여부
-//                    colors = TextFieldDefaults.outlinedTextFieldColors(
-//                        focusedBorderColor = if (isNameValid) Color.Blue else Color.Red,
-//                        unfocusedBorderColor = if (isNameValid) Color.Gray else Color.Red
-//                    ),
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(8.dp)
+                        .height(320.dp)   // 🔥 고정 높이
+                        .padding(8.dp),
+                    maxLines = Int.MAX_VALUE // 여러 줄 입력 가능
                 )
+
 
                 Spacer(modifier = Modifier.height(16.dp))
 

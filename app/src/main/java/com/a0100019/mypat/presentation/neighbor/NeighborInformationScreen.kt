@@ -1,5 +1,6 @@
 package com.a0100019.mypat.presentation.neighbor
 
+import android.app.Activity
 import android.widget.Toast
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -56,6 +57,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.data.room.allUser.AllUser
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pat.Pat
+import com.a0100019.mypat.presentation.daily.english.EnglishSideEffect
 import com.a0100019.mypat.presentation.information.medalName
 import com.a0100019.mypat.presentation.information.totalMedalCount
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
@@ -81,11 +83,16 @@ fun NeighborInformationScreen(
     val neighborInformationState : NeighborInformationState = neighborInformationViewModel.collectAsState().value
 
     val context = LocalContext.current
+    val activity = context as Activity
 
     neighborInformationViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
             is NeighborInformationSideEffect.Toast -> Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
             NeighborInformationSideEffect.NavigateToPrivateRoomScreen -> onNavigateToPrivateRoomScreen()
+
+            NeighborInformationSideEffect.ShowRewardAd -> {
+                neighborInformationViewModel.showRewardAd(activity)
+            }
         }
     }
 
@@ -103,7 +110,8 @@ fun NeighborInformationScreen(
         onLikeClick = neighborInformationViewModel::onLikeClick,
         onBanClick = neighborInformationViewModel::onBanClick,
         onPrivateChatStartClick = neighborInformationViewModel::onPrivateChatStartClick,
-        onSituationChange = neighborInformationViewModel::onSituationChange
+        onSituationChange = neighborInformationViewModel::onSituationChange,
+        onAdClick = neighborInformationViewModel::onAdClick
 
     )
 }
@@ -123,17 +131,28 @@ fun NeighborInformationScreen(
     onLikeClick: () -> Unit = {},
     onBanClick: (Int) -> Unit = {},
     onPrivateChatStartClick: () -> Unit = {},
-    onSituationChange: (String) -> Unit = {}
+    onSituationChange: (String) -> Unit = {},
+    onAdClick: () -> Unit = {}
 
     ) {
 
-    var page by remember { mutableIntStateOf(1) }
+    var page by remember { mutableIntStateOf(0) }
 
     when(situation) {
         "privateChat" -> SimpleAlertDialog(
-            onConfirmClick = onPrivateChatStartClick,
+            onConfirmClick = onAdClick,
             onDismissClick = onClose,
-            text = "개인 채팅을 시작하시겠습니까?"
+            text = "친구가 되면 개인 채팅 및 친구와 함께 보스를 잡아 랭킹에 오를 수 있습니다.\n\n광고를 보고 친구가 되겠습니까?"
+        )
+        "selfFriend" -> SimpleAlertDialog(
+            onConfirmClick = {onSituationChange("")},
+            onDismissOn = false,
+            text = "나와는 친구가 될 수 없습니다 ㅠ.ㅠ\n칭호를 획득했습니다!"
+        )
+        "medalQuestion" -> SimpleAlertDialog(
+            onConfirmClick = {onSituationChange("")},
+            onDismissOn = false,
+            text = "하루마을 곳곳에 숨어있는 칭호를 찾아보세요!\n내가 획득한 칭호는 클릭하여 정보를 확인할 수 있습니다."
         )
     }
 
@@ -178,8 +197,8 @@ fun NeighborInformationScreen(
                         Spacer(modifier = Modifier.size(15.dp))
 
                         Text(
-                            text = "아직 업데이트 되지 않은 이용자입니다." +
-                                    "\n내일 다시 방문해주세요"
+                            text = "아직 업데이트 되지 않은 이웃입니다." +
+                                    "\n내일 이웃 마을 데이터를 업데이트 한 후 다시 확인해주세요:)"
                             ,
                             textAlign = TextAlign.Center
                         )
@@ -192,8 +211,8 @@ fun NeighborInformationScreen(
                         ) {
 
                             MainButton(
-                                text = "1대1 채팅하기",
-                                onClick = onPrivateChatStartClick
+                                text = "친구하기",
+                                onClick = { onSituationChange("privateChat") }
                             )
 
                             Spacer(modifier = Modifier.size(60.dp))
@@ -225,9 +244,9 @@ fun NeighborInformationScreen(
                 .filter { it != 0 }          // "0" 제거
                 .distinct()                  // 중복 제거
 
-        MusicPlayer(
-            music = clickAllUserData.area
-        )
+//        MusicPlayer(
+//            music = clickAllUserData.area
+//        )
 
         Surface (
             modifier = Modifier
@@ -513,11 +532,23 @@ fun NeighborInformationScreen(
 
                 } else {
                     // 상세 페이지 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-                    Text(
-                        text = "칭호 ${medalList.size}/${totalMedalCount()}"
-                        ,
-                        style = MaterialTheme.typography.titleLarge,
-                    )
+                    Row(
+                    ) {
+                        Spacer(modifier = Modifier.size(20.dp))
+                        Text(
+                            text = "칭호 ${medalList.size}/${totalMedalCount()}",
+                            style = MaterialTheme.typography.titleLarge,
+                        )
+                        Spacer(modifier = Modifier.size(6.dp))
+                        JustImage(
+                            filePath = "etc/question.png",
+                            modifier = Modifier
+                                .size(15.dp)
+                                .clickable {
+                                    onSituationChange("medalQuestion")
+                                }
+                        )
+                    }
 
                     Surface(
                         modifier = Modifier

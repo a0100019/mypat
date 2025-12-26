@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -140,7 +141,7 @@ fun InformationScreen(
 
     ) {
 
-    var page by remember { mutableIntStateOf(1) }
+    var page by remember { mutableIntStateOf(0) }
 
     val myMedalString = userDataList.find { it.id == "etc" }?.value3 ?: ""
 
@@ -173,6 +174,11 @@ fun InformationScreen(
                 title = "칭호 설명"
             )
         }
+        "medalQuestion" -> SimpleAlertDialog(
+            onConfirmClick = {onSituationChange("")},
+            onDismissOn = false,
+            text = "하루마을 곳곳에 숨어있는 칭호를 찾아보세요!\n내가 획득한 칭호는 클릭하여 정보를 확인할 수 있습니다.\n모든 칭호를 모아 하루마을의 영웅이 되어보세요!"
+        )
     }
 
     Surface (
@@ -459,12 +465,24 @@ fun InformationScreen(
                 }
             } else {
                 // 상세 페이지 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-
-                Text(
-                    text = "칭호 ${myMedalList.size-1}/${totalMedalCount()}"
-                    ,
-                    style = MaterialTheme.typography.titleLarge,
-                )
+                Row(
+                ) {
+                    Spacer(modifier = Modifier.size(20.dp))
+                    Text(
+                        text = "칭호 ${myMedalList.size-1}/${totalMedalCount()}"
+                        ,
+                        style = MaterialTheme.typography.titleLarge,
+                    )
+                    Spacer(modifier = Modifier.size(6.dp))
+                    JustImage(
+                        filePath = "etc/question.png",
+                        modifier = Modifier
+                            .size(15.dp)
+                            .clickable {
+                                onSituationChange("medalQuestion")
+                            }
+                    )
+                }
 
                 Surface(
                     modifier = Modifier

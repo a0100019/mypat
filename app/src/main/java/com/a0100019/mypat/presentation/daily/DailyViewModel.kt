@@ -15,6 +15,11 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
+import com.a0100019.mypat.data.room.walk.WalkDao
+import com.a0100019.mypat.presentation.daily.walk.WalkSideEffect
+import com.a0100019.mypat.presentation.information.addMedalAction
+import com.a0100019.mypat.presentation.information.getMedalActionCount
+import com.a0100019.mypat.presentation.main.management.RewardAdManager
 import com.a0100019.mypat.presentation.setting.SettingSideEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -30,6 +35,8 @@ import javax.inject.Inject
 @HiltViewModel
 class DailyViewModel @Inject constructor(
     private val userDao: UserDao,
+    private val walkDao: WalkDao,
+    private val rewardAdManager: RewardAdManager   // ✅ 추가
 ) : ViewModel(), ContainerHost<DailyState, DailySideEffect> {
 
     override val container: Container<DailyState, DailySideEffect> = container(
@@ -52,10 +59,13 @@ class DailyViewModel @Inject constructor(
     private fun loadUserData() = intent {
 
         val userDataList = userDao.getAllUserData()
+        val walkData = walkDao.getLatestWalkData()
+        val rewardAdReady = walkData.success == "0"
 
         reduce {
             state.copy(
-                userData = userDataList
+                userData = userDataList,
+                rewardAdReady = rewardAdReady
             )
         }
     }
@@ -226,13 +236,92 @@ class DailyViewModel @Inject constructor(
         }
     }
 
+    fun onAdClick() = intent {
+        postSideEffect(DailySideEffect.ShowRewardAd)
+    }
+
+    fun showRewardAd(activity: Activity) {
+        rewardAdManager.show(
+            activity = activity,
+            onReward = {
+                onRewardEarned()
+            },
+            onNotReady = {
+                intent {
+                    postSideEffect(
+                        DailySideEffect.Toast(
+                            "광고를 불러오는 중이에요. 잠시 후 다시 시도해주세요."
+                        )
+                    )
+                }
+            }
+        )
+    }
+
+
+    private fun onRewardEarned() = intent {
+        // 햇살 +1
+        // DB 저장
+        // 하루 1회 처리
+        //보상
+        userDao.update(
+            id = "money",
+            value = (state.userData.find { it.id == "money" }!!.value.toInt() + 1).toString()
+        )
+        postSideEffect(DailySideEffect.Toast("햇살 +1"))
+        walkDao.updateLastSuccess()
+        reduce {
+            state.copy(
+                rewardAdReady = false
+            )
+        }
+
+        //@@@@@@@@@@@@@@@@@@@@칭호
+        var medalData = userDao.getAllUserData().find { it.id == "name" }!!.value2
+        medalData = addMedalAction(medalData, actionId = 27)
+        userDao.update(
+            id = "name",
+            value2 = medalData
+        )
+
+        if(getMedalActionCount(medalData, actionId = 27) == 15) {
+            //매달, medal, 칭호27
+            val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
+
+            val myMedalList: MutableList<Int> =
+                myMedal
+                    .split("/")
+                    .mapNotNull { it.toIntOrNull() }
+                    .toMutableList()
+
+            // 🔥 여기 숫자 두개랑 위에 // 바꾸면 됨
+            if (!myMedalList.contains(27)) {
+                myMedalList.add(27)
+
+                // 다시 문자열로 합치기
+                val updatedMedal = myMedalList.joinToString("/")
+
+                // DB 업데이트
+                userDao.update(
+                    id = "etc",
+                    value3 = updatedMedal
+                )
+
+                postSideEffect(DailySideEffect.Toast("칭호를 획득했습니다!"))
+            }
+        }
+
+    }
+
+
 
 }
 
 @Immutable
 data class DailyState(
     val userData: List<User> = emptyList(),
-    val situation: String = ""
+    val situation: String = "",
+    val rewardAdReady: Boolean = false
 )
 
 
@@ -240,5 +329,7 @@ data class DailyState(
 sealed interface DailySideEffect{
     class Toast(val message:String): DailySideEffect
     data object NavigateToWalkScreen : DailySideEffect
+
+    data object ShowRewardAd : DailySideEffect
 
 }

@@ -1,5 +1,6 @@
 package com.a0100019.mypat.presentation.daily
 
+import android.app.Activity
 import android.content.Context
 import android.os.Build
 import android.widget.Toast
@@ -61,14 +62,23 @@ fun DailyScreen(
 
     val context = LocalContext.current
 
+    val activity = context as Activity
+
     dailyViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
             is DailySideEffect.Toast -> {
                 Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
             }
+
             DailySideEffect.NavigateToWalkScreen -> onWalkNavigateClick()
+
+            DailySideEffect.ShowRewardAd -> {
+                dailyViewModel.showRewardAd(activity)
+            }
+
         }
     }
+
 
     DailyScreen(
         onWalkNavigateClick = { dailyViewModel.walkPermissionCheck(context) },
@@ -80,7 +90,9 @@ fun DailyScreen(
         onDialogNotificationPermissionCheckClick = dailyViewModel::onDialogNotificationPermissionCheckClick,
         onDialogBatteryOptimizationPermissionCheckClick = dailyViewModel::onDialogBatteryOptimizationPermissionCheckClick,
         popBackStack = popBackStack,
+        onAdClick = dailyViewModel::onAdClick,
 
+        rewardAdReady = dailyState.rewardAdReady,
         situation = dailyState.situation,
     )
 
@@ -88,6 +100,9 @@ fun DailyScreen(
 
 @Composable
 fun DailyScreen(
+    situation: String = "",
+    rewardAdReady: Boolean = false,
+
     onWalkNavigateClick: () -> Unit,
     onDiaryNavigateClick: () -> Unit,
     onEnglishNavigateClick: () -> Unit,
@@ -96,8 +111,8 @@ fun DailyScreen(
     onDialogPermissionCheckClick: (Context) -> Unit = {},
     onDialogNotificationPermissionCheckClick: (Context) -> Unit = {},
     onDialogBatteryOptimizationPermissionCheckClick: (Context) -> Unit = {},
-    situation: String,
-    popBackStack: () -> Unit = {}
+    popBackStack: () -> Unit = {},
+    onAdClick: () -> Unit = {}
 ) {
 
 //    val context = LocalContext.current
@@ -409,62 +424,62 @@ fun DailyScreen(
                     }
                 }
 
-                item {
-                    //버튼 기본 설정
-                    val interactionSource = remember { MutableInteractionSource() }
-                    val isPressed by interactionSource.collectIsPressedAsState()
-                    val scale by animateFloatAsState(
-                        targetValue = if (isPressed) 0.95f else 1f,
-                        label = "scale"
-                    )
+                if(rewardAdReady){
+                    item {
+                        //버튼 기본 설정
+                        val interactionSource = remember { MutableInteractionSource() }
+                        val isPressed by interactionSource.collectIsPressedAsState()
+                        val scale by animateFloatAsState(
+                            targetValue = if (isPressed) 0.95f else 1f,
+                            label = "scale"
+                        )
 
-                    Surface(
-                        shape = RoundedCornerShape(16.dp),
-                        color = MaterialTheme.colorScheme.scrim,
-                        border = BorderStroke(3.dp, MaterialTheme.colorScheme.primaryContainer),
-                        modifier = Modifier
-                            .graphicsLayer {
-                                scaleX = scale
-                                scaleY = scale
-                            }
-                            .clickable(
-                                interactionSource = interactionSource,
-                                indication = null,
-                                onClick = onWalkNavigateClick
-                            )
-                            .padding(top = 6.dp, bottom = 6.dp)
-                    ) {
-                        Box {
+                        Surface(
+                            shape = RoundedCornerShape(16.dp),
+                            color = MaterialTheme.colorScheme.scrim,
+                            border = BorderStroke(3.dp, MaterialTheme.colorScheme.primaryContainer),
+                            modifier = Modifier
+                                .graphicsLayer {
+                                    scaleX = scale
+                                    scaleY = scale
+                                }
+                                .clickable(
+                                    interactionSource = interactionSource,
+                                    indication = null,
+                                    onClick = onAdClick
+                                )
+                                .padding(top = 6.dp, bottom = 6.dp)
+                        ) {
+                            Box {
 
-                            Column(
-                                modifier = Modifier
-                                    .padding(8.dp)
-                                    .fillMaxWidth(),
-                                verticalArrangement = Arrangement.Center,
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Text(
-                                    text = "광고보기",
-                                    style = MaterialTheme.typography.headlineMedium,
+                                Column(
                                     modifier = Modifier
-                                        .padding(bottom = 10.dp)
-                                    ,
-                                )
-                                Text(
-                                    text = "하루에 1회만 가능합니다",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    modifier = Modifier
-                                        .padding(bottom = 10.dp)
-                                    ,
-                                )
-                                Text(
-                                    text = "광고를 보면 1 햇살을 얻을 수 있습니다!",
-                                    style = MaterialTheme.typography.titleSmall,
-                                    modifier = Modifier,
-                                )
+                                        .padding(8.dp)
+                                        .fillMaxWidth(),
+                                    verticalArrangement = Arrangement.Center,
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Text(
+                                        text = "광고보기",
+                                        style = MaterialTheme.typography.headlineMedium,
+                                        modifier = Modifier
+                                            .padding(bottom = 10.dp),
+                                    )
+                                    Text(
+                                        text = "하루에 1회만 가능합니다",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        modifier = Modifier
+                                            .padding(bottom = 10.dp),
+                                    )
+                                    Text(
+                                        text = "광고를 보면 1 햇살을 얻을 수 있습니다!",
+                                        style = MaterialTheme.typography.titleSmall,
+                                        modifier = Modifier,
+                                    )
+                                }
                             }
+
                         }
-
                     }
                 }
 
@@ -490,7 +505,8 @@ fun DailyScreenPreview() {
             onDiaryNavigateClick = {  },
             onEnglishNavigateClick = {  },
             onKoreanNavigateClick = {  },
-            situation = ""
+            situation = "",
+            rewardAdReady = true
         )
     }
 }

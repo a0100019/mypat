@@ -1,5 +1,6 @@
 package com.a0100019.mypat.presentation.daily.english
 
+import android.app.Activity
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -8,8 +9,12 @@ import com.a0100019.mypat.data.room.english.EnglishDao
 import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiom
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
+import com.a0100019.mypat.presentation.daily.DailySideEffect
 import com.a0100019.mypat.presentation.daily.diary.DiarySideEffect
 import com.a0100019.mypat.presentation.daily.korean.KoreanSideEffect
+import com.a0100019.mypat.presentation.information.addMedalAction
+import com.a0100019.mypat.presentation.information.getMedalActionCount
+import com.a0100019.mypat.presentation.main.management.RewardAdManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import org.orbitmvi.orbit.Container
@@ -27,8 +32,8 @@ import javax.inject.Inject
 class EnglishViewModel @Inject constructor(
     private val userDao: UserDao,
     private val englishDao: EnglishDao,
-    private val application: Application // 추가됨
-
+    private val application: Application,
+    private val rewardAdManager: RewardAdManager
 ) : ViewModel(), ContainerHost<EnglishState, EnglishSideEffect> {
 
     override val container: Container<EnglishState, EnglishSideEffect> = container(
@@ -331,8 +336,93 @@ class EnglishViewModel @Inject constructor(
 
     }
 
-}
+    fun onAdClick() = intent {
+        postSideEffect(EnglishSideEffect.ShowRewardAd)
+    }
 
+    fun showRewardAd(activity: Activity) {
+        rewardAdManager.show(
+            activity = activity,
+            onReward = {
+                onRewardEarned()
+            },
+            onNotReady = {
+                intent {
+                    postSideEffect(
+                        EnglishSideEffect.Toast(
+                            "광고를 불러오는 중이에요. 잠시 후 다시 시도해주세요."
+                        )
+                    )
+                }
+            }
+        )
+    }
+
+    fun onSituationChange(situation: String) = intent {
+
+        reduce {
+            state.copy(
+                situation = situation
+            )
+        }
+    }
+
+
+    private fun onRewardEarned() = intent {
+
+        postSideEffect(EnglishSideEffect.Toast("힌트를 얻었습니다!"))
+
+        val stateChangeEnglishData = state.clickEnglishData
+        stateChangeEnglishData!!.state = "뜻"
+        englishDao.update(stateChangeEnglishData)
+
+        val newEnglishData = englishDao.getOpenEnglishData()
+
+        reduce {
+            state.copy(
+                clickEnglishDataState = "뜻",
+                englishDataList = newEnglishData,
+                situation = ""
+            )
+        }
+
+        //@@@@@@@@@@@@@@@@@@@@칭호
+        var medalData = userDao.getAllUserData().find { it.id == "name" }!!.value2
+        medalData = addMedalAction(medalData, actionId = 27)
+        userDao.update(
+            id = "name",
+            value2 = medalData
+        )
+
+        if(getMedalActionCount(medalData, actionId = 27) == 15) {
+            //매달, medal, 칭호27
+            val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
+
+            val myMedalList: MutableList<Int> =
+                myMedal
+                    .split("/")
+                    .mapNotNull { it.toIntOrNull() }
+                    .toMutableList()
+
+            // 🔥 여기 숫자 두개랑 위에 // 바꾸면 됨
+            if (!myMedalList.contains(27)) {
+                myMedalList.add(27)
+
+                // 다시 문자열로 합치기
+                val updatedMedal = myMedalList.joinToString("/")
+
+                // DB 업데이트
+                userDao.update(
+                    id = "etc",
+                    value3 = updatedMedal
+                )
+
+                postSideEffect(EnglishSideEffect.Toast("칭호를 획득했습니다!"))
+            }
+        }
+
+    }
+}
 
 @Immutable
 data class EnglishState(
@@ -348,6 +438,7 @@ data class EnglishState(
     val failEnglishStateList: List<String> = emptyList(),
     val notUseEnglishList: List<String> = emptyList(),
     val useEnglishList: List<String> = emptyList(),
+    val situation: String = "",
     )
 
 
@@ -355,5 +446,7 @@ data class EnglishState(
 sealed interface EnglishSideEffect{
     class Toast(val message:String): EnglishSideEffect
 //    data object NavigateToDailyActivity: LoadingSideEffect
+
+    data object ShowRewardAd : EnglishSideEffect
 
 }

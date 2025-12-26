@@ -30,6 +30,18 @@ interface WalkDao {
     @Query("UPDATE walk_table SET success = :success WHERE date = :date")
     suspend fun updateSuccessByDate(date: String, success: String)
 
+    @Query("""
+    UPDATE walk_table
+    SET success = '1'
+    WHERE id = (
+        SELECT id
+        FROM walk_table
+        ORDER BY id DESC
+        LIMIT 1
+    )
+""")
+    suspend fun updateLastSuccess()
+
     @Query("SELECT * FROM walk_table ORDER BY id DESC")
     suspend fun getAllWalkData(): List<Walk>
 

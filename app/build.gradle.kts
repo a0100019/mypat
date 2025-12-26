@@ -135,5 +135,8 @@ dependencies {
     //삼성 헬스
     implementation("androidx.health.connect:connect-client:1.1.0-alpha04")
 
+    //광고
+    implementation("com.google.android.gms:play-services-ads:23.2.0")
+
 
 }

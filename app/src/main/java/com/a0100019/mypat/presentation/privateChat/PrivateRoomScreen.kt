@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -37,6 +38,7 @@ import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
 import com.a0100019.mypat.presentation.neighbor.chat.getPastelColorForTag
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
+import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -46,6 +48,7 @@ fun PrivateRoomScreen(
     privateRoomViewModel: PrivateRoomViewModel = hiltViewModel(),
     onNavigateToPrivateChatInScreen: () -> Unit = {},
     onNavigateToMainScreen: () -> Unit = {},
+    onNavigateToNeighborInformationScreen: () -> Unit = {},
     popBackStack: () -> Unit = {}
 
 ) {
@@ -59,6 +62,7 @@ fun PrivateRoomScreen(
             is PrivateRoomSideEffect.Toast -> Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
             PrivateRoomSideEffect.NavigateToPrivateChatInScreen -> onNavigateToPrivateChatInScreen()
             PrivateRoomSideEffect.NavigateToMainScreen -> onNavigateToMainScreen()
+            PrivateRoomSideEffect.NavigateToNeighborInformationScreen -> onNavigateToNeighborInformationScreen()
         }
     }
 
@@ -77,8 +81,8 @@ fun PrivateRoomScreen(
         onClose = privateRoomViewModel::onClose,
         onYourTagChange = privateRoomViewModel::onYourTagChange,
         loadMyRooms = privateRoomViewModel::loadMyRooms,
-        onPrivateChatStartClick = privateRoomViewModel::onPrivateChatStartClick,
-        onRankClick = privateRoomViewModel::onRankClick
+        onRankClick = privateRoomViewModel::onRankClick,
+        onNeighborInformationClick = privateRoomViewModel::onNeighborInformationClick
     )
 }
 
@@ -98,8 +102,8 @@ fun PrivateRoomScreen(
     onClose: () -> Unit = {},
     onYourTagChange: (String) -> Unit = {},
     loadMyRooms: () -> Unit = {},
-    onPrivateChatStartClick: () -> Unit = {},
-    onRankClick: () -> Unit = {}
+    onRankClick: () -> Unit = {},
+    onNeighborInformationClick: (String) -> Unit = {},
 ) {
 
     when(situation) {
@@ -109,23 +113,20 @@ fun PrivateRoomScreen(
                 onTextChange = onYourTagChange,
                 yourTag = yourTag,
                 onConfirmClick = {
-                    onSituationChange("roomCreateConfirm")
-                    onPrivateChatStartClick()
+                    onNeighborInformationClick(yourTag)
+                    onSituationChange("")
                 }
             )
         }
-        "roomCreateConfirm" -> SimpleAlertDialog(
-            onConfirmClick = {
-                onClose()
-                loadMyRooms()
-            },
-            onDismissOn = false,
-            text = "친구를 맺었습니다"
-        )
         "rank" -> PrivateChatGameRankDialog(
             onClose = onClose,
             privateChatRankList = roomListRank,
             privateChatTotalRankList = roomListTotalRank
+        )
+        "gameQuestion" -> SimpleAlertDialog(
+            onConfirmClick = {onSituationChange("")},
+            onDismissOn = false,
+            text = "친구와 함께 보스를 공격하세요!\n\n1. 서로 번갈아 가며 공격할 수 있습니다.\n\n2. 두 명의 최고 점수 합이 오늘의 점수가 되고 누적 점수에 포함되며, 오늘 점수는 내일 초기화 됩니다.\n\n3. 친구와 함께 높은 점수를 차지하여 순위에 올라보세요! 이후 다양한 보상이 추가될 예정입니다"
         )
     }
 
@@ -154,13 +155,26 @@ fun PrivateRoomScreen(
                     text = "친구 찾기"
                 )
 
-                MainButton(
-                    onClick = {
-                        onRankClick()
-                        onSituationChange("rank")
-                    },
-                    text = "랭킹 보기"
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    MainButton(
+                        onClick = {
+                            onRankClick()
+                            onSituationChange("rank")
+                        },
+                        text = "보스 잡기 랭킹"
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    JustImage(
+                        filePath = "etc/question.png",
+                        modifier = Modifier
+                            .size(15.dp)
+                            .clickable {
+                                onSituationChange("gameQuestion")
+                            }
+                    )
+                }
 
                 MainButton(
                     onClick = onNavigateToMainScreen,
@@ -330,8 +344,9 @@ fun PrivateRoomScreen(
                     modifier = Modifier.fillMaxSize()
                 ) {
                     Text(
-                        text = "친구를 만들어보세요!",
-                        modifier = Modifier.align(Alignment.Center)
+                        text = "마음에 드는 이웃과 친구를 맺어보세요!\n친구와 개인 채팅을 할 수 있으며 같이 보스를 잡아 랭킹에 오를 수 있습니다!",
+                        modifier = Modifier.align(Alignment.Center),
+                        textAlign = TextAlign.Center
                     )
                 }
             }

@@ -304,7 +304,7 @@ fun BoardMessageScreen(
                             .weight(1f),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        items(boardChat) { chat ->
+                        items(boardChat.reversed()) { chat ->
 
                             val displayName =
                                 if (chat.anonymous == "1") "익명" else chat.name

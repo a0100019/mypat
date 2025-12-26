@@ -1,5 +1,6 @@
 package com.a0100019.mypat.presentation.daily.english
 
+import android.app.Activity
 import android.widget.Toast
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
@@ -43,6 +44,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.english.English
+import com.a0100019.mypat.presentation.daily.DailySideEffect
+import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.component.SparkleText
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
@@ -61,10 +64,16 @@ fun EnglishScreen(
     val englishState : EnglishState = englishViewModel.collectAsState().value
 
     val context = LocalContext.current
+    val activity = context as Activity
 
     englishViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
             is EnglishSideEffect.Toast -> Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
+
+            EnglishSideEffect.ShowRewardAd -> {
+                englishViewModel.showRewardAd(activity)
+            }
+
         }
     }
 
@@ -79,6 +88,7 @@ fun EnglishScreen(
         failEnglishStateList = englishState.failEnglishStateList,
         notUseEnglishList = englishState.notUseEnglishList,
         useEnglishList = englishState.useEnglishList,
+        situation = englishState.situation,
 
         onEnglishClick = englishViewModel::onEnglishClick,
         onAlphabetClick = englishViewModel::onAlphabetClick,
@@ -87,6 +97,8 @@ fun EnglishScreen(
         onFilterClick = englishViewModel::onFilterClick,
         onCloseClick = englishViewModel::onCloseClick,
         onStateChangeClick = englishViewModel::onStateChangeClick,
+        onAdClick = englishViewModel::onAdClick,
+        onSituationChange = englishViewModel::onSituationChange,
         popBackStack = popBackStack
 
     )
@@ -104,6 +116,7 @@ fun EnglishScreen(
     failEnglishStateList: List<String> = emptyList(),
     notUseEnglishList: List<String> = emptyList(),
     useEnglishList: List<String> = emptyList(),
+    situation: String = "",
 
     onEnglishClick: (English) -> Unit = {},
     onAlphabetClick: (String) -> Unit = {},
@@ -113,10 +126,24 @@ fun EnglishScreen(
     onCloseClick: () -> Unit = {},
     onStateChangeClick: () -> Unit = {},
     popBackStack: () -> Unit = {},
+    onSituationChange: (String) -> Unit = {},
+    onAdClick: () -> Unit = {},
 
 ) {
 
-    if(clickEnglishData != null && clickEnglishDataState == "대기") {
+    when(situation) {
+        "hint" -> SimpleAlertDialog(
+            onConfirmClick = {
+                onAdClick()
+            },
+            onDismissClick = {
+                onSituationChange("")
+            },
+            text = "광고를 보고 영어 단어의 뜻을 보겠습니까?",
+        )
+    }
+
+    if(clickEnglishData != null && clickEnglishDataState in listOf("대기", "뜻")) {
         EnglishReadyDialog(
             englishTextList = englishTextList,
             failEnglishList = failEnglishList,
@@ -126,7 +153,12 @@ fun EnglishScreen(
             onSubmitClick = onSubmitClick,
             onAlphabetDeleteClick = onAlphabetDeleteClick,
             notUseEnglishList = notUseEnglishList,
-            useEnglishList = useEnglishList
+            useEnglishList = useEnglishList,
+            clickEnglishDataState = clickEnglishDataState,
+            clickEnglishData = clickEnglishData,
+            onHintClick = {
+                onSituationChange("hint")
+            }
         )
     } else if(clickEnglishData != null && clickEnglishDataState in listOf("완료", "별")) {
         EnglishDialog(
@@ -183,7 +215,7 @@ fun EnglishScreen(
                         label = "scale"
                     )
 
-                    if (englishData.state != "대기") {
+                    if (englishData.state !in listOf("대기", "뜻")) {
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()

@@ -1,5 +1,6 @@
 package com.a0100019.mypat.presentation.neighbor
 
+import android.app.Activity
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,8 +14,10 @@ import com.a0100019.mypat.data.room.pat.PatDao
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.world.WorldDao
+import com.a0100019.mypat.presentation.daily.english.EnglishSideEffect
 import com.a0100019.mypat.presentation.information.addMedalAction
 import com.a0100019.mypat.presentation.information.getMedalActionCount
+import com.a0100019.mypat.presentation.main.management.RewardAdManager
 import com.a0100019.mypat.presentation.neighbor.chat.ChatMessage
 import com.a0100019.mypat.presentation.neighbor.chat.ChatSideEffect
 import com.a0100019.mypat.presentation.neighbor.community.CommunitySideEffect
@@ -46,7 +49,8 @@ class NeighborInformationViewModel @Inject constructor(
     private val patDao: PatDao,
     private val itemDao: ItemDao,
     private val allUserDao: AllUserDao,
-    private val areaDao: AreaDao
+    private val areaDao: AreaDao,
+    private val rewardAdManager: RewardAdManager
 ) : ViewModel(), ContainerHost<NeighborInformationState, NeighborInformationSideEffect> {
 
     override val container: Container<NeighborInformationState, NeighborInformationSideEffect> = container(
@@ -270,31 +274,54 @@ class NeighborInformationViewModel @Inject constructor(
                     return@addOnSuccessListener
                 }
 
-                // 📌 participants 배열 생성
+                // 📌 user 정렬
                 val u1 = if (myNum < yourNum) myTag else yourTag
                 val u2 = if (myNum < yourNum) yourTag else myTag
+
+                // 📌 내가 user1인지 여부
+                val isMeUser1 = u1 == myTag
+
+                // 📌 이름 분기
+                val name1 = if (isMeUser1) {
+                    state.userDataList.find { it.id == "name" }!!.value
+                } else {
+                    state.clickAllUserData.name
+                }
+
+                val name2 = if (isMeUser1) {
+                    state.clickAllUserData.name
+                } else {
+                    state.userDataList.find { it.id == "name" }!!.value
+                }
 
                 // 📌 방 생성 데이터
                 val chatInitData = mapOf(
                     "user1" to u1,
                     "user2" to u2,
-                    "participants" to listOf(u1, u2),   // ⬅⬅⬅ 핵심 추가!
+                    "participants" to listOf(u1, u2),
                     "createdAt" to System.currentTimeMillis(),
+
                     "last1" to System.currentTimeMillis(),
                     "last2" to System.currentTimeMillis(),
                     "lastMessage" to "",
-                    "name1" to state.userDataList.find { it.id == "name" }!!.value,
-                    "name2" to state.clickAllUserData.name,
-                    "createUser" to state.userDataList.find { it.id == "auth" }!!.value,
+
+                    "name1" to name1,
+                    "name2" to name2,
+
+                    "createUser" to myTag,
                     "messageCount" to 0,
+
                     "attacker" to state.userDataList.find { it.id == "auth" }!!.value2,
                     "highScore" to 0,
+
                     "lastGame1" to "2001-01-01",
                     "lastGame2" to "2001-01-01",
+
                     "todayScore1" to 0,
                     "todayScore2" to 0,
                     "totalScore" to 0,
                 )
+
 
                 // 문서 생성
                 docRef.set(chatInitData)
@@ -388,7 +415,7 @@ class NeighborInformationViewModel @Inject constructor(
                                                             value2 = medalData
                                                         )
 
-                                                        if(getMedalActionCount(medalData, actionId = 11) >= 100) {
+                                                        if(getMedalActionCount(medalData, actionId = 11) >= 50) {
                                                             //매달, medal, 칭호11
                                                             val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
 
@@ -600,6 +627,103 @@ class NeighborInformationViewModel @Inject constructor(
         }
     }
 
+    fun onAdClick() = intent {
+        postSideEffect(NeighborInformationSideEffect.ShowRewardAd)
+    }
+
+    fun showRewardAd(activity: Activity) {
+        rewardAdManager.show(
+            activity = activity,
+            onReward = {
+                onRewardEarned()
+            },
+            onNotReady = {
+                intent {
+                    postSideEffect(
+                        NeighborInformationSideEffect.Toast(
+                            "광고를 불러오는 중이에요. 잠시 후 다시 시도해주세요."
+                        )
+                    )
+                }
+            }
+        )
+    }
+
+    private fun onRewardEarned() = intent {
+
+        //@@@@@@@@@@@@@@@@@@@@칭호
+        var medalData = userDao.getAllUserData().find { it.id == "name" }!!.value2
+        medalData = addMedalAction(medalData, actionId = 27)
+        userDao.update(
+            id = "name",
+            value2 = medalData
+        )
+
+        if(getMedalActionCount(medalData, actionId = 27) == 15) {
+            //매달, medal, 칭호27
+            val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
+
+            val myMedalList: MutableList<Int> =
+                myMedal
+                    .split("/")
+                    .mapNotNull { it.toIntOrNull() }
+                    .toMutableList()
+
+            // 🔥 여기 숫자 두개랑 위에 // 바꾸면 됨
+            if (!myMedalList.contains(27)) {
+                myMedalList.add(27)
+
+                // 다시 문자열로 합치기
+                val updatedMedal = myMedalList.joinToString("/")
+
+                // DB 업데이트
+                userDao.update(
+                    id = "etc",
+                    value3 = updatedMedal
+                )
+
+                postSideEffect(NeighborInformationSideEffect.Toast("칭호를 획득했습니다!"))
+            }
+        }
+
+        if(userDao.getAllUserData().find { it.id == "auth" }!!.value2 != state.clickAllUserData.tag) {
+            onPrivateChatStartClick()
+        } else {
+            //매달, medal, 칭호28
+            val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
+
+            val myMedalList: MutableList<Int> =
+                myMedal
+                    .split("/")
+                    .mapNotNull { it.toIntOrNull() }
+                    .toMutableList()
+
+            // 🔥 여기 숫자 두개 바꾸면 됨
+            if (!myMedalList.contains(28)) {
+                myMedalList.add(28)
+
+                // 다시 문자열로 합치기
+                val updatedMedal = myMedalList.joinToString("/")
+
+                // DB 업데이트
+                userDao.update(
+                    id = "etc",
+                    value3 = updatedMedal
+                )
+
+                postSideEffect(NeighborInformationSideEffect.Toast("칭호를 획득했습니다!"))
+            }
+
+            reduce {
+                state.copy(
+                    situation = "selfFriend"
+                )
+            }
+
+        }
+
+    }
+
 
 }
 
@@ -622,5 +746,7 @@ data class NeighborInformationState(
 sealed interface NeighborInformationSideEffect{
     class Toast(val message:String): NeighborInformationSideEffect
     data object NavigateToPrivateRoomScreen: NeighborInformationSideEffect
+
+    data object ShowRewardAd : NeighborInformationSideEffect
 
 }

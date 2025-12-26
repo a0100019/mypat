@@ -23,6 +23,7 @@ import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.data.room.world.WorldDao
 import com.a0100019.mypat.presentation.main.management.ManagementSideEffect
+import com.a0100019.mypat.presentation.main.management.RewardAdManager
 import com.google.firebase.storage.FirebaseStorage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -61,6 +62,7 @@ class MainViewModel @Inject constructor(
     private val itemDao: ItemDao,
     private val letterDao: LetterDao,
     private val areaDao: AreaDao,
+    private val rewardAdManager: RewardAdManager,
 
 ) : ViewModel(), ContainerHost<MainState, MainSideEffect> {
 
@@ -79,6 +81,7 @@ class MainViewModel @Inject constructor(
     init {
         loadData()
         startTenMinuteCountdown()
+        rewardAdManager.load()
     }
 
     fun loadData() = intent {

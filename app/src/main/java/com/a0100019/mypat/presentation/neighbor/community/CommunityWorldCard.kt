@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import com.a0100019.mypat.data.room.allUser.AllUser
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.pat.Pat
+import com.a0100019.mypat.presentation.information.medalName
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.image.item.WorldItemImage
 import com.a0100019.mypat.presentation.ui.image.pat.PatImage
@@ -58,6 +59,23 @@ fun CommunityWorldCard(
         targetValue = if (isPressed) 0.95f else 1f,
         label = "scale"
     )
+
+    val introduction =
+        userData
+            .warning
+            .split("@")
+            .first()
+
+    val medalList: List<Int> =
+        userData
+            .warning
+            .split("@")
+            .last()
+            .split("/")                  // ["1","3","12","5","0","3"]
+            .mapNotNull { it.toIntOrNull() }
+            .filter { it != 0 }          // "0" 제거
+            .distinct()                  // 중복 제거
+
 
     Card(
         modifier = modifier
@@ -88,6 +106,22 @@ fun CommunityWorldCard(
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
+            val medal = medalList.firstOrNull()
+
+            Text(
+                text = when (medal) {
+                    null -> "칭호 없음"
+                    0 -> "칭호 없음"
+                    else -> medalName(medal)
+                },
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color(0xFF6B1F1F),
+                textAlign = TextAlign.Center,
+                maxLines = 1
+            )
+
+            Spacer(modifier = Modifier.height(6.dp))
 
             Surface(
                 modifier = Modifier

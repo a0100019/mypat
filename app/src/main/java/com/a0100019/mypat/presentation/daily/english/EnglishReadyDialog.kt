@@ -1,5 +1,7 @@
 package com.a0100019.mypat.presentation.daily.english
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -19,17 +21,22 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.a0100019.mypat.R
+import com.a0100019.mypat.data.room.english.English
 import com.a0100019.mypat.presentation.ui.component.MainButton
+import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
 @Composable
@@ -40,11 +47,14 @@ fun EnglishReadyDialog(
     failEnglishStateList: List<String> = emptyList(),
     notUseEnglishList: List<String> = emptyList(),
     useEnglishList: List<String> = emptyList(),
+    clickEnglishDataState: String = "대기",
+    clickEnglishData: English = English(),
 
     onClose: () -> Unit = {},
     onAlphabetDeleteClick: () -> Unit = {},
     onSubmitClick: () -> Unit = {},
     onAlphabetClick: (String) -> Unit = {},
+    onHintClick: () -> Unit = {}
 
     ) {
 
@@ -74,14 +84,37 @@ fun EnglishReadyDialog(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-                Text(
-                    text = "영어 단어",
-                    style = MaterialTheme.typography.headlineLarge,
+                Box(
                     modifier = Modifier
-                        .padding(16.dp)
-                        .align(Alignment.CenterHorizontally)
-                    ,
-                )
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        text = "영어 단어",
+                        style = MaterialTheme.typography.headlineLarge,
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .align(Alignment.Center),
+                    )
+
+                    if(clickEnglishDataState == "대기"){
+                        Row(
+                            modifier = Modifier
+                                .align(Alignment.CenterEnd)
+                                .clickable {
+                                    onHintClick()
+                                }
+                        ) {
+                            Text(
+                                text = "힌트"
+                            )
+                            Image(
+                                painter = painterResource(id = R.drawable.key),
+                                contentDescription = "State Icon",
+                                modifier = Modifier
+                            )
+                        }
+                    }
+                }
 
                 Row(
                     modifier = Modifier
@@ -116,7 +149,7 @@ fun EnglishReadyDialog(
                     LazyColumn(
                         modifier = Modifier
                             .weight(1f)
-                            .padding(bottom = 12.dp)
+                            .padding(bottom = 4.dp)
                     ) {
                         itemsIndexed(failEnglishList.reversed()) { index, word ->
                             Row(
@@ -147,7 +180,9 @@ fun EnglishReadyDialog(
                             }
                             Spacer(modifier = Modifier.size(12.dp))
                         }
+
                     }
+
                 } else {
                     Box(
                         modifier = Modifier
@@ -155,10 +190,29 @@ fun EnglishReadyDialog(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "오늘의 단어를 찾아주세요!\n정답에 포함된 알파벳이면 노란색, 위치까지 일치하면 초록색으로 표시됩니다",
+                            text = "오늘의 단어를 찾아주세요!\n정답에 포함된 알파벳이면 노란색, 위치까지 일치하면 초록색으로 표시됩니다\n\n5글자 단어를 아무거나 입력해보세요!",
                             textAlign = TextAlign.Center,
                             modifier = Modifier
                                 .padding(16.dp) // 여백은 보기 좋게 추가
+                        )
+                    }
+
+                }
+
+                if(clickEnglishDataState == "뜻") {
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primaryContainer),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 4.dp)
+                    ) {
+                        Text(
+                            text = "뜻 : ${clickEnglishData.meaning}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(12.dp)
                         )
                     }
 
@@ -193,7 +247,7 @@ fun EnglishReadyDialog(
                                         }
                                         .weight(1f)
                                         .background(
-                                            color = if(char.toString() in notUseEnglishList) Color.LightGray else Color.Unspecified,
+                                            color = if (char.toString() in notUseEnglishList) Color.LightGray else Color.Unspecified,
                                             shape = RoundedCornerShape(8.dp)
                                         )
                                         .border( // ✅ 둥근 테두리 추가
@@ -224,7 +278,7 @@ fun EnglishReadyDialog(
                                     }
                                     .weight(0.1f)
                                     .background(
-                                        color = if(char.toString() in notUseEnglishList) Color.LightGray else Color.Unspecified,
+                                        color = if (char.toString() in notUseEnglishList) Color.LightGray else Color.Unspecified,
                                         shape = RoundedCornerShape(8.dp)
                                     )
                                     .border( // ✅ 둥근 테두리 추가
@@ -255,7 +309,7 @@ fun EnglishReadyDialog(
                                     }
                                     .weight(0.1f)
                                     .background(
-                                        color = if(char.toString() in notUseEnglishList) Color.LightGray else Color.Unspecified,
+                                        color = if (char.toString() in notUseEnglishList) Color.LightGray else Color.Unspecified,
                                         shape = RoundedCornerShape(8.dp)
                                     )
                                     .border( // ✅ 둥근 테두리 추가
