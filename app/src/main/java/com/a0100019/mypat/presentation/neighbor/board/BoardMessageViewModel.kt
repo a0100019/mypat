@@ -10,9 +10,8 @@ import com.a0100019.mypat.data.room.pat.PatDao
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.world.WorldDao
-import com.a0100019.mypat.presentation.information.addMedalAction
-import com.a0100019.mypat.presentation.information.getMedalActionCount
-import com.a0100019.mypat.presentation.privateChat.PrivateRoom
+import com.a0100019.mypat.presentation.main.management.addMedalAction
+import com.a0100019.mypat.presentation.main.management.getMedalActionCount
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.SetOptions

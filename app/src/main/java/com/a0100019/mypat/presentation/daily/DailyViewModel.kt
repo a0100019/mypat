@@ -6,7 +6,6 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.os.Build
 import android.os.PowerManager
 import androidx.annotation.RequiresApi
@@ -16,11 +15,9 @@ import androidx.lifecycle.ViewModel
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.walk.WalkDao
-import com.a0100019.mypat.presentation.daily.walk.WalkSideEffect
-import com.a0100019.mypat.presentation.information.addMedalAction
-import com.a0100019.mypat.presentation.information.getMedalActionCount
+import com.a0100019.mypat.presentation.main.management.addMedalAction
+import com.a0100019.mypat.presentation.main.management.getMedalActionCount
 import com.a0100019.mypat.presentation.main.management.RewardAdManager
-import com.a0100019.mypat.presentation.setting.SettingSideEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import org.orbitmvi.orbit.Container
@@ -61,11 +58,13 @@ class DailyViewModel @Inject constructor(
         val userDataList = userDao.getAllUserData()
         val walkData = walkDao.getLatestWalkData()
         val rewardAdReady = walkData.success == "0"
+        val removeAd = userDataList.find { it.id == "name" }!!.value3
 
         reduce {
             state.copy(
                 userData = userDataList,
-                rewardAdReady = rewardAdReady
+                rewardAdReady = rewardAdReady,
+                removeAd = removeAd
             )
         }
     }
@@ -237,7 +236,13 @@ class DailyViewModel @Inject constructor(
     }
 
     fun onAdClick() = intent {
-        postSideEffect(DailySideEffect.ShowRewardAd)
+
+        if(state.removeAd == "0") {
+            postSideEffect(DailySideEffect.ShowRewardAd)
+        } else {
+            onRewardEarned()
+        }
+
     }
 
     fun showRewardAd(activity: Activity) {
@@ -313,17 +318,15 @@ class DailyViewModel @Inject constructor(
 
     }
 
-
-
 }
 
 @Immutable
 data class DailyState(
     val userData: List<User> = emptyList(),
     val situation: String = "",
-    val rewardAdReady: Boolean = false
+    val rewardAdReady: Boolean = false,
+    val removeAd: String = "0"
 )
-
 
 //상태와 관련없는 것
 sealed interface DailySideEffect{

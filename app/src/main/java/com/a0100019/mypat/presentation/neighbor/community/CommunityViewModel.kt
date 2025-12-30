@@ -13,14 +13,8 @@ import com.a0100019.mypat.data.room.pat.PatDao
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.world.WorldDao
-import com.a0100019.mypat.presentation.information.addMedalAction
-import com.a0100019.mypat.presentation.information.getMedalActionCount
-import com.a0100019.mypat.presentation.main.management.ManagementSideEffect
-import com.a0100019.mypat.presentation.neighbor.chat.ChatSideEffect
 import com.google.firebase.Firebase
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.firestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -34,11 +28,8 @@ import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
-import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.Date
-import java.util.Locale
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 
@@ -66,6 +57,11 @@ class CommunityViewModel @Inject constructor(
     // 뷰 모델 초기화 시 모든 user 데이터를 로드
     init {
         loadData()
+        onFirstGameRank()
+        onSecondGameRank()
+        onThirdGameEasyRank()
+        onThirdGameNormalRank()
+        onThirdGameHardRank()
     }
 
     //room에서 데이터 가져옴
@@ -75,9 +71,6 @@ class CommunityViewModel @Inject constructor(
         val itemDataList = itemDao.getAllItemDataWithShadow()
         var allUserDataList = allUserDao.getAllUserDataNoBan()
         allUserDataList = allUserDataList.filter { it.totalDate != "1" && it.totalDate != "0" }
-
-        var allUserRankDataList = allUserDao.getAllUserDataNoBan()
-        allUserRankDataList = allUserRankDataList.filter { it.totalDate != "1" && it.totalDate != "0" }
 
         val allAreaCount = areaDao.getAllAreaData().size.toString()
 
@@ -135,7 +128,6 @@ class CommunityViewModel @Inject constructor(
                 allUserWorldDataList2 = allUserWorldDataList2,
                 allUserWorldDataList3 = allUserWorldDataList3,
                 allUserWorldDataList4 = allUserWorldDataList4,
-                allUserRankDataList = allUserRankDataList,
                 allAreaCount = allAreaCount
             )
         }
@@ -313,7 +305,6 @@ class CommunityViewModel @Inject constructor(
                 .split("/")
                 .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
 
-            userDao.update(id = "etc", value = (page+1).toString())
             reduce {
                 state.copy(
                     page = page + 1,
@@ -348,7 +339,6 @@ class CommunityViewModel @Inject constructor(
                 .split("/")
                 .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
 
-            userDao.update(id = "etc", value = "0")
             reduce {
                 state.copy(
                     page = 0,
@@ -368,19 +358,8 @@ class CommunityViewModel @Inject constructor(
 
     fun onSituationChange(newSituation: String) = intent {
         reduce {
-            val sortedList = when (newSituation) {
-                "firstGame" -> state.allUserRankDataList.sortedByDescending { it.firstGame.toInt() }
-                "secondGame" -> state.allUserRankDataList.sortedBy { it.secondGame.toDouble() }
-                "thirdGameEasy" -> state.allUserRankDataList.sortedByDescending { it.thirdGameEasy.toInt() }
-                "thirdGameNormal" -> state.allUserRankDataList.sortedByDescending { it.thirdGameNormal.toInt() }
-                "thirdGameHard" -> state.allUserRankDataList.sortedByDescending { it.thirdGameHard.toInt() }
-
-                else -> state.allUserRankDataList
-            }
-
             state.copy(
-                situation = newSituation,
-                allUserRankDataList = sortedList
+                situation = newSituation
             )
         }
     }
@@ -437,6 +416,206 @@ class CommunityViewModel @Inject constructor(
 //        }
     }
 
+    private fun onFirstGameRank() = intent {
+
+        try {
+            val docSnap = Firebase.firestore
+                .collection("rank")
+                .document("firstGame")
+                .get()
+                .await()
+
+            if (!docSnap.exists()) return@intent
+
+            val rankList = docSnap.data
+                ?.toList() // Map → List<Pair<String, Any>>
+                ?.sortedBy { (key, _) ->
+                    // "1", "10", "100" → 숫자 정렬
+                    key.toIntOrNull() ?: Int.MAX_VALUE
+                }
+                ?.mapNotNull { (_, value) ->
+                    val map = value as? Map<*, *> ?: return@mapNotNull null
+
+                    Rank(
+                        name = map["name"] as? String ?: "",
+                        tag = map["tag"] as? String ?: "",
+                        ban = map["ban"] as? String ?: "0",
+                        score = map["score"] as? String ?: "0",
+                    )
+                }
+                ?: emptyList()
+
+            reduce {
+                state.copy(
+                    firstGameRankList = rankList
+                )
+            }
+
+        } catch (e: Exception) {
+            Log.e("Rank", "firstGame 랭킹 로드 실패", e)
+        }
+    }
+
+
+    private fun onSecondGameRank() = intent {
+
+        try {
+            val docSnap = Firebase.firestore
+                .collection("rank")
+                .document("secondGame")
+                .get()
+                .await()
+
+            if (!docSnap.exists()) return@intent
+
+            val rankList = docSnap.data
+                ?.toList() // Map → List<Pair<String, Any>>
+                ?.sortedBy { (key, _) ->
+                    // "1", "10", "100" → 숫자 기준 정렬
+                    key.toIntOrNull() ?: Int.MAX_VALUE
+                }
+                ?.mapNotNull { (_, value) ->
+                    val map = value as? Map<*, *> ?: return@mapNotNull null
+
+                    Rank(
+                        name = map["name"] as? String ?: "",
+                        tag = map["tag"] as? String ?: "",
+                        ban = map["ban"] as? String ?: "0",
+                        score = map["score"] as? String ?: "0", // "39.829"
+                    )
+                }
+                ?: emptyList()
+
+            reduce {
+                state.copy(
+                    secondGameRankList = rankList
+                )
+            }
+
+        } catch (e: Exception) {
+            Log.e("Rank", "secondGame 랭킹 로드 실패", e)
+        }
+    }
+
+
+    private fun onThirdGameEasyRank() = intent {
+
+        try {
+            val docSnap = Firebase.firestore
+                .collection("rank")
+                .document("thirdGameEasy")
+                .get()
+                .await()
+
+            if (!docSnap.exists()) return@intent
+
+            val rankList = docSnap.data
+                ?.toList()
+                ?.sortedBy { (key, _) ->
+                    key.toIntOrNull() ?: Int.MAX_VALUE
+                }
+                ?.mapNotNull { (_, value) ->
+                    val map = value as? Map<*, *> ?: return@mapNotNull null
+
+                    Rank(
+                        name = map["name"] as? String ?: "",
+                        tag = map["tag"] as? String ?: "",
+                        ban = map["ban"] as? String ?: "0",
+                        score = map["score"] as? String ?: "0",
+                    )
+                }
+                ?: emptyList()
+
+            reduce {
+                state.copy(
+                    thirdGameEasyRankList = rankList
+                )
+            }
+
+        } catch (e: Exception) {
+            Log.e("Rank", "thirdGameEasy 랭킹 로드 실패", e)
+        }
+    }
+
+
+    private fun onThirdGameNormalRank() = intent {
+
+        try {
+            val docSnap = Firebase.firestore
+                .collection("rank")
+                .document("thirdGameNormal")
+                .get()
+                .await()
+
+            if (!docSnap.exists()) return@intent
+
+            val rankList = docSnap.data
+                ?.toList()
+                ?.sortedBy { (key, _) ->
+                    key.toIntOrNull() ?: Int.MAX_VALUE
+                }
+                ?.mapNotNull { (_, value) ->
+                    val map = value as? Map<*, *> ?: return@mapNotNull null
+
+                    Rank(
+                        name = map["name"] as? String ?: "",
+                        tag = map["tag"] as? String ?: "",
+                        ban = map["ban"] as? String ?: "0",
+                        score = map["score"] as? String ?: "0",
+                    )
+                }
+                ?: emptyList()
+
+            reduce {
+                state.copy(
+                    thirdGameNormalRankList = rankList
+                )
+            }
+
+        } catch (e: Exception) {
+            Log.e("Rank", "thirdGameNormal 랭킹 로드 실패", e)
+        }
+    }
+
+    private fun onThirdGameHardRank() = intent {
+
+        try {
+            val docSnap = Firebase.firestore
+                .collection("rank")
+                .document("thirdGameHard")
+                .get()
+                .await()
+
+            if (!docSnap.exists()) return@intent
+
+            val rankList = docSnap.data
+                ?.toList()
+                ?.sortedBy { (key, _) ->
+                    key.toIntOrNull() ?: Int.MAX_VALUE
+                }
+                ?.mapNotNull { (_, value) ->
+                    val map = value as? Map<*, *> ?: return@mapNotNull null
+
+                    Rank(
+                        name = map["name"] as? String ?: "",
+                        tag = map["tag"] as? String ?: "",
+                        ban = map["ban"] as? String ?: "0",
+                        score = map["score"] as? String ?: "0",
+                    )
+                }
+                ?: emptyList()
+
+            reduce {
+                state.copy(
+                    thirdGameHardRankList = rankList
+                )
+            }
+
+        } catch (e: Exception) {
+            Log.e("Rank", "thirdGameHard 랭킹 로드 실패", e)
+        }
+    }
+
 }
 
 @Immutable
@@ -455,13 +634,18 @@ data class CommunityState(
     val allUserWorldDataList3: List<String> = emptyList(),
     val allUserWorldDataList4: List<String> = emptyList(),
     val situation: String = "world",
-    val allUserRankDataList: List<AllUser> = emptyList(),
     val newChat: String = "",
     val chatMessages: List<ChatMessage> = emptyList(),
     val allAreaCount: String = "",
     val text2: String = "",
     val text3: String = "",
-    val dialogState: String = ""
+    val dialogState: String = "",
+    val firstGameRankList: List<Rank> = emptyList(),
+    val secondGameRankList: List<Rank> = emptyList(),
+    val thirdGameEasyRankList: List<Rank> = emptyList(),
+    val thirdGameNormalRankList: List<Rank> = emptyList(),
+    val thirdGameHardRankList: List<Rank> = emptyList(),
+
 )
 
 @Immutable
@@ -472,6 +656,14 @@ data class ChatMessage(
     val tag: String,
     val ban: String,
     val uid: String
+)
+
+@Immutable
+data class Rank(
+    val ban: String = "0",
+    val name: String = "이웃",
+    val tag: String = "0",
+    val score: String = "0",
 )
 
 //상태와 관련없는 것

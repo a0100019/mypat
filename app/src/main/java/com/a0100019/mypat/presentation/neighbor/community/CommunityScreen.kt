@@ -71,13 +71,17 @@ fun CommunityScreen(
         allUserWorldDataList2 = communityState.allUserWorldDataList2,
         allUserWorldDataList3 = communityState.allUserWorldDataList3,
         allUserWorldDataList4 = communityState.allUserWorldDataList4,
-        allUserRankDataList = communityState.allUserRankDataList,
         chatMessages = communityState.chatMessages,
         newChat = communityState.newChat,
         userDataList = communityState.userDataList,
         allAreaCount = communityState.allAreaCount,
         text2 = communityState.text2,
         text3 = communityState.text3,
+        firstGameRankList = communityState.firstGameRankList,
+        secondGameRankList = communityState.secondGameRankList,
+        thirdGameEasyRankList = communityState.thirdGameEasyRankList,
+        thirdGameNormalRankList = communityState.thirdGameNormalRankList,
+        thirdGameHardRankList = communityState.thirdGameHardRankList,
 
         onPageUpClick = communityViewModel::opPageUpClick,
         onSituationChange = communityViewModel::onSituationChange,
@@ -109,7 +113,6 @@ fun CommunityScreen(
     allUserWorldDataList2: List<String> = emptyList(),
     allUserWorldDataList3: List<String> = emptyList(),
     allUserWorldDataList4: List<String> = emptyList(),
-    allUserRankDataList: List<AllUser> = listOf(AllUser(), AllUser()),
     chatMessages: List<ChatMessage> = emptyList(),
     newChat: String = "",
     userDataList: List<User> = emptyList(),
@@ -118,6 +121,11 @@ fun CommunityScreen(
     dialogState: String = "",
     text2: String = "",
     text3: String = "",
+    firstGameRankList: List<Rank> = emptyList(),
+    secondGameRankList: List<Rank> = emptyList(),
+    thirdGameEasyRankList: List<Rank> = emptyList(),
+    thirdGameNormalRankList: List<Rank> = emptyList(),
+    thirdGameHardRankList: List<Rank> = emptyList(),
 
     onPageUpClick: () -> Unit = {},
     onSituationChange: (String) -> Unit = {},
@@ -291,7 +299,16 @@ fun CommunityScreen(
                             )
                         }
 
-                        itemsIndexed(allUserRankDataList) { index, user ->
+                        val rankList = when (situation) {
+                            "firstGame" -> firstGameRankList
+                            "secondGame" -> secondGameRankList
+                            "thirdGameEasy" -> thirdGameEasyRankList
+                            "thirdGameNormal" -> thirdGameNormalRankList
+                            "thirdGameHard" -> thirdGameHardRankList
+                            else -> emptyList()
+                        }
+
+                        itemsIndexed(rankList) { index, user ->
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth(),
@@ -303,11 +320,13 @@ fun CommunityScreen(
                                     style = MaterialTheme.typography.headlineMedium,
                                     textAlign = TextAlign.Center,
                                     modifier = Modifier
-                                        .weight(0.1f)
+                                        .weight(0.2f)
                                 )
 
                                 CommunityRankingCard(
-                                    userData = user,
+                                    name = user.name,
+                                    tag = user.tag,
+                                    score = user.score,
                                     rank = index + 1,
                                     situation = situation,
                                     onClick = { onNeighborInformationClick(user.tag) },
@@ -405,7 +424,8 @@ fun CommunityScreenPreview() {
     MypatTheme {
         CommunityScreen(
             userDataList = listOf(User(id = "auth")),
-            situation = "chat",
+            situation = "firstGame",
+            firstGameRankList = listOf(Rank()),
 //            chatMessages = emptyList()
             chatMessages = listOf(ChatMessage(10202020, "a", "a", tag = "1", ban = "0", uid = "hello"), ChatMessage(10202020, "a11", "a11", tag = "2", ban = "0", uid = "assssssssssssssssssssssssssssssssssssssds".repeat(5)), ChatMessage(10202020, "a11", "a11", tag = "3", ban = "0", uid = "adssssssssssssssssssssssssssssssssssssssssssssssssssss".repeat(5)))
         )

@@ -1,4 +1,4 @@
-package com.a0100019.mypat.presentation.information
+package com.a0100019.mypat.presentation.main.management
 
 fun medalName(type: Int): String =
     when (type) {
@@ -32,6 +32,7 @@ fun medalName(type: Int): String =
         26 -> "하루마을 공헌자"
         27 -> "티비 애청자"
         28 -> "혼자 놀기 장인"
+        29 -> "후원자"
         else -> "알 수 없음"
     }
 
@@ -70,6 +71,7 @@ fun medalExplain(type: Int): String =
         26 -> "하루마을의 발전에 큰 도움을 준 사람에게 부여하는 칭호"
         27 -> "광고 15회 시청"
         28 -> "나에게 친구 요청하기"
+        29 -> "광고 제거 구매하기"
         else -> "알 수 없음"
     }
 

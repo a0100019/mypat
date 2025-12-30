@@ -2,25 +2,18 @@ package com.a0100019.mypat.presentation.daily.english
 
 import android.app.Activity
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.a0100019.mypat.data.room.english.English
 import com.a0100019.mypat.data.room.english.EnglishDao
-import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiom
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
-import com.a0100019.mypat.presentation.daily.DailySideEffect
-import com.a0100019.mypat.presentation.daily.diary.DiarySideEffect
-import com.a0100019.mypat.presentation.daily.korean.KoreanSideEffect
-import com.a0100019.mypat.presentation.information.addMedalAction
-import com.a0100019.mypat.presentation.information.getMedalActionCount
+import com.a0100019.mypat.presentation.main.management.addMedalAction
+import com.a0100019.mypat.presentation.main.management.getMedalActionCount
 import com.a0100019.mypat.presentation.main.management.RewardAdManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
-import org.orbitmvi.orbit.annotation.OrbitExperimental
-import org.orbitmvi.orbit.syntax.simple.blockingIntent
 import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
@@ -58,12 +51,14 @@ class EnglishViewModel @Inject constructor(
         val englishDataList = englishDao.getOpenEnglishData()
         val words = WordRepository.loadWords(application)
         val userData = userDao.getAllUserData()
+        val removeAd = userData.find { it.id == "name" }!!.value3
 
         reduce {
             state.copy(
                 englishDataList = englishDataList,
                 allWordsData = words,
-                userData = userData
+                userData = userData,
+                removeAd = removeAd
             )
         }
 
@@ -337,7 +332,13 @@ class EnglishViewModel @Inject constructor(
     }
 
     fun onAdClick() = intent {
-        postSideEffect(EnglishSideEffect.ShowRewardAd)
+
+        if(state.removeAd == "0") {
+            postSideEffect(EnglishSideEffect.ShowRewardAd)
+        } else {
+            onRewardEarned()
+        }
+
     }
 
     fun showRewardAd(activity: Activity) {
@@ -439,6 +440,7 @@ data class EnglishState(
     val notUseEnglishList: List<String> = emptyList(),
     val useEnglishList: List<String> = emptyList(),
     val situation: String = "",
+    val removeAd: String = "0"
     )
 
 

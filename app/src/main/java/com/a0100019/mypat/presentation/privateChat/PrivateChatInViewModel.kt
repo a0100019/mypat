@@ -73,6 +73,8 @@ class PrivateChatInViewModel @Inject constructor(
             .collection("privateChat")
             .document(roomId)
 
+        var isLastUpdated = false
+
         // 🔥 채팅방 정보 구독
         roomRef.addSnapshotListener { roomSnap, error ->
 
@@ -110,6 +112,18 @@ class PrivateChatInViewModel @Inject constructor(
                 else
                     privateChatData.user1
 
+            // 🔥 채팅방 진입 last 업데이트 (1회)
+            if (!isLastUpdated) {
+                val lastField =
+                    if (myTag == privateChatData.user1) "last1" else "last2"
+
+                roomRef.update(lastField, System.currentTimeMillis())
+                isLastUpdated = true
+
+                Log.d("PrivateChatInViewModel", "lastField 업데이트: $lastField")
+            }
+
+            // 🔹 UI 상태 업데이트
             viewModelScope.launch {
                 intent {
                     reduce {
@@ -122,8 +136,10 @@ class PrivateChatInViewModel @Inject constructor(
                 }
             }
 
-            // 🔹 메시지 100개 이상 시 칭호 지급 (중복 방지용 체크 필요하면 flag 추가 가능)
+            // 🔹 칭호 지급 로직 (❌ 함수 분리 안 함)
             viewModelScope.launch {
+
+                // 💬 메시지 100개 → 칭호 21
                 if (privateChatData.messageCount >= 100) {
 
                     val myMedal = userDao.getAllUserData()
@@ -134,7 +150,6 @@ class PrivateChatInViewModel @Inject constructor(
                         .mapNotNull { it.toIntOrNull() }
                         .toMutableList()
 
-                    //매달, medal, 칭호21
                     if (!myMedalList.contains(21)) {
                         myMedalList.add(21)
 
@@ -149,69 +164,57 @@ class PrivateChatInViewModel @Inject constructor(
                     }
                 }
 
-                if((roomSnap.getLong("highScore") ?: 0L).toInt() >= 100) {//매달, medal, 칭호24
-                    val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
+                // 🎯 최고 점수 100 → 칭호 24
+                if (privateChatData.highScore >= 100) {
 
-                    val myMedalList: MutableList<Int> =
-                        myMedal
-                            .split("/")
-                            .mapNotNull { it.toIntOrNull() }
-                            .toMutableList()
+                    val myMedal = userDao.getAllUserData()
+                        .find { it.id == "etc" }!!.value3
 
-                    // 🔥 여기 숫자 두개 바꾸면 됨
+                    val myMedalList = myMedal
+                        .split("/")
+                        .mapNotNull { it.toIntOrNull() }
+                        .toMutableList()
+
                     if (!myMedalList.contains(24)) {
                         myMedalList.add(24)
 
-                        // 다시 문자열로 합치기
-                        val updatedMedal = myMedalList.joinToString("/")
-
-                        // DB 업데이트
                         userDao.update(
                             id = "etc",
-                            value3 = updatedMedal
+                            value3 = myMedalList.joinToString("/")
                         )
 
-                        postSideEffect(PrivateChatInSideEffect.Toast("칭호를 획득했습니다!"))
+                        postSideEffect(
+                            PrivateChatInSideEffect.Toast("칭호를 획득했습니다!")
+                        )
                     }
                 }
 
-                if((roomSnap.getLong("totalScore") ?: 0L).toInt() >= 1000) {
-                    //매달, medal, 칭호25
-                    val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
+                // 🏆 누적 점수 1000 → 칭호 25
+                if (privateChatData.totalScore >= 1000) {
 
-                    val myMedalList: MutableList<Int> =
-                        myMedal
-                            .split("/")
-                            .mapNotNull { it.toIntOrNull() }
-                            .toMutableList()
+                    val myMedal = userDao.getAllUserData()
+                        .find { it.id == "etc" }!!.value3
 
-                    // 🔥 여기 숫자 두개 바꾸면 됨
+                    val myMedalList = myMedal
+                        .split("/")
+                        .mapNotNull { it.toIntOrNull() }
+                        .toMutableList()
+
                     if (!myMedalList.contains(25)) {
                         myMedalList.add(25)
 
-                        // 다시 문자열로 합치기
-                        val updatedMedal = myMedalList.joinToString("/")
-
-                        // DB 업데이트
                         userDao.update(
                             id = "etc",
-                            value3 = updatedMedal
+                            value3 = myMedalList.joinToString("/")
                         )
 
-                        postSideEffect(PrivateChatInSideEffect.Toast("칭호를 획득했습니다!"))
+                        postSideEffect(
+                            PrivateChatInSideEffect.Toast("칭호를 획득했습니다!")
+                        )
                     }
                 }
-
             }
         }
-
-        // 🔥 채팅방 진입 last 업데이트 (1회)
-        val lastField = when (myTag) {
-            userDataList.find { it.id == "auth" }!!.value2 -> "last1"
-            else -> "last2"
-        }
-
-        roomRef.update(lastField, System.currentTimeMillis())
 
         // 🔥 메시지 구독
         roomRef.collection("message")
@@ -253,7 +256,6 @@ class PrivateChatInViewModel @Inject constructor(
                 }
             }
     }
-
 
     fun onChatSubmitClick() = intent {
 

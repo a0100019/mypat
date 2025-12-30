@@ -36,11 +36,8 @@ import com.a0100019.mypat.data.room.walk.getWalkInitialData
 import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.data.room.world.WorldDao
 import com.a0100019.mypat.data.room.world.getWorldInitialData
-import com.a0100019.mypat.domain.AppBgmManager
-import com.a0100019.mypat.presentation.index.IndexSideEffect
-import com.a0100019.mypat.presentation.information.addMedalAction
-import com.a0100019.mypat.presentation.information.getMedalActionCount
-import com.a0100019.mypat.presentation.main.MainSideEffect
+import com.a0100019.mypat.presentation.main.management.addMedalAction
+import com.a0100019.mypat.presentation.main.management.getMedalActionCount
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
@@ -259,6 +256,7 @@ class SettingViewModel @Inject constructor(
             "cash" to userDataList.find { it.id == "money"}!!.value2,
             "money" to userDataList.find { it.id == "money"}!!.value,
             "stepsRaw" to userDataList.find { it.id == "etc2" }!!.value2,
+            "pay" to userDataList.find { it.id == "name"}!!.value3,
 
             "community" to mapOf(
                 "ban" to userDataList.find { it.id == "community"}!!.value3,

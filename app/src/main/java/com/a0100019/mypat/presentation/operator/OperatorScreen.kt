@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -82,7 +83,8 @@ fun OperatorScreen(
         onTextChange5 = operatorViewModel::onTextChange5,
         onOperatorChatSubmitClick = operatorViewModel::onOperatorChatSubmitClick,
         onAskClick = operatorViewModel::onAskClick,
-        onLetterSubmitClick = operatorViewModel::onOperatorLetterSubmitClick
+        onLetterSubmitClick = operatorViewModel::onOperatorLetterSubmitClick,
+        onRankUpdate = operatorViewModel::onRankUpdate
 
     )
 }
@@ -124,7 +126,8 @@ fun CommunityScreen(
     onTextChange5: (String) -> Unit = {},
     onOperatorChatSubmitClick: () -> Unit = {},
     onAskClick: (String) -> Unit = {},
-    onLetterSubmitClick: () -> Unit = {}
+    onLetterSubmitClick: () -> Unit = {},
+    onRankUpdate: () -> Unit = {},
 
     ) {
 
@@ -233,26 +236,41 @@ fun CommunityScreen(
 
                 Spacer(modifier = Modifier.size(30.dp))
 
-                Row {
+                Column {
                     MainButton(
                         text = "도란도란",
                         onClick = { onDialogChangeClick("askView") },
                         modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(20.dp)
                     )
                     MainButton(
                         text = "공지",
                         onClick = { onDialogChangeClick("notice") },
                         modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(20.dp)
                     )
                     MainButton(
                         text = "채팅",
                         onClick = { onDialogChangeClick("operatorChat") },
                         modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(20.dp)
                     )
                     MainButton(
                         text = "편지",
                         onClick = { onDialogChangeClick("letter") },
                         modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(20.dp)
+                    )
+                    MainButton(
+                        text = "랭킹 업데이트",
+                        onClick = { onRankUpdate() },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(20.dp)
                     )
                 }
 

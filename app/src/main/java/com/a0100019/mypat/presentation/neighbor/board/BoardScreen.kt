@@ -1,5 +1,6 @@
 package com.a0100019.mypat.presentation.neighbor.board
 
+import android.app.Activity
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -32,11 +33,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.a0100019.mypat.presentation.daily.english.EnglishSideEffect
+import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun BoardScreen(
@@ -51,12 +57,16 @@ fun BoardScreen(
     val boardState : BoardState = boardViewModel.collectAsState().value
 
     val context = LocalContext.current
+    val activity = context as Activity
 
     boardViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
             is BoardSideEffect.Toast -> Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
             BoardSideEffect.NavigateToBoardMessageScreen -> onNavigateToBoardMessageScreen()
 
+            BoardSideEffect.ShowRewardAd -> {
+                boardViewModel.showRewardAd(activity)
+            }
         }
     }
 
@@ -75,9 +85,9 @@ fun BoardScreen(
         onBoardAnonymousChange = boardViewModel::onBoardAnonymousChange,
         onSituationChange = boardViewModel::onSituationChange,
         onTextChange = boardViewModel::onTextChange,
-        onBoardSubmitClick = boardViewModel::onBoardSubmitClick,
         loadBoardMessages = boardViewModel::loadBoardMessages,
-        onNavigateToMainScreen = onNavigateToMainScreen
+        onNavigateToMainScreen = onNavigateToMainScreen,
+        onAdClick = boardViewModel::onAdClick
     )
 }
 
@@ -97,9 +107,9 @@ fun BoardScreen(
     onBoardAnonymousChange: (String) -> Unit = {},
     onSituationChange: (String) -> Unit = {},
     onTextChange: (String) -> Unit = {},
-    onBoardSubmitClick: () -> Unit = {},
     loadBoardMessages: () -> Unit = {},
     onNavigateToMainScreen: () -> Unit = {},
+    onAdClick: () -> Unit = {}
 
 ) {
 
@@ -112,7 +122,16 @@ fun BoardScreen(
             onChangeAnonymousClick = onBoardAnonymousChange,
             onChangeTypeClick = onBoardTypeChange,
             onTextChange = onTextChange,
-            onConfirmClick = onBoardSubmitClick
+            onConfirmClick = {
+                onSituationChange("boardSubmitCheck")
+            }
+        )
+        "boardSubmitCheck" -> SimpleAlertDialog(
+            onConfirmClick = onAdClick,
+            onDismissClick = {
+                onSituationChange("boardSubmit")
+            },
+            text = "하루마을은 평화로운 커뮤니티를 지향하며, 전체 이용가인 만큼 부적절한 내용은 삼가해 주시기 바랍니다\n\n광고를 보고 게시글을 작성하겠습니까?",
         )
         "boardSubmitConfirm" -> BoardSubmitConfirmDialog(
             onDismissClick = {
@@ -136,12 +155,18 @@ fun BoardScreen(
         ) {
 
             Text(
-                text = "게시판",
+                text = "자유게시판",
                 style = MaterialTheme.typography.displayMedium,
                 modifier = Modifier
                     .padding(bottom = 6.dp)
             )
 
+            Text(
+                text = "축하받고 싶은 내용이나, 말 못해던 고민이 있다면 털어놓아봐요",
+                style = MaterialTheme.typography.labelLarge,
+                modifier = Modifier
+                    .padding(bottom = 8.dp)
+            )
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -184,8 +209,8 @@ fun BoardScreen(
 
                     // ⏰ 타임스탬프 텍스트 (함수 분리 없이 inline)
                     val timeText = remember(message.timestamp) {
-                        val sdf = java.text.SimpleDateFormat("M/d HH:mm", java.util.Locale.getDefault())
-                        sdf.format(java.util.Date(message.timestamp))
+                        val sdf = SimpleDateFormat("M/d HH:mm", Locale.getDefault())
+                        sdf.format(Date(message.timestamp))
                     }
 
                     Column(

@@ -84,7 +84,7 @@ fun DonationDialog(
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
 
-                    items(donationList.reversed()) { donation ->
+                    items(donationList) { donation ->
 
                         Column(
                             modifier = Modifier
@@ -141,7 +141,7 @@ fun DonationDialog(
                                 fontSize = 13.sp,
                                 color = Color(0xFF444444),
                                 lineHeight = 18.sp,
-                                maxLines = 3,                       // ⬅️ 3줄 제한
+                                maxLines = 4,                       // ⬅️ 3줄 제한
                                 overflow = TextOverflow.Ellipsis    // ⬅️ 넘치면 …
                             )
 

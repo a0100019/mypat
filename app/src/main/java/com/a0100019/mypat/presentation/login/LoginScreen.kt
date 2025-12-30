@@ -292,7 +292,6 @@ fun LoginScreen(
             label = ""
         )
 
-
 // 🌿 파스텔 민트 Glow (자연/숲/산 배경용)
         val glowBrush = Brush.verticalGradient(
             colors = listOf(
@@ -301,7 +300,6 @@ fun LoginScreen(
                 Color(0xFF9FE8CC).copy(alpha = glowProgress * 0.85f) // 산과 어울리는 고급 민트초록
             )
         )
-
 
         Box(
             modifier = Modifier
@@ -473,6 +471,24 @@ fun LoginScreen(
                 MainButton(
                     text = " 마을로 들어가기 ",
                     onClick = onNavigateToMainScreen
+                )
+                Spacer(modifier = Modifier.size(70.dp))
+
+            }
+
+            "loading" -> Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                ,
+                verticalArrangement = Arrangement.Bottom,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Spacer(modifier = Modifier.size(20.dp))
+                TextFlash("하루마을에 오신 것을 환영합니다!")
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = "로딩 중..",
+                    style = MaterialTheme.typography.titleLarge
                 )
                 Spacer(modifier = Modifier.size(70.dp))
 

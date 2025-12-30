@@ -35,7 +35,9 @@ import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
 @Composable
 fun CommunityRankingCard(
-    userData: AllUser = AllUser(),
+    name: String = "name",
+    tag: String = "0",
+    score: String = "0",
     rank: Int = 1,
     situation: String = "firstGame",
     onClick: () -> Unit = {},
@@ -91,7 +93,7 @@ fun CommunityRankingCard(
         ) {
 
             Text(
-                text = userData.name,
+                text = name,
                 style = MaterialTheme.typography.titleMedium.copy(
                     fontWeight = FontWeight.Bold
                 ),
@@ -100,7 +102,7 @@ fun CommunityRankingCard(
                     .padding(end = 3.dp)
             )
             Text(
-                text = "#${userData.tag}",
+                text = "#$tag",
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -109,11 +111,11 @@ fun CommunityRankingCard(
 
             // 점수 표시
             val scoreText = when (situation) {
-                "firstGame" -> "${userData.firstGame} 점"
-                "secondGame" -> "${if(userData.secondGame != "100000") userData.secondGame else "-"} 초"
-                "thirdGameEasy" -> "${userData.thirdGameEasy} 개"
-                "thirdGameNormal" -> "${userData.thirdGameNormal} 개"
-                "thirdGameHard" -> "${userData.thirdGameHard} 개"
+                "firstGame" -> "$score 점"
+                "secondGame" -> "${if(score != "100000") score else "-"} 초"
+                "thirdGameEasy" -> "$score 개"
+                "thirdGameNormal" -> "$score 개"
+                "thirdGameHard" -> "$score 개"
                 else -> "-"
             }
 
@@ -141,19 +143,7 @@ fun CommunityRankingCardPreview() {
     MypatTheme {
         CommunityRankingCard(
 
-            userData = AllUser(
-                tag = "436",
-                lastLogin = 342112,
-                ban = "0",
-                like = "54",
-                warning = "0",
-                firstDate = "2025-02-05",
-                openItem = "30",
-                area = "area/forest.jpg",
-                name = "이222유빈",
-                openPat = "20",
-                totalDate = "134",
-            ),
+
         )
     }
 }

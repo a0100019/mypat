@@ -16,8 +16,8 @@ android {
         applicationId = "com.a0100019.mypat"
         minSdk = 26
         targetSdk = 35
-        versionCode = 13
-        versionName = "25.7"
+        versionCode = 17
+        versionName = "25.8"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -137,6 +137,9 @@ dependencies {
 
     //광고
     implementation("com.google.android.gms:play-services-ads:23.2.0")
+
+    //결제
+    implementation("com.android.billingclient:billing-ktx:6.2.1")
 
 
 }

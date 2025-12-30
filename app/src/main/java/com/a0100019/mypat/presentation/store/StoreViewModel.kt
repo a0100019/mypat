@@ -1,5 +1,6 @@
 package com.a0100019.mypat.presentation.store
 
+import android.app.Activity
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,7 +16,9 @@ import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.data.room.world.WorldDao
-import com.a0100019.mypat.presentation.main.management.ManagementSideEffect
+import com.a0100019.mypat.presentation.setting.Donation
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -42,7 +45,7 @@ class StoreViewModel @Inject constructor(
     private val patDao: PatDao,
     private val itemDao: ItemDao,
     private val letterDao: LetterDao,
-    private val areaDao: AreaDao
+    private val areaDao: AreaDao,
 
 ) : ViewModel(), ContainerHost<StoreState, StoreSideEffect> {
 
@@ -60,6 +63,7 @@ class StoreViewModel @Inject constructor(
     // 뷰 모델 초기화 시 모든 user 데이터를 로드
     init {
         loadData()
+        loadDonationList()
     }
 
     //room에서 데이터 가져옴
@@ -104,7 +108,8 @@ class StoreViewModel @Inject constructor(
                             patPrice = patPrice,
                             itemPrice = itemPrice,
                             patSpacePrice = patSpacePrice,
-                            itemSpacePrice = itemSpacePrice
+                            itemSpacePrice = itemSpacePrice,
+                            pay = userDataList.find { it.id == "name" }!!.value3
                         )
                     }
                 }
@@ -129,7 +134,7 @@ class StoreViewModel @Inject constructor(
                 newPat = null,
                 newArea = null,
                 newItem = null,
-                newName = "",
+                text = "",
                 showDialog = "",
                 simpleDialogState = "",
                 selectPatData = null,
@@ -201,7 +206,7 @@ class StoreViewModel @Inject constructor(
     }
 
     fun onNameChangeConfirm() = intent {
-        val newName = state.newName.trim()
+        val newName = state.text.trim()
 
         when {
             newName.isBlank() -> {
@@ -228,7 +233,7 @@ class StoreViewModel @Inject constructor(
         val forbiddenNames = listOf("운영자", "공지사항", "GM")
 
         val currentName = state.userData.find { it.id == "name" }!!.value
-        val newName = state.newName.trim()
+        val newName = state.text.trim()
 
         if (newName.isBlank()) {
             postSideEffect(StoreSideEffect.Toast("닉네임을 입력해주세요."))
@@ -286,9 +291,9 @@ class StoreViewModel @Inject constructor(
 
     //입력 가능하게 하는 코드
     @OptIn(OrbitExperimental::class)
-    fun onNameTextChange(nameText: String) = blockingIntent {
+    fun onTextChange(text: String) = blockingIntent {
         reduce {
-            state.copy(newName = nameText)
+            state.copy(text = text)
         }
     }
 
@@ -500,6 +505,133 @@ class StoreViewModel @Inject constructor(
 
     }
 
+    fun onDonateClick() = intent {
+        postSideEffect(StoreSideEffect.StartDonatePurchase)
+    }
+
+    fun onPurchaseSuccess() = intent {
+        // 🔥 여기 안에 광고 제거 / DB 저장 등
+        postSideEffect(StoreSideEffect.Toast("광고가 제거되었습니다!"))
+        userDao.update(id = "name", value3 = "1")
+
+        //매달, medal, 칭호29
+        val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
+
+        val myMedalList: MutableList<Int> =
+            myMedal
+                .split("/")
+                .mapNotNull { it.toIntOrNull() }
+                .toMutableList()
+
+        // 🔥 여기 숫자 두개 바꾸면 됨
+        if (!myMedalList.contains(29)) {
+            myMedalList.add(29)
+
+            // 다시 문자열로 합치기
+            val updatedMedal = myMedalList.joinToString("/")
+
+            // DB 업데이트
+            userDao.update(
+                id = "etc",
+                value3 = updatedMedal
+            )
+
+            postSideEffect(StoreSideEffect.Toast("칭호를 획득했습니다!"))
+        }
+
+        val today = LocalDate.now()
+            .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+
+        // 방명록 작성
+        Firebase.firestore
+            .collection("code")
+            .document("donation")
+            .get()
+            .addOnSuccessListener { snap ->
+
+                val nextNumber =
+                    snap.data
+                        ?.keys
+                        ?.mapNotNull { it.toIntOrNull() }
+                        ?.maxOrNull()
+                        ?.plus(1)
+                        ?: 1
+
+                val donationMap = mapOf(
+                    "date" to today,
+                    "message" to state.text,
+                    "tag" to state.userData.find { it.id == "auth" }!!.value2,
+                    "name" to state.userData.find { it.id == "name" }!!.value
+                )
+
+                snap.reference.update(
+                    nextNumber.toString(),
+                    donationMap
+                )
+            }
+
+
+        reduce {
+            state.copy(
+                showDialog = "removeAdSuccess",
+                pay = "1"
+            )
+        }
+
+    }
+
+    fun onPurchaseFail() = intent {
+        postSideEffect(StoreSideEffect.Toast("결제에 실패했습니다."))
+    }
+
+    fun loadDonationList() = intent {
+
+        Firebase.firestore
+            .collection("code")
+            .document("donation")
+            .get()
+            .addOnSuccessListener { snap ->
+
+                if (!snap.exists()) return@addOnSuccessListener
+
+                val list = mutableListOf<Donation>()
+
+                snap.data?.forEach { (key, value) ->
+
+                    val number = key.toIntOrNull() ?: return@forEach
+                    val map = value as? Map<*, *> ?: return@forEach
+
+                    val date = map["date"] as? String ?: ""
+                    val message = map["message"] as? String ?: ""
+                    val tag = map["tag"] as? String ?: ""
+                    val name = map["name"] as? String ?: ""
+
+                    list.add(
+                        Donation(
+                            number = number,
+                            date = date,
+                            message = message,
+                            tag = tag,
+                            name = name
+                        )
+                    )
+                }
+
+                val sorted = list.sortedByDescending { it.number }
+
+                viewModelScope.launch {
+                    intent {
+                        reduce {
+                            state.copy(donationList = sorted)
+                        }
+                    }
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("DonationLoad", "후원 목록 로드 실패: ${e.message}")
+            }
+    }
+
 }
 
 @Immutable
@@ -509,7 +641,7 @@ data class StoreState(
     val newArea: Area? = null,
     val showDialog: String = "",
     val simpleDialogState: String = "",
-    val newName: String = "",
+    val text: String = "",
     val selectPatData: Pat? = null,
     val selectItemData: Item? = null,
     val selectAreaData: Area? = null,
@@ -517,6 +649,7 @@ data class StoreState(
     val itemPrice: Int = 0,
     val patSpacePrice: Int = 0,
     val itemSpacePrice: Int = 0,
+    val pay: String = "1",
 
     val userData: List<User> = emptyList(),
     val allClosePatDataList: List<Pat> = emptyList(),
@@ -528,13 +661,12 @@ data class StoreState(
     val patEggDataList: List<Pat> = emptyList(),
     val patSelectDataList: List<Pat> = emptyList(),
     val patSelectIndexList: List<Int> = emptyList(),
-    val shuffledItemDataList: List<String> = emptyList()
+    val shuffledItemDataList: List<String> = emptyList(),
+    val donationList: List<Donation> = emptyList(),
 
     )
 
-//상태와 관련없는 것
-sealed interface StoreSideEffect{
-    class Toast(val message:String): StoreSideEffect
-//    data object NavigateToDailyActivity: LoadingSideEffect
-
+sealed interface StoreSideEffect {
+    class Toast(val message: String) : StoreSideEffect
+    data object StartDonatePurchase : StoreSideEffect
 }

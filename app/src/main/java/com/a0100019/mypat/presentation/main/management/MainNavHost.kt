@@ -30,12 +30,13 @@ import com.a0100019.mypat.presentation.operator.OperatorScreen
 import com.a0100019.mypat.presentation.privateChat.PrivateChatGameScreen
 import com.a0100019.mypat.presentation.privateChat.PrivateChatInScreen
 import com.a0100019.mypat.presentation.privateChat.PrivateRoomScreen
+import com.a0100019.mypat.presentation.store.BillingManager
 
 @Composable
-fun MainNavHost() {
-    // 엑티비티 전환은 네비호스트 사용안함!!
+fun MainNavHost(
+    billingManager: BillingManager
+) {
     val navController = rememberNavController()
-
     //뷰모델 공유하고 싶으면 이렇게 하기
     // val diaryViewModel: DiaryViewModel = hiltViewModel()
 
@@ -120,7 +121,8 @@ fun MainNavHost() {
 
         composable(route = MainRoute.StoreScreen.name) {
             StoreScreen(
-                popBackStack = { navController.popBackStack() }
+                popBackStack = { navController.popBackStack() },
+                billingManager = billingManager
             )
         }
 

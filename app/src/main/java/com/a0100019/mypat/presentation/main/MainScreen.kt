@@ -391,12 +391,12 @@ fun MainScreen(
                         )
                     }
                     MainButton(
-                        text = "친구",
-                        onClick = onPrivateRoomNavigateClick
+                        text = "상점",
+                        onClick = onStoreNavigateClick
                     )
                     MainButton(
-                        text = "커뮤니티",
-                        onClick = onNeighborNavigateClick
+                        text = "도감",
+                        onClick = onIndexNavigateClick
                     )
                     MainButton(
                         text = "꾸미기",
@@ -448,10 +448,10 @@ fun MainScreen(
                     ) {
 
                     MainButton(
-                        text = "상점",
+                        text = "친구",
                         modifier = Modifier
                             .fillMaxWidth(0.4f),
-                        onClick = onStoreNavigateClick
+                        onClick = onPrivateRoomNavigateClick
                     )
 
                     if(userDataList.find { it.id == "auth" }?.value2 ?: "" in listOf("1", "38", "75", "181") ) {
@@ -464,10 +464,10 @@ fun MainScreen(
                     }
 
                     MainButton(
-                        text = "도감",
+                        text = "커뮤니티",
                         modifier = Modifier
                             .fillMaxWidth(0.66f),
-                        onClick = onIndexNavigateClick
+                        onClick = onNeighborNavigateClick
                     )
                     
                 }

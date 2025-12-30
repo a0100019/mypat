@@ -1,5 +1,6 @@
 package com.a0100019.mypat.presentation.neighbor.board
 
+import android.app.Activity
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,10 +14,10 @@ import com.a0100019.mypat.data.room.pat.PatDao
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.world.WorldDao
-import com.a0100019.mypat.presentation.information.addMedalAction
-import com.a0100019.mypat.presentation.information.getMedalActionCount
-import com.a0100019.mypat.presentation.neighbor.chat.ChatSideEffect
-import com.a0100019.mypat.presentation.neighbor.community.CommunitySideEffect
+import com.a0100019.mypat.presentation.daily.english.EnglishSideEffect
+import com.a0100019.mypat.presentation.main.management.RewardAdManager
+import com.a0100019.mypat.presentation.main.management.addMedalAction
+import com.a0100019.mypat.presentation.main.management.getMedalActionCount
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -40,7 +41,8 @@ class BoardViewModel @Inject constructor(
     private val patDao: PatDao,
     private val itemDao: ItemDao,
     private val allUserDao: AllUserDao,
-    private val areaDao: AreaDao
+    private val areaDao: AreaDao,
+    private val rewardAdManager: RewardAdManager
 ) : ViewModel(), ContainerHost<BoardState, BoardSideEffect> {
 
     override val container: Container<BoardState, BoardSideEffect> = container(
@@ -67,6 +69,7 @@ class BoardViewModel @Inject constructor(
         val itemDataList = itemDao.getAllItemDataWithShadow()
         val allUserDataList = allUserDao.getAllUserDataNoBan()
 //        allUserDataList = allUserDataList.filter { it.totalDate != "1" && it.totalDate != "0" }
+        val removeAd = userDataList.find { it.id == "name" }!!.value3
 
         val allAreaCount = areaDao.getAllAreaData().size.toString()
 
@@ -76,7 +79,8 @@ class BoardViewModel @Inject constructor(
                 patDataList = patDataList,
                 itemDataList = itemDataList,
                 allUserDataList =  allUserDataList,
-                allAreaCount = allAreaCount
+                allAreaCount = allAreaCount,
+                removeAd = removeAd
             )
         }
     }
@@ -219,11 +223,10 @@ class BoardViewModel @Inject constructor(
 
         val currentMessage = state.text.trim()
 
-        // ❌ 10자 이하 → 토스트
-        if (currentMessage.length < 5) {
-            postSideEffect(BoardSideEffect.Toast("5자 이상 입력해주세요."))
-            return@intent
-        }
+//        if (currentMessage.length < 5) {
+//            postSideEffect(BoardSideEffect.Toast("5자 이상 입력해주세요."))
+//            return@intent
+//        }
 
         val userName = state.userDataList.find { it.id == "name" }!!.value
         val userId = state.userDataList.find { it.id == "auth" }!!.value
@@ -302,6 +305,40 @@ class BoardViewModel @Inject constructor(
 
     }
 
+    fun onAdClick() = intent {
+
+        if(state.removeAd == "0") {
+            postSideEffect(BoardSideEffect.ShowRewardAd)
+        } else {
+            onRewardEarned()
+        }
+
+    }
+
+    fun showRewardAd(activity: Activity) {
+        rewardAdManager.show(
+            activity = activity,
+            onReward = {
+                onRewardEarned()
+            },
+            onNotReady = {
+                intent {
+                    postSideEffect(
+                        BoardSideEffect.Toast(
+                            "광고를 불러오는 중이에요. 잠시 후 다시 시도해주세요."
+                        )
+                    )
+                }
+            }
+        )
+    }
+
+    private fun onRewardEarned() = intent {
+
+        onBoardSubmitClick()
+
+    }
+
 }
 
 @Immutable
@@ -318,8 +355,8 @@ data class BoardState(
     val myBoardMessages: List<BoardMessage> = emptyList(),
     val text: String = "",
     val boardType: String = "free",
-    val boardAnonymous: String = "0"
-
+    val boardAnonymous: String = "0",
+    val removeAd: String = "0"
     )
 
 @Immutable
@@ -339,5 +376,8 @@ data class BoardMessage(
 sealed interface BoardSideEffect{
     class Toast(val message:String): BoardSideEffect
     data object NavigateToBoardMessageScreen: BoardSideEffect
+
+
+    data object ShowRewardAd : BoardSideEffect
 
 }

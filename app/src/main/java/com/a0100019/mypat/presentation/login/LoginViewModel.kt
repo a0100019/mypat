@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.a0100019.mypat.data.room.allUser.AllUser
 import com.a0100019.mypat.data.room.allUser.AllUserDao
 import com.a0100019.mypat.data.room.diary.Diary
 import com.a0100019.mypat.data.room.diary.DiaryDao
@@ -27,7 +26,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.firestore
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -95,12 +93,13 @@ class LoginViewModel @Inject constructor(
         } else {
             reduce {
                 state.copy(
-                    loginState = "login"
+                    loginState = "loading"
                 )
             }
 
             dataSave()
             newLetterGet()
+            onCommunityLoad()
 
         }
 
@@ -252,6 +251,11 @@ class LoginViewModel @Inject constructor(
                             prefs.edit()
                                 .putString("stepsRaw", saveStepsRaw)
                                 .apply()
+
+                            userDao.update(id = "etc2", value2 = saveStepsRaw)
+
+                            val pay = userDoc.getString("pay")
+                            userDao.update(id = "name", value3 = pay)
 
                             val communityMap = userDoc.get("community") as Map<String, String>
                             val ban = communityMap["ban"]
@@ -560,64 +564,127 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun newLetterGet() = intent {
+
         val letterDocRef = Firebase.firestore
             .collection("code")
             .document("letter")
 
         val tag = userDao.getValue2ById("auth")
 
-        letterDocRef.get()
-            .addOnSuccessListener { documentSnapshot ->
-                if (documentSnapshot.exists()) {
-                    val letterMap = documentSnapshot.data as Map<String, Map<String, String>>
+        try {
+            // 🔹 Firestore 문서 가져오기 (대기)
+            val snapshot = letterDocRef.get().await()
+            if (!snapshot.exists()) return@intent
 
-                    letterMap.forEach { (key, value) ->
-                        val idInt = key.toIntOrNull() ?: return@forEach
-                        var shouldDelete = false
+            val letterMap =
+                snapshot.data as? Map<String, Map<String, String>>
+                    ?: return@intent
 
-                        val shouldInsert = when {
-                            //개인 편지
-                            key.take(2) == "90" -> {
-                                val subId = key.drop(2)
-                                val match = (tag == subId)
-                                if (match) shouldDelete = true
-                                match
-                            }
-                            //준비된 전체 편지
-                            else -> true
-                        }
+            // 🔹 모든 편지 순차 처리
+            letterMap.forEach { (key, value) ->
 
-                        if (shouldInsert) {
-                            val letter = Letter(
-                                id = idInt,
-                                amount = value["amount"].orEmpty(),
-                                date = value["date"].orEmpty(),
-                                link = value["link"].orEmpty(),
-                                message = value["message"].orEmpty(),
-                                reward = value["reward"].orEmpty(),
-                                state = value["state"].orEmpty(),
-                                title = value["title"].orEmpty()
-                            )
+                val baseId = key.toIntOrNull() ?: return@forEach
+                val isPersonalLetter = key.startsWith("90")
+                var shouldDelete = false
 
-                            Log.e("Firestore", "letter 문서 가져옴: $idInt")
-
-                            viewModelScope.launch {
-                                letterDao.insertIgnore(letter)
-                            }
-
-                            // 9자리 이상이고 조건에 맞는 경우에만 Firestore에서 삭제
-                            if (shouldDelete) {
-                                letterDocRef.update(key, FieldValue.delete())
-                            }
-                        }
+                val shouldInsert = when {
+                    isPersonalLetter -> {
+                        val subId = key.drop(2)
+                        val match = (tag == subId)
+                        if (match) shouldDelete = true
+                        match
                     }
+                    else -> true
+                }
+
+                if (!shouldInsert) return@forEach
+
+                // ✅ Room id 계산 (순차라 안전)
+                val finalId = if (isPersonalLetter) {
+                    val maxId = letterDao.getMaxIdStartingFrom(baseId)
+                    (maxId ?: (baseId - 1)) + 1
+                } else {
+                    baseId
+                }
+
+                val letter = Letter(
+                    id = finalId,
+                    amount = value["amount"].orEmpty(),
+                    date = value["date"].orEmpty(),
+                    link = value["link"].orEmpty(),
+                    message = value["message"].orEmpty(),
+                    reward = value["reward"].orEmpty(),
+                    state = value["state"].orEmpty(),
+                    title = value["title"].orEmpty()
+                )
+
+                letterDao.insertIgnore(letter)
+
+                // 🔥 개인 편지는 Firestore에서 삭제 (대기)
+                if (shouldDelete) {
+                    letterDocRef.update(key, FieldValue.delete()).await()
                 }
             }
-            .addOnFailureListener { e ->
-                Log.e("Firestore", "letter 문서 가져오기 실패", e)
-            }
 
+            // 🎯 ✅ 모든 처리 완료 후 상태 변경
+            reduce {
+                state.copy(loginState = "login")
+            }
+            Log.e("Firestore", "letter 확인")
+
+        } catch (e: Exception) {
+            Log.e("Firestore", "letter 처리 실패", e)
+            reduce {
+                state.copy(loginState = "login")
+            }
+        }
     }
+
+
+    private fun onCommunityLoad() = intent {
+
+        viewModelScope.launch {
+            try {
+                // 🔑 현재 로그인한 유저 uid
+                val uid = userDao.getValueById("auth")
+                if (uid.isEmpty()) return@launch
+
+                val userDocRef = Firebase.firestore
+                    .collection("users")
+                    .document(uid)
+
+                val snapshot = userDocRef.get().await()
+
+                // community map
+                val communityMap = snapshot.get("community") as? Map<String, Any>
+
+                // ✅ like 값
+                val likeValue = communityMap?.get("like") as? String
+                if (likeValue != null) {
+                    userDao.update(
+                        id = "community",
+                        value = likeValue
+                    )
+                    Log.d("Firestore", "community.like 업데이트: $likeValue")
+                }
+
+                // ✅ ban 값 → value3에 저장
+                val banValue = communityMap?.get("ban") as? String
+                if (banValue != null) {
+                    userDao.update(
+                        id = "community",
+                        value3 = banValue
+                    )
+                    Log.d("Firestore", "community.ban 업데이트: $banValue")
+                }
+
+            } catch (e: Exception) {
+                Log.e("Firestore", "community 데이터 가져오기 실패", e)
+                postSideEffect(LoginSideEffect.Toast("인터넷 연결 오류"))
+            }
+        }
+    }
+
 
     private fun dataSave() = intent {
 
@@ -647,6 +714,7 @@ class LoginViewModel @Inject constructor(
                 "cash" to userDataList.find { it.id == "money"}!!.value2,
                 "money" to userDataList.find { it.id == "money"}!!.value,
                 "stepsRaw" to userDataList.find { it.id == "etc2" }!!.value2,
+                "pay" to userDataList.find { it.id == "name"}!!.value3,
 
                 "community" to mapOf(
                     "ban" to userDataList.find { it.id == "community"}!!.value3,

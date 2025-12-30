@@ -13,8 +13,8 @@ import com.a0100019.mypat.data.room.pat.PatDao
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.world.WorldDao
-import com.a0100019.mypat.presentation.information.addMedalAction
-import com.a0100019.mypat.presentation.information.getMedalActionCount
+import com.a0100019.mypat.presentation.main.management.addMedalAction
+import com.a0100019.mypat.presentation.main.management.getMedalActionCount
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.SetOptions
@@ -31,8 +31,6 @@ import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
 import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 import javax.annotation.concurrent.Immutable
@@ -113,9 +111,7 @@ class ChatViewModel @Inject constructor(
                 if (snapshot != null && !snapshot.isEmpty) {
                     val allMessages = mutableListOf<ChatMessage>()
 
-
                     for (doc in snapshot.documents) {
-
 
                         val data = doc.data ?: continue
                         val messages = data.mapNotNull { (key, value) ->

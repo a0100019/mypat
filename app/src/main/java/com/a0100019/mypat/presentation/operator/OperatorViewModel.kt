@@ -416,6 +416,245 @@ class OperatorViewModel @Inject constructor(
         }
     }
 
+    fun onRankUpdate() = intent {
+        onFirstGameRankUpdate()
+        onSecondGameRankUpdate()
+        onThirdGameEasyRankUpdate()
+        onThirdGameNormalRankUpdate()
+        onThirdGameHardRankUpdate()
+    }
+
+    fun onFirstGameRankUpdate() = intent {
+
+        try {
+            // 1️⃣ 로컬 유저 데이터 가져오기 (밴 제외)
+            val allUserDataList = allUserDao.getAllUserDataNoBan()
+
+            // 2️⃣ firstGame 점수 기준 내림차순 정렬
+            val sortedList = allUserDataList.sortedByDescending { user ->
+                user.firstGame.toLongOrNull() ?: 0L
+            }
+
+            // 3️⃣ Firestore rank / firstGame 문서 참조
+            val docRef = Firebase.firestore
+                .collection("rank")
+                .document("firstGame")
+
+            val rankMap = mutableMapOf<String, Any>()
+
+            // 4️⃣ 1, 2, 3 ... 필드로 map 구성
+            sortedList.take(500).forEachIndexed { index, user ->
+
+                val map = mapOf(
+                    "name" to user.name,
+                    "tag" to user.tag,
+                    "ban" to user.ban,
+                    "score" to user.firstGame   // ⭐ firstGame 값
+                )
+
+                rankMap[(index + 1).toString()] = map
+            }
+
+            // 5️⃣ 문서 통째로 덮어쓰기
+            docRef.set(rankMap)
+
+            Log.d("Rank", "firstGame 랭킹 업데이트 완료")
+            viewModelScope.launch {
+                intent {
+                    postSideEffect(OperatorSideEffect.Toast("firstGame 랭킹 업데이트 완료"))
+                }
+            }
+
+        } catch (e: Exception) {
+            Log.e("Rank", "firstGame 랭킹 업데이트 실패", e)
+        }
+    }
+
+    fun onSecondGameRankUpdate() = intent {
+
+        try {
+            // 1️⃣ 로컬 유저 데이터 가져오기 (밴 제외)
+            val allUserDataList = allUserDao.getAllUserDataNoBan()
+
+            // 2️⃣ secondGame 점수 기준 오름차순 정렬 (소수 포함)
+            val sortedList = allUserDataList.sortedBy { user ->
+                user.secondGame.toDoubleOrNull() ?: Double.MAX_VALUE
+            }
+
+            // 3️⃣ Firestore rank / secondGame 문서 참조
+            val docRef = Firebase.firestore
+                .collection("rank")
+                .document("secondGame")
+
+            val rankMap = mutableMapOf<String, Any>()
+
+            // 4️⃣ 1, 2, 3 ... 필드로 map 구성 (최대 500명)
+            sortedList.take(500).forEachIndexed { index, user ->
+
+                val map = mapOf(
+                    "name" to user.name,
+                    "tag" to user.tag,
+                    "ban" to user.ban,
+                    "score" to user.secondGame   // ⭐ secondGame 값
+                )
+
+                rankMap[(index + 1).toString()] = map
+            }
+
+            // 5️⃣ 문서 통째로 덮어쓰기
+            docRef.set(rankMap)
+
+            Log.d("Rank", "secondGame 랭킹 업데이트 완료")
+            viewModelScope.launch {
+                intent {
+                    postSideEffect(
+                        OperatorSideEffect.Toast("secondGame 랭킹 업데이트 완료")
+                    )
+                }
+            }
+
+        } catch (e: Exception) {
+            Log.e("Rank", "secondGame 랭킹 업데이트 실패", e)
+        }
+    }
+
+    fun onThirdGameEasyRankUpdate() = intent {
+
+        try {
+            // 1️⃣ 로컬 유저 데이터 가져오기 (밴 제외)
+            val allUserDataList = allUserDao.getAllUserDataNoBan()
+
+            // 2️⃣ firstGame 점수 기준 내림차순 정렬
+            val sortedList = allUserDataList.sortedByDescending { user ->
+                user.thirdGameEasy.toLongOrNull() ?: 0L
+            }
+
+            // 3️⃣ Firestore rank / firstGame 문서 참조
+            val docRef = Firebase.firestore
+                .collection("rank")
+                .document("thirdGameEasy")
+
+            val rankMap = mutableMapOf<String, Any>()
+
+            // 4️⃣ 1, 2, 3 ... 필드로 map 구성
+            sortedList.take(500).forEachIndexed { index, user ->
+
+                val map = mapOf(
+                    "name" to user.name,
+                    "tag" to user.tag,
+                    "ban" to user.ban,
+                    "score" to user.thirdGameEasy   // ⭐ firstGame 값
+                )
+
+                rankMap[(index + 1).toString()] = map
+            }
+
+            // 5️⃣ 문서 통째로 덮어쓰기
+            docRef.set(rankMap)
+
+            viewModelScope.launch {
+                intent {
+                    postSideEffect(OperatorSideEffect.Toast("thirdGameEasy 랭킹 업데이트 완료"))
+                }
+            }
+
+        } catch (e: Exception) {
+            Log.e("Rank", "랭킹 업데이트 실패", e)
+        }
+    }
+
+    fun onThirdGameNormalRankUpdate() = intent {
+
+        try {
+            // 1️⃣ 로컬 유저 데이터 가져오기 (밴 제외)
+            val allUserDataList = allUserDao.getAllUserDataNoBan()
+
+            // 2️⃣ firstGame 점수 기준 내림차순 정렬
+            val sortedList = allUserDataList.sortedByDescending { user ->
+                user.thirdGameNormal.toLongOrNull() ?: 0L
+            }
+
+            // 3️⃣ Firestore rank / firstGame 문서 참조
+            val docRef = Firebase.firestore
+                .collection("rank")
+                .document("thirdGameNormal")
+
+            val rankMap = mutableMapOf<String, Any>()
+
+            // 4️⃣ 1, 2, 3 ... 필드로 map 구성
+            sortedList.take(500).forEachIndexed { index, user ->
+
+                val map = mapOf(
+                    "name" to user.name,
+                    "tag" to user.tag,
+                    "ban" to user.ban,
+                    "score" to user.thirdGameNormal   // ⭐ firstGame 값
+                )
+
+                rankMap[(index + 1).toString()] = map
+            }
+
+            // 5️⃣ 문서 통째로 덮어쓰기
+            docRef.set(rankMap)
+
+            viewModelScope.launch {
+                intent {
+                    postSideEffect(OperatorSideEffect.Toast("thirdGameNormal 랭킹 업데이트 완료"))
+                }
+            }
+
+        } catch (e: Exception) {
+            Log.e("Rank", "랭킹 업데이트 실패", e)
+        }
+    }
+
+    fun onThirdGameHardRankUpdate() = intent {
+
+        try {
+            // 1️⃣ 로컬 유저 데이터 가져오기 (밴 제외)
+            val allUserDataList = allUserDao.getAllUserDataNoBan()
+
+            // 2️⃣ firstGame 점수 기준 내림차순 정렬
+            val sortedList = allUserDataList.sortedByDescending { user ->
+                user.thirdGameHard.toLongOrNull() ?: 0L
+            }
+
+            // 3️⃣ Firestore rank / firstGame 문서 참조
+            val docRef = Firebase.firestore
+                .collection("rank")
+                .document("thirdGameHard")
+
+            val rankMap = mutableMapOf<String, Any>()
+
+            // 4️⃣ 1, 2, 3 ... 필드로 map 구성
+            sortedList.take(500).forEachIndexed { index, user ->
+
+                val map = mapOf(
+                    "name" to user.name,
+                    "tag" to user.tag,
+                    "ban" to user.ban,
+                    "score" to user.thirdGameHard   // ⭐ firstGame 값
+                )
+
+                rankMap[(index + 1).toString()] = map
+            }
+
+            // 5️⃣ 문서 통째로 덮어쓰기
+            docRef.set(rankMap)
+
+            viewModelScope.launch {
+                intent {
+                    postSideEffect(OperatorSideEffect.Toast("thirdGameHard 랭킹 업데이트 완료"))
+                }
+            }
+
+        } catch (e: Exception) {
+            Log.e("Rank", "랭킹 업데이트 실패", e)
+        }
+    }
+
+
+
 }
 
 @Immutable

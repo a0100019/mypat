@@ -61,6 +61,14 @@ interface LetterDao {
         """)
     suspend fun getAllLetterData(): List<Letter>
 
+    @Query("""
+    SELECT MAX(id)
+    FROM letter_table
+    WHERE id >= :baseId AND id < :baseId + 1000
+""")
+    suspend fun getMaxIdStartingFrom(baseId: Int): Int?
+
+
     //초기에 데이터 한번에 넣기 위한 코드
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(letter: List<Letter>)

@@ -1,6 +1,8 @@
 package com.a0100019.mypat.presentation.store
 
+import android.app.Activity
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
@@ -22,10 +24,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,6 +45,8 @@ import com.a0100019.mypat.presentation.index.IndexItemDialog
 import com.a0100019.mypat.presentation.index.IndexAreaDialog
 import com.a0100019.mypat.presentation.index.IndexPatDialog
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
+import com.a0100019.mypat.presentation.setting.Donation
+import com.a0100019.mypat.presentation.setting.DonationDialog
 import com.a0100019.mypat.presentation.ui.SfxPlayer
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
@@ -52,16 +58,40 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 @Composable
 fun StoreScreen(
     storeViewModel: StoreViewModel = hiltViewModel(),
+    billingManager: BillingManager,
     popBackStack: () -> Unit = {}
 ) {
-
-    val storeState : StoreState = storeViewModel.collectAsState().value
+    val storeState: StoreState = storeViewModel.collectAsState().value
 
     val context = LocalContext.current
+    val activity = context as? Activity   // ✅ 프리뷰 안전
+
+    // 🔑 결제 이벤트 연결 (한 번만)
+    LaunchedEffect(Unit) {
+        billingManager.setBillingEventListener { event ->
+            when (event) {
+                BillingEvent.PurchaseSuccess -> {
+                    storeViewModel.onPurchaseSuccess()
+                }
+                is BillingEvent.PurchaseFailed -> {
+                    storeViewModel.onPurchaseFail()
+                }
+            }
+        }
+    }
 
     storeViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
-            is StoreSideEffect.Toast -> Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
+            is StoreSideEffect.Toast -> {
+                Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
+            }
+
+            StoreSideEffect.StartDonatePurchase -> {
+                activity?.let {
+                    Log.d("BILLING", "결제 시작")
+                    billingManager.startPurchase(it, "remove_ads")
+                }
+            }
         }
     }
 
@@ -70,8 +100,8 @@ fun StoreScreen(
         onPatRoomUpClick = storeViewModel::onPatRoomUpClick,
         onSimpleDialog = storeViewModel::onSimpleDialog,
         onItemRoomUpClick = storeViewModel::onItemRoomUpClick,
-        onNameTextChange = storeViewModel::onNameTextChange,
-        changeShowDialog = storeViewModel::changeShowDialog,
+        onTextChange = storeViewModel::onTextChange,
+        onShowDialogChange = storeViewModel::changeShowDialog,
         onNameChangeConfirm = storeViewModel::onNameChangeConfirm,
         onNameChangeClick = storeViewModel::onNameChangeClick,
         onMoneyChangeClick = storeViewModel::onMoneyChangeClick,
@@ -83,6 +113,8 @@ fun StoreScreen(
         onItemSelectClick = storeViewModel::onItemSelectClick,
         onItemSelectCloseClick = storeViewModel::onItemSelectCloseClick,
         popBackStack = popBackStack,
+        onDonateClick = storeViewModel::onDonateClick,
+        loadDonationList = storeViewModel::loadDonationList,
 
         newPat = storeState.newPat,
         userData = storeState.userData,
@@ -90,7 +122,7 @@ fun StoreScreen(
         newArea = storeState.newArea,
         showDialog = storeState.showDialog,
         simpleDialogState = storeState.simpleDialogState,
-        newName = storeState.newName,
+        text = storeState.text,
         patEggDataList = storeState.patEggDataList,
         patStoreDataList = storeState.patStoreDataList,
         patSelectIndexList = storeState.patSelectIndexList,
@@ -101,7 +133,9 @@ fun StoreScreen(
         patPrice = storeState.patPrice,
         itemPrice = storeState.itemPrice,
         patSpacePrice = storeState.patSpacePrice,
-        itemSpacePrice = storeState.itemSpacePrice
+        itemSpacePrice = storeState.itemSpacePrice,
+        pay = storeState.pay,
+        donationList = storeState.donationList,
 
     )
 }
@@ -112,8 +146,8 @@ fun StoreScreen(
     onPatRoomUpClick: () -> Unit,
     onItemRoomUpClick: () -> Unit,
     onSimpleDialog: (String) -> Unit,
-    onNameTextChange: (String) -> Unit,
-    changeShowDialog: (String) -> Unit,
+    onTextChange: (String) -> Unit,
+    onShowDialogChange: (String) -> Unit,
     onNameChangeClick: () -> Unit,
     onNameChangeConfirm: () -> Unit,
     onMoneyChangeClick: () -> Unit,
@@ -125,6 +159,8 @@ fun StoreScreen(
     onItemSelectClick: () -> Unit,
     onItemSelectCloseClick: () -> Unit,
     popBackStack: () -> Unit = {},
+    onDonateClick: () -> Unit = {},
+    loadDonationList: () -> Unit = {},
 
     newPat: Pat?,
     newItem: Item?,
@@ -132,7 +168,7 @@ fun StoreScreen(
     userData: List<User>,
     showDialog: String,
     simpleDialogState: String,
-    newName: String,
+    text: String,
     patEggDataList: List<Pat>?,
     patStoreDataList: List<Pat>?,
     patSelectIndexList: List<Int>,
@@ -144,8 +180,10 @@ fun StoreScreen(
     itemPrice: Int = 0,
     patSpacePrice: Int = 0,
     itemSpacePrice: Int = 0,
+    pay: String = "1",
+    donationList: List<Donation> = emptyList(),
 
-) {
+    ) {
 
     val context = LocalContext.current
     val prefs = context.getSharedPreferences("bgm_prefs", Context.MODE_PRIVATE)
@@ -215,9 +253,9 @@ fun StoreScreen(
         "name" -> NameChangeDialog(
             onClose = onDialogCloseClick,
             userData = userData,
-            onNameTextChange = onNameTextChange,
+            onNameTextChange = onTextChange,
             onConfirmClick = onNameChangeConfirm,
-            newName = newName
+            newName = text
         )
         "patStore" -> PatStoreDialog(
             onClose = { },
@@ -230,6 +268,21 @@ fun StoreScreen(
             onClose = { },
             itemData = shuffledItemDataList,
             onItemClick = onItemClick,
+        )
+        "donate" -> DonateDialog(
+            onClose = onDialogCloseClick,
+            onTextChange = onTextChange,
+            text = text,
+            onConfirmClick = onDonateClick
+        )
+        "donation" -> DonationDialog(
+            onClose = onDialogCloseClick,
+            donationList = donationList
+        )
+        "removeAdSuccess" -> SimpleAlertDialog(
+            onConfirmClick = onDialogCloseClick,
+            text = "광고가 제거되었습니다! 방명록은 설정에서 확인할 수 있습니다. 감사합니다 :)",
+            onDismissOn = false,
         )
 
     }
@@ -269,7 +322,7 @@ fun StoreScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(24.dp),
+                .padding(top = 24.dp, start = 24.dp, end = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
@@ -335,9 +388,97 @@ fun StoreScreen(
 
                     Text(
                         text = "아래로 드래그하세요",
-                        style = MaterialTheme.typography.bodyLarge
+                        style = MaterialTheme.typography.titleMedium
                     )
 
+                }
+
+                if(pay == "0") {
+                    item {
+                        //버튼 기본 설정
+                        val interactionSource = remember { MutableInteractionSource() }
+                        val isPressed by interactionSource.collectIsPressedAsState()
+                        val scale by animateFloatAsState(
+                            targetValue = if (isPressed) 0.95f else 1f,
+                            label = "scale"
+                        )
+
+                        Surface(
+                            shape = RoundedCornerShape(16.dp),
+                            color = Color(0xFFFFE5E5), // 🌸 파스텔 레드 배경
+                            border = BorderStroke(
+                                3.dp,
+                                Color(0xFFFF9A9A)      // 🌸 파스텔 레드 테두리
+                            ),
+                            modifier = Modifier
+                                .graphicsLayer {
+                                    scaleX = scale
+                                    scaleY = scale
+                                }
+                                .clickable(
+                                    interactionSource = interactionSource,
+                                    indication = null,
+                                    onClick = { onShowDialogChange("donate") }
+                                )
+                                .padding(top = 6.dp, bottom = 6.dp)
+                        ) {
+                            Box {
+
+                                Column(
+                                    modifier = Modifier
+                                        .padding(8.dp)
+                                        .fillMaxWidth(),
+                                    verticalArrangement = Arrangement.Center,
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                    ) {
+                                        Text(
+                                            text = "후원하기",
+                                            style = MaterialTheme.typography.headlineMedium,
+                                            modifier = Modifier
+                                                .padding(bottom = 10.dp)
+                                                .align(Alignment.Center)
+                                            ,
+                                        )
+
+                                        MainButton(
+                                            text = "방명록 보기",
+                                            onClick = {
+                                                onShowDialogChange("donation")
+                                            },
+                                            modifier = Modifier
+                                                .align(Alignment.CenterEnd)
+                                        )
+                                    }
+                                    Text(
+                                        text = "모든 광고가 제거되며, 방명록을 작성할 수 있습니다",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        modifier = Modifier
+                                            .padding(bottom = 10.dp),
+                                    )
+//                                Text(
+//                                    text = "(1인 개발자에게 큰 응원이 됩니다!)",
+//                                    style = MaterialTheme.typography.titleSmall,
+//                                    modifier = Modifier
+//                                        .padding(bottom = 10.dp),
+//                                )
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = "2200 원",
+                                            style = MaterialTheme.typography.titleMedium,
+                                            modifier = Modifier,
+                                        )
+                                    }
+                                }
+                            }
+
+                        }
+                    }
                 }
 
                 item {
@@ -366,40 +507,6 @@ fun StoreScreen(
                             .padding(top = 6.dp, bottom = 6.dp)
                     ) {
                         Box {
-
-                            //                        Row(
-                            //                            modifier = Modifier
-                            //                                .align(Alignment.CenterStart)
-                            //                        ) {
-                            //                            Spacer(modifier = Modifier.size(10.dp))
-                            //                            JustImage(
-                            //                                filePath = "pat/cat.json",
-                            //                                modifier = Modifier
-                            //                                    .size(50.dp)
-                            //                                    .rotate(10f)
-                            //                            )
-                            //                        }
-                            //
-                            //                        Row(
-                            //                            modifier = Modifier
-                            //                                .align(Alignment.CenterEnd)
-                            //                        ) {
-                            //                            JustImage(
-                            //                                filePath = "pat/cat.json",
-                            //                                modifier = Modifier
-                            //                                    .size(40.dp)
-                            //                                    .rotate(-10f)
-                            //                                    .align(Alignment.Bottom)
-                            //                            )
-                            //                            JustImage(
-                            //                                filePath = "pat/cat.json",
-                            //                                modifier = Modifier
-                            //                                    .size(30.dp)
-                            //                                    .rotate(10f)
-                            //                                    .align(Alignment.Top)
-                            //                            )
-                            //                            Spacer(modifier = Modifier.size(width = 10.dp, height = 50.dp))
-                            //                        }
 
                             Column(
                                 modifier = Modifier
@@ -717,7 +824,7 @@ fun StoreScreen(
                             .clickable(
                                 interactionSource = interactionSource,
                                 indication = null,
-                                onClick = { changeShowDialog("name") }
+                                onClick = { onShowDialogChange("name") }
                             )
                             .padding(top = 6.dp, bottom = 6.dp)
                     ) {
@@ -887,8 +994,8 @@ fun StoreScreenPreview() {
             onPatRoomUpClick = {},
             onSimpleDialog = {},
             onItemRoomUpClick = {},
-            onNameTextChange = {},
-            changeShowDialog = {},
+            onTextChange = {},
+            onShowDialogChange = {},
             onNameChangeConfirm = {},
             onNameChangeClick = {},
             onMoneyChangeClick = {},
@@ -906,7 +1013,7 @@ fun StoreScreenPreview() {
             simpleDialogState = "",
             newArea = null,
             newItem = null,
-            newName = "",
+            text = "",
             patEggDataList = emptyList(),
             patStoreDataList = emptyList(),
             patSelectIndexList = emptyList(),

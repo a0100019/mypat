@@ -26,12 +26,18 @@ import androidx.core.view.WindowInsetsControllerCompat
 import com.a0100019.mypat.R
 import com.a0100019.mypat.domain.AppBgmManager
 import com.a0100019.mypat.presentation.daily.walk.RequestPermissionScreen
+import com.a0100019.mypat.presentation.store.BillingManager
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var billingManager: BillingManager   // ✅ 추가
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,33 +81,35 @@ class MainActivity : ComponentActivity() {
                                 .background(Color.Black)
                         )
 
-                        when {
-                            aspectRatio < minRatio -> {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxHeight()
-                                        .aspectRatio(minRatio)
-                                        .border(2.dp, Color.Red)
-                                        .shadow(8.dp, RectangleShape, clip = false)
-                                ) { MainNavHost() }
-                            }
-                            aspectRatio > maxRatio -> {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxHeight()
-                                        .aspectRatio(maxRatio)
-                                        .border(1.dp, Color.Black)
-                                        .shadow(8.dp, RectangleShape, clip = false)
-                                ) { MainNavHost() }
-                            }
-                            else -> {
-                                MainNavHost()
-                            }
+                        val contentModifier = when {
+                            aspectRatio < minRatio ->
+                                Modifier
+                                    .fillMaxHeight()
+                                    .aspectRatio(minRatio)
+                                    .border(2.dp, Color.Red)
+                                    .shadow(8.dp, RectangleShape, clip = false)
+
+                            aspectRatio > maxRatio ->
+                                Modifier
+                                    .fillMaxHeight()
+                                    .aspectRatio(maxRatio)
+                                    .border(1.dp, Color.Black)
+                                    .shadow(8.dp, RectangleShape, clip = false)
+
+                            else -> Modifier.fillMaxSize()
+                        }
+
+                        Box(modifier = contentModifier) {
+                            // ✅ 여기서 단 한 번만 호출
+                            MainNavHost(
+                                billingManager = billingManager
+                            )
                         }
                     }
                 }
             }
         }
+
     }
 
     override fun onResume() {

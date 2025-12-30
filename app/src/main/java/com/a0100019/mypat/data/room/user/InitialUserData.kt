@@ -8,7 +8,7 @@ fun getUserInitialData(): List<User> {
         User(id = "money", value = "0", value2 = "500"),
         User(id = "pat", value = "5", value2 = "1", value3 = "1"), // 1-최종 개수, 2-오픈 개수, 3-사용 개수
         User(id = "item", value = "10", value2 = "1", value3 = "1"),
-        User(id = "name", value = "이웃"), //이름, 정보들(좋아요수, 게시글수, 댓글수)
+        User(id = "name", value = "이웃"), //이름, 정보들(좋아요수, 게시글수, 댓글수), 결제 정보
         User(id = "auth", value3 = "0"), //uid, 테그, timeStemp
         User(id = "etc"), // 소개, 커뮤니티업데이트날짜, 칭호
         User(id = "etc2"), // clickDiaryDate, stepsRaw, clickChatData

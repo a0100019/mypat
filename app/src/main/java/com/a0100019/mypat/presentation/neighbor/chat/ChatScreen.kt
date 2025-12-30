@@ -150,6 +150,16 @@ fun CommunityScreen(
     val prefs = context.getSharedPreferences("bgm_prefs", Context.MODE_PRIVATE)
     val bgmOn = prefs.getBoolean("bgmOn", true)
 
+    when(situation) {
+        "chatSubmitCheck" -> SimpleAlertDialog(
+            onConfirmClick = {
+                onChatSubmitClick()
+                onCloseClick()
+            },
+            onDismissClick = onCloseClick,
+            text = "채팅을 전송하겠습니까?\n\n부적절한 발언이나 도배 시 경고없이 제제를 받을 수 있습니다. 전체 이용가인 만큼 따뜻한 채팅 부탁드립니다.",
+        )
+    }
 
     if(clickAllUserData.tag != "0") {
         AppBgmManager.pause()
@@ -258,7 +268,6 @@ fun CommunityScreen(
                                     val isMine = authTag != null &&
                                             !isNotice && !isAsk &&
                                             message.tag == authTag
-
 
                                     val alignment = when {
                                         isNotice -> Arrangement.Center // 공지는 가운데 정렬
@@ -632,14 +641,13 @@ fun CommunityScreen(
                                     .rotate(90f)
                                     .padding(8.dp)
                                     .clickable {
-                                        onChatSubmitClick()
+                                        onSituationChange("chatSubmitCheck")
                                     }
                             )
 
                         }
 
                     }
-
 
             }
 

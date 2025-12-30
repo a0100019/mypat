@@ -14,13 +14,10 @@ import com.a0100019.mypat.data.room.pat.PatDao
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.world.WorldDao
-import com.a0100019.mypat.presentation.daily.english.EnglishSideEffect
-import com.a0100019.mypat.presentation.information.addMedalAction
-import com.a0100019.mypat.presentation.information.getMedalActionCount
+import com.a0100019.mypat.presentation.main.management.addMedalAction
+import com.a0100019.mypat.presentation.main.management.getMedalActionCount
 import com.a0100019.mypat.presentation.main.management.RewardAdManager
 import com.a0100019.mypat.presentation.neighbor.chat.ChatMessage
-import com.a0100019.mypat.presentation.neighbor.chat.ChatSideEffect
-import com.a0100019.mypat.presentation.neighbor.community.CommunitySideEffect
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.SetOptions
@@ -75,6 +72,7 @@ class NeighborInformationViewModel @Inject constructor(
         val patDataList = patDao.getAllPatData()
         val itemDataList = itemDao.getAllItemDataWithShadow()
         val allUserDataList = allUserDao.getAllUserDataNoBan()
+        val removeAd = userDataList.find { it.id == "name" }!!.value3
 
         val allAreaCount = areaDao.getAllAreaData().size.toString()
 
@@ -97,6 +95,7 @@ class NeighborInformationViewModel @Inject constructor(
                 allAreaCount = allAreaCount,
                 clickAllUserData = selectedUser,
                 clickAllUserWorldDataList = selectedUserWorldDataList,
+                removeAd = removeAd
             )
         }
     }
@@ -321,7 +320,6 @@ class NeighborInformationViewModel @Inject constructor(
                     "todayScore2" to 0,
                     "totalScore" to 0,
                 )
-
 
                 // 문서 생성
                 docRef.set(chatInitData)
@@ -628,7 +626,13 @@ class NeighborInformationViewModel @Inject constructor(
     }
 
     fun onAdClick() = intent {
-        postSideEffect(NeighborInformationSideEffect.ShowRewardAd)
+
+        if(state.removeAd == "0") {
+            postSideEffect(NeighborInformationSideEffect.ShowRewardAd)
+        } else {
+            onRewardEarned()
+        }
+
     }
 
     fun showRewardAd(activity: Activity) {
@@ -724,7 +728,6 @@ class NeighborInformationViewModel @Inject constructor(
 
     }
 
-
 }
 
 @Immutable
@@ -739,6 +742,7 @@ data class NeighborInformationState(
     val chatMessages: List<ChatMessage> = emptyList(),
     val alertState: String = "",
     val allAreaCount: String = "",
+    val removeAd: String = "0"
 
     )
 
