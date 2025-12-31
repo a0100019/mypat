@@ -12,6 +12,7 @@ import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.world.WorldDao
 import com.a0100019.mypat.presentation.main.management.addMedalAction
 import com.a0100019.mypat.presentation.main.management.getMedalActionCount
+import com.a0100019.mypat.presentation.neighbor.community.CommunitySideEffect
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.SetOptions
@@ -107,16 +108,15 @@ class BoardMessageViewModel @Inject constructor(
 
             if (snap == null || !snap.exists()) return@addSnapshotListener
 
+
             /* ---------------------------
-             * 1️⃣ boardData (문서 필드 그대로)
-             * timestamp = 문서명
+             * 1️⃣ boardData
              * --------------------------- */
             val boardData = BoardMessage(
                 timestamp = boardTimestamp.toLong(),
                 message = snap.getString("message") ?: "",
                 name = snap.getString("name") ?: "",
                 tag = snap.getString("tag") ?: "",
-                ban = snap.getString("ban") ?: "",
                 uid = snap.getString("uid") ?: "",
                 type = snap.getString("type") ?: "",
                 anonymous = snap.getString("anonymous") ?: ""
@@ -134,13 +134,16 @@ class BoardMessageViewModel @Inject constructor(
                 val timestamp = timestampKey.toString().toLongOrNull() ?: continue
                 val map = value as? Map<*, *> ?: continue
 
+                val ban = map["ban"] as? String ?: "0"
+                if (ban == "1") continue   // 🔥 차단된 답글 제외
+
                 boardChatList.add(
                     BoardChatMessage(
                         timestamp = timestamp,
                         message = map["message"] as? String ?: "",
                         name = map["name"] as? String ?: "",
                         tag = map["tag"] as? String ?: "",
-                        ban = map["ban"] as? String ?: "",
+                        ban = ban,
                         uid = map["uid"] as? String ?: "",
                         anonymous = map["anonymous"] as? String ?: ""
                     )
@@ -149,14 +152,12 @@ class BoardMessageViewModel @Inject constructor(
 
             val sortedChat = boardChatList.sortedBy { it.timestamp }
 
-            viewModelScope.launch {
-                intent {
-                    reduce {
-                        state.copy(
-                            boardData = boardData,
-                            boardChat = sortedChat
-                        )
-                    }
+            intent {
+                reduce {
+                    state.copy(
+                        boardData = boardData,
+                        boardChat = sortedChat
+                    )
                 }
             }
         }
@@ -328,6 +329,13 @@ class BoardMessageViewModel @Inject constructor(
             }
     }
 
+    fun onNeighborInformationClick(neighborTag: String) = intent {
+
+        userDao.update(id = "etc2", value3 = neighborTag)
+        postSideEffect(BoardMessageSideEffect.NavigateToNeighborInformationScreen)
+
+    }
+
 
 }
 
@@ -358,5 +366,7 @@ data class BoardChatMessage(
 sealed interface BoardMessageSideEffect{
     class Toast(val message:String): BoardMessageSideEffect
 //    data object NavigateToDailyActivity: LoadingSideEffect
+
+    data object NavigateToNeighborInformationScreen: BoardMessageSideEffect
 
 }

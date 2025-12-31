@@ -305,7 +305,7 @@ class EnglishViewModel @Inject constructor(
                 failEnglishStateList = emptyList(),
                 notUseEnglishList = emptyList(),
                 useEnglishList = emptyList(),
-
+                situation = ""
             )
         }
     }
@@ -423,6 +423,48 @@ class EnglishViewModel @Inject constructor(
         }
 
     }
+
+    fun onPracticeSubmitClick() = intent {
+        if(state.englishTextList[4] != " ") {
+
+            val testEnglish = state.englishTextList.joinToString("")
+            val allWordsData = state.allWordsData
+
+            if(testEnglish in allWordsData) {
+                if (testEnglish == "apple") {
+
+                    postSideEffect(EnglishSideEffect.Toast("정답입니다!"))
+
+                    reduce {
+                        state.copy(
+                            situation = "",
+                            englishTextList = listOf(" ", " ", " ", " ", " "),
+                            failEnglishList = emptyList(),
+                            failEnglishStateList = emptyList(),
+                        )
+                    }
+
+                } else {
+
+                    postSideEffect(EnglishSideEffect.Toast("오답입니다. 다시 생각해보세요 (a*ple)"))
+                    reduce {
+                        state.copy(
+                            englishTextList = listOf(" ", " ", " ", " ", " "),
+                        )
+                    }
+
+                }
+
+            } else {
+                postSideEffect(EnglishSideEffect.Toast("존재하지 않는 단어입니다"))
+            }
+
+        } else {
+            postSideEffect(EnglishSideEffect.Toast("영어 단어를 입력하세요"))
+        }
+
+    }
+
 }
 
 @Immutable

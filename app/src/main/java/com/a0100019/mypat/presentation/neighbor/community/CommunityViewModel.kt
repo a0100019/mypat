@@ -14,6 +14,8 @@ import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.world.WorldDao
 import com.google.firebase.Firebase
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -56,82 +58,119 @@ class CommunityViewModel @Inject constructor(
 
     // 뷰 모델 초기화 시 모든 user 데이터를 로드
     init {
-        loadData()
         onFirstGameRank()
         onSecondGameRank()
         onThirdGameEasyRank()
         onThirdGameNormalRank()
         onThirdGameHardRank()
+        loadData()
     }
 
-    //room에서 데이터 가져옴
     private fun loadData() = intent {
         val userDataList = userDao.getAllUserData()
         val patDataList = patDao.getAllPatData()
         val itemDataList = itemDao.getAllItemDataWithShadow()
-        var allUserDataList = allUserDao.getAllUserDataNoBan()
-        allUserDataList = allUserDataList.filter { it.totalDate != "1" && it.totalDate != "0" }
-
         val allAreaCount = areaDao.getAllAreaData().size.toString()
-
-        if(allUserDataList.isEmpty()) {
-            reduce {
-                state.copy(
-                    situation = "update"
-                )
-            }
-        }
-
-        val page = 0
-        val allUserData1 = allUserDataList[4*page]
-        val allUserData2 = allUserDataList[4*page + 1]
-        val allUserData3 = allUserDataList[4*page + 2]
-        val allUserData4 = allUserDataList[4*page + 3]
-        val allUserWorldDataList1: List<String> = allUserData1.worldData
-            .split("/")
-            .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
-        val allUserWorldDataList2: List<String> = allUserData2.worldData
-            .split("/")
-            .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
-        val allUserWorldDataList3: List<String> = allUserData3.worldData
-            .split("/")
-            .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
-        val allUserWorldDataList4: List<String> = allUserData4.worldData
-            .split("/")
-            .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
-
-        val currentDate =
-            LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-
-        if(currentDate != userDao.getValue2ById("etc") ){
-
-            reduce {
-                state.copy(
-                    situation = "update"
-                )
-            }
-
-        }
 
         reduce {
             state.copy(
                 userDataList = userDataList,
                 patDataList = patDataList,
                 itemDataList = itemDataList,
-                allUserDataList =  allUserDataList,
-                page = page,
-                allUserData1 = allUserData1,
-                allUserData2 = allUserData2,
-                allUserData3 = allUserData3,
-                allUserData4 = allUserData4,
-                allUserWorldDataList1 = allUserWorldDataList1,
-                allUserWorldDataList2 = allUserWorldDataList2,
-                allUserWorldDataList3 = allUserWorldDataList3,
-                allUserWorldDataList4 = allUserWorldDataList4,
                 allAreaCount = allAreaCount
             )
         }
+
+        randomGetAllUser()
     }
+
+    fun randomGetAllUser() = intent {
+        val db = Firebase.firestore
+
+        // 🔹 lastLogin 최신순으로 100개 가져오기
+        db.collection("users")
+            .orderBy("lastLogin", Query.Direction.DESCENDING)
+            .limit(100)
+            .get()
+            .addOnSuccessListener { snapshot ->
+
+                // 문서 100개 그대로 적용
+                val docs = snapshot.documents
+                applyResult(docs)
+            }
+            .addOnFailureListener {
+                Log.e("DB", "유저 최신순 100명 조회 실패", it)
+            }
+    }
+
+
+    private fun applyResult(docs: List<DocumentSnapshot>) = intent {
+        val users = docs.map { doc ->
+
+            val gameMap = doc.get("game") as? Map<String, String> ?: emptyMap()
+            val communityMap = doc.get("community") as? Map<String, String> ?: emptyMap()
+            val dateMap = doc.get("date") as? Map<String, String> ?: emptyMap()
+            val itemMap = doc.get("item") as? Map<String, String> ?: emptyMap()
+            val patMap = doc.get("pat") as? Map<String, String> ?: emptyMap()
+            val worldMap =
+                doc.get("world") as? Map<String, Map<String, String>> ?: emptyMap()
+
+            val worldData = worldMap.entries.joinToString("/") { (_, inner) ->
+                "${inner["id"].orEmpty()}@" +
+                        "${inner["size"].orEmpty()}@" +
+                        "${inner["type"].orEmpty()}@" +
+                        "${inner["x"].orEmpty()}@" +
+                        "${inner["y"].orEmpty()}@" +
+                        "${inner["effect"].orEmpty()}"
+            }
+
+            AllUser(
+                tag = doc.getString("tag").orEmpty(),
+                lastLogin = doc.getString("lastLogin")?.toLongOrNull() ?: 0L,
+                ban = communityMap["ban"].orEmpty(),
+                like = communityMap["like"].orEmpty(),
+                warning = communityMap["introduction"].orEmpty() +
+                        "@" + communityMap["medal"].orEmpty(),
+                firstDate = dateMap["firstDate"].orEmpty(),
+                firstGame = gameMap["firstGame"].orEmpty(),
+                secondGame = gameMap["secondGame"].orEmpty(),
+                thirdGameEasy = gameMap["thirdGameEasy"].orEmpty(),
+                thirdGameNormal = gameMap["thirdGameNormal"].orEmpty(),
+                thirdGameHard = gameMap["thirdGameHard"].orEmpty(),
+                openItem = itemMap["openItem"].orEmpty(),
+                area = doc.getString("area").orEmpty(),
+                name = doc.getString("name").orEmpty(),
+                openPat = patMap["openPat"].orEmpty(),
+                openArea = doc.getString("openArea").orEmpty(),
+                totalDate = dateMap["totalDate"].orEmpty(),
+                worldData = worldData
+            )
+        }
+
+        // 🔹 allUserDataList에 100명 전체 저장, page 0 기준 첫 4명 보여주기
+        reduce {
+            state.copy(
+                allUserDataList = users,
+                page = 0,
+
+                allUserData1 = users.getOrNull(0) ?: AllUser(),
+                allUserData2 = users.getOrNull(1) ?: AllUser(),
+                allUserData3 = users.getOrNull(2) ?: AllUser(),
+                allUserData4 = users.getOrNull(3) ?: AllUser(),
+
+                allUserWorldDataList1 = users.getOrNull(0)?.worldData
+                    ?.split("/")?.filter { it.isNotBlank() } ?: emptyList(),
+                allUserWorldDataList2 = users.getOrNull(1)?.worldData
+                    ?.split("/")?.filter { it.isNotBlank() } ?: emptyList(),
+                allUserWorldDataList3 = users.getOrNull(2)?.worldData
+                    ?.split("/")?.filter { it.isNotBlank() } ?: emptyList(),
+                allUserWorldDataList4 = users.getOrNull(3)?.worldData
+                    ?.split("/")?.filter { it.isNotBlank() } ?: emptyList()
+            )
+        }
+    }
+
+
 
     fun onCloseClick() = intent {
         reduce {
@@ -218,58 +257,6 @@ class CommunityViewModel @Inject constructor(
                     }
                 }
 
-                viewModelScope.launch {
-                    val uid = userDao.getValueById("auth")
-
-                    val userDocRef = Firebase.firestore
-                        .collection("users")
-                        .document(uid)
-
-                    try {
-                        val snapshot = userDocRef.get().await()
-
-                        // community map 가져오기
-                        val communityMap = snapshot.get("community") as? Map<String, Any>
-
-                        // like 값
-                        val likeValue = communityMap?.get("like") as? String
-                        if (likeValue != null) {
-                            userDao.update(id = "community", value = likeValue)
-                            Log.d("Firestore", "community.like = $likeValue 로 업데이트 완료")
-                        } else {
-                            Log.d("Firestore", "community.like 없음 → 업데이트 취소")
-                        }
-
-                        // 🔥 ban 값 → value3에 저장
-                        val banValue = communityMap?.get("ban") as? String
-                        if (banValue != null) {
-                            userDao.update(id = "community", value3 = banValue)
-                            Log.d("Firestore", "community.ban = $banValue 로 value3 업데이트 완료")
-                        } else {
-                            Log.d("Firestore", "community.ban 없음 → 업데이트 취소")
-                        }
-
-                    } catch (e: Exception) {
-                        Log.e("Firestore", "community 데이터 가져오기 실패", e)
-                    }
-                }
-
-                viewModelScope.launch {
-                    try {
-                        userDao.update(
-                            id = "etc",
-                            value2 = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-                        )
-
-                        reduce { state.copy(situation = "world") }
-
-                        loadData()
-
-                    } catch (e: Exception) {
-                        Log.e("DB", "update 실패", e)
-                    }
-                }
-
                 Log.e("login", "allUser 가져옴")
             }
             .addOnFailureListener { e ->
@@ -282,78 +269,39 @@ class CommunityViewModel @Inject constructor(
     }
 
     fun opPageUpClick() = intent {
-
-        val page = state.page
         val allUserDataList = state.allUserDataList
+        if (allUserDataList.isEmpty()) return@intent
 
-        if (allUserDataList.size > page * 4 + 8) {
-            //다음 페이지
-            val allUserData1 = allUserDataList[4*page + 4]
-            val allUserData2 = allUserDataList[4*page + 5]
-            val allUserData3 = allUserDataList[4*page + 6]
-            val allUserData4 = allUserDataList[4*page + 7]
-            val allUserWorldDataList1: List<String> = allUserData1.worldData
-                .split("/")
-                .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
-            val allUserWorldDataList2: List<String> = allUserData2.worldData
-                .split("/")
-                .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
-            val allUserWorldDataList3: List<String> = allUserData3.worldData
-                .split("/")
-                .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
-            val allUserWorldDataList4: List<String> = allUserData4.worldData
-                .split("/")
-                .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
+        val totalPages = (allUserDataList.size + 3) / 4 // 총 페이지 수 (올림)
+        val nextPage = (state.page + 1) % totalPages  // 100개이면 25페이지까지 순환
 
-            reduce {
-                state.copy(
-                    page = page + 1,
-                    allUserData1 = allUserData1,
-                    allUserData2 = allUserData2,
-                    allUserData3 = allUserData3,
-                    allUserData4 = allUserData4,
-                    allUserWorldDataList1 = allUserWorldDataList1,
-                    allUserWorldDataList2 = allUserWorldDataList2,
-                    allUserWorldDataList3 = allUserWorldDataList3,
-                    allUserWorldDataList4 = allUserWorldDataList4
-                )
-            }
+        // 페이지 시작 index
+        val startIndex = nextPage * 4
 
-        } else {
-            //첫 페이지
+        // 4개씩 가져오기, 부족하면 빈 AllUser()로 채우기
+        val allUserData1 = allUserDataList.getOrNull(startIndex) ?: AllUser()
+        val allUserData2 = allUserDataList.getOrNull(startIndex + 1) ?: AllUser()
+        val allUserData3 = allUserDataList.getOrNull(startIndex + 2) ?: AllUser()
+        val allUserData4 = allUserDataList.getOrNull(startIndex + 3) ?: AllUser()
 
-            val allUserData1 = allUserDataList[0]
-            val allUserData2 = allUserDataList[1]
-            val allUserData3 = allUserDataList[2]
-            val allUserData4 = allUserDataList[3]
-            val allUserWorldDataList1: List<String> = allUserData1.worldData
-                .split("/")
-                .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
-            val allUserWorldDataList2: List<String> = allUserData2.worldData
-                .split("/")
-                .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
-            val allUserWorldDataList3: List<String> = allUserData3.worldData
-                .split("/")
-                .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
-            val allUserWorldDataList4: List<String> = allUserData4.worldData
-                .split("/")
-                .filter { it.isNotBlank() } // 혹시 모를 빈 문자열 제거
+        val allUserWorldDataList1 = allUserData1.worldData.split("/").filter { it.isNotBlank() }
+        val allUserWorldDataList2 = allUserData2.worldData.split("/").filter { it.isNotBlank() }
+        val allUserWorldDataList3 = allUserData3.worldData.split("/").filter { it.isNotBlank() }
+        val allUserWorldDataList4 = allUserData4.worldData.split("/").filter { it.isNotBlank() }
 
-            reduce {
-                state.copy(
-                    page = 0,
-                    allUserData1 = allUserData1,
-                    allUserData2 = allUserData2,
-                    allUserData3 = allUserData3,
-                    allUserData4 = allUserData4,
-                    allUserWorldDataList1 = allUserWorldDataList1,
-                    allUserWorldDataList2 = allUserWorldDataList2,
-                    allUserWorldDataList3 = allUserWorldDataList3,
-                    allUserWorldDataList4 = allUserWorldDataList4
-                )
-            }
+        reduce {
+            state.copy(
+                page = nextPage,
+                allUserData1 = allUserData1,
+                allUserData2 = allUserData2,
+                allUserData3 = allUserData3,
+                allUserData4 = allUserData4,
+                allUserWorldDataList1 = allUserWorldDataList1,
+                allUserWorldDataList2 = allUserWorldDataList2,
+                allUserWorldDataList3 = allUserWorldDataList3,
+                allUserWorldDataList4 = allUserWorldDataList4
+            )
         }
-
     }
 
     fun onSituationChange(newSituation: String) = intent {
@@ -455,7 +403,6 @@ class CommunityViewModel @Inject constructor(
             Log.e("Rank", "firstGame 랭킹 로드 실패", e)
         }
     }
-
 
     private fun onSecondGameRank() = intent {
 
@@ -633,7 +580,7 @@ data class CommunityState(
     val allUserWorldDataList2: List<String> = emptyList(),
     val allUserWorldDataList3: List<String> = emptyList(),
     val allUserWorldDataList4: List<String> = emptyList(),
-    val situation: String = "world",
+    val situation: String = "firstGame",
     val newChat: String = "",
     val chatMessages: List<ChatMessage> = emptyList(),
     val allAreaCount: String = "",

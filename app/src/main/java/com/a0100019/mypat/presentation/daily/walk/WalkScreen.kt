@@ -273,7 +273,6 @@ fun WalkScreen(
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    // 🔥 10000보 기준 진행률 표시
                     val progress = (saveSteps.coerceAtMost(5000) / 5000f)
 
                     LinearProgressIndicator(

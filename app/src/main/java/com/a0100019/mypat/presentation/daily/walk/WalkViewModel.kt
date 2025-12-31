@@ -3,6 +3,7 @@ package com.a0100019.mypat.presentation.daily.walk
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.walk.Walk
@@ -11,6 +12,10 @@ import com.a0100019.mypat.presentation.daily.diary.DiarySideEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.simple.intent
@@ -44,6 +49,7 @@ class WalkViewModel @Inject constructor(
 
     init {
         loadData()
+        startStepUpdater()
     }
 
     private fun loadData() = intent {
@@ -112,6 +118,50 @@ class WalkViewModel @Inject constructor(
 
     }
 
+    private var stepUpdateJob: Job? = null
+
+    private fun startStepUpdater() {
+        if (stepUpdateJob != null) return // 중복 방지
+
+        stepUpdateJob = viewModelScope.launch {
+            while (isActive) {
+                loadData1()
+                delay(1000L) // ⏱ 1초
+            }
+        }
+    }
+
+    private fun loadData1() = intent {
+
+        Log.d("WalkViewModel", "loadData 호출")
+
+        val today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+
+        val prefs = context.getSharedPreferences("step_prefs", Context.MODE_PRIVATE)
+
+        //저장 걸음 수
+        val saveSteps = prefs.getInt("saveSteps", 0)
+
+        //걸음 수 기록
+        val stepsRaw = prefs.getString("stepsRaw", "$today.1") ?: "$today.1"
+
+        userDao.update(id = "etc2", value2 = stepsRaw)
+
+        reduce {
+            state.copy(
+                stepsRaw = stepsRaw,
+                saveSteps = saveSteps,
+            )
+        }
+
+    }
+
+    override fun onCleared() {
+        stepUpdateJob?.cancel()
+        stepUpdateJob = null
+        super.onCleared()
+    }
+
     fun onTodayWalkSubmitClick() = intent {
 
         if(state.saveSteps >= 5000){
@@ -121,6 +171,8 @@ class WalkViewModel @Inject constructor(
                 id = "money",
                 value = (state.userDataList.find { it.id == "money" }!!.value.toInt() + 1).toString()
             )
+
+            val userDataList = userDao.getAllUserData()
 
             postSideEffect(WalkSideEffect.Toast("햇살 +1"))
 
@@ -133,6 +185,7 @@ class WalkViewModel @Inject constructor(
             reduce {
                 state.copy(
                     saveSteps = 0,
+                    userDataList = userDataList
                 )
             }
 

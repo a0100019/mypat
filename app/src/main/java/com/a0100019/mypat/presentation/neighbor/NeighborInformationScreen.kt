@@ -99,7 +99,6 @@ fun NeighborInformationScreen(
         patDataList = neighborInformationState.patDataList,
         itemDataList = neighborInformationState.itemDataList,
         allMapCount = neighborInformationState.allAreaCount,
-        allUserDataList = neighborInformationState.allUserDataList,
         situation = neighborInformationState.situation,
 
         onClose = neighborInformationViewModel::onClose,
@@ -119,7 +118,6 @@ fun NeighborInformationScreen(
     clickAllUserWorldDataList: List<String> = emptyList(),
     patDataList: List<Pat> = emptyList(),
     itemDataList: List<Item> = emptyList(),
-    allUserDataList: List<AllUser> = emptyList(),
     allMapCount: String = "0",
     situation: String = "",
 
@@ -154,75 +152,78 @@ fun NeighborInformationScreen(
     }
 
     //빈 데이터일 경우
-    if(clickAllUserData.firstDate == "0") {
+    if(situation == "loading") {
+        Text(
+            text = "로딩 중"
+        )
 
-        Dialog(
-            onDismissRequest = onClose
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Box(
-                    modifier = Modifier
-                        .width(340.dp)
-                        .shadow(12.dp, RoundedCornerShape(24.dp))
-                        .border(
-                            width = 2.dp,
-                            color = MaterialTheme.colorScheme.outline,
-                            shape = RoundedCornerShape(24.dp)
-                        )
-                        .background(
-                            color = MaterialTheme.colorScheme.background,
-                            shape = RoundedCornerShape(24.dp)
-                        )
-                        .padding(16.dp)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                        ,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.SpaceBetween
-                    ) {
-
-                        Text(
-                            text = "#" + clickAllUserData.tag
-                            ,
-                            style = MaterialTheme.typography.titleMedium
-                        )
-
-                        Spacer(modifier = Modifier.size(15.dp))
-
-                        Text(
-                            text = "아직 업데이트 되지 않은 이웃입니다." +
-                                    "\n내일 이웃 마을 데이터를 업데이트 한 후 다시 확인해주세요:)"
-                            ,
-                            textAlign = TextAlign.Center
-                        )
-
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .padding(start = 6.dp, end = 6.dp, top = 6.dp)
-                        ) {
-
-                            MainButton(
-                                text = "친구하기",
-                                onClick = { onSituationChange("privateChat") }
-                            )
-
-                            Spacer(modifier = Modifier.size(60.dp))
-
-                            MainButton(
-                                text = "닫기",
-                                onClick = popBackStack
-                            )
-                        }
-                    }
-                }
-            }
-        }
+//        Dialog(
+//            onDismissRequest = onClose
+//        ) {
+//            Column(
+//                horizontalAlignment = Alignment.CenterHorizontally
+//            ) {
+//                Box(
+//                    modifier = Modifier
+//                        .width(340.dp)
+//                        .shadow(12.dp, RoundedCornerShape(24.dp))
+//                        .border(
+//                            width = 2.dp,
+//                            color = MaterialTheme.colorScheme.outline,
+//                            shape = RoundedCornerShape(24.dp)
+//                        )
+//                        .background(
+//                            color = MaterialTheme.colorScheme.background,
+//                            shape = RoundedCornerShape(24.dp)
+//                        )
+//                        .padding(16.dp)
+//                ) {
+//                    Column(
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                        ,
+//                        horizontalAlignment = Alignment.CenterHorizontally,
+//                        verticalArrangement = Arrangement.SpaceBetween
+//                    ) {
+//
+//                        Text(
+//                            text = "#" + clickAllUserData.tag
+//                            ,
+//                            style = MaterialTheme.typography.titleMedium
+//                        )
+//
+//                        Spacer(modifier = Modifier.size(15.dp))
+//
+//                        Text(
+//                            text = "아직 업데이트 되지 않은 이웃입니다." +
+//                                    "\n내일 이웃 마을 데이터를 업데이트 한 후 다시 확인해주세요:)"
+//                            ,
+//                            textAlign = TextAlign.Center
+//                        )
+//
+//                        Row(
+//                            horizontalArrangement = Arrangement.SpaceBetween,
+//                            verticalAlignment = Alignment.CenterVertically,
+//                            modifier = Modifier
+//                                .padding(start = 6.dp, end = 6.dp, top = 6.dp)
+//                        ) {
+//
+//                            MainButton(
+//                                text = "친구하기",
+//                                onClick = { onSituationChange("privateChat") }
+//                            )
+//
+//                            Spacer(modifier = Modifier.size(60.dp))
+//
+//                            MainButton(
+//                                text = "닫기",
+//                                onClick = popBackStack
+//                            )
+//                        }
+//                    }
+//                }
+//            }
+//        }
 
     } else {
         val introduction =
@@ -405,40 +406,49 @@ fun NeighborInformationScreen(
                             val surfaceHeightDp = with(density) { surfaceHeight.toDp() }
 
                             clickAllUserWorldDataList.forEach { data ->
-                                val parts = data.split("@")
-                                if (parts[2] == "pat") {
-                                    // pat일 때 처리
-                                    patDataList.find { it.id.toString() == parts[0] }
-                                        ?.let { patData ->
 
-                                            PatImage(
-                                                patUrl = patData.url,
-                                                surfaceWidthDp = surfaceWidthDp,
-                                                surfaceHeightDp = surfaceHeightDp,
-                                                xFloat = parts[3].toFloat(),
-                                                yFloat = parts[4].toFloat(),
-                                                sizeFloat = parts[1].toFloat(),
-                                                effect = parts[5].toInt(),
-                                                onClick = { }
-                                            )
-                                        }
+                                val parts = data.split("@")
+
+                                // ✅ 최소 필요한 개수 체크 (0~5 → 총 6개)
+                                if (parts.size < 6) return@forEach
+
+                                val id = parts.getOrNull(0) ?: return@forEach
+                                val size = parts.getOrNull(1)?.toFloatOrNull() ?: return@forEach
+                                val type = parts.getOrNull(2) ?: return@forEach
+                                val x = parts.getOrNull(3)?.toFloatOrNull() ?: return@forEach
+                                val y = parts.getOrNull(4)?.toFloatOrNull() ?: return@forEach
+                                val effect = parts.getOrNull(5)?.toIntOrNull() ?: 0
+
+                                if (type == "pat") {
+                                    // 🐾 pat 처리
+                                    val patData = patDataList.find { it.id.toString() == id } ?: return@forEach
+
+                                    PatImage(
+                                        patUrl = patData.url,
+                                        surfaceWidthDp = surfaceWidthDp,
+                                        surfaceHeightDp = surfaceHeightDp,
+                                        xFloat = x,
+                                        yFloat = y,
+                                        sizeFloat = size,
+                                        effect = effect,
+                                        onClick = { }
+                                    )
 
                                 } else {
-                                    // item일 때 처리
-                                    itemDataList.find { it.id.toString() == parts[0] }
-                                        ?.let { itemData ->
-                                            WorldItemImage(
-                                                itemUrl = itemData.url,
-                                                surfaceWidthDp = surfaceWidthDp,
-                                                surfaceHeightDp = surfaceHeightDp,
-                                                xFloat = parts[3].toFloat(),
-                                                yFloat = parts[4].toFloat(),
-                                                sizeFloat = parts[1].toFloat(),
-                                            )
-                                        }
-                                }
+                                    // 🎁 item 처리
+                                    val itemData = itemDataList.find { it.id.toString() == id } ?: return@forEach
 
+                                    WorldItemImage(
+                                        itemUrl = itemData.url,
+                                        surfaceWidthDp = surfaceWidthDp,
+                                        surfaceHeightDp = surfaceHeightDp,
+                                        xFloat = x,
+                                        yFloat = y,
+                                        sizeFloat = size,
+                                    )
+                                }
                             }
+
                         }
                     }
 
@@ -771,14 +781,14 @@ fun NeighborInformationScreen(
                                             modifier = Modifier
                                                 .padding(end = 6.dp)
                                         )
-                                        val firstGameRank = allUserDataList
-                                            .map { it.firstGame }        // 점수만 추출
-                                            .sortedDescending()          // 높은 점수 순으로 정렬
-                                            .count { it.toInt() > clickAllUserData.firstGame.toInt() } + 1  // myScore보다 작거나 같은 첫 점수의 순위
-                                        Text(
-                                            text = firstGameRank.toString() + "등",
-                                            style = MaterialTheme.typography.bodyMedium
-                                        )
+//                                        val firstGameRank = allUserDataList
+//                                            .map { it.firstGame }        // 점수만 추출
+//                                            .sortedDescending()          // 높은 점수 순으로 정렬
+//                                            .count { it.toInt() > clickAllUserData.firstGame.toInt() } + 1  // myScore보다 작거나 같은 첫 점수의 순위
+//                                        Text(
+//                                            text = firstGameRank.toString() + "등",
+//                                            style = MaterialTheme.typography.bodyMedium
+//                                        )
                                     }
 
                                     Row {
@@ -801,14 +811,14 @@ fun NeighborInformationScreen(
                                             modifier = Modifier
                                                 .padding(end = 6.dp)
                                         )
-                                        val secondGameRank = allUserDataList
-                                            .map { it.secondGame }        // 점수만 추출
-                                            .sortedDescending()          // 높은 점수 순으로 정렬
-                                            .count { it.toDouble() < clickAllUserData.secondGame.toDouble() } + 1  // myScore보다 작거나 같은 첫 점수의 순위
-                                        Text(
-                                            text = secondGameRank.toString() + "등",
-                                            style = MaterialTheme.typography.bodyMedium
-                                        )
+//                                        val secondGameRank = allUserDataList
+//                                            .map { it.secondGame }        // 점수만 추출
+//                                            .sortedDescending()          // 높은 점수 순으로 정렬
+//                                            .count { it.toDouble() < clickAllUserData.secondGame.toDouble() } + 1  // myScore보다 작거나 같은 첫 점수의 순위
+//                                        Text(
+//                                            text = secondGameRank.toString() + "등",
+//                                            style = MaterialTheme.typography.bodyMedium
+//                                        )
                                     }
 
                                 }
@@ -844,14 +854,14 @@ fun NeighborInformationScreen(
                                             modifier = Modifier
                                                 .padding(end = 6.dp)
                                         )
-                                        val thirdGameEasyRank = allUserDataList
-                                            .map { it.thirdGameEasy }        // 점수만 추출
-                                            .sortedDescending()          // 높은 점수 순으로 정렬
-                                            .count { it.toInt() > clickAllUserData.thirdGameEasy.toInt() } + 1  // myScore보다 작거나 같은 첫 점수의 순위
-                                        Text(
-                                            text = thirdGameEasyRank.toString() + "등",
-                                            style = MaterialTheme.typography.bodyMedium
-                                        )
+//                                        val thirdGameEasyRank = allUserDataList
+//                                            .map { it.thirdGameEasy }        // 점수만 추출
+//                                            .sortedDescending()          // 높은 점수 순으로 정렬
+//                                            .count { it.toInt() > clickAllUserData.thirdGameEasy.toInt() } + 1  // myScore보다 작거나 같은 첫 점수의 순위
+//                                        Text(
+//                                            text = thirdGameEasyRank.toString() + "등",
+//                                            style = MaterialTheme.typography.bodyMedium
+//                                        )
                                     }
 
                                     Row {
@@ -867,14 +877,14 @@ fun NeighborInformationScreen(
                                             modifier = Modifier
                                                 .padding(end = 6.dp)
                                         )
-                                        val thirdGameNormalRank = allUserDataList
-                                            .map { it.thirdGameNormal }        // 점수만 추출
-                                            .sortedDescending()          // 높은 점수 순으로 정렬
-                                            .count { it.toInt() > clickAllUserData.thirdGameNormal.toInt() } + 1  // myScore보다 작거나 같은 첫 점수의 순위
-                                        Text(
-                                            text = thirdGameNormalRank.toString() + "등",
-                                            style = MaterialTheme.typography.bodyMedium
-                                        )
+//                                        val thirdGameNormalRank = allUserDataList
+//                                            .map { it.thirdGameNormal }        // 점수만 추출
+//                                            .sortedDescending()          // 높은 점수 순으로 정렬
+//                                            .count { it.toInt() > clickAllUserData.thirdGameNormal.toInt() } + 1  // myScore보다 작거나 같은 첫 점수의 순위
+//                                        Text(
+//                                            text = thirdGameNormalRank.toString() + "등",
+//                                            style = MaterialTheme.typography.bodyMedium
+//                                        )
                                     }
 
                                     Row {
@@ -890,14 +900,14 @@ fun NeighborInformationScreen(
                                             modifier = Modifier
                                                 .padding(end = 6.dp)
                                         )
-                                        val thirdGameHardRank = allUserDataList
-                                            .map { it.thirdGameHard }        // 점수만 추출
-                                            .sortedDescending()          // 높은 점수 순으로 정렬
-                                            .count { it.toInt() > clickAllUserData.thirdGameHard.toInt() } + 1  // myScore보다 작거나 같은 첫 점수의 순위
-                                        Text(
-                                            text = thirdGameHardRank.toString() + "등",
-                                            style = MaterialTheme.typography.bodyMedium
-                                        )
+//                                        val thirdGameHardRank = allUserDataList
+//                                            .map { it.thirdGameHard }        // 점수만 추출
+//                                            .sortedDescending()          // 높은 점수 순으로 정렬
+//                                            .count { it.toInt() > clickAllUserData.thirdGameHard.toInt() } + 1  // myScore보다 작거나 같은 첫 점수의 순위
+//                                        Text(
+//                                            text = thirdGameHardRank.toString() + "등",
+//                                            style = MaterialTheme.typography.bodyMedium
+//                                        )
                                     }
 
                                 }

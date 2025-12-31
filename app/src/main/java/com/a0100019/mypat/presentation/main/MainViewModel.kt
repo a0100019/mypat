@@ -24,6 +24,9 @@ import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.data.room.world.WorldDao
 import com.a0100019.mypat.presentation.main.management.ManagementSideEffect
 import com.a0100019.mypat.presentation.main.management.RewardAdManager
+import com.a0100019.mypat.presentation.privateChat.PrivateRoom
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
 import com.google.firebase.storage.FirebaseStorage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -499,6 +502,79 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun checkNewMessage() = intent {
+
+        val userDataList = userDao.getAllUserData()
+        val myTag = userDataList.find { it.id == "auth" }!!.value2
+
+        val roomRef = Firebase.firestore
+            .collection("chatting")
+            .document("privateChat")
+            .collection("privateChat")
+
+        roomRef
+            .whereArrayContains("participants", myTag)
+            .get()
+            .addOnSuccessListener { snapshot ->
+
+                if (snapshot.isEmpty) {
+                    // 방이 없으면 newMessage false
+                    intent { reduce { state.copy(newMessage = false) } }
+                    return@addOnSuccessListener
+                }
+
+                var foundUnread = false
+                var completed = 0
+                val totalRooms = snapshot.size()
+
+                snapshot.documents.forEach { doc ->
+                    val roomId = doc.id
+
+                    val user1 = doc.getString("user1") ?: ""
+                    val user2 = doc.getString("user2") ?: ""
+                    val last1 = doc.getLong("last1") ?: 0L
+                    val last2 = doc.getLong("last2") ?: 0L
+
+                    val myLast = if (myTag == user1) last1 else last2
+
+                    // message 컬렉션 확인
+                    Firebase.firestore
+                        .collection("chatting")
+                        .document("privateChat")
+                        .collection("privateChat")
+                        .document(roomId)
+                        .collection("message")
+                        .limit(1) // 안 읽은 메시지 1개만 있으면 충분
+                        .get()
+                        .addOnSuccessListener { dateDocs ->
+
+                            // 단 1개라도 timestamp > myLast면 true
+                            outer@ for (dateDoc in dateDocs.documents) {
+                                val data = dateDoc.data ?: continue
+                                for ((key, _) in data) {
+                                    val timestamp = key.toLongOrNull() ?: continue
+                                    if (timestamp > myLast) {
+                                        foundUnread = true
+                                        break@outer
+                                    }
+                                }
+                            }
+
+                            completed++
+                            if (foundUnread || completed == totalRooms) {
+                                // 하나라도 발견했거나, 모든 방 다 확인했으면 상태 업데이트
+                                intent { reduce { state.copy(newMessage = foundUnread) } }
+                            }
+                        }
+                }
+            }
+            .addOnFailureListener {
+                Log.e("Chat", "새 메시지 확인 실패", it)
+                intent { reduce { state.copy(newMessage = false) } }
+            }
+    }
+
+
 }
 
 @Immutable
@@ -525,7 +601,8 @@ data class MainState(
     val loveAmount: Int = 1000,
     val cashAmount: Int = 100,
     val timer: String = "10:00",
-    val musicTrigger: Int = 0
+    val musicTrigger: Int = 0,
+    val newMessage: Boolean = false
 
     )
 

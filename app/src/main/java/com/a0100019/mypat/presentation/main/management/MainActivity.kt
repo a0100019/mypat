@@ -52,7 +52,7 @@ class MainActivity : ComponentActivity() {
             context = this,
             name = bgm!!,
             loop = true,
-            volume = 0.4f
+            volume = 0.1f
         )
 
         if (!bgmOn) AppBgmManager.pause()

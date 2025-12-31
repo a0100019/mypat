@@ -715,10 +715,7 @@ fun InformationScreen(
                                         modifier = Modifier
                                             .padding(end = 6.dp)
                                     )
-                                    Text(
-                                        text = gameRankList[0] + "등",
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
+
                                 }
 
                                 Row {
@@ -742,10 +739,7 @@ fun InformationScreen(
                                         modifier = Modifier
                                             .padding(end = 6.dp)
                                     )
-                                    Text(
-                                        text = gameRankList[1] + "등",
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
+
                                 }
 
                             }
@@ -781,10 +775,7 @@ fun InformationScreen(
                                         modifier = Modifier
                                             .padding(end = 6.dp)
                                     )
-                                    Text(
-                                        text = gameRankList[2] + "등",
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
+
                                 }
 
                                 Row {
@@ -800,10 +791,7 @@ fun InformationScreen(
                                         modifier = Modifier
                                             .padding(end = 6.dp)
                                     )
-                                    Text(
-                                        text = gameRankList[3] + "등",
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
+
                                 }
 
                                 Row {
@@ -819,10 +807,7 @@ fun InformationScreen(
                                         modifier = Modifier
                                             .padding(end = 6.dp)
                                     )
-                                    Text(
-                                        text = gameRankList[4] + "등",
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
+
                                 }
 
                             }

@@ -47,6 +47,7 @@ import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
 import com.a0100019.mypat.presentation.neighbor.chat.getPastelColorForTag
+import com.a0100019.mypat.presentation.neighbor.community.CommunitySideEffect
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
@@ -63,6 +64,7 @@ fun BoardMessageScreen(
 
     popBackStack: () -> Unit = {},
     onNavigateToBoardScreen: () -> Unit = {},
+    onNavigateToNeighborInformationScreen: () -> Unit = {},
 
     ) {
 
@@ -73,6 +75,7 @@ fun BoardMessageScreen(
     boardMessageViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
             is BoardMessageSideEffect.Toast -> Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
+            BoardMessageSideEffect.NavigateToNeighborInformationScreen -> onNavigateToNeighborInformationScreen()
         }
     }
 
@@ -92,7 +95,8 @@ fun BoardMessageScreen(
         onSituationChange = boardMessageViewModel::onSituationChange,
         onBoardDelete = boardMessageViewModel::onBoardDelete,
         onNavigateToBoardScreen = onNavigateToBoardScreen,
-        onBoardChatDelete = boardMessageViewModel::onBoardChatDelete
+        onBoardChatDelete = boardMessageViewModel::onBoardChatDelete,
+        onNeighborInformationClick = boardMessageViewModel::onNeighborInformationClick,
     )
 }
 
@@ -114,7 +118,8 @@ fun BoardMessageScreen(
     onSituationChange: (String) -> Unit = {},
     onBoardDelete: () -> Unit = {},
     onNavigateToBoardScreen: () -> Unit = {},
-    onBoardChatDelete: (String) -> Unit = {}
+    onBoardChatDelete: (String) -> Unit = {},
+    onNeighborInformationClick: (String) -> Unit = {},
 ) {
 
     when(situation) {
@@ -220,6 +225,9 @@ fun BoardMessageScreen(
                                 "congratulation" -> Color(0xFF6D4C41)
                                 "worry" -> Color(0xFF0D47A1)
                                 else -> Color(0xFF33691E)
+                            },
+                            modifier = Modifier.clickable {
+                                if(boardData.anonymous != "1") {onNeighborInformationClick(boardData.tag)}
                             }
                         )
 
@@ -276,7 +284,6 @@ fun BoardMessageScreen(
                     )
                 }
             }
-
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -339,7 +346,6 @@ fun BoardMessageScreen(
                                     .padding(horizontal = 14.dp, vertical = 12.dp)
                             ) {
 
-
                                 // 👤 상단: 이름 · 태그 / 시간 · 삭제
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
@@ -348,7 +354,11 @@ fun BoardMessageScreen(
 
                                     // 왼쪽: 이름 + 태그
                                     Row(
-                                        modifier = Modifier.weight(1f),
+                                        modifier = Modifier
+                                            .clickable {
+                                                if(chat.anonymous != "1") { onNeighborInformationClick(chat.tag) }
+                                        }
+                                        ,
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Text(
@@ -368,6 +378,8 @@ fun BoardMessageScreen(
                                             )
                                         }
                                     }
+                                    
+                                    Spacer(modifier = Modifier.weight(1f))
 
                                     // 오른쪽: 시간 + 삭제
                                     Row(

@@ -22,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,9 +31,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.letter.Letter
 import com.a0100019.mypat.data.room.pat.Pat
@@ -88,6 +92,24 @@ fun MainScreen(
         }
     }
 
+    // 화면이 다시 포그라운드가 될 때마다 실행
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                // 화면이 다시 나타날 때마다 호출
+                mainViewModel.checkNewMessage()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
+
     MainScreen(
 
         onDailyNavigateClick = onDailyNavigateClick,
@@ -130,7 +152,8 @@ fun MainScreen(
         cashAmount = mainState.cashAmount,
         timer = mainState.timer,
         itemDataWithShadowList = mainState.itemDataWithShadowList,
-        musicTrigger = mainState.musicTrigger
+        musicTrigger = mainState.musicTrigger,
+        newMessage = mainState.newMessage
 
     )
 
@@ -179,6 +202,7 @@ fun MainScreen(
     timer: String,
     itemDataWithShadowList: List<Item> = emptyList(),
     musicTrigger: Int = 0,
+    newMessage: Boolean = false
 
     ) {
 
@@ -188,7 +212,7 @@ fun MainScreen(
 
     if(bgm != mapUrl) {
         //노래 변경
-        AppBgmManager.changeTrack(context, mapUrl) // ✅ context 전달
+        AppBgmManager.init(context, mapUrl) // ✅ context 전달
         prefs.edit().putString("bgm", mapUrl).apply()
     }
 
@@ -375,6 +399,22 @@ fun MainScreen(
                         )
                     }
                     Spacer(modifier = Modifier.weight(1f))
+
+                    if(newMessage) {
+                        JustImage(
+                            filePath = "etc/letter.json",
+                            modifier = Modifier
+                                .size(50.dp)
+                                .clickable(
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication = null,
+                                    onClick = {
+                                        onPrivateRoomNavigateClick()
+                                    }
+                                )
+                        )
+                    }
+
                     //편지 이미지
                     if(showLetterData.id != 0){
                         JustImage(

@@ -180,7 +180,7 @@ fun StoreScreen(
     itemPrice: Int = 0,
     patSpacePrice: Int = 0,
     itemSpacePrice: Int = 0,
-    pay: String = "1",
+    pay: String = "0",
     donationList: List<Donation> = emptyList(),
 
     ) {
@@ -436,7 +436,7 @@ fun StoreScreen(
                                             .fillMaxWidth()
                                     ) {
                                         Text(
-                                            text = "후원하기",
+                                            text = "광고 제거",
                                             style = MaterialTheme.typography.headlineMedium,
                                             modifier = Modifier
                                                 .padding(bottom = 10.dp)
@@ -454,7 +454,7 @@ fun StoreScreen(
                                         )
                                     }
                                     Text(
-                                        text = "모든 광고가 제거되며, 방명록을 작성할 수 있습니다",
+                                        text = "방명록을 작성할 수 있으며, 후원은 개발자에게 큰 도움이 됩니다",
                                         style = MaterialTheme.typography.titleMedium,
                                         modifier = Modifier
                                             .padding(bottom = 10.dp),

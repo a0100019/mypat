@@ -233,6 +233,11 @@ fun CommunityScreen(
                     )
                 }
 
+                Text(
+                    text = "친구를 만들어보세요! 이름을 클릭하면 정보를 볼 수 있어요",
+                    style = MaterialTheme.typography.labelMedium
+                )
+
                     Column(
                         modifier = Modifier
                             .weight(1f)

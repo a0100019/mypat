@@ -87,7 +87,8 @@ fun BoardScreen(
         onTextChange = boardViewModel::onTextChange,
         loadBoardMessages = boardViewModel::loadBoardMessages,
         onNavigateToMainScreen = onNavigateToMainScreen,
-        onAdClick = boardViewModel::onAdClick
+        onAdClick = boardViewModel::onAdClick,
+        onBoardSubmitClick = boardViewModel::onBoardSubmitClick
     )
 }
 
@@ -109,7 +110,8 @@ fun BoardScreen(
     onTextChange: (String) -> Unit = {},
     loadBoardMessages: () -> Unit = {},
     onNavigateToMainScreen: () -> Unit = {},
-    onAdClick: () -> Unit = {}
+    onAdClick: () -> Unit = {},
+    onBoardSubmitClick: () -> Unit = {}
 
 ) {
 
@@ -127,11 +129,11 @@ fun BoardScreen(
             }
         )
         "boardSubmitCheck" -> SimpleAlertDialog(
-            onConfirmClick = onAdClick,
+            onConfirmClick = onBoardSubmitClick,
             onDismissClick = {
                 onSituationChange("boardSubmit")
             },
-            text = "하루마을은 평화로운 커뮤니티를 지향하며, 전체 이용가인 만큼 부적절한 내용은 삼가해 주시기 바랍니다\n\n광고를 보고 게시글을 작성하겠습니까?",
+            text = "하루마을은 평화로운 커뮤니티를 지향하며, 전체 이용가인 만큼 부적절한 내용은 삼가해 주시기 바랍니다\n\n게시글을 작성하겠습니까?",
         )
         "boardSubmitConfirm" -> BoardSubmitConfirmDialog(
             onDismissClick = {
@@ -162,7 +164,7 @@ fun BoardScreen(
             )
 
             Text(
-                text = "축하받고 싶은 내용이나, 말 못해던 고민이 있다면 털어놓아봐요",
+                text = "축하받고 싶은 내용이나, 말 못했던 고민이 있다면 털어놓아봐요",
                 style = MaterialTheme.typography.labelLarge,
                 modifier = Modifier
                     .padding(bottom = 8.dp)

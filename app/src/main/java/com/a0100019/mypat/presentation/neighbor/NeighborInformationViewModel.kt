@@ -71,30 +71,113 @@ class NeighborInformationViewModel @Inject constructor(
         val userDataList = userDao.getAllUserData()
         val patDataList = patDao.getAllPatData()
         val itemDataList = itemDao.getAllItemDataWithShadow()
-        val allUserDataList = allUserDao.getAllUserDataNoBan()
         val removeAd = userDataList.find { it.id == "name" }!!.value3
 
         val allAreaCount = areaDao.getAllAreaData().size.toString()
 
         val clickUserTag = userDataList.find { it.id == "etc2" }!!.value3
 
-        val selectedUser = allUserDataList
-            .find { it.tag == clickUserTag }
-            ?: AllUser(tag = clickUserTag) // 없으면 기본값
+        val db = Firebase.firestore
 
-        val selectedUserWorldDataList = selectedUser.worldData
-            .split("/")
-            .filter { it.isNotBlank() }
+        db.collection("users")
+            .whereEqualTo("tag", clickUserTag) // ⭐ tag로 단일 유저 조회
+            .limit(1)
+            .get()
+            .addOnSuccessListener { result ->
+
+                val doc = result.documents.firstOrNull()
+                if (doc == null) {
+                    Log.e("DB", "해당 tag 유저 없음: $clickUserTag")
+                    viewModelScope.launch {
+                        reduce {
+                            state.copy(
+                                clickAllUserData = AllUser(tag = clickUserTag, name = "이웃"),
+                                clickAllUserWorldDataList = AllUser().worldData
+                                    .split("/")
+                                    .filter { it.isNotBlank() },
+                                situation = ""
+                            )
+                        }
+                    }
+
+                    return@addOnSuccessListener
+                }
+
+                try {
+                    val gameMap = doc.get("game") as? Map<String, String> ?: emptyMap()
+                    val communityMap = doc.get("community") as? Map<String, String> ?: emptyMap()
+                    val dateMap = doc.get("date") as? Map<String, String> ?: emptyMap()
+                    val itemMap = doc.get("item") as? Map<String, String> ?: emptyMap()
+                    val patMap = doc.get("pat") as? Map<String, String> ?: emptyMap()
+
+                    val worldMap =
+                        doc.get("world") as? Map<String, Map<String, String>> ?: emptyMap()
+
+                    val worldData = worldMap.entries.joinToString("/") { (_, innerMap) ->
+                        val id = innerMap["id"].orEmpty()
+                        val size = innerMap["size"].orEmpty()
+                        val type = innerMap["type"].orEmpty()
+                        val x = innerMap["x"].orEmpty()
+                        val y = innerMap["y"].orEmpty()
+                        val effect = innerMap["effect"].orEmpty()
+                        "$id@$size@$type@$x@$y@$effect"
+                    }
+
+                    val allUser = AllUser(
+                        tag = doc.getString("tag").orEmpty(),
+                        lastLogin = doc.getString("lastLogin")
+                            .orEmpty()
+                            .toLongOrNull() ?: 0L,
+                        ban = communityMap["ban"].orEmpty(),
+                        like = communityMap["like"].orEmpty(),
+                        warning = communityMap["introduction"].orEmpty() +
+                                "@" + communityMap["medal"].orEmpty(),
+                        firstDate = dateMap["firstDate"].orEmpty(),
+                        firstGame = gameMap["firstGame"].orEmpty(),
+                        secondGame = gameMap["secondGame"].orEmpty(),
+                        thirdGameEasy = gameMap["thirdGameEasy"].orEmpty(),
+                        thirdGameNormal = gameMap["thirdGameNormal"].orEmpty(),
+                        thirdGameHard = gameMap["thirdGameHard"].orEmpty(),
+                        openItem = itemMap["openItem"].orEmpty(),
+                        area = doc.getString("area").orEmpty(),
+                        name = doc.getString("name").orEmpty(),
+                        openPat = patMap["openPat"].orEmpty(),
+                        openArea = doc.getString("openArea").orEmpty(),
+                        totalDate = dateMap["totalDate"].orEmpty(),
+                        worldData = worldData
+                    )
+
+                    viewModelScope.launch {
+                        reduce {
+                            state.copy(
+                                clickAllUserData = allUser,
+                                clickAllUserWorldDataList = worldData
+                                    .split("/")
+                                    .filter { it.isNotBlank() },
+                                situation = ""
+                            )
+                        }
+                    }
+
+                    Log.d("DB", "유저 1명 로컬 저장 완료: $clickUserTag")
+
+                } catch (e: Exception) {
+                    Log.e("DB", "문서 처리 실패: ${doc.id}", e)
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("login", "유저 단일 조회 실패", e)
+                viewModelScope.launch {
+                    postSideEffect(NeighborInformationSideEffect.Toast("인터넷 연결 오류"))
+                }
+            }
 
         reduce {
             state.copy(
                 userDataList = userDataList,
                 patDataList = patDataList,
                 itemDataList = itemDataList,
-                allUserDataList =  allUserDataList,
                 allAreaCount = allAreaCount,
-                clickAllUserData = selectedUser,
-                clickAllUserWorldDataList = selectedUserWorldDataList,
                 removeAd = removeAd
             )
         }
@@ -240,7 +323,6 @@ class NeighborInformationViewModel @Inject constructor(
             }
 
     }
-
 
     fun onPrivateChatStartClick() = intent {
         val myTag = state.userDataList.find { it.id == "auth" }!!.value2
@@ -735,8 +817,7 @@ data class NeighborInformationState(
     val userDataList: List<User> = emptyList(),
     val patDataList: List<Pat> = emptyList(),
     val itemDataList: List<Item> = emptyList(),
-    val allUserDataList: List<AllUser> = emptyList(),
-    val situation: String = "world",
+    val situation: String = "loading",
     val clickAllUserData: AllUser = AllUser(),
     val clickAllUserWorldDataList: List<String> = emptyList(),
     val chatMessages: List<ChatMessage> = emptyList(),

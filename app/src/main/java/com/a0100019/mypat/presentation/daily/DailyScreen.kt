@@ -41,6 +41,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.presentation.daily.walk.RequestBatteryPermissionScreen
 import com.a0100019.mypat.presentation.daily.walk.RequestNotificationPermissionScreen
 import com.a0100019.mypat.presentation.daily.walk.RequestPermissionScreen
+import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
@@ -91,6 +92,7 @@ fun DailyScreen(
         onDialogBatteryOptimizationPermissionCheckClick = dailyViewModel::onDialogBatteryOptimizationPermissionCheckClick,
         popBackStack = popBackStack,
         onAdClick = dailyViewModel::onAdClick,
+        onSituationChange = dailyViewModel::onSituationChange,
 
         rewardAdReady = dailyState.rewardAdReady,
         situation = dailyState.situation,
@@ -112,7 +114,8 @@ fun DailyScreen(
     onDialogNotificationPermissionCheckClick: (Context) -> Unit = {},
     onDialogBatteryOptimizationPermissionCheckClick: (Context) -> Unit = {},
     popBackStack: () -> Unit = {},
-    onAdClick: () -> Unit = {}
+    onAdClick: () -> Unit = {},
+    onSituationChange: (String) -> Unit = {},
 ) {
 
 //    val context = LocalContext.current
@@ -145,6 +148,17 @@ fun DailyScreen(
             situation = situation,
             onCloseClick = onCloseClick,
             onCheckClick = onDialogBatteryOptimizationPermissionCheckClick
+        )
+    }
+
+    when(situation) {
+        "adCheck" -> SimpleAlertDialog(
+            onConfirmClick = {
+                onAdClick()
+                onSituationChange("")
+                             },
+            onDismissClick = onCloseClick,
+            text = "광고를 보고 1햇살을 얻겠습니까?",
         )
     }
 
@@ -446,7 +460,7 @@ fun DailyScreen(
                                 .clickable(
                                     interactionSource = interactionSource,
                                     indication = null,
-                                    onClick = onAdClick
+                                    onClick = { onSituationChange("adCheck") }
                                 )
                                 .padding(top = 6.dp, bottom = 6.dp)
                         ) {

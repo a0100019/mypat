@@ -83,7 +83,7 @@ fun CommunityScreen(
         thirdGameNormalRankList = communityState.thirdGameNormalRankList,
         thirdGameHardRankList = communityState.thirdGameHardRankList,
 
-        onPageUpClick = communityViewModel::opPageUpClick,
+        onRandomGetAllUser = communityViewModel::randomGetAllUser,
         onSituationChange = communityViewModel::onSituationChange,
         onChatTextChange = communityViewModel::onChatTextChange,
         onUpdateCheckClick = communityViewModel::onUpdateCheckClick,
@@ -93,7 +93,8 @@ fun CommunityScreen(
         onCloseClick = communityViewModel::onCloseClick,
         onTextChange2 = communityViewModel::onTextChange2,
         onTextChange3 = communityViewModel::onTextChange3,
-        onUserWorldClick = communityViewModel::onUserWorldClick
+        onUserWorldClick = communityViewModel::onUserWorldClick,
+        onPageUpClick = communityViewModel::opPageUpClick
 
     )
 }
@@ -127,7 +128,7 @@ fun CommunityScreen(
     thirdGameNormalRankList: List<Rank> = emptyList(),
     thirdGameHardRankList: List<Rank> = emptyList(),
 
-    onPageUpClick: () -> Unit = {},
+    onRandomGetAllUser: () -> Unit = {},
     onSituationChange: (String) -> Unit = {},
     onChatTextChange: (String) -> Unit = {},
     alertStateChange: (String) -> Unit = {},
@@ -139,7 +140,7 @@ fun CommunityScreen(
     onTextChange2: (String) -> Unit = {},
     onTextChange3: (String) -> Unit = {},
     onUserWorldClick: (Int) -> Unit = {},
-
+    onPageUpClick: () -> Unit = {}
     ) {
 
     val context = LocalContext.current
@@ -382,10 +383,10 @@ fun CommunityScreen(
                 }
 
                 val buttons = listOf(
-                    "마을" to "world",
                     "컬링" to "firstGame",
                     "1to50" to "secondGame",
                     "스도쿠" to "thirdGameEasy", // 대표 키만 지정
+                    "마을" to "world",
                 )
 
                 Row(

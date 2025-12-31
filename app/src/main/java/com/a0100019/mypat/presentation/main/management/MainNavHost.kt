@@ -314,6 +314,9 @@ fun MainNavHost(
                         launchSingleTop = true // 같은 화면 여러 번 안 쌓이게
                     }
                 },
+                onNavigateToNeighborInformationScreen = {
+                    navController.navigate(route = MainRoute.NeighborInformationScreen.name)
+                },
             )
         }
 

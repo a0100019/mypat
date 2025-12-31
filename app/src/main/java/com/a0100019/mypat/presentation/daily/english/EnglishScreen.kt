@@ -99,7 +99,8 @@ fun EnglishScreen(
         onStateChangeClick = englishViewModel::onStateChangeClick,
         onAdClick = englishViewModel::onAdClick,
         onSituationChange = englishViewModel::onSituationChange,
-        popBackStack = popBackStack
+        popBackStack = popBackStack,
+        onPracticeSubmitClick = englishViewModel::onPracticeSubmitClick
 
     )
 }
@@ -128,6 +129,7 @@ fun EnglishScreen(
     popBackStack: () -> Unit = {},
     onSituationChange: (String) -> Unit = {},
     onAdClick: () -> Unit = {},
+    onPracticeSubmitClick: () -> Unit = {}
 
 ) {
 
@@ -140,6 +142,16 @@ fun EnglishScreen(
                 onSituationChange("")
             },
             text = "광고를 보고 영어 단어의 뜻을 보겠습니까?",
+        )
+        "practice" -> EnglishPracticeDialog(
+            englishTextList = englishTextList,
+            onClose = onCloseClick,
+            onAlphabetClick = onAlphabetClick,
+            onSubmitClick = onPracticeSubmitClick,
+            onAlphabetDeleteClick = onAlphabetDeleteClick,
+            notUseEnglishList = notUseEnglishList,
+            useEnglishList = useEnglishList,
+            clickEnglishDataState = clickEnglishDataState,
         )
     }
 
@@ -335,6 +347,62 @@ fun EnglishScreen(
 
 
                 }
+
+                item {
+
+                    val interactionSource = remember { MutableInteractionSource() }
+                    val isPressed by interactionSource.collectIsPressedAsState()
+                    val scale by animateFloatAsState(
+                        targetValue = if (isPressed) 0.95f else 1f,
+                        label = "scale"
+                    )
+
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .graphicsLayer {
+                                scaleX = scale
+                                scaleY = scale
+                            }
+                            .clickable(
+                                interactionSource = interactionSource,
+                                indication = null,
+                                onClick = { onSituationChange("practice") }
+                            )
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                            .border(
+                                width = 2.dp,
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                                shape = RoundedCornerShape(16.dp)
+                            ),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.scrim
+                        )
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(20.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Column(
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text(
+                                    text = "클릭하여 연습해보세요!",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+
+
+                            }
+
+                        }
+                    }
+                }
+                
             }
 
             Row {

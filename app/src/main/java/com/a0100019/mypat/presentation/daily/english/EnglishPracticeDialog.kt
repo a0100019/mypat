@@ -39,11 +39,10 @@ import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.english.English
 import com.a0100019.mypat.presentation.ui.component.MainButton
-import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
 @Composable
-fun EnglishReadyDialog(
+fun EnglishPracticeDialog(
 
     englishTextList: List<String> = listOf(" ", " ", " ", " ", " "),
     failEnglishList: List<String> = emptyList(),
@@ -59,7 +58,7 @@ fun EnglishReadyDialog(
     onAlphabetClick: (String) -> Unit = {},
     onHintClick: () -> Unit = {}
 
-    ) {
+) {
 
 
     Dialog(
@@ -69,7 +68,7 @@ fun EnglishReadyDialog(
         Box(
             modifier = Modifier
                 .width(340.dp)
-                .fillMaxHeight(0.8f)
+                .fillMaxHeight(0.9f)
                 .shadow(12.dp, RoundedCornerShape(24.dp))
                 .border(
                     width = 2.dp,
@@ -102,38 +101,6 @@ fun EnglishReadyDialog(
                 )
                 Spacer(modifier = Modifier.size(6.dp))
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    Text(
-                        text = "영어 단어",
-                        style = MaterialTheme.typography.headlineLarge,
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .align(Alignment.Center),
-                    )
-
-                    if(clickEnglishDataState == "대기"){
-                        Row(
-                            modifier = Modifier
-                                .align(Alignment.CenterEnd)
-                                .clickable {
-                                    onHintClick()
-                                }
-                        ) {
-                            Text(
-                                text = "힌트"
-                            )
-                            Image(
-                                painter = painterResource(id = R.drawable.key),
-                                contentDescription = "State Icon",
-                                modifier = Modifier
-                            )
-                        }
-                    }
-                }
-
                 Row(
                     modifier = Modifier
                         .fillMaxWidth(0.5f)
@@ -161,80 +128,161 @@ fun EnglishReadyDialog(
 
                 }
 
-                Spacer(modifier = Modifier.size(12.dp))
+                Spacer(modifier = Modifier.weight(1f))
 
-                if(failEnglishList.isNotEmpty()){
-                    LazyColumn(
+                Text(
+                    text = "5글자로 된 영어 단어를 찾는 게임이에요!\n아무 단어나 입력했을때 알파벳이 위치까지 일치하면 초록색, 정답에 포함되긴 하지만 위치가 다르다면 노란색으로 표시됩니다!",
+                    textAlign = TextAlign.Center,
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(0.5f)
+                ) {
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = "a",
+                        style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier
-                            .weight(1f)
-                            .padding(bottom = 4.dp)
-                    ) {
-                        itemsIndexed(failEnglishList.reversed()) { index, word ->
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth(0.5f)
-                            ) {
-                                Spacer(modifier = Modifier.weight(1f))
-                                repeat(5) {
-                                    Text(
-                                        text = word[it].toString(),
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        modifier = Modifier
-                                            .background(
-                                                color = if (failEnglishStateList.reversed()[index][it] == '0') {
-                                                    Color.Unspecified
-                                                } else if (failEnglishStateList.reversed()[index][it] == '1') {
-                                                    Color(0xFFFFF59D)
-                                                } else {
-                                                    Color(0xFFA5D6A7)
-                                                },
-                                                shape = RoundedCornerShape(8.dp)
-                                            )
-                                            .padding(horizontal = 8.dp, vertical = 2.dp)
-                                    )
-                                    Spacer(modifier = Modifier.weight(1f))
-                                }
-
-                            }
-                            Spacer(modifier = Modifier.size(12.dp))
-                        }
-
-                    }
-
-                } else {
-                    Box(
+                            .background(
+                                color = Color(0xFFA5D6A7),
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            .padding(horizontal = 8.dp, vertical = 2.dp)
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = "n",
+                        style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier
-                            .weight(1f),  // 전체 영역 차지
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "오늘의 단어를 찾아주세요!\n정답에 포함된 알파벳이면 노란색, 위치까지 일치하면 초록색으로 표시됩니다\n\n5글자 영어 단어를 아무거나 입력해보세요!",
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier
-                                .padding(16.dp) // 여백은 보기 좋게 추가
-                        )
-                    }
+                            .background(
+                                color = Color.Unspecified,
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            .padding(horizontal = 8.dp, vertical = 2.dp)
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = "g",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier
+                            .background(
+                                color = Color.Unspecified,
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            .padding(horizontal = 8.dp, vertical = 2.dp)
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = "e",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier
+                            .background(
+                                color = Color(0xFFFFF59D),
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            .padding(horizontal = 8.dp, vertical = 2.dp)
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = "l",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier
+                            .background(
+                                color = Color(0xFFFFF59D),
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            .padding(horizontal = 8.dp, vertical = 2.dp)
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
 
                 }
 
-                if(clickEnglishDataState == "뜻") {
-                    Surface(
-                        shape = RoundedCornerShape(12.dp),
-                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primaryContainer),
+                Text(
+                    text = "이와 같이 나온다면 첫 글자가 a 이고, 정답에 e, l이 포함되어 있다는 뜻이에요!",
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(0.5f)
+                ) {
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = "m",
+                        style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 4.dp)
-                    ) {
-                        Text(
-                            text = "뜻 : ${clickEnglishData.meaning}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(12.dp)
-                        )
-                    }
+                            .background(
+                                color = Color.Unspecified,
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            .padding(horizontal = 8.dp, vertical = 2.dp)
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = "a",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier
+                            .background(
+                                color = Color(0xFFFFF59D),
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            .padding(horizontal = 8.dp, vertical = 2.dp)
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = "p",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier
+                            .background(
+                                color = Color(0xFFA5D6A7),
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            .padding(horizontal = 8.dp, vertical = 2.dp)
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = "l",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier
+                            .background(
+                                color = Color(0xFFA5D6A7),
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            .padding(horizontal = 8.dp, vertical = 2.dp)
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = "e",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier
+                            .background(
+                                color = Color(0xFFA5D6A7),
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            .padding(horizontal = 8.dp, vertical = 2.dp)
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+
 
                 }
+
+                Text(
+                    text = "이와 같이 나온다면 정답에 a가 포함되어 있고, 뒤에 세글자가 ple 라는 뜻이에요!",
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                Text(
+                    text = "둘을 조합해보면 정답은 무엇일까요?",
+                    textAlign = TextAlign.Center
+                )
+
 
                 Column(
                     modifier = Modifier
@@ -375,9 +423,9 @@ fun EnglishReadyDialog(
 
 @Preview(showBackground = true)
 @Composable
-fun EnglishReadyDialogPreview() {
+fun EnglishPracticeDialogPreview() {
     MypatTheme {
-        EnglishReadyDialog(
+        EnglishPracticeDialog(
             failEnglishList = listOf("happy", "iiiii"),
             failEnglishStateList = listOf("01210", "12221"),
             englishTextList = listOf("a", "a", "a", "", ""),

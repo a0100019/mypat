@@ -18,7 +18,7 @@ data class AllUser(
     val thirdGameNormal: String = "0",
     val thirdGameHard: String = "0",
     val openItem: String = "0",
-    val area: String = "0",
+    val area: String = "area/normal.webp",
     val name: String = "0",
     val openPat: String = "0",
     val openArea: String = "0",

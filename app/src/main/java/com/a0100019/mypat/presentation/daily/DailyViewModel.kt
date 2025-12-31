@@ -316,6 +316,22 @@ class DailyViewModel @Inject constructor(
             }
         }
 
+        val userDataList = userDao.getAllUserData()
+
+        reduce {
+            state.copy(
+                userData =  userDataList
+            )
+        }
+
+    }
+
+    fun onSituationChange(newSituation: String) = intent {
+        reduce {
+            state.copy(
+                situation = newSituation
+            )
+        }
     }
 
 }

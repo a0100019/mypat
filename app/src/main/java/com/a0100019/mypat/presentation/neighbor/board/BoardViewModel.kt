@@ -19,6 +19,8 @@ import com.a0100019.mypat.presentation.main.management.RewardAdManager
 import com.a0100019.mypat.presentation.main.management.addMedalAction
 import com.a0100019.mypat.presentation.main.management.getMedalActionCount
 import com.google.firebase.Firebase
+import com.google.firebase.firestore.FieldPath
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -107,20 +109,18 @@ class BoardViewModel @Inject constructor(
     fun loadBoardMessages() = intent {
 
         val myTag = userDao.getAllUserData()
-            .find { it.id == "auth" }!!
-            .value2
+            .find { it.id == "auth" }
+            ?.value2
+            ?: return@intent
 
         val boardRef = Firebase.firestore
             .collection("chatting")
             .document("board")
             .collection("board")
 
-        // 1️⃣ 전체 게시글 100개
+        // 1️⃣ 전체 게시글 100개 (ban == "1" 제외)
         boardRef
-            .orderBy(
-                com.google.firebase.firestore.FieldPath.documentId(),
-                com.google.firebase.firestore.Query.Direction.DESCENDING
-            )
+            .orderBy(FieldPath.documentId(), Query.Direction.DESCENDING)
             .limit(100)
             .get()
             .addOnSuccessListener { snapshot ->
@@ -129,26 +129,26 @@ class BoardViewModel @Inject constructor(
                     val timestamp = doc.id.toLongOrNull() ?: return@mapNotNull null
                     val data = doc.data ?: return@mapNotNull null
 
+                    val ban = data["ban"] as? String ?: "0"
+                    if (ban == "1") return@mapNotNull null  // 🔥 차단된 글 제외
+
                     BoardMessage(
                         timestamp = timestamp,
-                        message = data["message"] as String,
-                        name = data["name"] as String,
-                        tag = data["tag"] as String,
-                        ban = data["ban"] as String,
-                        uid = data["uid"] as String,
-                        type = data["type"] as String,
-                        anonymous = data["anonymous"] as String,
+                        message = data["message"] as? String ?: "",
+                        name = data["name"] as? String ?: "알수없음",
+                        tag = data["tag"] as? String ?: "",
+                        ban = ban,
+                        uid = data["uid"] as? String ?: "",
+                        type = data["type"] as? String ?: "free",
+                        anonymous = data["anonymous"] as? String ?: "0",
                         answerCount = (data["answer"] as? Map<*, *>)?.size ?: 0
                     )
                 }.sortedBy { it.timestamp }
 
-                // 2️⃣ 내 게시글 전부 (limit ❌)
+                // 2️⃣ 내 게시글 전부 (ban == "1" 제외)
                 boardRef
-                    .whereEqualTo("tag", myTag) // 👉 uid 추천
-                    .orderBy(
-                        com.google.firebase.firestore.FieldPath.documentId(),
-                        com.google.firebase.firestore.Query.Direction.DESCENDING
-                    )
+                    .whereEqualTo("tag", myTag)
+                    .orderBy(FieldPath.documentId(), Query.Direction.DESCENDING)
                     .get()
                     .addOnSuccessListener { mySnapshot ->
 
@@ -156,34 +156,36 @@ class BoardViewModel @Inject constructor(
                             val timestamp = doc.id.toLongOrNull() ?: return@mapNotNull null
                             val data = doc.data ?: return@mapNotNull null
 
+                            val ban = data["ban"] as? String ?: "0"
+                            if (ban == "1") return@mapNotNull null  // 🔥 차단된 글 제외
+
                             BoardMessage(
                                 timestamp = timestamp,
-                                message = data["message"] as String,
-                                name = data["name"] as String,
-                                tag = data["tag"] as String,
-                                ban = data["ban"] as String,
-                                uid = data["uid"] as String,
-                                type = data["type"] as String,
-                                anonymous = data["anonymous"] as String
+                                message = data["message"] as? String ?: "",
+                                name = data["name"] as? String ?: "알수없음",
+                                tag = data["tag"] as? String ?: "",
+                                ban = ban,
+                                uid = data["uid"] as? String ?: "",
+                                type = data["type"] as? String ?: "free",
+                                anonymous = data["anonymous"] as? String ?: "0"
                             )
                         }.sortedBy { it.timestamp }
 
-                        viewModelScope.launch {
-                            intent {
-                                reduce {
-                                    state.copy(
-                                        boardMessages = boardMessages,      // ✅ 전체 100개
-                                        myBoardMessages = myBoardMessages   // ✅ 내 글 전부
-                                    )
-                                }
+                        intent {
+                            reduce {
+                                state.copy(
+                                    boardMessages = boardMessages,
+                                    myBoardMessages = myBoardMessages
+                                )
                             }
                         }
                     }
             }
             .addOnFailureListener { e ->
-                Log.e("BoardViewModel", "보드 메시지 로드 실패: ${e.message}")
+                Log.e("BoardViewModel", "보드 메시지 로드 실패", e)
             }
     }
+
 
     fun onBoardMessageClick(boardTimestamp: String) = intent {
 
@@ -223,10 +225,10 @@ class BoardViewModel @Inject constructor(
 
         val currentMessage = state.text.trim()
 
-//        if (currentMessage.length < 5) {
-//            postSideEffect(BoardSideEffect.Toast("5자 이상 입력해주세요."))
-//            return@intent
-//        }
+        if (currentMessage.length < 5) {
+            postSideEffect(BoardSideEffect.Toast("5자 이상 입력해주세요."))
+            return@intent
+        }
 
         val userName = state.userDataList.find { it.id == "name" }!!.value
         val userId = state.userDataList.find { it.id == "auth" }!!.value
