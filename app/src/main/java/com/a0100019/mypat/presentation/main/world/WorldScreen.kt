@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -209,6 +210,15 @@ fun WorldScreen(
                 modifier = Modifier
                     .padding(16.dp)
             )
+
+            Text(
+                text = "나만의 에쁜 ",
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier
+                    .padding(16.dp)
+            )
+
+            Spacer(modifier = Modifier.size(36.dp))
 
             Column(
                 modifier = Modifier

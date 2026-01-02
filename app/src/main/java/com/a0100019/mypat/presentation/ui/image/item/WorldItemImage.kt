@@ -36,18 +36,20 @@ fun WorldItemImage(
     yFloat: Float,
     sizeFloat: Float,
     isPlaying: Boolean = true,
-    onClick: () -> Unit = {}
+    onClick: (() -> Unit)? = null
 ) {
     val imageSize = remember(surfaceWidthDp, sizeFloat) {
         surfaceWidthDp * sizeFloat
     }
 
+    // 🔥 modifier에서 클릭 처리 (PatImage 방식)
     val modifier = remember(
         surfaceWidthDp,
         surfaceHeightDp,
         xFloat,
         yFloat,
-        imageSize
+        imageSize,
+        onClick
     ) {
         Modifier
             .size(imageSize)
@@ -55,14 +57,15 @@ fun WorldItemImage(
                 x = surfaceWidthDp * xFloat,
                 y = surfaceHeightDp * yFloat
             )
-    }
-
-    val noEffectClickable = remember {
-        Modifier.clickable(
-            interactionSource = MutableInteractionSource(),
-            indication = null,
-            onClick = onClick
-        )
+            .let {
+                if (onClick != null) {
+                    it.clickable(
+                        interactionSource = MutableInteractionSource(),
+                        indication = null,
+                        onClick = onClick
+                    )
+                } else it
+            }
     }
 
     // =========================
@@ -72,14 +75,12 @@ fun WorldItemImage(
 
         val composition by rememberLottieComposition(LottieCache.get(itemUrl))
 
-        // 애니메이션 진행 중일 때만 계산
         val animatedProgress by animateLottieCompositionAsState(
             composition = composition,
             isPlaying = isPlaying,
             iterations = Int.MAX_VALUE
         )
 
-        // 멈춘 시점 progress 고정
         val frozenProgress = remember { mutableStateOf(0f) }
 
         if (isPlaying) {
@@ -91,7 +92,7 @@ fun WorldItemImage(
             progress = {
                 if (isPlaying) animatedProgress else frozenProgress.value
             },
-            modifier = modifier.then(noEffectClickable)
+            modifier = modifier
         )
 
     } else {
@@ -115,7 +116,7 @@ fun WorldItemImage(
             Image(
                 bitmap = bitmap!!.asImageBitmap(),
                 contentDescription = null,
-                modifier = modifier.then(noEffectClickable)
+                modifier = modifier
             )
         } else {
             Box(

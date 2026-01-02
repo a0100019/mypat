@@ -100,7 +100,9 @@ fun EnglishScreen(
         onAdClick = englishViewModel::onAdClick,
         onSituationChange = englishViewModel::onSituationChange,
         popBackStack = popBackStack,
-        onPracticeSubmitClick = englishViewModel::onPracticeSubmitClick
+        onPracticeSubmitClick = englishViewModel::onPracticeSubmitClick,
+        onLevelClick = englishViewModel::onLevelClick,
+        onEasySubmitClick = englishViewModel::onEasySubmitClick
 
     )
 }
@@ -129,7 +131,9 @@ fun EnglishScreen(
     popBackStack: () -> Unit = {},
     onSituationChange: (String) -> Unit = {},
     onAdClick: () -> Unit = {},
-    onPracticeSubmitClick: () -> Unit = {}
+    onPracticeSubmitClick: () -> Unit = {},
+    onLevelClick: (String) -> Unit = {},
+    onEasySubmitClick: () -> Unit = {},
 
 ) {
 
@@ -155,7 +159,7 @@ fun EnglishScreen(
         )
     }
 
-    if(clickEnglishData != null && clickEnglishDataState in listOf("대기", "뜻")) {
+    if(clickEnglishData != null && clickEnglishDataState in listOf("어려움", "뜻")) {
         EnglishReadyDialog(
             englishTextList = englishTextList,
             failEnglishList = failEnglishList,
@@ -178,6 +182,29 @@ fun EnglishScreen(
             english = clickEnglishData,
             onStateChangeClick = onStateChangeClick,
             englishDataState = clickEnglishDataState
+        )
+    } else if(clickEnglishData != null && clickEnglishDataState in listOf("쉬움", "쉬움뜻")) {
+        EnglishEasyReadyDialog(
+            englishTextList = englishTextList,
+            clickEnglishDataState = clickEnglishDataState,
+            clickEnglishData = clickEnglishData,
+            onClose = onCloseClick,
+            onAlphabetDeleteClick = onAlphabetDeleteClick,
+            onSubmitClick = onEasySubmitClick,
+            onAlphabetClick = onAlphabetClick,
+            onHintClick = {
+                onSituationChange("hint")
+            }
+        )
+    } else if(clickEnglishData != null && clickEnglishDataState in listOf("대기")) {
+        EnglishLevelDialog(
+            onCloseClick = onCloseClick,
+            onEasyClick = {
+                onLevelClick("easy")
+            },
+            onHardClick = {
+                onLevelClick("hard")
+            }
         )
     }
 
@@ -227,7 +254,7 @@ fun EnglishScreen(
                         label = "scale"
                     )
 
-                    if (englishData.state !in listOf("대기", "뜻")) {
+                    if (englishData.state !in listOf("대기", "뜻", "쉬움", "어려움", "쉬움뜻")) {
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -391,7 +418,7 @@ fun EnglishScreen(
                                 modifier = Modifier.weight(1f)
                             ) {
                                 Text(
-                                    text = "클릭하여 연습해보세요!",
+                                    text = "클릭하여 어려움 난이도를 연습해보세요!",
                                     style = MaterialTheme.typography.titleMedium,
                                     color = MaterialTheme.colorScheme.primary
                                 )

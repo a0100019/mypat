@@ -45,7 +45,6 @@ import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 @Composable
 fun PrivateChatGameRankDialog(
     onClose: () -> Unit = {},
-    privateChatRankList: List<PrivateRoom> = emptyList(),
     privateChatTotalRankList: List<PrivateRoom> = emptyList(),
 ) {
     var page by remember { mutableIntStateOf(0) }
@@ -76,7 +75,7 @@ fun PrivateChatGameRankDialog(
             ) {
 
                 Text(
-                    text = if(page == 0) "🏆 최고 점수 순위" else "🏆 누적 점수 순위",
+                    text = "🏆 누적 점수 순위",
                     style = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier.padding(vertical = 12.dp)
                 )
@@ -90,7 +89,7 @@ fun PrivateChatGameRankDialog(
                 ) {
 
                     itemsIndexed(
-                        if (page == 0) privateChatRankList else privateChatTotalRankList
+                        privateChatTotalRankList
                     ) { index, room ->
 
                         Card(
@@ -143,12 +142,12 @@ fun PrivateChatGameRankDialog(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.SpaceAround
                                 ) {
-
-                                    Text(
-                                        text = "최고 ${room.highScore}점",
-                                        style = MaterialTheme.typography.labelMedium,
-                                        color = Color(0xFF43A047) // 파스텔 그린
-                                    )
+//
+//                                    Text(
+//                                        text = "최고 ${room.highScore}점",
+//                                        style = MaterialTheme.typography.labelMedium,
+//                                        color = Color(0xFF43A047) // 파스텔 그린
+//                                    )
 
                                     Text(
                                         text = "누적 ${room.totalScore}점",
@@ -170,13 +169,15 @@ fun PrivateChatGameRankDialog(
                     ,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    MainButton(
-                        text = if(page == 0) "누적 점수" else "최고 점수",
-                        onClick = {
-                            if(page == 0) page = 1 else page = 0
-                        },
-                        modifier = Modifier.padding(top = 8.dp)
-                    )
+//                    MainButton(
+//                        text = if(page == 0) "누적 점수" else "최고 점수",
+//                        onClick = {
+//                            if(page == 0) page = 1 else page = 0
+//                        },
+//                        modifier = Modifier.padding(top = 8.dp)
+//                    )
+
+                    Spacer(modifier = Modifier.weight(1f))
 
                     MainButton(
                         text = "확인",
@@ -195,38 +196,6 @@ fun PrivateChatGameRankDialogPreview() {
     MypatTheme {
         PrivateChatGameRankDialog(
             onClose = {},
-            privateChatRankList = listOf(
-                PrivateRoom(
-                    roomId = "room1",
-                    user1 = "101",
-                    user2 = "202",
-                    name1 = "유저A",
-                    name2 = "유저B",
-                    highScore = 120,
-                    totalScore = 3400,
-                    attacker = "101"
-                ),
-                PrivateRoom(
-                    roomId = "room2",
-                    user1 = "303",
-                    user2 = "404",
-                    name1 = "유저C",
-                    name2 = "유저D",
-                    highScore = 98,
-                    totalScore = 2100,
-                    attacker = "303"
-                ),
-                PrivateRoom(
-                    roomId = "room3",
-                    user1 = "505",
-                    user2 = "606",
-                    name1 = "유저E",
-                    name2 = "유저F",
-                    highScore = 77,
-                    totalScore = 1500,
-                    attacker = "606"
-                )
-            ),
             privateChatTotalRankList = listOf(
                 PrivateRoom(
                     roomId = "room1",

@@ -9,6 +9,7 @@ import com.a0100019.mypat.data.room.diary.Diary
 import com.a0100019.mypat.data.room.diary.DiaryDao
 import com.a0100019.mypat.data.room.english.EnglishDao
 import com.a0100019.mypat.data.room.item.ItemDao
+import com.a0100019.mypat.data.room.knowledge.KnowledgeDao
 import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiomDao
 import com.a0100019.mypat.data.room.letter.LetterDao
 import com.a0100019.mypat.data.room.user.User
@@ -43,6 +44,7 @@ class ManagementViewModel @Inject constructor(
     private val letterDao: LetterDao,
     private val itemDao: ItemDao,
     private val stepCounterManager: StepCounterManager,
+    private val knowledgeDao: KnowledgeDao,
     @ApplicationContext private val context: Context
 
 ) : ViewModel(), ContainerHost<ManagementState, ManagementSideEffect> {
@@ -168,7 +170,14 @@ class ManagementViewModel @Inject constructor(
             }
         }
 
-
+        if(!knowledgeDao.existsByDate(currentDate)){
+            val closeKnowledgeData = knowledgeDao.getCloseKnowledge()
+            if (closeKnowledgeData != null) {
+                closeKnowledgeData.date = currentDate
+                closeKnowledgeData.state = "대기"
+                knowledgeDao.update(closeKnowledgeData)
+            }
+        }
 
         //칭호, 편지 관리
         if(itemDao.getAllCloseItemData().isEmpty()) {

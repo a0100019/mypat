@@ -27,29 +27,27 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.english.English
 import com.a0100019.mypat.presentation.ui.component.MainButton
-import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
 @Composable
-fun EnglishReadyDialog(
+fun EnglishEasyReadyDialog(
 
     englishTextList: List<String> = listOf(" ", " ", " ", " ", " "),
-    failEnglishList: List<String> = emptyList(),
-    failEnglishStateList: List<String> = emptyList(),
-    notUseEnglishList: List<String> = emptyList(),
-    useEnglishList: List<String> = emptyList(),
     clickEnglishDataState: String = "대기",
     clickEnglishData: English = English(),
 
@@ -59,7 +57,7 @@ fun EnglishReadyDialog(
     onAlphabetClick: (String) -> Unit = {},
     onHintClick: () -> Unit = {}
 
-    ) {
+) {
 
 
     Dialog(
@@ -69,7 +67,6 @@ fun EnglishReadyDialog(
         Box(
             modifier = Modifier
                 .width(340.dp)
-                .fillMaxHeight(0.8f)
                 .shadow(12.dp, RoundedCornerShape(24.dp))
                 .border(
                     width = 2.dp,
@@ -84,7 +81,6 @@ fun EnglishReadyDialog(
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
                 ,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -114,7 +110,7 @@ fun EnglishReadyDialog(
                             .align(Alignment.Center),
                     )
 
-                    if(clickEnglishDataState == "어려움"){
+                    if(clickEnglishDataState == "쉬움"){
                         Row(
                             modifier = Modifier
                                 .align(Alignment.CenterEnd)
@@ -133,6 +129,38 @@ fun EnglishReadyDialog(
                         }
                     }
                 }
+
+                Text(
+                    text = "영어 단어의 순서를 맞춰주세요!"
+                )
+
+                Spacer(modifier = Modifier.size(36.dp))
+
+                val shuffledWord = remember(clickEnglishData.word) {
+                    val original = clickEnglishData.word
+                    val firstChar = original.first()
+
+                    generateSequence {
+                        original.toList().shuffled().joinToString("")
+                    }
+                        .first { it.first() != firstChar }
+                }
+
+                Text(
+                    text = shuffledWord,
+                    style = MaterialTheme.typography.headlineMedium,
+                    letterSpacing = 10.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier
+                        .background(
+                            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f),
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                        .padding(horizontal = 24.dp, vertical = 12.dp)
+                )
+
+                Spacer(modifier = Modifier.size(36.dp))
 
                 Row(
                     modifier = Modifier
@@ -161,63 +189,9 @@ fun EnglishReadyDialog(
 
                 }
 
-                Spacer(modifier = Modifier.size(12.dp))
+                Spacer(modifier = Modifier.size(36.dp))
 
-                if(failEnglishList.isNotEmpty()){
-                    LazyColumn(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(bottom = 4.dp)
-                    ) {
-                        itemsIndexed(failEnglishList.reversed()) { index, word ->
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth(0.5f)
-                            ) {
-                                Spacer(modifier = Modifier.weight(1f))
-                                repeat(5) {
-                                    Text(
-                                        text = word[it].toString(),
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        modifier = Modifier
-                                            .background(
-                                                color = if (failEnglishStateList.reversed()[index][it] == '0') {
-                                                    Color.Unspecified
-                                                } else if (failEnglishStateList.reversed()[index][it] == '1') {
-                                                    Color(0xFFFFF59D)
-                                                } else {
-                                                    Color(0xFFA5D6A7)
-                                                },
-                                                shape = RoundedCornerShape(8.dp)
-                                            )
-                                            .padding(horizontal = 8.dp, vertical = 2.dp)
-                                    )
-                                    Spacer(modifier = Modifier.weight(1f))
-                                }
-
-                            }
-                            Spacer(modifier = Modifier.size(12.dp))
-                        }
-
-                    }
-
-                } else {
-                    Box(
-                        modifier = Modifier
-                            .weight(1f),  // 전체 영역 차지
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "오늘의 단어를 찾아주세요!\n정답에 포함된 알파벳이면 노란색, 위치까지 일치하면 초록색으로 표시됩니다\n\n5글자 영어 단어를 아무거나 입력해보세요!",
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier
-                                .padding(16.dp) // 여백은 보기 좋게 추가
-                        )
-                    }
-
-                }
-
-                if(clickEnglishDataState == "뜻") {
+                if(clickEnglishDataState == "쉬움뜻") {
                     Surface(
                         shape = RoundedCornerShape(12.dp),
                         color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
@@ -265,12 +239,12 @@ fun EnglishReadyDialog(
                                         }
                                         .weight(1f)
                                         .background(
-                                            color = if (char.toString() in notUseEnglishList) Color.LightGray else Color.Unspecified,
+                                            color = Color.Unspecified,
                                             shape = RoundedCornerShape(8.dp)
                                         )
                                         .border( // ✅ 둥근 테두리 추가
                                             width = 1.dp,
-                                            color = if (char.toString() in useEnglishList) MaterialTheme.colorScheme.errorContainer else Color.Unspecified,
+                                            color = Color.Unspecified,
                                             shape = RoundedCornerShape(8.dp)
                                         )
                                 )
@@ -296,12 +270,12 @@ fun EnglishReadyDialog(
                                     }
                                     .weight(0.1f)
                                     .background(
-                                        color = if (char.toString() in notUseEnglishList) Color.LightGray else Color.Unspecified,
+                                        color = Color.Unspecified,
                                         shape = RoundedCornerShape(8.dp)
                                     )
                                     .border( // ✅ 둥근 테두리 추가
                                         width = 1.dp,
-                                        color = if (char.toString() in useEnglishList) MaterialTheme.colorScheme.errorContainer else Color.Unspecified,
+                                        color = Color.Unspecified,
                                         shape = RoundedCornerShape(8.dp)
                                     )
                             )
@@ -327,12 +301,12 @@ fun EnglishReadyDialog(
                                     }
                                     .weight(0.1f)
                                     .background(
-                                        color = if (char.toString() in notUseEnglishList) Color.LightGray else Color.Unspecified,
+                                        color = Color.Unspecified,
                                         shape = RoundedCornerShape(8.dp)
                                     )
                                     .border( // ✅ 둥근 테두리 추가
                                         width = 1.dp,
-                                        color = if (char.toString() in useEnglishList) MaterialTheme.colorScheme.errorContainer else Color.Unspecified,
+                                        color = Color.Unspecified,
                                         shape = RoundedCornerShape(8.dp)
                                     )
                             )
@@ -375,12 +349,11 @@ fun EnglishReadyDialog(
 
 @Preview(showBackground = true)
 @Composable
-fun EnglishReadyDialogPreview() {
+fun EnglishEasyReadyDialogPreview() {
     MypatTheme {
-        EnglishReadyDialog(
-            failEnglishList = listOf("happy", "iiiii"),
-            failEnglishStateList = listOf("01210", "12221"),
+        EnglishEasyReadyDialog(
             englishTextList = listOf("a", "a", "a", "", ""),
+            clickEnglishData = English(word = "apple")
         )
     }
 }

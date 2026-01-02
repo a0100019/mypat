@@ -87,21 +87,19 @@ class CommunityViewModel @Inject constructor(
     fun randomGetAllUser() = intent {
         val db = Firebase.firestore
 
-        // 🔹 lastLogin 최신순으로 100개 가져오기
         db.collection("users")
+            .whereNotEqualTo("date.totalDate", "0")
             .orderBy("lastLogin", Query.Direction.DESCENDING)
             .limit(100)
             .get()
             .addOnSuccessListener { snapshot ->
-
-                // 문서 100개 그대로 적용
-                val docs = snapshot.documents
-                applyResult(docs)
+                applyResult(snapshot.documents)
             }
             .addOnFailureListener {
-                Log.e("DB", "유저 최신순 100명 조회 실패", it)
+                Log.e("DB", "유저 조회 실패", it)
             }
     }
+
 
 
     private fun applyResult(docs: List<DocumentSnapshot>) = intent {
@@ -193,80 +191,6 @@ class CommunityViewModel @Inject constructor(
 
     }
 
-    fun onUpdateCheckClick() = intent {
-
-        reduce {
-            state.copy(
-                situation = "updateLoading"
-            )
-        }
-
-        val db = Firebase.firestore
-        db.collection("users")
-            .orderBy("lastLogin", Query.Direction.DESCENDING) // 최신순 정렬
-            .limit(1000) // 최대 1000개만 가져오기
-            .get()
-            .addOnSuccessListener { result ->
-                for (doc in result) {
-                    try {
-                        val gameMap = doc.get("game") as? Map<String, String> ?: emptyMap()
-                        val communityMap = doc.get("community") as? Map<String, String> ?: emptyMap()
-                        val dateMap = doc.get("date") as? Map<String, String> ?: emptyMap()
-                        val itemMap = doc.get("item") as? Map<String, String> ?: emptyMap()
-                        val patMap = doc.get("pat") as? Map<String, String> ?: emptyMap()
-
-                        val worldMap = doc.get("world") as? Map<String, Map<String, String>> ?: emptyMap()
-
-                        val worldData = worldMap.entries.joinToString("/") { (_, innerMap) ->
-                            val id = innerMap["id"].orEmpty()
-                            val size = innerMap["size"].orEmpty()
-                            val type = innerMap["type"].orEmpty()
-                            val x = innerMap["x"].orEmpty()
-                            val y = innerMap["y"].orEmpty()
-                            val effect = innerMap["effect"].orEmpty()
-                            "$id@$size@$type@$x@$y@$effect"
-                        }
-
-                        val allUser = AllUser(
-                            tag = doc.getString("tag").orEmpty(),
-                            lastLogin = doc.getString("lastLogin").orEmpty().toLongOrNull() ?: 0L,
-                            ban = communityMap["ban"].orEmpty(),
-                            like = communityMap["like"].orEmpty(),
-                            warning = communityMap["introduction"].orEmpty() + "@" + communityMap["medal"].orEmpty(),
-                            firstDate = dateMap["firstDate"].orEmpty(),
-                            firstGame = gameMap["firstGame"].orEmpty(),
-                            secondGame = gameMap["secondGame"].orEmpty(),
-                            thirdGameEasy = gameMap["thirdGameEasy"].orEmpty(),
-                            thirdGameNormal = gameMap["thirdGameNormal"].orEmpty(),
-                            thirdGameHard = gameMap["thirdGameHard"].orEmpty(),
-                            openItem = itemMap["openItem"].orEmpty(),
-                            area = doc.getString("area").orEmpty(),
-                            name = doc.getString("name").orEmpty(),
-                            openPat = patMap["openPat"].orEmpty(),
-                            openArea = doc.getString("openArea").orEmpty(),
-                            totalDate = dateMap["totalDate"].orEmpty(),
-                            worldData = worldData
-                        )
-
-                        viewModelScope.launch {
-                            allUserDao.insert(allUser)
-                        }
-
-                    } catch (e: Exception) {
-                        Log.e("DB", "문서 처리 실패: ${doc.id}", e)
-                    }
-                }
-
-                Log.e("login", "allUser 가져옴")
-            }
-            .addOnFailureListener { e ->
-                Log.e("login", "users 컬렉션 가져오기 실패", e)
-                viewModelScope.launch {
-                    postSideEffect(CommunitySideEffect.Toast("인터넷 연결 오류"))
-                }
-            }
-
-    }
 
     fun opPageUpClick() = intent {
         val allUserDataList = state.allUserDataList
@@ -580,7 +504,7 @@ data class CommunityState(
     val allUserWorldDataList2: List<String> = emptyList(),
     val allUserWorldDataList3: List<String> = emptyList(),
     val allUserWorldDataList4: List<String> = emptyList(),
-    val situation: String = "firstGame",
+    val situation: String = "world",
     val newChat: String = "",
     val chatMessages: List<ChatMessage> = emptyList(),
     val allAreaCount: String = "",

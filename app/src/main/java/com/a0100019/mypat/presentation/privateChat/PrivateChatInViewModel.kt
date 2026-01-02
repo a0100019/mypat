@@ -139,7 +139,7 @@ class PrivateChatInViewModel @Inject constructor(
             // 🔹 칭호 지급 로직 (❌ 함수 분리 안 함)
             viewModelScope.launch {
 
-                // 💬 메시지 100개 → 칭호 21
+                // 💬 메시지 100개 → 칭호21
                 if (privateChatData.messageCount >= 100) {
 
                     val myMedal = userDao.getAllUserData()
@@ -164,33 +164,9 @@ class PrivateChatInViewModel @Inject constructor(
                     }
                 }
 
-                // 🎯 최고 점수 100 → 칭호 24
-                if (privateChatData.highScore >= 100) {
 
-                    val myMedal = userDao.getAllUserData()
-                        .find { it.id == "etc" }!!.value3
-
-                    val myMedalList = myMedal
-                        .split("/")
-                        .mapNotNull { it.toIntOrNull() }
-                        .toMutableList()
-
-                    if (!myMedalList.contains(24)) {
-                        myMedalList.add(24)
-
-                        userDao.update(
-                            id = "etc",
-                            value3 = myMedalList.joinToString("/")
-                        )
-
-                        postSideEffect(
-                            PrivateChatInSideEffect.Toast("칭호를 획득했습니다!")
-                        )
-                    }
-                }
-
-                // 🏆 누적 점수 1000 → 칭호 25
-                if (privateChatData.totalScore >= 1000) {
+                // 🏆 누적 점수 100 → 칭호25
+                if (privateChatData.totalScore >= 100) {
 
                     val myMedal = userDao.getAllUserData()
                         .find { it.id == "etc" }!!.value3

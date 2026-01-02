@@ -91,7 +91,6 @@ fun BoardScreen(
         onBoardSubmitClick = boardViewModel::onBoardSubmitClick
     )
 }
-
 @Composable
 fun BoardScreen(
     text: String = "",
@@ -112,10 +111,9 @@ fun BoardScreen(
     onNavigateToMainScreen: () -> Unit = {},
     onAdClick: () -> Unit = {},
     onBoardSubmitClick: () -> Unit = {}
-
 ) {
 
-    when(situation) {
+    when (situation) {
         "boardSubmit" -> BoardSubmitDialog(
             text = text,
             anonymous = boardAnonymous,
@@ -128,13 +126,15 @@ fun BoardScreen(
                 onSituationChange("boardSubmitCheck")
             }
         )
+
         "boardSubmitCheck" -> SimpleAlertDialog(
             onConfirmClick = onBoardSubmitClick,
             onDismissClick = {
                 onSituationChange("boardSubmit")
             },
-            text = "하루마을은 평화로운 커뮤니티를 지향하며, 전체 이용가인 만큼 부적절한 내용은 삼가해 주시기 바랍니다\n\n게시글을 작성하겠습니까?",
+            text = "하루마을은 평화로운 커뮤니티를 지향하며, 전체 이용가인 만큼 부적절한 내용은 삼가해 주시기 바랍니다.\n\n게시글을 작성하겠습니까?",
         )
+
         "boardSubmitConfirm" -> BoardSubmitConfirmDialog(
             onDismissClick = {
                 onClose()
@@ -143,9 +143,7 @@ fun BoardScreen(
         )
     }
 
-    Surface(
-        modifier = Modifier.fillMaxSize()
-    ) {
+    Surface(modifier = Modifier.fillMaxSize()) {
 
         BackGroundImage()
 
@@ -159,15 +157,13 @@ fun BoardScreen(
             Text(
                 text = "자유게시판",
                 style = MaterialTheme.typography.displayMedium,
-                modifier = Modifier
-                    .padding(bottom = 6.dp)
+                modifier = Modifier.padding(bottom = 6.dp)
             )
 
             Text(
                 text = "축하받고 싶은 내용이나, 말 못했던 고민이 있다면 털어놓아봐요",
                 style = MaterialTheme.typography.labelLarge,
-                modifier = Modifier
-                    .padding(bottom = 8.dp)
+                modifier = Modifier.padding(bottom = 8.dp)
             )
 
             Row(
@@ -176,17 +172,18 @@ fun BoardScreen(
             ) {
 
                 MainButton(
-                    onClick = {
-                        onSituationChange("boardSubmit")
-                    },
+                    onClick = { onSituationChange("boardSubmit") },
                     text = "게시글 작성하기"
                 )
+
                 MainButton(
                     onClick = {
-                        if(situation == "myBoard") onSituationChange("") else onSituationChange("myBoard")
+                        if (situation == "myBoard") onSituationChange("")
+                        else onSituationChange("myBoard")
                     },
-                    text = if(situation == "myBoard") "전체 게시물 보기" else "내 게시물 보기"
+                    text = if (situation == "myBoard") "전체 게시물 보기" else "내 게시물 보기"
                 )
+
                 MainButton(
                     onClick = onNavigateToMainScreen,
                     text = "닫기"
@@ -195,7 +192,6 @@ fun BoardScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 🔽 여기부터 Board 메시지 리스트
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -204,12 +200,15 @@ fun BoardScreen(
             ) {
 
                 items(
-                    if(situation == "myBoard") myBoardMessages.reversed() else boardMessages.reversed()
+                    if (situation == "myBoard")
+                        myBoardMessages.reversed()
+                    else
+                        boardMessages.reversed()
                 ) { message ->
-                    val isAnonymous = message.anonymous == "1"
-                    val displayName = if (isAnonymous) "익명" else message.name
 
-                    // ⏰ 타임스탬프 텍스트 (함수 분리 없이 inline)
+                    val displayName =
+                        if (message.anonymous == "1") "익명" else message.name
+
                     val timeText = remember(message.timestamp) {
                         val sdf = SimpleDateFormat("M/d HH:mm", Locale.getDefault())
                         sdf.format(Date(message.timestamp))
@@ -233,13 +232,11 @@ fun BoardScreen(
                             .padding(14.dp)
                     ) {
 
-                        // ── 상단: 👤 작성자 · 태그 / 타입 · ⏰ 시간 ──
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
 
-                            // 왼쪽: 👤 이름 + 태그
                             Row(
                                 modifier = Modifier.weight(1f),
                                 verticalAlignment = Alignment.CenterVertically
@@ -253,7 +250,6 @@ fun BoardScreen(
 
                                 if (message.anonymous != "1") {
                                     Spacer(modifier = Modifier.width(6.dp))
-
                                     Text(
                                         text = "#${message.tag}",
                                         fontSize = 12.sp,
@@ -262,26 +258,26 @@ fun BoardScreen(
                                 }
                             }
 
-                            // 오른쪽: 타입 뱃지 + 시간
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
 
                                 val typeEmoji = when (message.type) {
                                     "congratulation" -> "🎉"
                                     "worry" -> "💭"
+                                    "friend" -> "👫"
                                     else -> "🌱"
                                 }
 
                                 val typeBackgroundColor = when (message.type) {
                                     "congratulation" -> Color(0xFFFFF1CC)
                                     "worry" -> Color(0xFFE6F1FB)
+                                    "friend" -> Color(0xFFFFE6F0)
                                     else -> Color(0xFFEAF4EC)
                                 }
 
                                 val typeText = when (message.type) {
                                     "congratulation" -> "축하"
                                     "worry" -> "고민"
+                                    "friend" -> "친구 구해요"
                                     else -> "자유"
                                 }
 
@@ -310,7 +306,6 @@ fun BoardScreen(
 
                                 Spacer(modifier = Modifier.width(8.dp))
 
-                                // ⏰ 날짜·시간
                                 Text(
                                     text = timeText,
                                     fontSize = 11.sp,
@@ -321,7 +316,6 @@ fun BoardScreen(
 
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        // ── 메시지 본문 (4줄 제한) ──
                         Text(
                             text = message.message,
                             fontSize = 14.sp,
@@ -330,9 +324,7 @@ fun BoardScreen(
                             maxLines = 4,
                             overflow = TextOverflow.Ellipsis
                         )
-
                     }
-
                 }
             }
         }

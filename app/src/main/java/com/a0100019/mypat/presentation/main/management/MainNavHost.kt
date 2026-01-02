@@ -10,6 +10,7 @@ import com.a0100019.mypat.presentation.daily.DailyScreen
 import com.a0100019.mypat.presentation.daily.diary.DiaryScreen
 import com.a0100019.mypat.presentation.daily.diary.DiaryWriteScreen
 import com.a0100019.mypat.presentation.daily.english.EnglishScreen
+import com.a0100019.mypat.presentation.daily.knowledge.KnowledgeScreen
 import com.a0100019.mypat.presentation.daily.korean.KoreanScreen
 import com.a0100019.mypat.presentation.daily.walk.WalkScreen
 import com.a0100019.mypat.presentation.game.firstGame.FirstGameScreen
@@ -103,6 +104,9 @@ fun MainNavHost(
                 },
                 onWalkNavigateClick = {
                     navController.navigate(route = MainRoute.WalkScreen.name)
+                },
+                onKnowledgeNavigateClick = {
+                    navController.navigate(route = MainRoute.KnowledgeScreen.name)
                 },
                 popBackStack = { navController.popBackStack() }
             )
@@ -322,6 +326,12 @@ fun MainNavHost(
 
         composable(route = MainRoute.PrivateChatGameScreen.name) {
             PrivateChatGameScreen(
+                popBackStack = { navController.popBackStack() }
+            )
+        }
+
+        composable(route = MainRoute.KnowledgeScreen.name) {
+            KnowledgeScreen(
                 popBackStack = { navController.popBackStack() }
             )
         }

@@ -56,6 +56,7 @@ fun DailyScreen(
     onDiaryNavigateClick: () -> Unit,
     onEnglishNavigateClick: () -> Unit,
     onKoreanNavigateClick: () -> Unit,
+    onKnowledgeNavigateClick: () -> Unit = {},
     popBackStack: () -> Unit
 ) {
 
@@ -80,16 +81,16 @@ fun DailyScreen(
         }
     }
 
-
     DailyScreen(
-        onWalkNavigateClick = { dailyViewModel.walkPermissionCheck(context) },
+//        onWalkNavigateClick = { dailyViewModel.walkPermissionCheck(context) },
         onDiaryNavigateClick = onDiaryNavigateClick,
         onEnglishNavigateClick = onEnglishNavigateClick,
         onKoreanNavigateClick = onKoreanNavigateClick,
+        onKnowledgeNavigateClick = onKnowledgeNavigateClick,
         onCloseClick = dailyViewModel::onCloseClick,
-        onDialogPermissionCheckClick = dailyViewModel::onDialogPermissionCheckClick,
-        onDialogNotificationPermissionCheckClick = dailyViewModel::onDialogNotificationPermissionCheckClick,
-        onDialogBatteryOptimizationPermissionCheckClick = dailyViewModel::onDialogBatteryOptimizationPermissionCheckClick,
+//        onDialogPermissionCheckClick = dailyViewModel::onDialogPermissionCheckClick,
+//        onDialogNotificationPermissionCheckClick = dailyViewModel::onDialogNotificationPermissionCheckClick,
+//        onDialogBatteryOptimizationPermissionCheckClick = dailyViewModel::onDialogBatteryOptimizationPermissionCheckClick,
         popBackStack = popBackStack,
         onAdClick = dailyViewModel::onAdClick,
         onSituationChange = dailyViewModel::onSituationChange,
@@ -105,14 +106,15 @@ fun DailyScreen(
     situation: String = "",
     rewardAdReady: Boolean = false,
 
-    onWalkNavigateClick: () -> Unit,
+//    onWalkNavigateClick: () -> Unit,
     onDiaryNavigateClick: () -> Unit,
     onEnglishNavigateClick: () -> Unit,
     onKoreanNavigateClick: () -> Unit,
+    onKnowledgeNavigateClick: () -> Unit = {},
     onCloseClick: () -> Unit = {},
-    onDialogPermissionCheckClick: (Context) -> Unit = {},
-    onDialogNotificationPermissionCheckClick: (Context) -> Unit = {},
-    onDialogBatteryOptimizationPermissionCheckClick: (Context) -> Unit = {},
+//    onDialogPermissionCheckClick: (Context) -> Unit = {},
+//    onDialogNotificationPermissionCheckClick: (Context) -> Unit = {},
+//    onDialogBatteryOptimizationPermissionCheckClick: (Context) -> Unit = {},
     popBackStack: () -> Unit = {},
     onAdClick: () -> Unit = {},
     onSituationChange: (String) -> Unit = {},
@@ -125,31 +127,31 @@ fun DailyScreen(
 //        tutorialPrefs.edit().putString("tutorial", "커뮤니티").apply()
 //    }
 
-    if(situation == "walkPermissionRequest") {
-        RequestPermissionScreen()
-    } else if (situation in listOf("walkPermissionSetting", "walkPermissionSettingNo")) {
-        WalkPermissionDialog(
-            situation = situation,
-            onCloseClick = onCloseClick,
-            onCheckClick = onDialogPermissionCheckClick
-        )
-    } else if (situation == "notificationPermissionRequest") {
-        RequestNotificationPermissionScreen()
-    } else if (situation in listOf("notificationPermissionSetting", "notificationPermissionSettingNo")) {
-        NotificationPermissionDialog(
-            situation = situation,
-            onCloseClick = onCloseClick,
-            onCheckClick = onDialogNotificationPermissionCheckClick
-        )
-    } else if (situation == "batteryPermissionRequest") {
-        RequestBatteryPermissionScreen()
-    } else if (situation in listOf("batteryPermissionSetting", "batteryPermissionSettingNo")) {
-        BatteryPermissionDialog(
-            situation = situation,
-            onCloseClick = onCloseClick,
-            onCheckClick = onDialogBatteryOptimizationPermissionCheckClick
-        )
-    }
+//    if(situation == "walkPermissionRequest") {
+//        RequestPermissionScreen()
+//    } else if (situation in listOf("walkPermissionSetting", "walkPermissionSettingNo")) {
+//        WalkPermissionDialog(
+//            situation = situation,
+//            onCloseClick = onCloseClick,
+//            onCheckClick = onDialogPermissionCheckClick
+//        )
+//    } else if (situation == "notificationPermissionRequest") {
+//        RequestNotificationPermissionScreen()
+//    } else if (situation in listOf("notificationPermissionSetting", "notificationPermissionSettingNo")) {
+//        NotificationPermissionDialog(
+//            situation = situation,
+//            onCloseClick = onCloseClick,
+//            onCheckClick = onDialogNotificationPermissionCheckClick
+//        )
+//    } else if (situation == "batteryPermissionRequest") {
+//        RequestBatteryPermissionScreen()
+//    } else if (situation in listOf("batteryPermissionSetting", "batteryPermissionSettingNo")) {
+//        BatteryPermissionDialog(
+//            situation = situation,
+//            onCloseClick = onCloseClick,
+//            onCheckClick = onDialogBatteryOptimizationPermissionCheckClick
+//        )
+//    }
 
     when(situation) {
         "adCheck" -> SimpleAlertDialog(
@@ -195,9 +197,15 @@ fun DailyScreen(
                 )
             }
 
+            Text(
+                text = "매일 꾸준히 하루미션들을 완료하여 멋있는 사람이 되어보세요!\n하루미션을 완료할 때마다 햇살을 얻을 수 있습니다",
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .padding(top = 36.dp, bottom = 12.dp)
+            )
+
             LazyColumn(
                 modifier = Modifier
-                    .padding(top = 36.dp)
                     .weight(1f),
                 verticalArrangement = Arrangement.spacedBy(16.dp) // ← 아이템 사이 간격
             ){
@@ -341,6 +349,65 @@ fun DailyScreen(
                             .clickable(
                                 interactionSource = interactionSource,
                                 indication = null,
+                                onClick = onKnowledgeNavigateClick
+                            )
+                            .padding(top = 6.dp, bottom = 6.dp)
+                    ) {
+                        Box {
+
+                            Column(
+                                modifier = Modifier
+                                    .padding(8.dp)
+                                    .fillMaxWidth(),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = "상식",
+                                    style = MaterialTheme.typography.headlineMedium,
+                                    modifier = Modifier
+                                        .padding(bottom = 10.dp)
+                                    ,
+                                )
+                                Text(
+                                    text = "필수 지식들을 공부해봐요",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    modifier = Modifier
+                                        .padding(bottom = 10.dp)
+                                    ,
+                                )
+                                Text(
+                                    text = "외워두면 지식인이 될 수 있어요",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    modifier = Modifier,
+                                )
+                            }
+                        }
+
+                    }
+                }
+
+                item {
+                    //버튼 기본 설정
+                    val interactionSource = remember { MutableInteractionSource() }
+                    val isPressed by interactionSource.collectIsPressedAsState()
+                    val scale by animateFloatAsState(
+                        targetValue = if (isPressed) 0.95f else 1f,
+                        label = "scale"
+                    )
+
+                    Surface(
+                        shape = RoundedCornerShape(16.dp),
+                        color = MaterialTheme.colorScheme.scrim,
+                        border = BorderStroke(3.dp, MaterialTheme.colorScheme.primaryContainer),
+                        modifier = Modifier
+                            .graphicsLayer {
+                                scaleX = scale
+                                scaleY = scale
+                            }
+                            .clickable(
+                                interactionSource = interactionSource,
+                                indication = null,
                                 onClick = onEnglishNavigateClick
                             )
                             .padding(top = 6.dp, bottom = 6.dp)
@@ -379,64 +446,64 @@ fun DailyScreen(
                     }
                 }
 
-                item {
-                    //버튼 기본 설정
-                    val interactionSource = remember { MutableInteractionSource() }
-                    val isPressed by interactionSource.collectIsPressedAsState()
-                    val scale by animateFloatAsState(
-                        targetValue = if (isPressed) 0.95f else 1f,
-                        label = "scale"
-                    )
-
-                    Surface(
-                        shape = RoundedCornerShape(16.dp),
-                        color = MaterialTheme.colorScheme.scrim,
-                        border = BorderStroke(3.dp, MaterialTheme.colorScheme.primaryContainer),
-                        modifier = Modifier
-                            .graphicsLayer {
-                                scaleX = scale
-                                scaleY = scale
-                            }
-                            .clickable(
-                                interactionSource = interactionSource,
-                                indication = null,
-                                onClick = onWalkNavigateClick
-                            )
-                            .padding(top = 6.dp, bottom = 6.dp)
-                    ) {
-                        Box {
-
-                            Column(
-                                modifier = Modifier
-                                    .padding(8.dp)
-                                    .fillMaxWidth(),
-                                verticalArrangement = Arrangement.Center,
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Text(
-                                    text = "만보기",
-                                    style = MaterialTheme.typography.headlineMedium,
-                                    modifier = Modifier
-                                        .padding(bottom = 10.dp)
-                                    ,
-                                )
-                                Text(
-                                    text = "건강과 함께 마을을 키워보세요",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    modifier = Modifier
-                                        .padding(bottom = 10.dp)
-                                    ,
-                                )
-                                Text(
-                                    text = "언제든지 설정에서 만보기 기능을 정지할 수 있습니다",
-                                    style = MaterialTheme.typography.titleSmall,
-                                    modifier = Modifier,
-                                )
-                            }
-                        }
-
-                    }
-                }
+//                item {
+//                    //버튼 기본 설정
+//                    val interactionSource = remember { MutableInteractionSource() }
+//                    val isPressed by interactionSource.collectIsPressedAsState()
+//                    val scale by animateFloatAsState(
+//                        targetValue = if (isPressed) 0.95f else 1f,
+//                        label = "scale"
+//                    )
+//
+//                    Surface(
+//                        shape = RoundedCornerShape(16.dp),
+//                        color = MaterialTheme.colorScheme.scrim,
+//                        border = BorderStroke(3.dp, MaterialTheme.colorScheme.primaryContainer),
+//                        modifier = Modifier
+//                            .graphicsLayer {
+//                                scaleX = scale
+//                                scaleY = scale
+//                            }
+//                            .clickable(
+//                                interactionSource = interactionSource,
+//                                indication = null,
+//                                onClick = onWalkNavigateClick
+//                            )
+//                            .padding(top = 6.dp, bottom = 6.dp)
+//                    ) {
+//                        Box {
+//
+//                            Column(
+//                                modifier = Modifier
+//                                    .padding(8.dp)
+//                                    .fillMaxWidth(),
+//                                verticalArrangement = Arrangement.Center,
+//                                horizontalAlignment = Alignment.CenterHorizontally
+//                            ) {
+//                                Text(
+//                                    text = "만보기",
+//                                    style = MaterialTheme.typography.headlineMedium,
+//                                    modifier = Modifier
+//                                        .padding(bottom = 10.dp)
+//                                    ,
+//                                )
+//                                Text(
+//                                    text = "건강과 함께 마을을 키워보세요",
+//                                    style = MaterialTheme.typography.titleMedium,
+//                                    modifier = Modifier
+//                                        .padding(bottom = 10.dp)
+//                                    ,
+//                                )
+//                                Text(
+//                                    text = "언제든지 설정에서 만보기 기능을 정지할 수 있습니다",
+//                                    style = MaterialTheme.typography.titleSmall,
+//                                    modifier = Modifier,
+//                                )
+//                            }
+//                        }
+//
+//                    }
+//                }
 
                 if(rewardAdReady){
                     item {
@@ -499,13 +566,6 @@ fun DailyScreen(
 
             }
 
-            Text(
-                text = "만보기를 제외한 미션들은 다른 날에 미션을 완료해도 보상을 획득할 수 있습니다",
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .padding(30.dp)
-            )
-
         }
     }
 }
@@ -515,7 +575,6 @@ fun DailyScreen(
 fun DailyScreenPreview() {
     MypatTheme {
         DailyScreen(
-            onWalkNavigateClick = {  },
             onDiaryNavigateClick = {  },
             onEnglishNavigateClick = {  },
             onKoreanNavigateClick = {  },

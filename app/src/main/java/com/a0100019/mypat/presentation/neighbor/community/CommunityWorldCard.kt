@@ -75,7 +75,6 @@ fun CommunityWorldCard(
             .filter { it != 0 }          // "0" 제거
             .distinct()                  // 중복 제거
 
-
     Card(
         modifier = modifier
             .graphicsLayer {
@@ -213,8 +212,6 @@ fun CommunityWorldCard(
         }
     }
 }
-
-
 
 @Preview(showBackground = true)
 @Composable

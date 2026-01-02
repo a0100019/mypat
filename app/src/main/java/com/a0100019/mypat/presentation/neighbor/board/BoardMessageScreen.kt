@@ -122,14 +122,13 @@ fun BoardMessageScreen(
     onNeighborInformationClick: (String) -> Unit = {},
 ) {
 
-    when(situation) {
+    when (situation) {
         "boardDelete" -> SimpleAlertDialog(
             onConfirmClick = onBoardDelete,
-            onDismissClick = {
-                onClose()
-            },
+            onDismissClick = { onClose() },
             text = "게시물을 삭제하겠습니까?"
         )
+
         "deleteCheck" -> SimpleAlertDialog(
             onDismissOn = false,
             onConfirmClick = onNavigateToBoardScreen,
@@ -137,9 +136,7 @@ fun BoardMessageScreen(
         )
     }
 
-    Surface(
-        modifier = Modifier.fillMaxSize()
-    ) {
+    Surface(modifier = Modifier.fillMaxSize()) {
 
         BackGroundImage()
 
@@ -150,73 +147,74 @@ fun BoardMessageScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            /* ---------- 상단 닫기 버튼 ---------- */
+            /* ---------- 상단 ---------- */
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                if(boardData.tag == userDataList.find { it.id == "auth" }?.value2){
+
+                if (boardData.tag == userDataList.find { it.id == "auth" }?.value2) {
                     MainButton(
-                        onClick = {
-                            onSituationChange("boardDelete")
-                        },
+                        onClick = { onSituationChange("boardDelete") },
                         text = "삭제"
                     )
                 }
 
                 // 📌 게시판 타입 뱃지
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    val (boardTitle, boardColor) = when (boardData.type) {
-                        "congratulation" -> "축하 게시판" to Color(0xFFFFF3E0)
-                        "worry" -> "고민 게시판" to Color(0xFFE3F2FD)
-                        else -> "자유 게시판" to Color(0xFFF1F8E9)
-                    }
+                val (boardTitle, boardColor) = when (boardData.type) {
+                    "congratulation" -> "축하 게시판" to Color(0xFFFFF3E0)
+                    "worry" -> "고민 게시판" to Color(0xFFE3F2FD)
+                    "friend" -> "친구 구하기" to Color(0xFFFFEBEE)
+                    else -> "자유 게시판" to Color(0xFFF1F8E9)
+                }
 
-                    Box(
-                        modifier = Modifier
-                            .background(boardColor, RoundedCornerShape(8.dp))
-                            .padding(horizontal = 8.dp, vertical = 4.dp)
-                    ) {
-                        Text(
-                            text = boardTitle,
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = Color.DarkGray
-                        )
-                    }
+                Box(
+                    modifier = Modifier
+                        .background(boardColor, RoundedCornerShape(8.dp))
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                ) {
+                    Text(
+                        text = boardTitle,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.DarkGray
+                    )
                 }
 
                 MainButton(
                     onClick = popBackStack,
                     text = "닫기"
                 )
-
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
+            Text(
+                text = "이름을 누르면 프로필을 볼 수 있습니다",
+                style = MaterialTheme.typography.labelMedium
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            /* ---------- 게시글 ---------- */
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(200.dp)
                     .background(
                         color = when (boardData.type) {
-                            "congratulation" -> Color(0xFFFFF3E0) // 🎉 축하
-                            "worry" -> Color(0xFFE3F2FD)           // 💙 고민
-                            else -> Color(0xFFF1F8E9)              // 🌿 자유
+                            "congratulation" -> Color(0xFFFFF3E0)
+                            "worry" -> Color(0xFFE3F2FD)
+                            "friend" -> Color(0xFFFFEBEE)
+                            else -> Color(0xFFF1F8E9)
                         },
                         shape = RoundedCornerShape(14.dp)
                     )
-                    .padding(top = 16.dp, start = 16.dp, end = 16.dp)
+                    .padding(16.dp)
             ) {
 
-                // 👤 작성자 + 타입 뱃지
                 item {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
 
                         Text(
                             text = if (boardData.anonymous == "1") "익명" else boardData.name,
@@ -224,10 +222,13 @@ fun BoardMessageScreen(
                             color = when (boardData.type) {
                                 "congratulation" -> Color(0xFF6D4C41)
                                 "worry" -> Color(0xFF0D47A1)
+                                "friend" -> Color(0xFFC2185B)
                                 else -> Color(0xFF33691E)
                             },
                             modifier = Modifier.clickable {
-                                if(boardData.anonymous != "1") {onNeighborInformationClick(boardData.tag)}
+                                if (boardData.anonymous != "1") {
+                                    onNeighborInformationClick(boardData.tag)
+                                }
                             }
                         )
 
@@ -235,23 +236,20 @@ fun BoardMessageScreen(
                             Text(
                                 text = " #${boardData.tag}",
                                 fontSize = 15.sp,
-                                color = when (boardData.type) {
-                                    "congratulation" -> Color(0xFF6D4C41).copy(alpha = 0.7f)
-                                    "worry" -> Color(0xFF0D47A1).copy(alpha = 0.7f)
-                                    else -> Color(0xFF33691E).copy(alpha = 0.7f)
-                                }
+                                color = Color.Gray
                             )
                         }
 
                         Spacer(modifier = Modifier.width(8.dp))
 
-                        // 📌 타입 뱃지
+                        // 타입 뱃지
                         Box(
                             modifier = Modifier
                                 .background(
                                     color = when (boardData.type) {
                                         "congratulation" -> Color(0xFFFFCC80)
                                         "worry" -> Color(0xFF90CAF9)
+                                        "friend" -> Color(0xFFF48FB1)
                                         else -> Color(0xFFAED581)
                                     },
                                     shape = RoundedCornerShape(8.dp)
@@ -262,6 +260,7 @@ fun BoardMessageScreen(
                                 text = when (boardData.type) {
                                     "congratulation" -> "축하"
                                     "worry" -> "고민"
+                                    "friend" -> "친구 구해요"
                                     else -> "자유"
                                 },
                                 fontSize = 12.sp,
@@ -274,7 +273,6 @@ fun BoardMessageScreen(
 
                 item { Spacer(modifier = Modifier.height(12.dp)) }
 
-                // 📝 게시글 내용
                 item {
                     Text(
                         text = boardData.message,

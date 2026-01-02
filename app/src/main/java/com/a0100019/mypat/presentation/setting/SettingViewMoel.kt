@@ -21,6 +21,9 @@ import com.a0100019.mypat.data.room.letter.LetterDao
 import com.a0100019.mypat.data.room.letter.getLetterInitialData
 import com.a0100019.mypat.data.room.area.AreaDao
 import com.a0100019.mypat.data.room.area.getAreaInitialData
+import com.a0100019.mypat.data.room.knowledge.Knowledge
+import com.a0100019.mypat.data.room.knowledge.KnowledgeDao
+import com.a0100019.mypat.data.room.knowledge.getKnowledgeInitialData
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.pat.PatDao
 import com.a0100019.mypat.data.room.pat.getPatInitialData
@@ -74,7 +77,8 @@ class SettingViewModel @Inject constructor(
     private val walkDao: WalkDao,
     private val worldDao: WorldDao,
     private val letterDao: LetterDao,
-    private val areaDao: AreaDao
+    private val areaDao: AreaDao,
+    private val knowledgeDao: KnowledgeDao,
 ) : ViewModel(), ContainerHost<SettingState, SettingSideEffect> {
 
     override val container: Container<SettingState, SettingSideEffect> = container(
@@ -110,6 +114,7 @@ class SettingViewModel @Inject constructor(
         val diaryDataList = diaryDao.getAllDiaryData()
         val sudokuDataList = sudokuDao.getAllSudokuData()
         val areaDataList = areaDao.getAllAreaData()
+        val knowledgeDataList = knowledgeDao.getAllKnowledgeData()
 
         reduce {
             state.copy(
@@ -123,7 +128,8 @@ class SettingViewModel @Inject constructor(
                 koreanIdiomDataList = koreanIdiomDataList,
                 diaryDataList = diaryDataList,
                 sudokuDataList = sudokuDataList,
-                areaDataList = areaDataList
+                areaDataList = areaDataList,
+                knowledgeDataList = knowledgeDataList
             )
         }
     }
@@ -249,6 +255,7 @@ class SettingViewModel @Inject constructor(
         val letterDataList = state.letterDataList
         val sudokuDataList = state.sudokuDataList
         val areaDataList = state.areaDataList
+        val knowledgeDataList = state.knowledgeDataList
 
         val batch = db.batch()
 
@@ -264,7 +271,8 @@ class SettingViewModel @Inject constructor(
                 "warning" to userDataList.find {it.id == "community"}!!.value2,
                 "medal" to userDataList.find { it.id == "etc"}!!.value3,
                 "introduction" to userDataList.find { it.id == "etc"}!!.value,
-                "medalQuest" to userDataList.find { it.id == "name"}!!.value2
+                "medalQuest" to userDataList.find { it.id == "name"}!!.value2,
+                "medalCount" to userDataList.find { it.id == "etc"}!!.value3.count { it == '/' },
             ),
 
             "date" to mapOf(
@@ -444,6 +452,8 @@ class SettingViewModel @Inject constructor(
         diaryDataList.forEach { diary ->
             val docRef = dailyCollectionRef.document(diary.id.toString())
 
+            val date = diary.date
+
             val walk = walkDataList.find { it.id == diary.id }?.success
 
             // state 구성 (둘 중 하나라도 null이면 제외)
@@ -468,6 +478,11 @@ class SettingViewModel @Inject constructor(
                     "english" to englishState,
                     "koreanIdiom" to idiomState
                 )
+            }
+
+            val knowledgeState = knowledgeDataList.find {it.date == date}?.state
+            if(knowledgeState != null) {
+                data["knowledge"] = knowledgeState
             }
 
             batch.set(docRef, data)
@@ -600,6 +615,11 @@ class SettingViewModel @Inject constructor(
         areaDao.resetAreaPrimaryKey()
         val initialAreaData = getAreaInitialData()
         areaDao.insertAll(initialAreaData)
+
+        knowledgeDao.deleteAllKnowledge()
+        knowledgeDao.resetKnowledgePrimaryKey()
+        val initialKnowledgeData = getKnowledgeInitialData()
+        knowledgeDao.insertAll(initialKnowledgeData)
 
     }
 
@@ -1092,6 +1112,7 @@ data class SettingState(
     val recommending: String = "-1",
     val recommended: String = "-1",
     val donationList: List<Donation> = emptyList(),
+    val knowledgeDataList: List<Knowledge> = emptyList()
     )
 
 @Immutable

@@ -90,30 +90,7 @@ class WalkViewModel @Inject constructor(
         // 전체 걸음 수
         val totalSteps = walkMap.values.sum()
         if(totalSteps * 0.65 / 1000.0 >= 325.0) {
-            //매달, medal, 칭호9
-            val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
 
-            val myMedalList: MutableList<Int> =
-                myMedal
-                    .split("/")
-                    .mapNotNull { it.toIntOrNull() }
-                    .toMutableList()
-
-            // 🔥 여기 숫자 두개 바꾸면 됨
-            if (!myMedalList.contains(9)) {
-                myMedalList.add(9)
-
-                // 다시 문자열로 합치기
-                val updatedMedal = myMedalList.joinToString("/")
-
-                // DB 업데이트
-                userDao.update(
-                    id = "etc",
-                    value3 = updatedMedal
-                )
-
-                postSideEffect(WalkSideEffect.Toast("칭호를 획득했습니다!"))
-            }
         }
 
     }

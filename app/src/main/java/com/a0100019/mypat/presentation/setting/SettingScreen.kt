@@ -303,13 +303,19 @@ fun SettingScreen(
                 Spacer(modifier = Modifier.size(12.dp))
 
                 MainButton(
-                    text = "만보기 일시 정지",
-                    onClick = {
-                        val intent = Intent(context, StepForegroundService::class.java)
-                        context.stopService(intent)
-                    },
+                    text = "방명록",
+                    onClick = { onSituationChange("donation") },
                     modifier = Modifier.weight(1f)
                 )
+
+//                MainButton(
+//                    text = "만보기 일시 정지",
+//                    onClick = {
+//                        val intent = Intent(context, StepForegroundService::class.java)
+//                        context.stopService(intent)
+//                    },
+//                    modifier = Modifier.weight(1f)
+//                )
             }
 
             Row(
@@ -362,12 +368,6 @@ fun SettingScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
             Divider()
-
-            MainButton(
-                text = "방명록",
-                onClick = { onSituationChange("donation") },
-                modifier = Modifier.fillMaxWidth()
-            )
 
             Box(
                 modifier = Modifier

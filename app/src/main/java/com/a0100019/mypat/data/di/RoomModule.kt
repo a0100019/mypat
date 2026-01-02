@@ -3,6 +3,7 @@ package com.a0100019.mypat.data.di
 import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.a0100019.mypat.data.room.walk.WalkDao
 import com.a0100019.mypat.data.room.user.UserDao
@@ -22,6 +23,8 @@ import com.a0100019.mypat.data.room.letter.LetterDao
 import com.a0100019.mypat.data.room.letter.getLetterInitialData
 import com.a0100019.mypat.data.room.area.AreaDao
 import com.a0100019.mypat.data.room.area.getAreaInitialData
+import com.a0100019.mypat.data.room.knowledge.KnowledgeDao
+import com.a0100019.mypat.data.room.knowledge.getKnowledgeInitialData
 import com.a0100019.mypat.data.room.pat.getPatInitialData
 import com.a0100019.mypat.data.room.sudoku.SudokuDao
 import com.a0100019.mypat.data.room.sudoku.getSudokuInitialData
@@ -43,152 +46,77 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object RoomModule {
 
+    private lateinit var database: Database
+
     @Provides
     @Singleton
-    fun provideDatabase(@ApplicationContext context: Context): Database {
-        return Room.databaseBuilder(
+    fun provideDatabase(
+        @ApplicationContext context: Context
+    ): Database {
+
+        database = Room.databaseBuilder(
             context,
             Database::class.java,
             "database"
         )
+            .addMigrations(MIGRATION_2_3)
             .addCallback(object : RoomDatabase.Callback() {
+
                 override fun onCreate(db: SupportSQLiteDatabase) {
                     super.onCreate(db)
-                    // 데이터베이스가 처음 생성될 때 초기 데이터 삽입
+
                     CoroutineScope(Dispatchers.IO).launch {
-
-                        //data 삽입
-                        val userDao = provideDatabase(context).userDao()
-                        val userInitialData = getUserInitialData()
-                        userDao.insertAll(userInitialData) // 대량 삽입
-
-                        val diaryDao = provideDatabase(context).diaryDao()
-                        val diaryInitialData = getDiaryInitialData()
-                        diaryDao.insertAll(diaryInitialData)
-
-                        val englishDao = provideDatabase(context).englishDao()
-                        val englishInitialData = getEnglishInitialData()
-                        englishDao.insertAll(englishInitialData) // 대량 삽입
-
-                        val koreanIdiomDao = provideDatabase(context).koreanIdiomDao()
-                        val koreanIdiomInitialData = getKoreanIdiomInitialData()
-                        koreanIdiomDao.insertAll(koreanIdiomInitialData) // 대량 삽입
-
-                        val patDao = provideDatabase(context).patDao()
-                        val patInitialData = getPatInitialData()
-                        patDao.insertAll(patInitialData) // 대량 삽입
-
-                        val itemDao = provideDatabase(context).itemDao()
-                        val itemInitialData = getItemInitialData()
-                        itemDao.insertAll(itemInitialData) // 대량 삽입
-
-                        val worldDao = provideDatabase(context).worldDao()
-                        val worldInitialData = getWorldInitialData()
-                        worldDao.insertAll(worldInitialData) // 대량 삽입
-
-                        val walkDao = provideDatabase(context).walkDao()
-                        val walkInitialData = getWalkInitialData()
-                        walkDao.insertAll(walkInitialData) // 대량 삽입
-
-                        val sudokuDao = provideDatabase(context).sudokuDao()
-                        val sudokuInitialData = getSudokuInitialData()
-                        sudokuDao.insertAll(sudokuInitialData) // 대량 삽입
-
-                        val letterDao = provideDatabase(context).letterDao()
-                        val letterInitialData = getLetterInitialData()
-                        letterDao.insertAll(letterInitialData) // 대량 삽입
-
-                        val allUserDao = provideDatabase(context).allUserDao()
-                        val allUserInitialData = getAllUserInitialData()
-                        allUserDao.insertAll(allUserInitialData) // 대량 삽입
-
-                        val areaDao = provideDatabase(context).areaDao()
-                        val areaInitialData = getAreaInitialData()
-                        areaDao.insertAll(areaInitialData) // 대량 삽입
-
-
+                        // ✅ 이미 생성된 database 인스턴스 사용
+                        database.userDao().insertAll(getUserInitialData())
+                        database.walkDao().insertAll(getWalkInitialData())
+                        database.diaryDao().insertAll(getDiaryInitialData())
+                        database.englishDao().insertAll(getEnglishInitialData())
+                        database.koreanIdiomDao().insertAll(getKoreanIdiomInitialData())
+                        database.patDao().insertAll(getPatInitialData())
+                        database.itemDao().insertAll(getItemInitialData())
+                        database.worldDao().insertAll(getWorldInitialData())
+                        database.sudokuDao().insertAll(getSudokuInitialData())
+                        database.letterDao().insertAll(getLetterInitialData())
+                        database.areaDao().insertAll(getAreaInitialData())
+                        database.allUserDao().insertAll(getAllUserInitialData())
+                        database.knowledgeDao().insertAll(getKnowledgeInitialData())
                     }
                 }
             })
-            .fallbackToDestructiveMigration() //이전 데이터 버리기
             .build()
+
+        return database
     }
 
-//    //테이블 추가 같은 데이터베이스 변경 사항은 아래의 마이그레이션 코드가 있어야 버전 업데이트가 진행됨 아니면 이전 데이터를 못가져옴
-//    private val MIGRATION_1_2 = object : Migration(1, 2) {
-//        override fun migrate(db: SupportSQLiteDatabase) {
-//            // 새 테이블 생성 쿼리
-//            db.execSQL("""
-//            CREATE TABLE IF NOT EXISTS `note_table` (
-//                `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-//                `title` TEXT NOT NULL,
-//                `content` TEXT NOT NULL,
-//                `createdAt` INTEGER NOT NULL
-//            )
-//        """)
-//        }
-//    }
-
-
-    @Provides
-    fun provideUserDao(database: Database): UserDao {
-        return database.userDao()
+    // ✅ Migration (기존 유저 데이터 유지)
+    private val MIGRATION_2_3 = object : Migration(2, 3) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL(
+                """
+                CREATE TABLE IF NOT EXISTS knowledge_table (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    date TEXT NOT NULL,
+                    state TEXT NOT NULL,
+                    answer TEXT NOT NULL,
+                    meaning TEXT NOT NULL
+                )
+                """.trimIndent()
+            )
+        }
     }
 
-    @Provides
-    fun provideWalkDao(database: Database): WalkDao {
-        return database.walkDao()
-    }
-
-    @Provides
-    fun provideDiaryDao(database: Database): DiaryDao {
-        return database.diaryDao()
-    }
-
-    @Provides
-    fun provideEnglishDao(database: Database): EnglishDao {
-        return database.englishDao()
-    }
-
-    @Provides
-    fun provideKoreanIdiomDao(database: Database): KoreanIdiomDao {
-        return database.koreanIdiomDao()
-    }
-
-    @Provides
-    fun providePatDao(database: Database): PatDao {
-        return database.patDao()
-    }
-
-    @Provides
-    fun provideItemDao(database: Database): ItemDao {
-        return database.itemDao()
-    }
-
-    @Provides
-    fun provideWorldDao(database: Database): WorldDao {
-        return database.worldDao()
-    }
-
-    @Provides
-    fun provideSudokuDao(database: Database): SudokuDao {
-        return database.sudokuDao()
-    }
-
-    @Provides
-    fun provideLetterDao(database: Database): LetterDao {
-        return database.letterDao()
-    }
-
-    @Provides
-    fun provideAllUserDao(database: Database): AllUserDao {
-        return database.allUserDao()
-    }
-
-    @Provides
-    fun provideAreaDao(database: Database): AreaDao {
-        return database.areaDao()
-    }
+    // ===== DAO Providers =====
+    @Provides fun provideUserDao(db: Database): UserDao = db.userDao()
+    @Provides fun provideWalkDao(db: Database): WalkDao = db.walkDao()
+    @Provides fun provideDiaryDao(db: Database): DiaryDao = db.diaryDao()
+    @Provides fun provideEnglishDao(db: Database): EnglishDao = db.englishDao()
+    @Provides fun provideKoreanIdiomDao(db: Database): KoreanIdiomDao = db.koreanIdiomDao()
+    @Provides fun providePatDao(db: Database): PatDao = db.patDao()
+    @Provides fun provideItemDao(db: Database): ItemDao = db.itemDao()
+    @Provides fun provideWorldDao(db: Database): WorldDao = db.worldDao()
+    @Provides fun provideSudokuDao(db: Database): SudokuDao = db.sudokuDao()
+    @Provides fun provideLetterDao(db: Database): LetterDao = db.letterDao()
+    @Provides fun provideAllUserDao(db: Database): AllUserDao = db.allUserDao()
+    @Provides fun provideAreaDao(db: Database): AreaDao = db.areaDao()
+    @Provides fun provideKnowledgeDao(db: Database): KnowledgeDao = db.knowledgeDao()
 }
-
-

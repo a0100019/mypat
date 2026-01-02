@@ -10,7 +10,7 @@ fun getUserInitialData(): List<User> {
         User(id = "item", value = "10", value2 = "1", value3 = "1"),
         User(id = "name", value = "이웃"), //이름, 정보들(좋아요수, 게시글수, 댓글수), 결제 정보
         User(id = "auth", value3 = "0"), //uid, 테그, timeStemp
-        User(id = "etc"), // 소개, ???????????????없음, 칭호
+        User(id = "etc"), // 소개, 영어레벨 (1-초딩, 2-그 이상), 칭호
         User(id = "etc2"), // clickDiaryDate, stepsRaw, clickChatData
         User(id = "firstGame"), //
         User(id = "secondGame", value = "100000"), //

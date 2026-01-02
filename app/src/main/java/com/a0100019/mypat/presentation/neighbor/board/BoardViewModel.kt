@@ -223,11 +223,19 @@ class BoardViewModel @Inject constructor(
 
     fun onBoardSubmitClick() = intent {
 
+        // 🔒 이미 전송 중이면 무시
+        if (state.isSubmitting) return@intent
+
         val currentMessage = state.text.trim()
 
         if (currentMessage.length < 5) {
             postSideEffect(BoardSideEffect.Toast("5자 이상 입력해주세요."))
             return@intent
+        }
+
+        // 🔒 전송 시작
+        reduce {
+            state.copy(isSubmitting = true)
         }
 
         val userName = state.userDataList.find { it.id == "name" }!!.value
@@ -243,69 +251,64 @@ class BoardViewModel @Inject constructor(
             "tag" to userTag,
             "ban" to userBan,
             "uid" to userId,
-            "type" to state.boardType,        // ex) worry / free
-            "anonymous" to state.boardAnonymous // "0" / "1"
+            "like" to 0,
+            "type" to state.boardType,
+            "anonymous" to state.boardAnonymous
         )
 
         Firebase.firestore
             .collection("chatting")
             .document("board")
             .collection("board")
-            .document(timestamp.toString()) // 🔑 문서명 = timestamp
+            .document(timestamp.toString())
             .set(boardData)
             .addOnSuccessListener {
-                Log.d("BoardSubmit", "보드 글 작성 성공")
 
                 viewModelScope.launch {
                     reduce {
                         state.copy(
-                            situation = "boardSubmitConfirm"
+                            situation = "boardSubmitConfirm",
+                            isSubmitting = false // ✅ 해제
                         )
                     }
 
-                    var medalData = userDao.getAllUserData().find { it.id == "name" }!!.value2
+                    /* ---- 이하 네 기존 메달 로직 그대로 ---- */
+                    var medalData =
+                        userDao.getAllUserData().find { it.id == "name" }!!.value2
                     medalData = addMedalAction(medalData, actionId = 12)
-                    userDao.update(
-                        id = "name",
-                        value2 = medalData
-                    )
+                    userDao.update(id = "name", value2 = medalData)
 
-                    if(getMedalActionCount(medalData, actionId = 12) >= 3) {
-                        //매달, medal, 칭호12
-                        val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
+                    if (getMedalActionCount(medalData, actionId = 12) >= 1) {
+                        val myMedal =
+                            userDao.getAllUserData().find { it.id == "etc" }!!.value3
 
-                        val myMedalList: MutableList<Int> =
-                            myMedal
-                                .split("/")
-                                .mapNotNull { it.toIntOrNull() }
-                                .toMutableList()
+                        val myMedalList = myMedal
+                            .split("/")
+                            .mapNotNull { it.toIntOrNull() }
+                            .toMutableList()
 
-                        // 🔥 여기 숫자 두개랑 위에 // 바꾸면 됨
                         if (!myMedalList.contains(12)) {
                             myMedalList.add(12)
-
-                            // 다시 문자열로 합치기
-                            val updatedMedal = myMedalList.joinToString("/")
-
-                            // DB 업데이트
                             userDao.update(
                                 id = "etc",
-                                value3 = updatedMedal
+                                value3 = myMedalList.joinToString("/")
                             )
-
                             postSideEffect(BoardSideEffect.Toast("칭호를 획득했습니다!"))
                         }
                     }
                 }
             }
-            .addOnFailureListener { e ->
-                Log.e("BoardSubmit", "보드 글 작성 실패: ${e.message}")
+            .addOnFailureListener {
                 viewModelScope.launch {
+                    // ❌ 실패 시도 다시 가능
+                    reduce {
+                        state.copy(isSubmitting = false)
+                    }
                     postSideEffect(BoardSideEffect.Toast("작성 실패"))
                 }
             }
-
     }
+
 
     fun onAdClick() = intent {
 
@@ -358,7 +361,8 @@ data class BoardState(
     val text: String = "",
     val boardType: String = "free",
     val boardAnonymous: String = "0",
-    val removeAd: String = "0"
+    val removeAd: String = "0",
+    val isSubmitting: Boolean = false
     )
 
 @Immutable
@@ -378,7 +382,6 @@ data class BoardMessage(
 sealed interface BoardSideEffect{
     class Toast(val message:String): BoardSideEffect
     data object NavigateToBoardMessageScreen: BoardSideEffect
-
 
     data object ShowRewardAd : BoardSideEffect
 

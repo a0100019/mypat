@@ -1,3 +1,4 @@
+
 @@지금 할일
 보석, 돈 순위
 대나무숲 가져오기
@@ -92,3 +93,6 @@ if(getMedalActionCount(medalData, actionId = 11) == 100) {
         postSideEffect(CommunitySideEffect.Toast("칭호를 획득했습니다!"))
     }
 }
+
+http://www.reformanda.co.kr/acts30m/169419
+https://blog.naver.com/redbac/150020011526

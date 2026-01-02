@@ -149,7 +149,7 @@ fun PrivateChatInScreen(
         "gameQuestion" -> SimpleAlertDialog(
             onConfirmClick = {onSituationChange("")},
             onDismissOn = false,
-            text = "친구와 보스를 공격하세요!\n\n1. 서로 번갈아 가며 공격할 수 있습니다.\n\n2. 두 명의 최고 점수 합이 오늘의 점수가 되고 누적 점수에 포함되며, 오늘 점수는 내일 초기화 됩니다.\n\n3. 친구와 함께 높은 점수를 차지하여 순위에 올라보세요! 이후 다양한 보상이 추가될 예정입니다"
+            text = "친구와 보스를 공격하세요!\n\n1. 서로 번갈아 가며 공격할 수 있습니다.\n\n2. 친구와 함께 높은 점수를 차지하여 순위에 올라보세요! 이후 다양한 보상이 추가될 예정입니다"
         )
     }
 
@@ -249,12 +249,6 @@ fun PrivateChatInScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
 
-                        Text(
-                            text = "최고 점수 ${privateChatData.highScore}",
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Medium
-                        )
-
                         Spacer(modifier = Modifier.weight(1f))
 
                         Row(
@@ -270,18 +264,14 @@ fun PrivateChatInScreen(
                                 modifier = Modifier
                                     .size(15.dp)
                                     .clickable {
-                                        onSituationChange("medalQuestion")
+                                        onSituationChange("gameQuestion")
                                     }
                             )
                         }
 
                         Spacer(modifier = Modifier.weight(1f))
 
-                        Text(
-                            text = "누적 점수 $totalScore",
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Medium
-                        )
+
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -297,52 +287,51 @@ fun PrivateChatInScreen(
                             0.4f   // 연하면 0.3f / 진하면 0.2f
                         )
 
-                        Box(
-                            modifier = Modifier
-                                .background(
-                                    color = bgColor1,
-                                    shape = RoundedCornerShape(8.dp) // 네모지만 살짝 둥글게
-                                )
-                                .padding(horizontal = 8.dp, vertical = 4.dp)
-                        ) {
-                            Text(
-                                text = "${privateChatData.name1} $todayScore1",
-                                fontSize = 13.sp,
-                            )
-                        }
+//                        Box(
+//                            modifier = Modifier
+//                                .background(
+//                                    color = bgColor1,
+//                                    shape = RoundedCornerShape(8.dp) // 네모지만 살짝 둥글게
+//                                )
+//                                .padding(horizontal = 8.dp, vertical = 4.dp)
+//                        ) {
+//                            Text(
+//                                text = "${privateChatData.name1} $todayScore1",
+//                                fontSize = 13.sp,
+//                            )
+//                        }
+//                        Spacer(modifier = Modifier.weight(1f))
 
-
-                        Spacer(modifier = Modifier.weight(1f))
-
-                        // 오늘 총합
                         Text(
-                            text = "오늘\n$todayScore",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold,
+                            text = "우리의 점수 : $totalScore 점",
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier
+                                .weight(1f)
+                            ,
                             textAlign = TextAlign.Center
                         )
 
-                        Spacer(modifier = Modifier.weight(1f))
+//                        Spacer(modifier = Modifier.weight(1f))
 
-                        val bgColor2 = lerp(
-                            getPastelColorForTag(privateChatData.user2),
-                            Color.White,
-                            0.4f   // 연하면 0.3f / 진하면 0.2f
-                        )
-
-                        Box(
-                            modifier = Modifier
-                                .background(
-                                    color = bgColor2,
-                                    shape = RoundedCornerShape(8.dp) // 네모지만 살짝 둥글게
-                                )
-                                .padding(horizontal = 8.dp, vertical = 4.dp)
-                        ) {
-                            Text(
-                                text = "${privateChatData.name2} $todayScore2",
-                                fontSize = 13.sp,
-                            )
-                        }
+//                        val bgColor2 = lerp(
+//                            getPastelColorForTag(privateChatData.user2),
+//                            Color.White,
+//                            0.4f   // 연하면 0.3f / 진하면 0.2f
+//                        )
+//
+//                        Box(
+//                            modifier = Modifier
+//                                .background(
+//                                    color = bgColor2,
+//                                    shape = RoundedCornerShape(8.dp) // 네모지만 살짝 둥글게
+//                                )
+//                                .padding(horizontal = 8.dp, vertical = 4.dp)
+//                        ) {
+//                            Text(
+//                                text = "${privateChatData.name2} $todayScore2",
+//                                fontSize = 13.sp,
+//                            )
+//                        }
 
                         Spacer(modifier = Modifier.width(12.dp))
 

@@ -13,6 +13,8 @@ import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiomDao
 import com.a0100019.mypat.data.room.letter.Letter
 import com.a0100019.mypat.data.room.letter.LetterDao
 import com.a0100019.mypat.data.room.area.AreaDao
+import com.a0100019.mypat.data.room.knowledge.KnowledgeDao
+import com.a0100019.mypat.data.room.knowledge.getKnowledgeInitialData
 import com.a0100019.mypat.data.room.pat.PatDao
 import com.a0100019.mypat.data.room.sudoku.SudokuDao
 import com.a0100019.mypat.data.room.user.User
@@ -60,6 +62,7 @@ class LoginViewModel @Inject constructor(
     private val letterDao: LetterDao,
     private val areaDao: AreaDao,
     private val allUserDao: AllUserDao,
+    private val knowledgeDao: KnowledgeDao,
     @ApplicationContext private val context: Context
 ) : ViewModel(), ContainerHost<LoginState, LoginSideEffect> {
 
@@ -83,6 +86,10 @@ class LoginViewModel @Inject constructor(
     private fun loadData() = intent {
         val userDataList = userDao.getAllUserData()
         val loginState = userDataList.find { it.id == "auth" }!!.value
+
+        if (knowledgeDao.count() == 0) {
+            knowledgeDao.insertAll(getKnowledgeInitialData())
+        }
 
         if(loginState == "0") {
             reduce {
@@ -335,7 +342,11 @@ class LoginViewModel @Inject constructor(
                                 .get()
                                 .await()
 
-                            for (dailyDoc in dailySubCollectionSnapshot.documents) {
+                            val dailyDocs = dailySubCollectionSnapshot.documents
+                                .sortedBy { it.id.toIntOrNull() ?: Int.MAX_VALUE }
+
+                            for (dailyDoc in dailyDocs) {
+                                // 숫자 순서대로 처리됨
                                 val date = dailyDoc.getString("date") ?: continue
 
                                 val diaryMap = dailyDoc.get("diary") as? Map<*, *>
@@ -382,6 +393,13 @@ class LoginViewModel @Inject constructor(
                                             date = date,
                                             success = walk
                                         )
+                                    )
+                                }
+
+                                dailyDoc.getString("knowledge")?.let { knowledge ->
+                                    knowledgeDao.updateFirstZeroDateKnowledge(
+                                        date = date,
+                                        state = knowledge
                                     )
                                 }
 
@@ -707,6 +725,7 @@ class LoginViewModel @Inject constructor(
             val diaryDataList = diaryDao.getAllDiaryData()
             val sudokuDataList = sudokuDao.getAllSudokuData()
             val areaDataList = areaDao.getAllAreaData()
+            val knowledgeList = knowledgeDao.getAllKnowledgeData()
 
             val batch = db.batch()
 
@@ -723,6 +742,7 @@ class LoginViewModel @Inject constructor(
                     "medal" to userDataList.find { it.id == "etc"}!!.value3,
                     "medalQuest" to userDataList.find { it.id == "name"}!!.value2,
                     "introduction" to userDataList.find { it.id == "etc"}!!.value,
+                    "medalCount" to userDataList.find { it.id == "etc"}!!.value3.count { it == '/' },
                 ),
 
                 "date" to mapOf(
@@ -902,6 +922,8 @@ class LoginViewModel @Inject constructor(
             diaryDataList.forEach { diary ->
                 val docRef = dailyCollectionRef.document(diary.id.toString())
 
+                val date = diary.date
+
                 val walk = walkDataList.find { it.id == diary.id }?.success
 
                 // state 구성 (둘 중 하나라도 null이면 제외)
@@ -926,6 +948,11 @@ class LoginViewModel @Inject constructor(
                         "english" to englishState,
                         "koreanIdiom" to idiomState
                     )
+                }
+
+                val knowledgeState = knowledgeList.find {it.date == date}?.state
+                if(knowledgeState != null) {
+                    data["knowledge"] = knowledgeState
                 }
 
                 batch.set(docRef, data)

@@ -59,7 +59,7 @@ object AppBgmManager {
         context: Context,
         name: String,
         loop: Boolean = true,
-        volume: Float = 0.1f,
+        volume: Float = 0.2f,
         defaultName: String = "area/normal.webp"
     ) {
         if (prepared) return
@@ -132,6 +132,6 @@ object AppBgmManager {
 
     private fun getCurrentVolume(): Float {
         // 필요하면 setVolume 호출 시 값을 저장해두고 여기서 반환하도록 바꿔도 됩니다.
-        return 0.1f
+        return 0.2f
     }
 }

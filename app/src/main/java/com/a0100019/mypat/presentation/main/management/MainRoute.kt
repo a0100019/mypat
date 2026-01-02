@@ -49,6 +49,8 @@ sealed class MainRoute(
 
     object PrivateChatGameScreen : MainRoute("PrivateChatGameScreen")
 
+    object KnowledgeScreen : MainRoute("KnowledgeScreen")
+
 }
 
 

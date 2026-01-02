@@ -86,7 +86,6 @@ fun CommunityScreen(
         onRandomGetAllUser = communityViewModel::randomGetAllUser,
         onSituationChange = communityViewModel::onSituationChange,
         onChatTextChange = communityViewModel::onChatTextChange,
-        onUpdateCheckClick = communityViewModel::onUpdateCheckClick,
         popBackStack = popBackStack,
         onDialogChangeClick = communityViewModel::onDialogChangeClick,
         onNeighborInformationClick = communityViewModel::onNeighborInformationClick,
@@ -132,7 +131,6 @@ fun CommunityScreen(
     onSituationChange: (String) -> Unit = {},
     onChatTextChange: (String) -> Unit = {},
     alertStateChange: (String) -> Unit = {},
-    onUpdateCheckClick: () -> Unit = {},
     popBackStack: () -> Unit = {},
     onDialogChangeClick: (String) -> Unit = {},
     onCloseClick: () -> Unit = {},
@@ -146,17 +144,6 @@ fun CommunityScreen(
     val context = LocalContext.current
     val prefs = context.getSharedPreferences("bgm_prefs", Context.MODE_PRIVATE)
     val bgmOn = prefs.getBoolean("bgmOn", true)
-
-    if(situation == "update") {
-        CommunityUpdateCheckDialog(
-            onConfirmClick = onUpdateCheckClick,
-            onDismissClick = popBackStack
-        )
-    } else if(situation == "updateLoading") {
-        CommunityUpdateLoadingDialog(
-            onDismissClick = popBackStack
-        )
-    }
 
     Surface(
         modifier = Modifier
@@ -383,10 +370,10 @@ fun CommunityScreen(
                 }
 
                 val buttons = listOf(
+                    "마을" to "world",
                     "컬링" to "firstGame",
                     "1to50" to "secondGame",
                     "스도쿠" to "thirdGameEasy", // 대표 키만 지정
-                    "마을" to "world",
                 )
 
                 Row(

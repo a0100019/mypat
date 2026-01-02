@@ -11,6 +11,7 @@ import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.pat.PatDao
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.world.WorldDao
+import com.a0100019.mypat.presentation.daily.walk.WalkSideEffect
 import com.a0100019.mypat.presentation.main.management.addMedalAction
 import com.a0100019.mypat.presentation.main.management.getMedalActionCount
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -78,6 +79,31 @@ class IndexViewModel @Inject constructor(
             } catch (e: Exception) {
                 postSideEffect(IndexSideEffect.Toast("데이터 로드 에러"))
             }
+        }
+
+        //매달, medal, 칭호9
+        val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
+
+        val myMedalList: MutableList<Int> =
+            myMedal
+                .split("/")
+                .mapNotNull { it.toIntOrNull() }
+                .toMutableList()
+
+        // 🔥 여기 숫자 두개 바꾸면 됨
+        if (!myMedalList.contains(9)) {
+            myMedalList.add(9)
+
+            // 다시 문자열로 합치기
+            val updatedMedal = myMedalList.joinToString("/")
+
+            // DB 업데이트
+            userDao.update(
+                id = "etc",
+                value3 = updatedMedal
+            )
+
+            postSideEffect(IndexSideEffect.Toast("칭호를 획득했습니다!"))
         }
     }
 

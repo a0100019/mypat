@@ -298,7 +298,7 @@ fun NeighborScreen(
                                     ,
                                 )
                                 Text(
-                                    text = "하루에 한 번 업데이트 됩니다",
+                                    text = "마음에 드는 이웃과 친구해보세요!",
                                     style = MaterialTheme.typography.titleSmall,
                                     modifier = Modifier,
                                 )

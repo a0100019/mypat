@@ -153,77 +153,22 @@ fun NeighborInformationScreen(
 
     //빈 데이터일 경우
     if(situation == "loading") {
-        Text(
-            text = "로딩 중"
-        )
-
-//        Dialog(
-//            onDismissRequest = onClose
-//        ) {
-//            Column(
-//                horizontalAlignment = Alignment.CenterHorizontally
-//            ) {
-//                Box(
-//                    modifier = Modifier
-//                        .width(340.dp)
-//                        .shadow(12.dp, RoundedCornerShape(24.dp))
-//                        .border(
-//                            width = 2.dp,
-//                            color = MaterialTheme.colorScheme.outline,
-//                            shape = RoundedCornerShape(24.dp)
-//                        )
-//                        .background(
-//                            color = MaterialTheme.colorScheme.background,
-//                            shape = RoundedCornerShape(24.dp)
-//                        )
-//                        .padding(16.dp)
-//                ) {
-//                    Column(
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                        ,
-//                        horizontalAlignment = Alignment.CenterHorizontally,
-//                        verticalArrangement = Arrangement.SpaceBetween
-//                    ) {
-//
-//                        Text(
-//                            text = "#" + clickAllUserData.tag
-//                            ,
-//                            style = MaterialTheme.typography.titleMedium
-//                        )
-//
-//                        Spacer(modifier = Modifier.size(15.dp))
-//
-//                        Text(
-//                            text = "아직 업데이트 되지 않은 이웃입니다." +
-//                                    "\n내일 이웃 마을 데이터를 업데이트 한 후 다시 확인해주세요:)"
-//                            ,
-//                            textAlign = TextAlign.Center
-//                        )
-//
-//                        Row(
-//                            horizontalArrangement = Arrangement.SpaceBetween,
-//                            verticalAlignment = Alignment.CenterVertically,
-//                            modifier = Modifier
-//                                .padding(start = 6.dp, end = 6.dp, top = 6.dp)
-//                        ) {
-//
-//                            MainButton(
-//                                text = "친구하기",
-//                                onClick = { onSituationChange("privateChat") }
-//                            )
-//
-//                            Spacer(modifier = Modifier.size(60.dp))
-//
-//                            MainButton(
-//                                text = "닫기",
-//                                onClick = popBackStack
-//                            )
-//                        }
-//                    }
-//                }
-//            }
-//        }
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+        ){
+            MainButton(
+                text = "닫기",
+                onClick = popBackStack,
+                modifier = Modifier.align(Alignment.TopEnd)
+            )
+            Text(
+                text = "로딩 중..",
+                style = MaterialTheme.typography.titleLarge,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
 
     } else {
         val introduction =

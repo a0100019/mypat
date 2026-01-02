@@ -71,7 +71,6 @@ fun PrivateRoomScreen(
         userDataList = privateRoomState.userDataList,
         situation = privateRoomState.situation,
         yourTag = privateRoomState.yourTag,
-        roomListRank = privateRoomState.roomListRank,
         roomListTotalRank = privateRoomState.roomListTotalRank,
 
         popBackStack = popBackStack,
@@ -89,7 +88,6 @@ fun PrivateRoomScreen(
 @Composable
 fun PrivateRoomScreen(
     roomList: List<PrivateRoom> = emptyList(),
-    roomListRank: List<PrivateRoom> = emptyList(),
     roomListTotalRank: List<PrivateRoom> = emptyList(),
     userDataList: List<User> = emptyList(),
     situation: String = "",
@@ -120,13 +118,16 @@ fun PrivateRoomScreen(
         }
         "rank" -> PrivateChatGameRankDialog(
             onClose = onClose,
-            privateChatRankList = roomListRank,
             privateChatTotalRankList = roomListTotalRank
         )
         "gameQuestion" -> SimpleAlertDialog(
             onConfirmClick = {onSituationChange("")},
             onDismissOn = false,
-            text = "친구와 함께 보스를 공격하세요!\n\n1. 서로 번갈아 가며 공격할 수 있습니다.\n\n2. 두 명의 최고 점수 합이 오늘의 점수가 되고 누적 점수에 포함되며, 오늘 점수는 내일 초기화 됩니다.\n\n3. 친구와 함께 높은 점수를 차지하여 순위에 올라보세요! 이후 다양한 보상이 추가될 예정입니다"
+            text = "친구와 보스를 공격하세요!\n" +
+                    "\n" +
+                    "1. 서로 번갈아 가며 공격할 수 있습니다.\n" +
+                    "\n" +
+                    "2. 친구와 함께 높은 점수를 차지하여 순위에 올라보세요! 이후 다양한 보상이 추가될 예정입니다"
         )
     }
 

@@ -158,9 +158,6 @@ class PrivateChatGameViewModel @Inject constructor(
         val myTag =
             userDataList.find { it.id == "auth" }!!.value2
 
-        val today =
-            LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-
         val todayMessageDoc =
             LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
 
@@ -178,13 +175,7 @@ class PrivateChatGameViewModel @Inject constructor(
                 val user1 = snap.getString("user1") ?: return@addOnSuccessListener
                 val user2 = snap.getString("user2") ?: return@addOnSuccessListener
 
-                val lastGame = snap.getString("lastGame") ?: ""
-
-                val todayScore1 = (snap.getLong("todayScore1") ?: 0L).toInt()
-                val todayScore2 = (snap.getLong("todayScore2") ?: 0L).toInt()
                 val totalScore = (snap.getLong("totalScore") ?: 0L).toInt()
-                val highScore = (snap.getLong("highScore") ?: 0L).toInt()
-
                 val newScore = state.score
                 val nowTimestamp = System.currentTimeMillis()
 
@@ -194,58 +185,18 @@ class PrivateChatGameViewModel @Inject constructor(
                 // 🔥 내가 user1 인 경우
                 // ===============================
                 if (myTag == user1) {
-
                     updates["attacker"] = user2
-                    updates["last1"] = nowTimestamp   // ✅ 추가
-
-                    if (lastGame != today) {
-                        updates["totalScore"] =
-                            totalScore + todayScore1 + todayScore2
-                        updates["lastGame"] = today
-                        updates["todayScore1"] = newScore
-                        updates["todayScore2"] = 0
-                    } else {
-                        if (newScore > todayScore1) {
-                            updates["todayScore1"] = newScore
-                        }
-                    }
-
-                    val newTodayTotal =
-                        (updates["todayScore1"] as? Int ?: todayScore1) +
-                                (updates["todayScore2"] as? Int ?: todayScore2)
-
-                    if (newTodayTotal > highScore) {
-                        updates["highScore"] = newTodayTotal
-                    }
+                    updates["totalScore"] = totalScore + newScore
+                    updates["last1"] = nowTimestamp
                 }
 
                 // ===============================
                 // 🔥 내가 user2 인 경우
                 // ===============================
                 if (myTag == user2) {
-
                     updates["attacker"] = user1
-                    updates["last2"] = nowTimestamp   // ✅ 추가
-
-                    if (lastGame != today) {
-                        updates["totalScore"] =
-                            totalScore + todayScore1 + todayScore2
-                        updates["lastGame"] = today
-                        updates["todayScore2"] = newScore
-                        updates["todayScore1"] = 0
-                    } else {
-                        if (newScore > todayScore2) {
-                            updates["todayScore2"] = newScore
-                        }
-                    }
-
-                    val newTodayTotal =
-                        (updates["todayScore1"] as? Int ?: todayScore1) +
-                                (updates["todayScore2"] as? Int ?: todayScore2)
-
-                    if (newTodayTotal > highScore) {
-                        updates["highScore"] = newTodayTotal
-                    }
+                    updates["totalScore"] = totalScore + newScore
+                    updates["last2"] = nowTimestamp
                 }
 
                 // ===============================
@@ -264,7 +215,7 @@ class PrivateChatGameViewModel @Inject constructor(
                     if (myTag == user1) user2 else user1
 
                 val systemMessage = mapOf(
-                    "message" to "#${myTag} 님 출격! ⚔️ $newScore 점 성공!\n다음은 #${nextTurnTag} 님 차례입니다!",
+                    "message" to "#${myTag} 님 출격! ⚔️ $newScore 점 획득!\n다음은 #${nextTurnTag} 님 차례입니다!",
                     "tag" to "0",
                     "name" to "system"
                 )
@@ -277,6 +228,29 @@ class PrivateChatGameViewModel @Inject constructor(
                         SetOptions.merge()
                     )
             }
+
+        // 🎯 첫 공격 → 칭호24
+        val myMedal = userDao.getAllUserData()
+            .find { it.id == "etc" }!!.value3
+
+        val myMedalList = myMedal
+            .split("/")
+            .mapNotNull { it.toIntOrNull() }
+            .toMutableList()
+
+        if (!myMedalList.contains(24)) {
+            myMedalList.add(24)
+
+            userDao.update(
+                id = "etc",
+                value3 = myMedalList.joinToString("/")
+            )
+
+            postSideEffect(
+                PrivateChatGameSideEffect.Toast("칭호를 획득했습니다!")
+            )
+        }
+
     }
 
 

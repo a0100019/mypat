@@ -58,7 +58,7 @@ fun BoardSubmitDialog(
                     color = MaterialTheme.colorScheme.outline,
                     shape = RoundedCornerShape(24.dp)
                 )
-                .padding(24.dp)
+                .padding(12.dp)
         ) {
 
             Column(
@@ -93,7 +93,7 @@ fun BoardSubmitDialog(
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     // 자유
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -127,6 +127,21 @@ fun BoardSubmitDialog(
                         )
                         Text(text = "축하")
                     }
+
+                    // 친구
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Checkbox(
+                            checked = type == "friend",
+                            onCheckedChange = {
+                                if (it) onChangeTypeClick("friend")
+                            }
+                        )
+                        Text(
+                            text = "친구\n구하기",
+                            textAlign = TextAlign.Center,
+                        )
+                    }
+
 
                 }
 
