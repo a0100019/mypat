@@ -46,14 +46,17 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.offset
 import androidx.compose.material3.Checkbox
@@ -67,6 +70,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.TextStyle
@@ -78,6 +83,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
 import com.a0100019.mypat.presentation.setting.TermsDialog
 import com.a0100019.mypat.presentation.ui.MusicPlayer
+import com.a0100019.mypat.presentation.ui.SfxPlayer
 import com.a0100019.mypat.presentation.ui.component.MainButton
 
 @Composable
@@ -172,6 +178,8 @@ fun LoginScreen(
     // 상태를 remember로 관리해야 UI가 갱신됨
     var termsChecked by remember { mutableStateOf(false) }
     var privacyChecked by remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
 
     when (dialog) {
         "loginWarning" -> {
@@ -279,67 +287,104 @@ fun LoginScreen(
 
         val isPreview = LocalInspectionMode.current // 프리뷰 감지
 
+        // 폰트 설정
         val customFont = FontFamily(Font(R.font.fish))
         val safeFont = if (isPreview) FontFamily.SansSerif else customFont
 
-        val glowProgress by rememberInfiniteTransition(label = "").animateFloat(
-            initialValue = 0.6f,
-            targetValue = 1.0f,
+        // 애니메이션 정의
+        val infiniteTransition = rememberInfiniteTransition(label = "title_animation")
+
+        // 1. 빛의 강도 (투명도 조절용 - 0.0 ~ 1.0 사이로 안전하게 설정)
+        val glowAlpha by infiniteTransition.animateFloat(
+            initialValue = 0.5f,
+            targetValue = 0.9f,
             animationSpec = infiniteRepeatable(
-                animation = tween(1600, easing = LinearEasing),
+                animation = tween(2000, easing = FastOutSlowInEasing),
                 repeatMode = RepeatMode.Reverse
-            ),
-            label = ""
+            ), label = "glowAlpha"
         )
 
-// 🌿 파스텔 민트 Glow (자연/숲/산 배경용)
-        val glowBrush = Brush.verticalGradient(
-            colors = listOf(
-                Color(0xFFDFFFEF).copy(alpha = glowProgress),       // 연한 민트화이트
-                Color(0xFFBFFFE3).copy(alpha = glowProgress * 0.9f), // 부드러운 파스텔 민트
-                Color(0xFF9FE8CC).copy(alpha = glowProgress * 0.85f) // 산과 어울리는 고급 민트초록
-            )
+        // 2. 글자가 위아래로 둥실둥실 떠 있는 애니메이션
+        val floatOffset by infiniteTransition.animateFloat(
+            initialValue = 0f,
+            targetValue = -12f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(1800, easing = LinearEasing), // 부드러운 사인파 곡선 느낌
+                repeatMode = RepeatMode.Reverse
+            ), label = "floatOffset"
         )
 
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight()
-                .padding(bottom = 100.dp),
+                .align(alignment = Alignment.Center)
+                .padding(bottom = 100.dp)
+            ,
             contentAlignment = Alignment.Center
         ) {
-
-            // ▼ 아래 그림자층 (그린 계열 그림자)
+            // [Layer 1] 가장 아래쪽 깊은 그림자 (바닥 고정)
             Text(
                 text = "하루마을",
-                fontSize = 74.sp,
+                fontSize = 77.sp,
                 fontFamily = safeFont,
-                color = Color(0xFF7EC8A3),  // 은은한 그린 그림자
-                modifier = Modifier.offset(5.dp, 5.dp)
+                // alpha 값을 .coerceIn(0f, 1f)로 감싸서 에러 방지
+                color = Color(0xFF2F6F62).copy(alpha = 0.15f.coerceIn(0f, 1f)),
+                modifier = Modifier.offset(y = 10.dp)
             )
 
-            // ▼ 기본 텍스트 (흰색)
-            Text(
-                text = "하루마을",
-                fontSize = 70.sp,
-                fontFamily = safeFont,
-                color = Color.White.copy(alpha = 0.98f)
-            )
+            // [Layer 2] 움직이는 본체 그룹
+            Box(modifier = Modifier.offset(y = floatOffset.dp)) {
 
-            // ▼ 민트 Glow
-            Text(
-                text = "하루마을",
-                fontSize = 70.sp,
-                fontFamily = safeFont,
-                style = TextStyle(
-                    brush = glowBrush,
-                    shadow = Shadow(
-                        color = Color(0xAA7AD4A4).copy(alpha = glowProgress),
-                        offset = Offset(3f, 3f),
-                        blurRadius = 24f * glowProgress
+                // 외곽선 효과 (Stroke)
+                Text(
+                    text = "하루마을",
+                    fontSize = 75.sp,
+                    fontFamily = safeFont,
+                    style = TextStyle(
+                        drawStyle = Stroke(
+                            width = 10f,
+                            join = StrokeJoin.Round
+                        ),
+                        color = Color(0xFF5AA48F) // 짙은 민트 테두리
                     )
                 )
-            )
+
+                // 메인 텍스트 (그라데이션 본체)
+                Text(
+                    text = "하루마을",
+                    fontSize = 75.sp,
+                    fontFamily = safeFont,
+                    style = TextStyle(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                Color.White,
+                                Color(0xFFE0F7F0)
+                            )
+                        ),
+                        shadow = Shadow(
+                            // 에러 방지를 위해 최종 alpha 값에 coerceIn 적용
+                            color = Color(0xFF9FE8CC).copy(alpha = (glowAlpha * 0.6f).coerceIn(0f, 1f)),
+                            offset = Offset(0f, 4f),
+                            blurRadius = 25f * glowAlpha
+                        )
+                    )
+                )
+
+                // [Layer 3] 상단 화이트 하이라이트 (더 반짝이는 느낌)
+                Text(
+                    text = "하루마을",
+                    fontSize = 75.sp,
+                    fontFamily = safeFont,
+                    style = TextStyle(
+                        color = Color.Transparent,
+                        shadow = Shadow(
+                            color = Color.White.copy(alpha = glowAlpha.coerceIn(0f, 1f)),
+                            offset = Offset(0f, -2f),
+                            blurRadius = 15f * glowAlpha
+                        )
+                    )
+                )
+            }
         }
 
         when (loginState) {
@@ -465,13 +510,75 @@ fun LoginScreen(
                 verticalArrangement = Arrangement.Bottom,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.size(20.dp))
-                TextFlash("하루마을에 오신 것을 환영합니다!")
                 Spacer(modifier = Modifier.weight(1f))
-                MainButton(
-                    text = " 마을로 들어가기 ",
-                    onClick = onNavigateToMainScreen
-                )
+// 1. 버튼 내부 상태 관리를 위한 변수들
+                val interactionSource = remember { MutableInteractionSource() }
+                val isPressed by interactionSource.collectIsPressedAsState()
+                val scale by animateFloatAsState(targetValue = if (isPressed) 0.95f else 1f, label = "scale")
+// 버튼이 눌렸을 때 아래로 살짝 내려가는 효과
+                val offsetY by animateFloatAsState(targetValue = if (isPressed) 4f else 0f, label = "offset")
+
+                Box(
+                    modifier = Modifier
+                        .graphicsLayer {
+                            scaleX = scale
+                            scaleY = scale
+                        }
+                        .padding(12.dp)
+                        .clickable(
+                            interactionSource = interactionSource,
+                            indication = null
+                        ) {
+                            onNavigateToMainScreen() // 클릭 이벤트
+                            SfxPlayer.play(context, R.raw.bubble)
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    // [그림자 레이어] 버튼 뒤에 깔리는 짙은 바닥
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth(0.8f) // 원하는 너비 조절
+                            .height(64.dp)
+                            .offset(y = 4.dp), // 살짝 아래로 배치해서 입체감 부여
+                        shape = RoundedCornerShape(20.dp),
+                        color = Color(0xFF2F6F62).copy(alpha = 0.5f) // 버튼보다 진한 색
+                    ) {}
+
+                    // [메인 버튼 레이어] 실제 보이는 버튼
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth(0.8f)
+                            .height(64.dp)
+                            .offset(y = offsetY.dp), // 누를 때 아래로 슥 내려감
+                        shape = RoundedCornerShape(20.dp),
+                        color = Color(0xFFEAF4F1), // 배경색
+                        border = BorderStroke(2.dp, Color(0xFF9ECFC3)) // 테두리
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center,
+                            modifier = Modifier.padding(horizontal = 24.dp)
+                        ) {
+                            // 아이콘 (원하면 추가)
+                            Text(text = "🏡", modifier = Modifier.padding(end = 8.dp))
+
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text(
+                                    text = "마을로 들어가기",
+                                    style = MaterialTheme.typography.titleLarge.copy(
+                                        letterSpacing = 1.sp
+                                    ),
+                                    color = Color(0xFF2F6F62)
+                                )
+                                Text(
+                                    text = "펫들이 기다리고 있어요!",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = Color(0xFF6FA9A0)
+                                )
+                            }
+                        }
+                    }
+                }
                 Spacer(modifier = Modifier.size(70.dp))
 
             }

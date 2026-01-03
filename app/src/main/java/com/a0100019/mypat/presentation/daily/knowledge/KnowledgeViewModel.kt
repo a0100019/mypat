@@ -129,7 +129,7 @@ class KnowledgeViewModel @Inject constructor(
 
             knowledgeDao.update(newClickKnowledgeData)
 
-            postSideEffect(KnowledgeSideEffect.Toast("정답입니다"))
+            postSideEffect(KnowledgeSideEffect.Toast("수고하셨습니다 (+1 햇살)"))
 
             //매달, medal, 칭호31
             val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3

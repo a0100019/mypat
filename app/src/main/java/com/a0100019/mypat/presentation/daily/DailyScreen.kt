@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -14,15 +15,23 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -34,9 +43,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.presentation.daily.walk.RequestBatteryPermissionScreen
 import com.a0100019.mypat.presentation.daily.walk.RequestNotificationPermissionScreen
@@ -105,91 +116,51 @@ fun DailyScreen(
 fun DailyScreen(
     situation: String = "",
     rewardAdReady: Boolean = false,
-
-//    onWalkNavigateClick: () -> Unit,
     onDiaryNavigateClick: () -> Unit,
     onEnglishNavigateClick: () -> Unit,
     onKoreanNavigateClick: () -> Unit,
     onKnowledgeNavigateClick: () -> Unit = {},
-    onCloseClick: () -> Unit = {},
-//    onDialogPermissionCheckClick: (Context) -> Unit = {},
-//    onDialogNotificationPermissionCheckClick: (Context) -> Unit = {},
-//    onDialogBatteryOptimizationPermissionCheckClick: (Context) -> Unit = {},
     popBackStack: () -> Unit = {},
     onAdClick: () -> Unit = {},
     onSituationChange: (String) -> Unit = {},
+    onCloseClick: () -> Unit = {},
 ) {
-
-//    val context = LocalContext.current
-//    val tutorialPrefs = context.getSharedPreferences("tutorial_prefs", Context.MODE_PRIVATE)
-//    val tutorial = tutorialPrefs.getString("tutorial", "미션")
-//    if(tutorial == "미션") {
-//        tutorialPrefs.edit().putString("tutorial", "커뮤니티").apply()
-//    }
-
-//    if(situation == "walkPermissionRequest") {
-//        RequestPermissionScreen()
-//    } else if (situation in listOf("walkPermissionSetting", "walkPermissionSettingNo")) {
-//        WalkPermissionDialog(
-//            situation = situation,
-//            onCloseClick = onCloseClick,
-//            onCheckClick = onDialogPermissionCheckClick
-//        )
-//    } else if (situation == "notificationPermissionRequest") {
-//        RequestNotificationPermissionScreen()
-//    } else if (situation in listOf("notificationPermissionSetting", "notificationPermissionSettingNo")) {
-//        NotificationPermissionDialog(
-//            situation = situation,
-//            onCloseClick = onCloseClick,
-//            onCheckClick = onDialogNotificationPermissionCheckClick
-//        )
-//    } else if (situation == "batteryPermissionRequest") {
-//        RequestBatteryPermissionScreen()
-//    } else if (situation in listOf("batteryPermissionSetting", "batteryPermissionSettingNo")) {
-//        BatteryPermissionDialog(
-//            situation = situation,
-//            onCloseClick = onCloseClick,
-//            onCheckClick = onDialogBatteryOptimizationPermissionCheckClick
-//        )
-//    }
-
-    when(situation) {
-        "adCheck" -> SimpleAlertDialog(
+    // 다이얼로그 로직
+    if (situation == "adCheck") {
+        SimpleAlertDialog(
             onConfirmClick = {
                 onAdClick()
                 onSituationChange("")
-                             },
-            onDismissClick = onCloseClick,
-            text = "광고를 보고 1햇살을 얻겠습니까?",
+            },
+            onDismissClick = { onSituationChange("") },
+            text = "광고를 보고 1 햇살을 얻겠습니까?",
         )
     }
 
     Surface(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
     ) {
-
         BackGroundImage()
 
-        Column (
-            horizontalAlignment = Alignment.CenterHorizontally,
+        Column(
             modifier = Modifier
-                .padding(24.dp)
-        ){
-
+                .fillMaxSize()
+                .padding(horizontal = 20.dp)
+        ) {
+            // 상단 헤더 영역
+            Spacer(modifier = Modifier.height(24.dp))
             Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                        ,
+                modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
-                // 가운데 텍스트
                 Text(
                     text = "하루 미션",
-                    style = MaterialTheme.typography.displaySmall
+                    style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.onBackground
                 )
 
-                // 오른쪽 버튼
+                // 닫기 버튼을 아이콘 버튼으로 변경하여 세련되게 수정 가능
                 MainButton(
                     text = "닫기",
                     onClick = popBackStack,
@@ -198,374 +169,157 @@ fun DailyScreen(
             }
 
             Text(
-                text = "매일 꾸준히 하루미션들을 완료하여 멋있는 사람이 되어보세요!\n하루미션을 완료할 때마다 햇살을 얻을 수 있습니다",
+                text = "매일 꾸준히 하루 미션을 완료하여 멋있는 사람이 되어보세요!\n미션을 완료할 때마다 햇살을 얻을 수 있습니다",
                 textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodyLarge,
+                lineHeight = 24.sp,
                 modifier = Modifier
-                    .padding(top = 36.dp, bottom = 12.dp)
+                    .fillMaxWidth()
+                    .padding(vertical = 32.dp)
             )
 
+            // 미션 리스트
             LazyColumn(
-                modifier = Modifier
-                    .weight(1f),
-                verticalArrangement = Arrangement.spacedBy(16.dp) // ← 아이템 사이 간격
-            ){
-
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(14.dp),
+                contentPadding = PaddingValues(bottom = 24.dp)
+            ) {
                 item {
-                    //버튼 기본 설정
-                    val interactionSource = remember { MutableInteractionSource() }
-                    val isPressed by interactionSource.collectIsPressedAsState()
-                    val scale by animateFloatAsState(
-                        targetValue = if (isPressed) 0.95f else 1f,
-                        label = "scale"
+                    MissionCard(
+                        title = "일기",
+                        description = "오늘 하루를 정리하세요",
+                        subDescription = "길게 적지 않아도 돼요. 꾸준함이 중요합니다",
+                        icon = "✍️", // 이모지를 활용하거나 ImageVector 사용
+                        onClick = onDiaryNavigateClick
                     )
-
-                    Surface(
-                        shape = RoundedCornerShape(16.dp),
-                        color = MaterialTheme.colorScheme.scrim,
-                        border = BorderStroke(3.dp, MaterialTheme.colorScheme.primaryContainer),
-                        modifier = Modifier
-                            .graphicsLayer {
-                                scaleX = scale
-                                scaleY = scale
-                            }
-                            .clickable(
-                                interactionSource = interactionSource,
-                                indication = null,
-                                onClick = onDiaryNavigateClick
-                            )
-                            .padding(top = 6.dp, bottom = 6.dp)
-                    ) {
-                        Box {
-
-                            Column(
-                                modifier = Modifier
-                                    .padding(8.dp)
-                                    .fillMaxWidth(),
-                                verticalArrangement = Arrangement.Center,
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Text(
-                                    text = "일기",
-                                    style = MaterialTheme.typography.headlineMedium,
-                                    modifier = Modifier
-                                        .padding(bottom = 10.dp)
-                                    ,
-                                )
-                                Text(
-                                    text = "오늘 하루를 정리하세요",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    modifier = Modifier
-                                        .padding(bottom = 10.dp)
-                                    ,
-                                )
-                                Text(
-                                    text = "길게 적지 않아도 돼요. 꾸준함이 중요합니다",
-                                    style = MaterialTheme.typography.titleSmall,
-                                    modifier = Modifier,
-                                )
-                            }
-                        }
-
-                    }
                 }
 
                 item {
-                    //버튼 기본 설정
-                    val interactionSource = remember { MutableInteractionSource() }
-                    val isPressed by interactionSource.collectIsPressedAsState()
-                    val scale by animateFloatAsState(
-                        targetValue = if (isPressed) 0.95f else 1f,
-                        label = "scale"
+                    MissionCard(
+                        title = "사자성어",
+                        description = "한자 카드를 조합하여 맞춰보세요",
+                        subDescription = "매우 쉬우니 걱정하지 마세요",
+                        icon = "📜",
+                        onClick = onKoreanNavigateClick
                     )
-
-                    Surface(
-                        shape = RoundedCornerShape(16.dp),
-                        color = MaterialTheme.colorScheme.scrim,
-                        border = BorderStroke(3.dp, MaterialTheme.colorScheme.primaryContainer),
-                        modifier = Modifier
-                            .graphicsLayer {
-                                scaleX = scale
-                                scaleY = scale
-                            }
-                            .clickable(
-                                interactionSource = interactionSource,
-                                indication = null,
-                                onClick = onKoreanNavigateClick
-                            )
-                            .padding(top = 6.dp, bottom = 6.dp)
-                    ) {
-                        Box {
-
-                            Column(
-                                modifier = Modifier
-                                    .padding(8.dp)
-                                    .fillMaxWidth(),
-                                verticalArrangement = Arrangement.Center,
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Text(
-                                    text = "사자성어",
-                                    style = MaterialTheme.typography.headlineMedium,
-                                    modifier = Modifier
-                                        .padding(bottom = 10.dp)
-                                    ,
-                                )
-                                Text(
-                                    text = "한자 카드를 조합하여 사자성어를 맞춰주세요",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    modifier = Modifier
-                                        .padding(bottom = 10.dp)
-                                    ,
-                                )
-                                Text(
-                                    text = "매우 쉬우니 걱정하지 마세요",
-                                    style = MaterialTheme.typography.titleSmall,
-                                    modifier = Modifier,
-                                )
-                            }
-                        }
-
-                    }
                 }
 
                 item {
-                    //버튼 기본 설정
-                    val interactionSource = remember { MutableInteractionSource() }
-                    val isPressed by interactionSource.collectIsPressedAsState()
-                    val scale by animateFloatAsState(
-                        targetValue = if (isPressed) 0.95f else 1f,
-                        label = "scale"
+                    MissionCard(
+                        title = "상식",
+                        description = "필수 지식들을 공부해봐요",
+                        subDescription = "외워두면 언젠간 쓸 일이 있을 거에요",
+                        icon = "💡",
+                        onClick = onKnowledgeNavigateClick
                     )
-
-                    Surface(
-                        shape = RoundedCornerShape(16.dp),
-                        color = MaterialTheme.colorScheme.scrim,
-                        border = BorderStroke(3.dp, MaterialTheme.colorScheme.primaryContainer),
-                        modifier = Modifier
-                            .graphicsLayer {
-                                scaleX = scale
-                                scaleY = scale
-                            }
-                            .clickable(
-                                interactionSource = interactionSource,
-                                indication = null,
-                                onClick = onKnowledgeNavigateClick
-                            )
-                            .padding(top = 6.dp, bottom = 6.dp)
-                    ) {
-                        Box {
-
-                            Column(
-                                modifier = Modifier
-                                    .padding(8.dp)
-                                    .fillMaxWidth(),
-                                verticalArrangement = Arrangement.Center,
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Text(
-                                    text = "상식",
-                                    style = MaterialTheme.typography.headlineMedium,
-                                    modifier = Modifier
-                                        .padding(bottom = 10.dp)
-                                    ,
-                                )
-                                Text(
-                                    text = "필수 지식들을 공부해봐요",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    modifier = Modifier
-                                        .padding(bottom = 10.dp)
-                                    ,
-                                )
-                                Text(
-                                    text = "외워두면 지식인이 될 수 있어요",
-                                    style = MaterialTheme.typography.titleSmall,
-                                    modifier = Modifier,
-                                )
-                            }
-                        }
-
-                    }
                 }
 
                 item {
-                    //버튼 기본 설정
-                    val interactionSource = remember { MutableInteractionSource() }
-                    val isPressed by interactionSource.collectIsPressedAsState()
-                    val scale by animateFloatAsState(
-                        targetValue = if (isPressed) 0.95f else 1f,
-                        label = "scale"
+                    MissionCard(
+                        title = "영단어",
+                        description = "목표 영단어를 추측해보세요",
+                        subDescription = "어렵지만 끝까지 파이팅!",
+                        icon = "🇬🇧",
+                        onClick = onEnglishNavigateClick
                     )
-
-                    Surface(
-                        shape = RoundedCornerShape(16.dp),
-                        color = MaterialTheme.colorScheme.scrim,
-                        border = BorderStroke(3.dp, MaterialTheme.colorScheme.primaryContainer),
-                        modifier = Modifier
-                            .graphicsLayer {
-                                scaleX = scale
-                                scaleY = scale
-                            }
-                            .clickable(
-                                interactionSource = interactionSource,
-                                indication = null,
-                                onClick = onEnglishNavigateClick
-                            )
-                            .padding(top = 6.dp, bottom = 6.dp)
-                    ) {
-                        Box {
-
-                            Column(
-                                modifier = Modifier
-                                    .padding(8.dp)
-                                    .fillMaxWidth(),
-                                verticalArrangement = Arrangement.Center,
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Text(
-                                    text = "영단어",
-                                    style = MaterialTheme.typography.headlineMedium,
-                                    modifier = Modifier
-                                        .padding(bottom = 10.dp)
-                                    ,
-                                )
-                                Text(
-                                    text = "목표 영단어를 추측을 통해 맞춰주세요",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    modifier = Modifier
-                                        .padding(bottom = 10.dp)
-                                    ,
-                                )
-                                Text(
-                                    text = "어려워요! 천천히 회이팅! 응원할게요",
-                                    style = MaterialTheme.typography.titleSmall,
-                                    modifier = Modifier,
-                                )
-                            }
-                        }
-
-                    }
                 }
 
-//                item {
-//                    //버튼 기본 설정
-//                    val interactionSource = remember { MutableInteractionSource() }
-//                    val isPressed by interactionSource.collectIsPressedAsState()
-//                    val scale by animateFloatAsState(
-//                        targetValue = if (isPressed) 0.95f else 1f,
-//                        label = "scale"
-//                    )
-//
-//                    Surface(
-//                        shape = RoundedCornerShape(16.dp),
-//                        color = MaterialTheme.colorScheme.scrim,
-//                        border = BorderStroke(3.dp, MaterialTheme.colorScheme.primaryContainer),
-//                        modifier = Modifier
-//                            .graphicsLayer {
-//                                scaleX = scale
-//                                scaleY = scale
-//                            }
-//                            .clickable(
-//                                interactionSource = interactionSource,
-//                                indication = null,
-//                                onClick = onWalkNavigateClick
-//                            )
-//                            .padding(top = 6.dp, bottom = 6.dp)
-//                    ) {
-//                        Box {
-//
-//                            Column(
-//                                modifier = Modifier
-//                                    .padding(8.dp)
-//                                    .fillMaxWidth(),
-//                                verticalArrangement = Arrangement.Center,
-//                                horizontalAlignment = Alignment.CenterHorizontally
-//                            ) {
-//                                Text(
-//                                    text = "만보기",
-//                                    style = MaterialTheme.typography.headlineMedium,
-//                                    modifier = Modifier
-//                                        .padding(bottom = 10.dp)
-//                                    ,
-//                                )
-//                                Text(
-//                                    text = "건강과 함께 마을을 키워보세요",
-//                                    style = MaterialTheme.typography.titleMedium,
-//                                    modifier = Modifier
-//                                        .padding(bottom = 10.dp)
-//                                    ,
-//                                )
-//                                Text(
-//                                    text = "언제든지 설정에서 만보기 기능을 정지할 수 있습니다",
-//                                    style = MaterialTheme.typography.titleSmall,
-//                                    modifier = Modifier,
-//                                )
-//                            }
-//                        }
-//
-//                    }
-//                }
-
-                if(rewardAdReady){
+                if (rewardAdReady) {
                     item {
-                        //버튼 기본 설정
-                        val interactionSource = remember { MutableInteractionSource() }
-                        val isPressed by interactionSource.collectIsPressedAsState()
-                        val scale by animateFloatAsState(
-                            targetValue = if (isPressed) 0.95f else 1f,
-                            label = "scale"
+                        MissionCard(
+                            title = "보너스 햇살 받기",
+                            description = "광고 보고 1 햇살 얻기",
+                            subDescription = "하루에 한 번만 가능해요",
+                            icon = "☀️",
+                            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
+                            onClick = { onSituationChange("adCheck") }
                         )
-
-                        Surface(
-                            shape = RoundedCornerShape(16.dp),
-                            color = MaterialTheme.colorScheme.scrim,
-                            border = BorderStroke(3.dp, MaterialTheme.colorScheme.primaryContainer),
-                            modifier = Modifier
-                                .graphicsLayer {
-                                    scaleX = scale
-                                    scaleY = scale
-                                }
-                                .clickable(
-                                    interactionSource = interactionSource,
-                                    indication = null,
-                                    onClick = { onSituationChange("adCheck") }
-                                )
-                                .padding(top = 6.dp, bottom = 6.dp)
-                        ) {
-                            Box {
-
-                                Column(
-                                    modifier = Modifier
-                                        .padding(8.dp)
-                                        .fillMaxWidth(),
-                                    verticalArrangement = Arrangement.Center,
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    Text(
-                                        text = "광고보기",
-                                        style = MaterialTheme.typography.headlineMedium,
-                                        modifier = Modifier
-                                            .padding(bottom = 10.dp),
-                                    )
-                                    Text(
-                                        text = "하루에 1회만 가능합니다",
-                                        style = MaterialTheme.typography.titleMedium,
-                                        modifier = Modifier
-                                            .padding(bottom = 10.dp),
-                                    )
-                                    Text(
-                                        text = "광고를 보면 1 햇살을 얻을 수 있습니다!",
-                                        style = MaterialTheme.typography.titleSmall,
-                                        modifier = Modifier,
-                                    )
-                                }
-                            }
-
-                        }
                     }
                 }
+            }
+        }
+    }
+}
 
+@Composable
+fun MissionCard(
+    title: String,
+    description: String,
+    subDescription: String,
+    icon: String,
+    containerColor: Color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+    onClick: () -> Unit
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) 0.96f else 1f,
+        label = "scale"
+    )
+
+    Surface(
+        shape = RoundedCornerShape(20.dp),
+        color = containerColor,
+        border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.outlineVariant),
+        modifier = Modifier
+            .fillMaxWidth()
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = onClick
+            )
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(20.dp),
+            verticalAlignment = Alignment.CenterVertically // 모든 요소를 세로 중앙 정렬
+        ) {
+            // 1. 왼쪽 아이콘 박스
+            Box(
+                modifier = Modifier
+                    .size(50.dp)
+                    .background(
+                        MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
+                        RoundedCornerShape(12.dp)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = icon, fontSize = 24.sp)
             }
 
+            Spacer(modifier = Modifier.width(16.dp))
+
+            // 2. 중간 텍스트 영역 (weight를 주어 화살표를 오른쪽 끝으로 밀어냅니다)
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = description,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = subDescription,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+            }
+
+            // 3. 오른쪽 화살표 아이콘 (다시 추가됨!)
+            Icon(
+                imageVector = Icons.Default.KeyboardArrowRight,
+                contentDescription = "상세보기",
+                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                modifier = Modifier.size(28.dp)
+            )
         }
     }
 }

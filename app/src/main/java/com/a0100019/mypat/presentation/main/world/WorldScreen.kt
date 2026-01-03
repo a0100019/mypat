@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -212,13 +213,14 @@ fun WorldScreen(
             )
 
             Text(
-                text = "나만의 에쁜 ",
+                text = "펫과 아이템을 드래그하여 위치를 옮길 수 있고, 클릭하여 크기를 수정할 수 있어요\n자기계발을 꾸준히 하여 나만의 멋진 마을을 만들어봐요",
                 style = MaterialTheme.typography.titleSmall,
+                textAlign = TextAlign.Center,
                 modifier = Modifier
                     .padding(16.dp)
             )
 
-            Spacer(modifier = Modifier.size(36.dp))
+            Spacer(modifier = Modifier.size(32.dp))
 
             Column(
                 modifier = Modifier

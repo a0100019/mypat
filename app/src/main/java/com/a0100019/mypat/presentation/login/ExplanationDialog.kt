@@ -1,7 +1,19 @@
 package com.a0100019.mypat.presentation.login
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,6 +21,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -20,6 +34,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,12 +44,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.a0100019.mypat.data.room.letter.Letter
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
@@ -45,236 +67,205 @@ import kotlin.random.Random
 fun ExplanationDialog(
     onClose: () -> Unit,
 ) {
-
-    var page by remember { mutableIntStateOf(1) }
-
     Dialog(
-        onDismissRequest = {  }
+        onDismissRequest = { },
+        properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
-
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
+        Box(
             modifier = Modifier
-                .width(340.dp)
+                .width(360.dp)
+                .fillMaxHeight(0.85f),
+            contentAlignment = Alignment.Center
         ) {
+            // 1. 배경 이미지
+            JustImage(
+                filePath = "etc/story.webp",
+                contentScale = ContentScale.FillBounds,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .shadow(15.dp, shape = RoundedCornerShape(8.dp))
+            )
 
-            Spacer(modifier = Modifier.size(30.dp))
-
+            // 2. 가독성을 위한 은은한 덮개 (0.3f 정도가 적당합니다)
             Box(
                 modifier = Modifier
-                    .fillMaxHeight(0.9f)
-//                    .fillMaxWidth(0.8f)
-            ) {
+                    .fillMaxSize()
+                    .background(
+                        color = Color.White.copy(alpha = 0.7f),
+                        shape = RoundedCornerShape(8.dp)
+                    )
+            )
 
-                //편지 이미지
-                JustImage(
-                    filePath = "etc/letter.webp",
-                    contentScale = ContentScale.FillBounds,
-                    modifier = Modifier
-                        .fillMaxSize()
+            // 3. 내부 콘텐츠
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 35.dp, vertical = 35.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "스토리",
+                    style = MaterialTheme.typography.headlineMedium.copy(
+                        fontWeight = FontWeight.ExtraBold, // 제목은 더 강조
+                        letterSpacing = 2.sp,
+                        fontFamily = FontFamily.Serif // 세리프체 적용
+                    ),
+                    color = Color(0xFF2E1A16)
                 )
 
-                if(page == 1){
-                    Row {
+                Box(
+                    modifier = Modifier
+                        .padding(top = 8.dp, bottom = 20.dp)
+                        .width(60.dp)
+                        .height(2.dp)
+                        .background(Color(0xFF4E342E))
+                )
 
-                        Column(
-                            modifier = Modifier
-                                .weight(8f),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Spacer(modifier = Modifier.weight(1f))
-                            Column(
-                                modifier = Modifier
-                                    .verticalScroll(rememberScrollState())
-                                    .weight(10f),
-                                horizontalAlignment = Alignment.CenterHorizontally,
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "아주 오래 전, 하루마을은 모두가 행복하게 지내는 따뜻한 마을이었습니다.\n\n" +
+                                "하지만 마을을 돌보던 부지런한 관리인이 세상을 떠난 뒤, 모든 게 멈춰 버렸습니다.\n\n" +
+                                "돌보는 손길이 사라지자, 펫들은 흩어졌고 잿빛 그림자만이 마을을 덮고 있었습니다.\n\n" +
+                                "하지만 마지막 희망이 남아있었습니다.\n\n" +
+                                "생기를 잃어가는 마을과 불쌍한 펫들을 발견한 당신은, 새로운 관리인이 되어 마을을 살리기로 결심했습니다.",
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            lineHeight = 28.sp,
+                            fontWeight = FontWeight.Bold, // 두껍게 하여 가독성 확보
+                            fontFamily = FontFamily.Serif // 아까 좋아하셨던 세리프체 적용
+                        ),
+                        textAlign = TextAlign.Center,
+                        color = Color(0xFF1B0C0A)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+// 1. 애니메이션 변수 정의 (기존 shimmer 코드 위에 추가)
+                val infiniteTransition = rememberInfiniteTransition(label = "daily_btn_anim")
+
+// 둥실둥실 뜨는 효과
+                val floatingOffset by infiniteTransition.animateFloat(
+                    initialValue = 0f,
+                    targetValue = -8f,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(1500, easing = FastOutSlowInEasing),
+                        repeatMode = RepeatMode.Reverse
+                    ),
+                    label = "floating"
+                )
+
+                val interactionSource = remember { MutableInteractionSource() }
+                val isPressed by interactionSource.collectIsPressedAsState()
+
+// 눌렀을 때 내려가는 깊이 (isPressed일 때 floating 효과를 상쇄하며 바닥으로 붙음)
+                val pressOffset by animateFloatAsState(
+                    targetValue = if (isPressed) 4f else 0f,
+                    label = "pressOffset"
+                )
+
+                val scale by animateFloatAsState(
+                    targetValue = if (isPressed) 0.97f else 1f,
+                    label = "daily_mission_scale"
+                )
+
+                // ✨ 반짝임 애니메이션 (기존 유지)
+                val shimmerX by infiniteTransition.animateFloat(
+                    initialValue = -0.4f,
+                    targetValue = 1.4f,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(durationMillis = 2200, easing = LinearEasing),
+                        repeatMode = RepeatMode.Restart
+                    ),
+                    label = "shimmerX"
+                )
+
+                val shimmerColor = Color.White.copy(alpha = 0.4f)
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp) // 버튼 높이 고정
+                            .graphicsLayer {
+                                scaleX = scale
+                                scaleY = scale
+                                // 둥실둥실 효과 + 누를 때 바닥으로 내려가는 효과 합산
+                                translationY = (floatingOffset + pressOffset).dp.toPx()
+                            }
+                            .clickable(
+                                interactionSource = interactionSource,
+                                indication = null
                             ) {
+                                onClose()
+                            }
+                    ) {
+                        // [Layer 1] 하단 그림자/바닥 (입체감 부여)
+                        Surface(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .offset(y = 6.dp),
+                            shape = RoundedCornerShape(22.dp),
+                            color = Color(0xFF2F6F62).copy(alpha = 0.2f)
+                        ) {}
 
-                                Text(
-                                    text = "스토리",
-                                    style = MaterialTheme.typography.headlineMedium,
-                                    modifier = Modifier,
-                                    color = Color.Black
-                                )
+                        // [Layer 2] 메인 버튼 바디
+                        Surface(
+                            modifier = Modifier.fillMaxSize(),
+                            shape = RoundedCornerShape(22.dp),
+                            color = Color(0xFFEAF4F1),
+                            border = BorderStroke(2.dp, Color(0xFF9ECFC3))
+                        ) {
+                            Box(modifier = Modifier.fillMaxSize()) {
 
-                                Spacer(modifier = Modifier.weight(1f))
-
-                                Text(
-                                    text = "아주 오래 전, 하루마을은 모두가 행복하게 지내는 따뜻한 마을이었습니다.\n\n" +
-                                            "하지만 마을을 돌보던 지혜로운 관리인이 병으로 세상을 떠난 뒤, 모든 게 멈춰 버렸습니다.\n\n" +
-                                            "돌보는 손길이 사라지자, 펫들은 흩어졌고 잿빛 그림자만이 이 마을을 덮고 있었습니다\n\n" +
-                                            "하지만 마지막 희망이 남아있었습니다\n\n" +
-                                            "생기를 잃어가는 마을과 불쌍한 펫들을 발견한 당신은, 새로운 관리인이 되어 마을을 살리기로 결심했습니다",
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier
-                                        .padding(start = 30.dp, end = 30.dp)
-                                    ,
-                                    color = Color.Black
-                                )
-
-                                Spacer(modifier = Modifier.weight(1f))
-
+                                // 🌿 버튼 내부 내용
                                 Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth(0.8f)
+                                    modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center
                                 ) {
-
-                                    MainButton(
-                                        onClick = onClose,
-                                        modifier = Modifier
-                                            .fillMaxWidth(),
-                                        text = " 시작하기 "
-                                    )
-
+                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                        Text(
+                                            text = "시작하기",
+                                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                                            color = Color(0xFF2F6F62)
+                                        )
+                                    }
                                 }
 
-                            }
-                            Spacer(modifier = Modifier.weight(1f))
-                        }
-
-                    }
-                } else {
-
-                    Row {
-
-                        Column(
-                            modifier = Modifier
-                                .weight(8f),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Spacer(modifier = Modifier.weight(1f))
-                            Column(
-                                modifier = Modifier
-                                    .verticalScroll(rememberScrollState())
-                                    .weight(10f)
-                                    .padding(start = 30.dp, end = 30.dp)
-                                ,
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                            ) {
-
-                                Text(
-                                    text = "간단 설명서",
-                                    style = MaterialTheme.typography.headlineMedium,
-                                    modifier = Modifier.padding(bottom = 36.dp),
-                                    color = Color.Black
-                                )
-
-                                Text(
-                                    text = "1.  하루마을의 에너지원은 바로 관리인의 성실함입니다. 하루마을에는 총 4가지의 간단한 하루 미션이 있습니다. " +
-                                            "게임을 시작하면 아래와 같이 생긴 하루 미션 버튼을 가장 먼저 눌러 미션들을 완료하고 주된 화폐인 햇살을 얻어주세요",
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier.padding(bottom = 10.dp),
-                                    color = Color.Black
-                                )
-
-                                MainButton(
-                                    onClick = {},
-                                    text = "     하루 미션     "
-                                )
-
-                                Spacer(modifier = Modifier.size(36.dp))
-
-                                Text(
-                                    text = "2.  펫과 놀아주세요! 펫을 클릭하면 여러 게임을 플레이 할 수 있으며 이웃들과 경쟁하여 높은 순위를 차지해 보세요. " +
-                                            "또한 10분마다 펫 머리 위에 말풍선이 생기면 클릭하여 놀아주세요 애정도와 달빛을 얻을 수 있습니다",
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier.padding(bottom = 10.dp),
-                                    color = Color.Black
-                                )
-
-                                JustImage(
-                                    filePath = "etc/loveBubble.json",
-                                    modifier = Modifier.size(50.dp),
-                                    repetition = true
-                                )
-
-                                Spacer(modifier = Modifier.size(36.dp))
-
-                                Text(
-                                    text = "3.  마을을 꾸며보세요! 꾸미기 모드에 들어가면 가지고 있는 펫과 아이템을 배치하고, 크기도 조정할 수 있으니 나만의 개성 있는 마을로 만들어 보세요. 또한 맵을 바꾸면, 마을의 배경 음악도 함께 바뀐답니다",
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier.padding(bottom = 10.dp),
-                                    color = Color.Black
-                                )
-
-                                MainButton(
-                                    onClick = {},
-                                    text = "   꾸미기 모드   "
-                                )
-
-                                Spacer(modifier = Modifier.size(36.dp))
-
-                                Text(
-                                    text = "4.  이웃들과 소통해보세요! 하루마을은 커뮤니티 기능을 통해 이웃들의 마을을 구경하고 게임 순위를 볼 수 있으며, 채팅을 통해 소통할 수 있습니다. 마음에 드는 이웃 마을이 있다면 좋아요를 눌러보세요!",
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier.padding(bottom = 10.dp),
-                                    color = Color.Black
-                                )
-
-                                MainButton(
-                                    onClick = {},
-                                    text = "   커뮤니티   "
-                                )
-
-                                Spacer(modifier = Modifier.size(36.dp))
-
-                                Text(
-                                    text = "설명은 끝났습니다. 어렵지 않으니 걱정하지 마세요 그럼 하루마을을 잘 부탁드립니다!",
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier.padding(bottom = 10.dp),
-                                    color = Color.Black
-                                )
-
-                                Spacer(modifier = Modifier.size(24.dp))
-
-                                Row(
+                                // ✨ 반짝임 레이어 (유리 스윕 효과)
+                                Box(
                                     modifier = Modifier
-                                        .fillMaxWidth(0.8f)
-                                ) {
-
-                                    MainButton(
-                                        onClick = onClose,
-                                        modifier = Modifier
-                                            .fillMaxWidth(),
-                                        text = " 시작하기 "
-                                    )
-
-                                }
-
+                                        .matchParentSize()
+                                        .background(
+                                            brush = Brush.linearGradient(
+                                                colorStops = arrayOf(
+                                                    (shimmerX - 0.2f) to Color.Transparent,
+                                                    shimmerX to shimmerColor,
+                                                    (shimmerX + 0.2f) to Color.Transparent
+                                                )
+                                            )
+                                        )
+                                )
                             }
-                            Spacer(modifier = Modifier.weight(1f))
                         }
-
-
                     }
-
                 }
 
             }
-
-            Spacer(modifier = Modifier.size(6.dp))
-
-            if(page == 2){
-                Text(
-                    text = "설명서를 아래로 드래그하세요",
-                    modifier = Modifier
-                        .background(
-                            color = Color.LightGray,
-                            shape = RoundedCornerShape(12.dp) // ⬅️ 둥글게 처리
-                        )
-                        .padding(horizontal = 12.dp, vertical = 6.dp) // ⬅️ 내부 여백
-                )
-            }
-
         }
     }
-
 }
 
 @Preview(showBackground = true)

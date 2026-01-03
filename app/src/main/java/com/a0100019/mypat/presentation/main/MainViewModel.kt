@@ -578,7 +578,17 @@ class MainViewModel @Inject constructor(
             }
     }
 
+    fun onExitClick() = intent {
+        postSideEffect(MainSideEffect.ExitApp)
+    }
 
+    fun onCloseClick() = intent {
+        reduce {
+            state.copy(
+                situation = ""
+            )
+        }
+    }
 
 }
 
@@ -615,5 +625,7 @@ data class MainState(
 sealed interface MainSideEffect{
     class Toast(val message:String): MainSideEffect
     data class OpenUrl(val url: String) : MainSideEffect
+
+    object ExitApp : MainSideEffect   // 앱 종료용
 
 }

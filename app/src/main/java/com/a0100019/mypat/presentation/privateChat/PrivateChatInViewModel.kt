@@ -235,7 +235,7 @@ class PrivateChatInViewModel @Inject constructor(
 
     fun onChatSubmitClick() = intent {
 
-        val userDataList = userDao.getAllUserData()
+        val userDataList = state.userDataList
 
         val myName = userDataList.find { it.id == "name" }?.value ?: "익명"
         val myTag = userDataList.find { it.id == "auth" }?.value2 ?: ""
@@ -254,6 +254,8 @@ class PrivateChatInViewModel @Inject constructor(
             "tag" to myTag
         )
 
+        Log.e("PrivateChatIn", myTag)
+
         val baseRef = Firebase.firestore
             .collection("chatting")
             .document("privateChat")
@@ -267,8 +269,10 @@ class PrivateChatInViewModel @Inject constructor(
         // 🔥 user1 / user2 확인
         baseRef.get().addOnSuccessListener { roomDoc ->
 
-            val user1 = roomDoc.getString("user1")
-            val user2 = roomDoc.getString("user2")
+            val user1 = state.privateChatData.user1
+            val user2 = state.privateChatData.user2
+            Log.e("PrivateChatIn", user1)
+            Log.e("PrivateChatIn", user2)
 
             val nameField: String
             val lastField: String

@@ -189,6 +189,7 @@ fun StoreScreen(
     val context = LocalContext.current
     val prefs = context.getSharedPreferences("bgm_prefs", Context.MODE_PRIVATE)
     val bgmOn = prefs.getBoolean("bgmOn", true)
+    val adPrefs = context.getSharedPreferences("ad_prefs", Context.MODE_PRIVATE)
 
     if (selectPatData != null) {
         PatSelectDialog(
@@ -281,8 +282,14 @@ fun StoreScreen(
             donationList = donationList
         )
         "removeAdSuccess" -> SimpleAlertDialog(
-            onConfirmClick = onDialogCloseClick,
-            text = "광고가 제거되었습니다! 방명록은 설정에서 확인할 수 있습니다. 감사합니다 :)",
+            onConfirmClick = {
+                adPrefs
+                    .edit()
+                    .putString("banner", "2")
+                    .apply()
+                onDialogCloseClick()
+                             },
+            text = "모든 광고가 제거되었습니다! 방명록은 설정에서 확인할 수 있으며, 상단의 베너 광고는 다음 접속부터 제거됩니다. 감사합니다 :)",
             onDismissOn = false,
         )
 
@@ -435,7 +442,7 @@ fun StoreScreen(
                                     Box(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .padding(bottom = 12.dp )
+                                            .padding(bottom = 12.dp)
                                         ,
                                         contentAlignment = Alignment.Center
                                     ) {

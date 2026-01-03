@@ -1,10 +1,12 @@
 package com.a0100019.mypat.presentation.main
 
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -27,6 +29,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -49,8 +52,10 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -63,7 +68,9 @@ import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.domain.AppBgmManager
 import com.a0100019.mypat.presentation.daily.walk.StepForegroundService
 import com.a0100019.mypat.presentation.main.mainDialog.LovePatDialog
+import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
 import com.a0100019.mypat.presentation.main.mainDialog.TutorialDialog
+import com.a0100019.mypat.presentation.main.management.BannerAd
 import com.a0100019.mypat.presentation.main.management.ManagementViewModel
 import com.a0100019.mypat.presentation.setting.LetterViewDialog
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
@@ -107,6 +114,10 @@ fun MainScreen(
             is MainSideEffect.OpenUrl -> {
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(sideEffect.url))
                 context.startActivity(intent)
+
+            }
+            MainSideEffect.ExitApp -> {
+                (context as? Activity)?.finish()  // ✅ 안전하게 앱 종료
             }
         }
     }
@@ -152,6 +163,8 @@ fun MainScreen(
         onLoveItemClick = mainViewModel::onLoveItemClick,
         onLovePatNextClick = mainViewModel::onLovePatNextClick,
         onLovePatStopClick = mainViewModel::onLovePatStopClick,
+        onCloseClick = mainViewModel::onCloseClick,
+        onExitClick = mainViewModel::onExitClick,
 
         mapUrl = mainState.mapData.value,
         patDataList = mainState.patDataList,
@@ -201,6 +214,8 @@ fun MainScreen(
     onLoveItemClick: (String) -> Unit,
     onLovePatNextClick: () -> Unit,
     onLovePatStopClick: () -> Unit,
+    onExitClick: () -> Unit = {},
+    onCloseClick: () -> Unit = {},
 
     mapUrl: String,
     patDataList: List<Pat>,
@@ -242,6 +257,9 @@ fun MainScreen(
     val tutorial = tutorialPrefs.getString("tutorial", "미션")
     var tutorialText by remember { mutableStateOf("진행") }
 
+    //
+    val adPrefs = context.getSharedPreferences("ad_prefs", Context.MODE_PRIVATE)
+
     if(tutorialText == "진행"){
         when (tutorial) {
 
@@ -251,6 +269,7 @@ fun MainScreen(
                     tutorialText = "완료"
                     onDailyNavigateClick()
                     tutorialPrefs.edit().putString("tutorial", "커뮤니티").apply()
+                    adPrefs.edit().putString("banner", "1").apply()
                 }
             )
 
@@ -291,6 +310,11 @@ fun MainScreen(
             clickLetterData = showLetterData,
             closeVisible = false
         )
+        "exit" -> SimpleAlertDialog(
+            onConfirmClick = onExitClick,
+            onDismissClick = onCloseClick,
+            text = "하루마을을 종료하시겠습니까?",
+        )
     }
 
     if(lovePatData.id != 0) {
@@ -329,12 +353,12 @@ fun MainScreen(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-                    .padding(6.dp)
+                    .padding(start = 6.dp, end = 6.dp, bottom = 6.dp, top = 6.dp)
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(10.dp),
+                        .padding(start = 10.dp, end = 10.dp, bottom = 10.dp, top = 5.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
 
@@ -344,51 +368,93 @@ fun MainScreen(
                         onClick = onInformationNavigateClick,
                     )
 
+                    // 1. 아이콘 애니메이션을 위한 Transition
+                    val infiniteTransition = rememberInfiniteTransition(label = "currency_anim")
+                    val iconScale by infiniteTransition.animateFloat(
+                        initialValue = 1f,
+                        targetValue = 1.15f,
+                        animationSpec = infiniteRepeatable(
+                            animation = tween(1200, easing = FastOutSlowInEasing),
+                            repeatMode = RepeatMode.Reverse
+                        ),
+                        label = "iconScale"
+                    )
+
                     val users by userFlowDataList.collectAsState(initial = emptyList())
+
+// 2. 재화창 메인 디자인
                     Row(
                         modifier = Modifier
-//                            .shadow(elevation = 4.dp, shape = RoundedCornerShape(16.dp)) // 💥 그림자 추가
+                            // 유리 효과: 반투명 배경 + 블러 느낌의 그림자
                             .background(
-                                color = MaterialTheme.colorScheme.scrim,
-                                shape = RoundedCornerShape(16.dp)
-                            ) // ✨ 배경 추가
-                            .border(
-                                width = 2.dp,
-                                color = MaterialTheme.colorScheme.primaryContainer,
-                                shape = RoundedCornerShape(16.dp)
+                                brush = Brush.verticalGradient(
+                                    colors = listOf(
+                                        Color.White.copy(alpha = 0.4f),
+                                        Color.White.copy(alpha = 0.2f)
+                                    )
+                                ),
+                                shape = RoundedCornerShape(24.dp)
                             )
-                            .padding(horizontal = 20.dp, vertical = 12.dp)
-                        ,
-                        horizontalArrangement = Arrangement.SpaceBetween,
+                            .border(
+                                width = 1.dp,
+                                brush = Brush.linearGradient(
+                                    colors = listOf(Color.White.copy(alpha = 0.5f), Color.Transparent)
+                                ),
+                                shape = RoundedCornerShape(24.dp)
+                            )
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+                        // --- 햇살(Sun) 섹션 ---
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            JustImage(
+                                filePath = "etc/sun.png",
+                                modifier = Modifier
+                                    .size(22.dp)
+                                    .graphicsLayer { // 둥실둥실 애니메이션
+                                        scaleX = iconScale
+                                        scaleY = iconScale
+                                    }
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = users.find { it.id == "money" }?.value ?: "0",
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(0xFF424242) // 가독성을 위해 진한 회색
+                                )
+                            )
+                        }
 
-                        JustImage(
-                            filePath = "etc/sun.png",
+                        // 구분선
+                        Box(
                             modifier = Modifier
-                                .size(20.dp)
-                                .padding(end = 3.dp)
+                                .width(1.dp)
+                                .height(14.dp)
+                                .background(Color.White.copy(alpha = 0.3f))
                         )
 
-                        Text(
-                            text = users.find { it.id == "money" }?.value ?: "0",
-                            style = MaterialTheme.typography.bodyLarge,
-                        )
-
-                        Spacer(modifier = Modifier.size(16.dp))
-
-                        JustImage(
-                            filePath = "etc/moon.png",
-                            modifier = Modifier
-                                .size(20.dp)
-                                .padding(end = 3.dp)
-                        )
-
-                        Text(
-                            text = users.find { it.id == "money" }?.value2 ?: "0",
-                            style = MaterialTheme.typography.bodyLarge,
-                        )
-
+                        // --- 달(Moon) 섹션 ---
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            JustImage(
+                                filePath = "etc/moon.png",
+                                modifier = Modifier
+                                    .size(20.dp)
+                                    .graphicsLayer {
+                                        // 달은 살짝 회전하는 느낌으로 차별화
+                                        rotationZ = (iconScale - 1f) * 100f
+                                    }
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = users.find { it.id == "money" }?.value2 ?: "0",
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(0xFF424242)
+                                )
+                            )
+                        }
                     }
 
                     Row(
@@ -398,6 +464,13 @@ fun MainScreen(
                             onClick = onSettingNavigateClick,
                             text = "설정"
                         )
+                        Spacer(modifier = Modifier.size(10.dp))
+                        MainButton(
+                            onClick = { onSituationChange("exit") },
+                            text = "종료",
+                            backgroundColor = MaterialTheme.colorScheme.tertiary,
+                            borderColor = MaterialTheme.colorScheme.onTertiary
+                        )
                     }
 
                 }
@@ -406,8 +479,7 @@ fun MainScreen(
 
             Column(
                 modifier = Modifier
-                    .padding(16.dp)
-                    .weight(1f)
+                    .padding(start = 24.dp, end = 24.dp)
                 ,
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -416,7 +488,6 @@ fun MainScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(10.dp),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.End),
                     verticalAlignment = Alignment.Bottom
                 ) {
                     Row(
@@ -466,10 +537,16 @@ fun MainScreen(
                         text = "상점",
                         onClick = onStoreNavigateClick
                     )
+
+                    Spacer(modifier = Modifier.size(10.dp))
+
                     MainButton(
                         text = "도감",
                         onClick = onIndexNavigateClick
                     )
+
+                    Spacer(modifier = Modifier.size(10.dp))
+
                     MainButton(
                         text = "꾸미기",
                         onClick = onWorldNavigateClick
@@ -494,20 +571,41 @@ fun MainScreen(
 
             Column(
                 modifier = Modifier
-                    .weight(0.25f)
+                    .height(150.dp)
                     .padding(12.dp)
                 ,
                 verticalArrangement = Arrangement.Bottom
             ) {
+                // 1. 애니메이션 변수 정의 (기존 shimmer 코드 위에 추가)
+                val infiniteTransition = rememberInfiniteTransition(label = "daily_btn_anim")
+
+// 둥실둥실 뜨는 효과
+                val floatingOffset by infiniteTransition.animateFloat(
+                    initialValue = 0f,
+                    targetValue = -8f,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(1500, easing = FastOutSlowInEasing),
+                        repeatMode = RepeatMode.Reverse
+                    ),
+                    label = "floating"
+                )
+
                 val interactionSource = remember { MutableInteractionSource() }
                 val isPressed by interactionSource.collectIsPressedAsState()
+
+// 눌렀을 때 내려가는 깊이 (isPressed일 때 floating 효과를 상쇄하며 바닥으로 붙음)
+                val pressOffset by animateFloatAsState(
+                    targetValue = if (isPressed) 4f else 0f,
+                    label = "pressOffset"
+                )
+
                 val scale by animateFloatAsState(
-                    targetValue = if (isPressed) 0.96f else 1f,
+                    targetValue = if (isPressed) 0.97f else 1f,
                     label = "daily_mission_scale"
                 )
 
-// ✨ 반짝임 애니메이션
-                val shimmerX by rememberInfiniteTransition(label = "shimmer").animateFloat(
+                // ✨ 반짝임 애니메이션 (기존 유지)
+                val shimmerX by infiniteTransition.animateFloat(
                     initialValue = -0.4f,
                     targetValue = 1.4f,
                     animationSpec = infiniteRepeatable(
@@ -517,74 +615,87 @@ fun MainScreen(
                     label = "shimmerX"
                 )
 
-                val shimmerColor = Color.White.copy(alpha = 0.35f)
+                val shimmerColor = Color.White.copy(alpha = 0.4f)
 
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Surface(
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(bottom = 10.dp)
+                            .height(100.dp) // 버튼 높이 고정
                             .graphicsLayer {
                                 scaleX = scale
                                 scaleY = scale
+                                // 둥실둥실 효과 + 누를 때 바닥으로 내려가는 효과 합산
+                                translationY = (floatingOffset + pressOffset).dp.toPx()
                             }
                             .clickable(
                                 interactionSource = interactionSource,
                                 indication = null
                             ) {
+                                if(userDataList.find { it.id == "name" }?.value3 == "1"){
+                                    adPrefs.edit().putString("banner", "2").apply()
+                                }
                                 onDailyNavigateClick()
-                            },
-                        shape = RoundedCornerShape(20.dp),
-                        color = Color(0xFFEAF4F1),
-                        border = BorderStroke(1.5.dp, Color(0xFF9ECFC3))
+                            }
                     ) {
-                        Box {
+                        // [Layer 1] 하단 그림자/바닥 (입체감 부여)
+                        Surface(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .offset(y = 6.dp),
+                            shape = RoundedCornerShape(22.dp),
+                            color = Color(0xFF2F6F62).copy(alpha = 0.2f)
+                        ) {}
 
-                            // 🌿 버튼 내용
-                            Row(
-                                modifier = Modifier
-                                    .padding(vertical = 16.dp, horizontal = 16.dp)
-                                    .fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center
-                            ) {
+                        // [Layer 2] 메인 버튼 바디
+                        Surface(
+                            modifier = Modifier.fillMaxSize(),
+                            shape = RoundedCornerShape(22.dp),
+                            color = Color(0xFFEAF4F1),
+                            border = BorderStroke(2.dp, Color(0xFF9ECFC3))
+                        ) {
+                            Box(modifier = Modifier.fillMaxSize()) {
 
-                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-
-                                    Text(
-                                        text = "✨ 하루 미션 ✨",
-                                        style = MaterialTheme.typography.titleLarge, // 🔥 한 단계 키움
-                                        color = Color(0xFF2F6F62)
-                                    )
-
-                                    Spacer(modifier = Modifier.height(2.dp))
-
-                                    Text(
-                                        text = "오늘의 작은 성장 기록",
-                                        style = MaterialTheme.typography.labelSmall,
-                                        color = Color(0xFF6FA9A0)
-                                    )
+                                // 🌿 버튼 내부 내용
+                                Row(
+                                    modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center
+                                ) {
+                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                        Text(
+                                            text = "✨ 하루 미션 ✨",
+                                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                                            color = Color(0xFF2F6F62)
+                                        )
+                                        Text(
+                                            text = "오늘의 작은 성장 기록",
+                                            style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 0.5.sp),
+                                            color = Color(0xFF6FA9A0)
+                                        )
+                                    }
                                 }
 
-                            }
-
-                            // ✨ 반짝임 레이어 (유리 스윕 효과)
-                            Box(
-                                modifier = Modifier
-                                    .matchParentSize()
-                                    .background(
-                                        brush = Brush.linearGradient(
-                                            colorStops = arrayOf(
-                                                (shimmerX - 0.18f) to Color.Transparent,
-                                                shimmerX to shimmerColor,
-                                                (shimmerX + 0.18f) to Color.Transparent
+                                // ✨ 반짝임 레이어 (유리 스윕 효과)
+                                Box(
+                                    modifier = Modifier
+                                        .matchParentSize()
+                                        .background(
+                                            brush = Brush.linearGradient(
+                                                colorStops = arrayOf(
+                                                    (shimmerX - 0.2f) to Color.Transparent,
+                                                    shimmerX to shimmerColor,
+                                                    (shimmerX + 0.2f) to Color.Transparent
+                                                )
                                             )
                                         )
-                                    )
-                            )
+                                )
+                            }
                         }
                     }
                 }
@@ -619,7 +730,7 @@ fun MainScreen(
                             .fillMaxWidth(0.66f),
                         onClick = onNeighborNavigateClick
                     )
-                    
+
                 }
 
             }
@@ -647,7 +758,7 @@ fun MainScreenPreview() {
             itemDataList = listOf(Item(url = "item/airplane.json")),
             dialogPatId = "0",
             dialogPatIdChange = {},
-            userFlowDataList = flowOf(listOf(User(id = "money", value = "1000"), User(id = "cash", value = "100"))),
+            userFlowDataList = flowOf(listOf(User(id = "money", value = "1000", value2 = "100000"))),
             patFlowWorldDataList = flowOf(emptyList()),
             worldDataList = emptyList(),
             userDataList = emptyList(),

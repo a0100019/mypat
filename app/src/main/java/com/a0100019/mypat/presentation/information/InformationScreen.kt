@@ -308,7 +308,9 @@ fun InformationScreen(
                 // 미니맵 뷰
                 Surface(
                     modifier = Modifier
-                        .aspectRatio(1f / 1.25f),
+                        .aspectRatio(1f / 1.25f)
+                        .padding(start = 6.dp, end = 6.dp)
+                    ,
                     shape = RoundedCornerShape(16.dp),
                     color = Color(0xFFFFF8E7),
                     border = BorderStroke(2.dp, MaterialTheme.colorScheme.primaryContainer),
@@ -463,6 +465,9 @@ fun InformationScreen(
                 }
             } else {
                 // 상세 페이지 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+
+                Spacer(modifier = Modifier.size(12.dp))
+
                 Row(
                 ) {
                     Spacer(modifier = Modifier.size(20.dp))
@@ -482,10 +487,12 @@ fun InformationScreen(
                     )
                 }
 
+                Spacer(modifier = Modifier.size(12.dp))
+
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .aspectRatio(1f / 1.25f)
+                        .weight(1f)
                         .padding(start = 6.dp, end = 6.dp, bottom = 6.dp),
                     shape = RoundedCornerShape(18.dp),
                     color = Color(0xFFFFF9ED),
@@ -604,7 +611,7 @@ fun InformationScreen(
                     }
                 }
 
-
+                Spacer(modifier = Modifier.size(12.dp))
 
                 Column(
                     modifier = Modifier,
@@ -816,6 +823,8 @@ fun InformationScreen(
                     }
 
                 }
+
+                Spacer(modifier = Modifier.size(12.dp))
 
             }
 
