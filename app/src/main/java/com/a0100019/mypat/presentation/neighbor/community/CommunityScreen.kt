@@ -164,7 +164,7 @@ fun CommunityScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
+                        .padding(start = 16.dp, end = 16.dp, bottom = 16.dp, top = 5.dp),
                     contentAlignment = Alignment.Center
                 ) {
 
@@ -256,18 +256,18 @@ fun CommunityScreen(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(top = 16.dp, bottom = 50.dp)
+                                .padding(top = 4.dp, bottom = 40.dp)
                         ) {
-                            Text("     ")
-
-                            Text(
-                                text = "마음에 드는 마을에 좋아요를 눌러주세요!\n오늘의 첫 좋아요를 누르면 1000달빛을 획득합니다",
-                                textAlign = TextAlign.Center
-                            )
+                            Text("   ")
+//
+//                            Text(
+//                                text = "오늘의 첫 좋아요를 누르면 1000달빛을 획득합니다",
+//                                textAlign = TextAlign.Center
+//                            )
 
                             MainButton(
                                 onClick = onPageUpClick,
-                                text = " 다음 "
+                                text = "다음"
                             )
                         }
                     }
@@ -412,7 +412,7 @@ fun CommunityScreenPreview() {
     MypatTheme {
         CommunityScreen(
             userDataList = listOf(User(id = "auth")),
-            situation = "firstGame",
+            situation = "world",
             firstGameRankList = listOf(Rank()),
 //            chatMessages = emptyList()
             chatMessages = listOf(ChatMessage(10202020, "a", "a", tag = "1", ban = "0", uid = "hello"), ChatMessage(10202020, "a11", "a11", tag = "2", ban = "0", uid = "assssssssssssssssssssssssssssssssssssssds".repeat(5)), ChatMessage(10202020, "a11", "a11", tag = "3", ban = "0", uid = "adssssssssssssssssssssssssssssssssssssssssssssssssssss".repeat(5)))

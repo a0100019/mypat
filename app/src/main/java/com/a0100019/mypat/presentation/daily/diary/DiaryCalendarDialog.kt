@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -134,6 +135,7 @@ fun DiaryCalendarDialog(
                 Text(
                     text = "하루 미션을 받지 못한 날짜의 일기도 작성할 수 있습니다",
                     style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center,
                     modifier = Modifier
                         .padding(top = 16.dp, bottom = 8.dp)
                 )

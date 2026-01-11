@@ -639,6 +639,8 @@ fun MainScreen(
                             ) {
                                 if(userDataList.find { it.id == "name" }?.value3 == "1"){
                                     adPrefs.edit().putString("banner", "2").apply()
+                                } else if(userDataList.find { it.id == "name" }?.value3 == "0"){
+                                    adPrefs.edit().putString("banner", "1").apply()
                                 }
                                 onDailyNavigateClick()
                             }

@@ -176,8 +176,7 @@ fun LoginScreen(
 ) {
 
     // 상태를 remember로 관리해야 UI가 갱신됨
-    var termsChecked by remember { mutableStateOf(false) }
-    var privacyChecked by remember { mutableStateOf(false) }
+    var termsChecked by remember { mutableStateOf(true) }
 
     val context = LocalContext.current
 
@@ -402,6 +401,37 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.weight(1f))
 
+
+                // ✅ 구글 로그인 버튼
+                Button(
+                    onClick = {
+                        if(termsChecked) { googleLoginClick() }
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.White,
+                        contentColor = Color.Black
+                    ),
+                    shape = RoundedCornerShape(8.dp),
+                    border = BorderStroke(1.dp, Color.LightGray),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp)
+                        .alpha(if(termsChecked) 1f else 0.7f) // 🔹 전체 투명도 (70% 불투명)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        JustImage(
+                            filePath = "etc/googleLogo.png",
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text("구글 로그인")
+                    }
+                }
+
+                Spacer(modifier = Modifier.size(20.dp))
+
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -422,18 +452,13 @@ fun LoginScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
 
-                        Text(
-                            text = "마을 친구들을 만나려면 작은 약속이 필요해요",
-                            style = MaterialTheme.typography.titleMedium
-                        )
-
                         Row(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
 
                             Column {
                                 Text(
-                                    text = "이용약관에 동의합니다.",
+                                    text = "이용약관 및 개인정보 처리방침에 동의합니다.",
                                 )
                             }
 
@@ -444,18 +469,6 @@ fun LoginScreen(
 
                         }
 
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "개인정보 처리방침에 동의합니다.",
-                            )
-                            Checkbox(
-                                checked = privacyChecked,
-                                onCheckedChange = { privacyChecked = it }
-                            )
-
-                        }
 
                         Text(
                             text = "이용약관 및 개인정보 처리방침 보기",
@@ -468,36 +481,6 @@ fun LoginScreen(
 
                     }
 
-                }
-
-                Spacer(modifier = Modifier.size(20.dp))
-
-                // ✅ 구글 로그인 버튼
-                Button(
-                    onClick = {
-                        if(termsChecked && privacyChecked) { googleLoginClick() }
-                              },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.White,
-                        contentColor = Color.Black
-                    ),
-                    shape = RoundedCornerShape(8.dp),
-                    border = BorderStroke(1.dp, Color.LightGray),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(48.dp)
-                        .alpha(if(termsChecked && privacyChecked) 1f else 0.7f) // 🔹 전체 투명도 (70% 불투명)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        JustImage(
-                            filePath = "etc/googleLogo.png",
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text("구글 로그인")
-                    }
                 }
 
                 Spacer(modifier = Modifier.size(20.dp))

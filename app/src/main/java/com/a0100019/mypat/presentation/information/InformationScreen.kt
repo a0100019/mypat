@@ -480,7 +480,7 @@ fun InformationScreen(
                     JustImage(
                         filePath = "etc/question.png",
                         modifier = Modifier
-                            .size(15.dp)
+                            .size(20.dp)
                             .clickable {
                                 onSituationChange("medalQuestion")
                             }
@@ -835,19 +835,19 @@ fun InformationScreen(
                 horizontalArrangement = Arrangement.SpaceBetween
             ){
                 MainButton(
-                    text = "칭호 변경하기",
+                    text = "칭호 변경",
                     onClick = {
                         onSituationChange("medal")
                     }
                 )
                 MainButton(
-                    text = "인삿말 변경하기",
+                    text = "인삿말 변경",
                     onClick = {
                         onSituationChange("introduction")
                     }
                 )
                 MainButton(
-                    text = if(page == 0) "상세 페이지 보기" else "메인 페이지 보기",
+                    text = if(page == 0) "상세 페이지" else "메인 페이지",
                     onClick = {
                         if(page == 0) page = 1 else page = 0
                     },

@@ -184,25 +184,6 @@ fun DailyScreen(
                 verticalArrangement = Arrangement.spacedBy(14.dp),
                 contentPadding = PaddingValues(bottom = 24.dp)
             ) {
-                item {
-                    MissionCard(
-                        title = "일기",
-                        description = "오늘 하루를 정리하세요",
-                        subDescription = "길게 적지 않아도 돼요. 꾸준함이 중요합니다",
-                        icon = "✍️", // 이모지를 활용하거나 ImageVector 사용
-                        onClick = onDiaryNavigateClick
-                    )
-                }
-
-                item {
-                    MissionCard(
-                        title = "사자성어",
-                        description = "한자 카드를 조합하여 맞춰보세요",
-                        subDescription = "매우 쉬우니 걱정하지 마세요",
-                        icon = "📜",
-                        onClick = onKoreanNavigateClick
-                    )
-                }
 
                 item {
                     MissionCard(
@@ -221,6 +202,26 @@ fun DailyScreen(
                         subDescription = "어렵지만 끝까지 파이팅!",
                         icon = "🇬🇧",
                         onClick = onEnglishNavigateClick
+                    )
+                }
+
+                item {
+                    MissionCard(
+                        title = "사자성어",
+                        description = "한자 카드를 조합하여 맞춰보세요",
+                        subDescription = "매우 쉬우니 걱정하지 마세요",
+                        icon = "📜",
+                        onClick = onKoreanNavigateClick
+                    )
+                }
+
+                item {
+                    MissionCard(
+                        title = "일기",
+                        description = "오늘 하루를 정리하세요",
+                        subDescription = "길게 적지 않아도 돼요. 꾸준함이 중요합니다",
+                        icon = "✍️", // 이모지를 활용하거나 ImageVector 사용
+                        onClick = onDiaryNavigateClick
                     )
                 }
 

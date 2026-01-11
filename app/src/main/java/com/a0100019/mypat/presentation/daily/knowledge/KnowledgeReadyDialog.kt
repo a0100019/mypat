@@ -35,10 +35,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.knowledge.Knowledge
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
+
 @Composable
 fun KnowledgeReadyDialog(
     onClose: () -> Unit = {},

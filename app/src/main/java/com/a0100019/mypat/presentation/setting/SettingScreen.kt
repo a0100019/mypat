@@ -271,7 +271,7 @@ fun SettingScreen(
             ){
                 // 기타 정보
                 MainButton(
-                    text = "이용약관 & 개인정보 처리방침",
+                    text = "이용약관",
                     onClick = { onSituationChange("terms") },
                     modifier = Modifier.weight(1f)
                 )

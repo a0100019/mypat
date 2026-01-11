@@ -58,11 +58,6 @@ class CommunityViewModel @Inject constructor(
 
     // 뷰 모델 초기화 시 모든 user 데이터를 로드
     init {
-        onFirstGameRank()
-        onSecondGameRank()
-        onThirdGameEasyRank()
-        onThirdGameNormalRank()
-        onThirdGameHardRank()
         loadData()
     }
 
@@ -82,6 +77,12 @@ class CommunityViewModel @Inject constructor(
         }
 
         randomGetAllUser()
+
+        onFirstGameRank()
+        onSecondGameRank()
+        onThirdGameEasyRank()
+        onThirdGameNormalRank()
+        onThirdGameHardRank()
     }
 
     fun randomGetAllUser() = intent {
@@ -169,7 +170,6 @@ class CommunityViewModel @Inject constructor(
     }
 
 
-
     fun onCloseClick() = intent {
         reduce {
             state.copy(
@@ -190,7 +190,6 @@ class CommunityViewModel @Inject constructor(
         }
 
     }
-
 
     fun opPageUpClick() = intent {
         val allUserDataList = state.allUserDataList

@@ -278,7 +278,7 @@ fun KoreanScreen(
                                     modifier = Modifier.weight(1f)
                                 ) {
                                     Text(
-                                        text = "문제를 풀고 보상을 받으세요!",
+                                        text = "오늘의 사자성어를 찾아주세요!",
                                         style = MaterialTheme.typography.titleMedium,
                                         color = MaterialTheme.colorScheme.primary,
                                     )

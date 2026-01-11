@@ -8,7 +8,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.a0100019.mypat.R
 
-private val letterFontFamily = FontFamily(Font(R.font.letter))
+private val letterFontFamily = FontFamily(Font(R.font.kukkuk))
+//private val letterFontFamily = FontFamily.Default
+
 private val defaultTypography = Typography()
 
 //display, headline, title, body, label

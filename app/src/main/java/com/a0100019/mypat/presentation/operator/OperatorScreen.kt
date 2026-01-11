@@ -84,7 +84,8 @@ fun OperatorScreen(
         onOperatorChatSubmitClick = operatorViewModel::onOperatorChatSubmitClick,
         onAskClick = operatorViewModel::onAskClick,
         onLetterSubmitClick = operatorViewModel::onOperatorLetterSubmitClick,
-        onRankUpdate = operatorViewModel::onRankUpdate
+        onRankUpdate = operatorViewModel::onRankUpdate,
+        onAllUserDataGet = operatorViewModel::onAllUserDataGet
 
     )
 }
@@ -128,6 +129,7 @@ fun CommunityScreen(
     onAskClick: (String) -> Unit = {},
     onLetterSubmitClick: () -> Unit = {},
     onRankUpdate: () -> Unit = {},
+    onAllUserDataGet: () -> Unit = {}
 
     ) {
 
@@ -266,14 +268,21 @@ fun CommunityScreen(
                             .padding(20.dp)
                     )
                     MainButton(
+                        text = "모든 유저 데이터 가져오기",
+                        onClick = { onAllUserDataGet() },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(20.dp)
+                    )
+                    MainButton(
                         text = "랭킹 업데이트",
                         onClick = { onRankUpdate() },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(20.dp)
                     )
-                }
 
+                }
 
             }
 

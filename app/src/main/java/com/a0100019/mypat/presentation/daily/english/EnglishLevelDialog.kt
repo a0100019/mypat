@@ -86,7 +86,7 @@ fun EnglishLevelDialog(
 
                 Row {
                     MainButton(
-                        text = "쉬움 (초등학생 난이도)",
+                        text = "쉬움",
                         onClick = onEasyClick,
                         modifier = Modifier
                             .padding(16.dp)

@@ -14,6 +14,7 @@ import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.world.WorldDao
 import com.google.firebase.Firebase
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.firestore
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -155,6 +156,73 @@ class OperatorViewModel @Inject constructor(
                 dialogState = "askWrite"
             )
         }
+    }
+
+    fun onAllUserDataGet() = intent {
+        val db = Firebase.firestore
+
+        db.collection("users")
+            .get()
+            .addOnSuccessListener { snapshot ->
+                // 성공 시 결과 처리
+                applyResult(snapshot.documents)
+            }
+            .addOnFailureListener { e ->
+                Log.e("DB", "모든 유저 조회 실패", e)
+                // 실패 시 토스트 알림
+                intent {
+                    postSideEffect(OperatorSideEffect.Toast("유저 데이터 로드 실패: ${e.message}"))
+                }
+            }
+    }
+
+    private fun applyResult(docs: List<DocumentSnapshot>) = intent {
+        // 1️⃣ map을 사용하여 모든 문서를 AllUser 객체로 변환
+        val users = docs.map { doc ->
+            val gameMap = doc.get("game") as? Map<String, String> ?: emptyMap()
+            val communityMap = doc.get("community") as? Map<String, String> ?: emptyMap()
+            val dateMap = doc.get("date") as? Map<String, String> ?: emptyMap()
+            val itemMap = doc.get("item") as? Map<String, String> ?: emptyMap()
+            val patMap = doc.get("pat") as? Map<String, String> ?: emptyMap()
+            val worldMap = doc.get("world") as? Map<String, Map<String, String>> ?: emptyMap()
+
+            val worldData = worldMap.entries.joinToString("/") { (_, inner) ->
+                "${inner["id"].orEmpty()}@" +
+                        "${inner["size"].orEmpty()}@" +
+                        "${inner["type"].orEmpty()}@" +
+                        "${inner["x"].orEmpty()}@" +
+                        "${inner["y"].orEmpty()}@" +
+                        "${inner["effect"].orEmpty()}"
+            }
+
+            AllUser(
+                tag = doc.getString("tag").orEmpty(),
+                lastLogin = doc.getString("lastLogin")?.toLongOrNull() ?: 0L,
+                ban = communityMap["ban"].orEmpty(),
+                like = communityMap["like"].orEmpty(),
+                warning = communityMap["introduction"].orEmpty() +
+                        "@" + communityMap["medal"].orEmpty(),
+                firstDate = dateMap["firstDate"].orEmpty(),
+                firstGame = gameMap["firstGame"].orEmpty(),
+                secondGame = gameMap["secondGame"].orEmpty(),
+                thirdGameEasy = gameMap["thirdGameEasy"].orEmpty(),
+                thirdGameNormal = gameMap["thirdGameNormal"].orEmpty(),
+                thirdGameHard = gameMap["thirdGameHard"].orEmpty(),
+                openItem = itemMap["openItem"].orEmpty(),
+                area = doc.getString("area").orEmpty(),
+                name = doc.getString("name").orEmpty(),
+                openPat = patMap["openPat"].orEmpty(),
+                openArea = doc.getString("openArea").orEmpty(),
+                totalDate = dateMap["totalDate"].orEmpty(),
+                worldData = worldData
+            )
+        }
+
+        // 2️⃣ 로컬 DB 저장
+        allUserDao.insertAll(users)
+
+        // 3️⃣ 저장 완료 후 토스트 알림
+        postSideEffect(OperatorSideEffect.Toast("${users.size}명의 유저 정보를 모두 가져왔습니다."))
     }
 
     fun onAskChatWrite() = intent {
