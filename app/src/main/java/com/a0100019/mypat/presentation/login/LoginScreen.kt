@@ -133,6 +133,7 @@ fun LoginScreen(
         onNavigateToMainScreen = loginViewModel::onNavigateToMainScreen,
         dialogChange = loginViewModel::dialogChange,
         reLoading = loginViewModel::reLoading,
+        onGuestLoginClick = loginViewModel::onGuestLoginClick,
 
         googleLoginClick = {
             if (!isInternetAvailable(context)) {
@@ -170,6 +171,7 @@ fun LoginScreen(
     onNavigateToMainScreen: () -> Unit,
     dialogChange: (String) -> Unit = {},
     reLoading: () -> Unit = {},
+    onGuestLoginClick: () -> Unit = {},
 
     loginState: String,
     dialog: String = ""
@@ -401,6 +403,16 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.weight(1f))
 
+                MainButton(
+                    text = "게스트 로그인",
+                    onClick = {
+                        onGuestLoginClick()
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.size(20.dp))
 
                 // ✅ 구글 로그인 버튼
                 Button(

@@ -164,7 +164,7 @@ fun DailyScreen(
                 MainButton(
                     text = "마을",
                     onClick = popBackStack,
-                    modifier = Modifier.align(Alignment.CenterEnd)
+                    modifier = Modifier.align(Alignment.CenterStart)
                 )
 
                 MainButton(

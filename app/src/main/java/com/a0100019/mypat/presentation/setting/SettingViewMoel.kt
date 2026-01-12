@@ -43,6 +43,8 @@ import com.a0100019.mypat.presentation.main.management.addMedalAction
 import com.a0100019.mypat.presentation.main.management.getMedalActionCount
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
@@ -1085,6 +1087,46 @@ class SettingViewModel @Inject constructor(
             state.copy(settingSituation = "")
         }
 
+    }
+
+    fun onGoogleLoginChangeClick(
+        googleIdToken: String
+    ) = intent {
+
+        try {
+            val user = FirebaseAuth.getInstance().currentUser ?: return@intent
+            if (!user.isAnonymous) return@intent
+
+            val credential =
+                GoogleAuthProvider.getCredential(googleIdToken, null)
+
+            // 🔹 익명 계정 → 구글 계정 연결 (UID 유지 핵심)
+            user.linkWithCredential(credential).await()
+
+            Log.e("login", "게스트 → 구글 로그인 전환 성공 (uid 유지): ${user.uid}")
+
+            // 🔹 Local DB auth 정보는 그대로 UID 유지
+            userDao.update(id = "selectPat", value3 = "0")
+
+            postSideEffect(
+                SettingSideEffect.Toast("계정이 구글 계정으로 저장되었습니다 ☁️")
+            )
+
+            loadData()
+
+        } catch (e: FirebaseAuthUserCollisionException) {
+            // 이미 다른 계정에 연결된 구글 계정
+            Log.e("login", "구글 계정 충돌", e)
+            postSideEffect(
+                SettingSideEffect.Toast("이미 사용 중인 구글 계정입니다.")
+            )
+
+        } catch (e: Exception) {
+            Log.e("login", "구글 로그인 전환 실패", e)
+            postSideEffect(
+                SettingSideEffect.Toast("구글 로그인 실패: ${e.localizedMessage}")
+            )
+        }
     }
 
 

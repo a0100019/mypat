@@ -7,6 +7,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -31,12 +32,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
@@ -59,15 +62,18 @@ fun SettingScreen(
     onSignOutClick: () -> Unit,
     popBackStack: () -> Unit = {}
 ) {
-    val settingState: SettingState = settingViewModel.collectAsState().value
     val context = LocalContext.current
+    val settingState = settingViewModel.collectAsState().value
 
+    // 🔹 SideEffect 처리
     settingViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
-            is SettingSideEffect.Toast -> {
+            is SettingSideEffect.Toast ->
                 Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
-            }
-            SettingSideEffect.NavigateToLoginScreen -> onSignOutClick()
+
+            SettingSideEffect.NavigateToLoginScreen ->
+                onSignOutClick()
+
             is SettingSideEffect.OpenUrl -> {
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(sideEffect.url))
                 context.startActivity(intent)
@@ -75,8 +81,23 @@ fun SettingScreen(
         }
     }
 
-    SettingScreen(
+    // 🔹 Google 로그인 launcher (LoginScreen과 동일)
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+        try {
+            val account = task.getResult(ApiException::class.java)
+            val idToken = account.idToken
+            if (idToken != null) {
+                settingViewModel.onGoogleLoginChangeClick(idToken)
+            }
+        } catch (e: Exception) {
+            Log.e("setting", "구글 로그인 실패", e)
+        }
+    }
 
+    SettingScreen(
         userData = settingState.userDataList,
         settingSituation = settingState.settingSituation,
         editText = settingState.editText,
@@ -101,7 +122,21 @@ fun SettingScreen(
         onRecommendationSubmitClick = settingViewModel::onRecommendationSubmitClick,
         onMedal19Click = settingViewModel::onMedal19Click,
         popBackStack = popBackStack,
-        onReviewClick = settingViewModel::onReviewClick
+        onReviewClick = settingViewModel::onReviewClick,
+
+        // 🔥 여기서 연결
+        onGoogleLoginChangeClick = {
+            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(context.getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build()
+
+            val googleSignInClient = GoogleSignIn.getClient(context, gso)
+
+            googleSignInClient.signOut().addOnCompleteListener {
+                launcher.launch(googleSignInClient.signInIntent)
+            }
+        }
     )
 }
 
@@ -132,7 +167,8 @@ fun SettingScreen(
     onRecommendationClick: () -> Unit = {},
     onRecommendationSubmitClick: () -> Unit = {},
     onMedal19Click: () -> Unit = {},
-    onReviewClick: () -> Unit = {}
+    onReviewClick: () -> Unit = {},
+    onGoogleLoginChangeClick: () -> Unit = {},
 
 ) {
 
@@ -351,19 +387,48 @@ fun SettingScreen(
                 modifier = Modifier
                     .fillMaxWidth()
             ){
-                MainButton(
-                    text = "계정삭제",
-                    onClick = { onSituationChange("accountDelete") },
-                    modifier = Modifier.weight(1f)
-                )
 
-                Spacer(modifier = Modifier.size(12.dp))
+                if(userData.find { it.id == "selectPat" }?.value3 == "0"){
+                    MainButton(
+                        text = "계정삭제",
+                        onClick = { onSituationChange("accountDelete") },
+                        modifier = Modifier.weight(0.5f)
+                    )
 
-                MainButton(
-                    text = "로그아웃",
-                    onClick = onSignOutClick,
-                    modifier = Modifier.weight(1f)
-                )
+                    Spacer(modifier = Modifier.size(12.dp))
+
+                    MainButton(
+                        text = "로그아웃",
+                        onClick = onSignOutClick,
+                        modifier = Modifier.weight(1f)
+                    )
+                } else {
+
+                    // ✅ 구글 로그인 버튼
+                    Button(
+                        onClick = onGoogleLoginChangeClick,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.White,
+                            contentColor = Color.Black
+                        ),
+                        shape = RoundedCornerShape(8.dp),
+                        border = BorderStroke(1.dp, Color.LightGray),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            JustImage(
+                                filePath = "etc/googleLogo.png",
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text("구글 로그인")
+                        }
+                    }
+                }
             }
 
             Spacer(modifier = Modifier.height(12.dp))

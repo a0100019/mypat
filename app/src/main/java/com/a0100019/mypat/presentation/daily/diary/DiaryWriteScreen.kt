@@ -171,7 +171,7 @@ fun DiaryWriteScreen(
                 placeholder = { Text("내용을 입력하세요") },
                 shape = RoundedCornerShape(8.dp),
                 textStyle = MaterialTheme.typography.bodyLarge.copy(
-                    fontSize = 16.sp
+                    fontSize = 18.sp
                 )
                 ,
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Default),

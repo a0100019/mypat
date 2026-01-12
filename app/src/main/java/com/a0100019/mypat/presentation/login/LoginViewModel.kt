@@ -116,6 +116,88 @@ class LoginViewModel @Inject constructor(
         loadData()
     }
 
+    fun onGuestLoginClick() = intent {
+        // 1. 중복 로그인 방지
+        if (state.isLoggingIn) return@intent
+        reduce { state.copy(isLoggingIn = true) }
+
+        try {
+            // 2. Firebase 익명 로그인 실행
+            val authResult = FirebaseAuth.getInstance().signInAnonymously().await()
+            val user = authResult.user
+
+            // 익명 로그인은 항상 신규 유저로 생성되거나,
+            // 기존 익명 세션이 유지되는 형태이므로 isNewUser를 체크합니다.
+            val isNewUser = authResult.additionalUserInfo?.isNewUser ?: false
+
+            Log.e("login", "Guest User = $user, isNewUser = $isNewUser")
+
+            user?.let {
+                if (isNewUser) {
+                    // 🔹 신규 사용자 설정 로직 (기존 구글 로그인 로직과 동일)
+                    val db = FirebaseFirestore.getInstance()
+
+                    // [Tag 설정 및 Local DB 업데이트]
+                    val lastKey: Int = withContext(Dispatchers.IO) {
+                        val documentSnapshot = db.collection("tag")
+                            .document("tag")
+                            .get()
+                            .await()
+                        val dataMap = documentSnapshot.data ?: emptyMap()
+                        dataMap.keys.maxOfOrNull { it.toInt() } ?: 0
+                    }
+                    userDao.update(id = "auth", value = user.uid, value2 = "${lastKey + 1}")
+
+                    // [Firestore Tag 문서 업데이트]
+                    val tagDocRef = db.collection("tag").document("tag")
+                    val nextKey = (lastKey + 1).toString()
+                    tagDocRef.update(nextKey, user.uid).await()
+
+                    // [초기 날짜 및 기본 데이터 설정]
+                    val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+                    userDao.update(id = "date", value3 = currentDate)
+                    userDao.update(id = "selectPat", value3 = "1")
+                    letterDao.updateDateByTitle(title = "시작의 편지", todayDate = currentDate)
+
+                    // [Firestore 유저 문서 생성]
+                    val userRef = db.collection("users").document(it.uid)
+                    userRef.set(
+                        mapOf(
+                            "online" to "1",
+                            "community" to mapOf("like" to "0"),
+                            "name" to "게스트", // 익명 유저는 이름이 없으므로 기본값 설정
+                            "tag" to nextKey
+                        ),
+                        SetOptions.merge()
+                    ).await()
+
+                    // 데이터 저장 처리
+                    dataSave()
+
+                    Log.e("login", "익명 신규 사용자 등록 완료")
+
+                    reduce {
+                        state.copy(dialog = "explanation")
+                    }
+                } else {
+                    // 기존 익명 계정이 있는 경우 (캐시된 세션 등)
+                    Log.e("login", "기존 익명 사용자 세션 재사용")
+                    // 필요하다면 기존 유저 데이터 로드 로직을 여기에 추가하세요.
+                    reduce {
+                        state.copy(dialog = "explanation")
+                    }
+                }
+            }
+
+
+        } catch (e: Exception) {
+            Log.e("login", "익명 로그인 실패", e)
+            postSideEffect(LoginSideEffect.Toast("게스트 로그인 실패: ${e.localizedMessage}"))
+        } finally {
+            reduce { state.copy(isLoggingIn = false) }
+        }
+    }
+
     fun onGoogleLoginClick(idToken: String) = intent {
         Log.e("login", "idToken = $idToken")
 
