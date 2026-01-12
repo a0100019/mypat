@@ -139,7 +139,7 @@ dependencies {
     implementation("com.google.android.gms:play-services-ads:23.2.0")
 
     //결제
-    implementation("com.android.billingclient:billing-ktx:6.2.1")
-
+    implementation("com.android.billingclient:billing-ktx:8.0.0")
+    implementation("com.google.ads.mediation:applovin:12.4.3.0")
 
 }

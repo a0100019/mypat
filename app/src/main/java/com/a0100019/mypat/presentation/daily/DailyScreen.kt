@@ -162,8 +162,14 @@ fun DailyScreen(
 
                 // 닫기 버튼을 아이콘 버튼으로 변경하여 세련되게 수정 가능
                 MainButton(
-                    text = "닫기",
+                    text = "마을",
                     onClick = popBackStack,
+                    modifier = Modifier.align(Alignment.CenterEnd)
+                )
+
+                MainButton(
+                    text = "종료",
+                    onClick = {},
                     modifier = Modifier.align(Alignment.CenterEnd)
                 )
             }

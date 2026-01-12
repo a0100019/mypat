@@ -128,7 +128,6 @@ class ManagementViewModel @Inject constructor(
 
                     }
 
-
                     100 -> letterDao.updateDateByTitle(
                         title = "100일 출석 감사 편지",
                         todayDate = currentDate
@@ -210,6 +209,7 @@ class ManagementViewModel @Inject constructor(
             postSideEffect(ManagementSideEffect.Toast("칭호를 획득했습니다!"))
         }
 
+        Log.e("ManagementViewModel", "데이터 로드 완료")
 
     }
 

@@ -66,6 +66,7 @@ import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.domain.AppBgmManager
+import com.a0100019.mypat.presentation.daily.diary.DiarySideEffect
 import com.a0100019.mypat.presentation.daily.walk.StepForegroundService
 import com.a0100019.mypat.presentation.main.mainDialog.LovePatDialog
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
@@ -116,6 +117,7 @@ fun MainScreen(
                 context.startActivity(intent)
 
             }
+            MainSideEffect.NavigateToDailyScreen -> onDailyNavigateClick()
             MainSideEffect.ExitApp -> {
                 (context as? Activity)?.finish()  // ✅ 안전하게 앱 종료
             }

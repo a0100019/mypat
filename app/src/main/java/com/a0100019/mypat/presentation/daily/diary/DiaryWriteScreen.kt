@@ -41,7 +41,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.*
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.unit.sp
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
 
 @Composable
@@ -110,7 +112,6 @@ fun DiaryWriteScreen(
     )
 }
 
-
 @Composable
 fun DiaryWriteScreen(
     writeDiaryData: Diary,
@@ -169,6 +170,10 @@ fun DiaryWriteScreen(
                 isError = isError,
                 placeholder = { Text("내용을 입력하세요") },
                 shape = RoundedCornerShape(8.dp),
+                textStyle = MaterialTheme.typography.bodyLarge.copy(
+                    fontSize = 16.sp
+                )
+                ,
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Default),
                 modifier = Modifier
                     .fillMaxWidth()

@@ -22,6 +22,7 @@ import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.data.room.world.WorldDao
+import com.a0100019.mypat.presentation.daily.diary.DiarySideEffect
 import com.a0100019.mypat.presentation.main.management.ManagementSideEffect
 import com.a0100019.mypat.presentation.main.management.RewardAdManager
 import com.a0100019.mypat.presentation.privateChat.PrivateRoom
@@ -197,6 +198,9 @@ class MainViewModel @Inject constructor(
                         )
                     }
                 }
+
+                postSideEffect(MainSideEffect.NavigateToDailyScreen)
+
             } catch (e: Exception) {
                 Log.e("DataLoadError", "데이터 로드 중 에러 발생: ${e.message}", e)
                 postSideEffect(MainSideEffect.Toast("데이터 로드 에러"))
@@ -625,6 +629,7 @@ data class MainState(
 sealed interface MainSideEffect{
     class Toast(val message:String): MainSideEffect
     data class OpenUrl(val url: String) : MainSideEffect
+    data object NavigateToDailyScreen: MainSideEffect
 
     object ExitApp : MainSideEffect   // 앱 종료용
 
