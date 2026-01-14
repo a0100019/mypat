@@ -20,6 +20,9 @@
     <!-- Android 13 이상: 알림 표시 권한 필요 -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
+    <!-- 폰 다시 켜도 알림 유지 -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
     <application
         android:name=".App"
         android:allowBackup="false"
@@ -51,6 +54,20 @@
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="health" />
+
+        <receiver
+            android:name=".presentation.daily.diary.AlarmReceiver"
+            android:enabled="true"
+            android:exported="false" />
+
+        <receiver
+            android:name=".presentation.daily.diary.BootReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
 
         <!-- AdMob App ID -->
         <meta-data

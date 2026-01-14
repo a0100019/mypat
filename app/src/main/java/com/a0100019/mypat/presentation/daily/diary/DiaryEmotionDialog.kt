@@ -63,11 +63,19 @@ fun DiaryEmotionDialog(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-                Text(
-                    text = "감정을 선택해주세요",
-                    modifier = Modifier
-                        .padding(bottom = 6.dp)
-                )
+                if(removeEmotion){
+                    Text(
+                        text = " 필터 감정을 선택해주세요",
+                        modifier = Modifier
+                            .padding(bottom = 6.dp)
+                    )
+                } else {
+                    Text(
+                        text = " 오늘의 감정을 선택해주세요",
+                        modifier = Modifier
+                            .padding(bottom = 6.dp)
+                    )
+                }
 
                 Box(
                     modifier = Modifier

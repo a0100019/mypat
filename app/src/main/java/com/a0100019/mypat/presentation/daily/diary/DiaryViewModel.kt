@@ -1,6 +1,15 @@
 package com.a0100019.mypat.presentation.daily.diary
 
+import android.Manifest
+import android.app.AlarmManager
+import android.app.Application
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.util.Log
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.a0100019.mypat.data.room.diary.Diary
@@ -9,7 +18,10 @@ import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.presentation.daily.walk.WalkSideEffect
 import com.a0100019.mypat.presentation.game.secondGame.SecondGameSideEffect
+import com.a0100019.mypat.presentation.main.MainSideEffect
+import dagger.hilt.android.internal.Contexts.getApplication
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -25,6 +37,7 @@ import org.orbitmvi.orbit.viewmodel.container
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
+import java.util.Calendar
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 
@@ -33,6 +46,7 @@ import javax.inject.Inject
 class DiaryViewModel @Inject constructor(
     private val userDao: UserDao,
     private val diaryDao: DiaryDao,
+    @ApplicationContext private val context: Context,
 ) : ViewModel(), ContainerHost<DiaryState, DiarySideEffect> {
 
     override val container: Container<DiaryState, DiarySideEffect> = container(
@@ -47,6 +61,7 @@ class DiaryViewModel @Inject constructor(
     )
 
     init {
+
         loadData()
     }
 
@@ -310,7 +325,38 @@ class DiaryViewModel @Inject constructor(
                 }
             }
 
+        }
+    }
 
+    fun onExitClick() = intent {
+        postSideEffect(DiarySideEffect.ExitApp)
+    }
+
+    fun onDiaryAlarmChangeClick(timeString: String) = intent {
+        postSideEffect(
+            DiarySideEffect.CheckNotificationPermission(timeString)
+        )
+    }
+
+    // 알람을 해제하려 할 때
+    fun onCancelAlarmClick() = intent {
+
+        // 1. 시스템 알람 및 저장 데이터 삭제
+        cancelDiaryAlarm(context)
+
+        // 2. State 업데이트 (필요한 경우)
+        reduce {
+            state.copy(
+                // 예를 들어 alarmTime이라는 상태가 있다면 null로 변경
+                // alarmTime = null
+            )
+        }
+
+        postSideEffect(DiarySideEffect.Toast("알림이 해제되었습니다."))
+        reduce {
+            state.copy(
+                dialogState = ""
+            )
         }
     }
 
@@ -339,5 +385,12 @@ data class DiaryState(
 sealed interface DiarySideEffect{
     class Toast(val message:String): DiarySideEffect
     data object NavigateToDiaryWriteScreen: DiarySideEffect
+
+    object ExitApp : DiarySideEffect   // 앱 종료용
+
+    // 🔥 추가
+    data class CheckNotificationPermission(
+        val timeString: String
+    ) : DiarySideEffect
 
 }

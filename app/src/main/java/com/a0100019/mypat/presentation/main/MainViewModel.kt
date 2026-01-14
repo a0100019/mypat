@@ -199,7 +199,7 @@ class MainViewModel @Inject constructor(
                     }
                 }
 
-                postSideEffect(MainSideEffect.NavigateToDailyScreen)
+//                postSideEffect(MainSideEffect.NavigateToDailyScreen)
 
             } catch (e: Exception) {
                 Log.e("DataLoadError", "데이터 로드 중 에러 발생: ${e.message}", e)

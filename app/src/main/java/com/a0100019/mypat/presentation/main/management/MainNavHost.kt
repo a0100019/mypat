@@ -174,6 +174,12 @@ fun MainNavHost(
                 onDiaryClick = {
                     navController.navigate(route = MainRoute.DiaryWriteScreen.name)
                 },
+                onNavigateToMainScreen = {
+                    navController.navigate(route = MainRoute.MainScreen.name) {
+                        popUpTo(0) { inclusive = true } // 백스택 전체 제거
+                        launchSingleTop = true // 같은 화면 여러 번 안 쌓이게
+                    }
+                },
                 popBackStack = { navController.popBackStack() }
             )
         }

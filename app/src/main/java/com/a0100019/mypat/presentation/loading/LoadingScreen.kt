@@ -45,7 +45,7 @@ fun LoadingScreen(
         }
     }
 
-    LoadingScreen(
+    LoadingContentScreen(
         situation = loadingState.situation,
 
         onClose = loadingViewModel::onClose,
@@ -54,7 +54,7 @@ fun LoadingScreen(
 }
 
 @Composable
-fun LoadingScreen(
+fun LoadingContentScreen(
     situation: String = "",
 
     onClose : () -> Unit = {},
@@ -88,9 +88,9 @@ fun LoadingScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun SelectScreenPreview() {
+fun LoadingScreenPreview() {
     MypatTheme {
-        LoadingScreen(
+        LoadingContentScreen(
             situation = ""
         )
     }

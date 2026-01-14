@@ -55,9 +55,9 @@ class MainActivity : ComponentActivity() {
             context = this,
             name = bgm!!,
             loop = true,
-            volume = 0.2f
+            volume = 0.1f
         )
-        if (!bgmOn) AppBgmManager.pause()
+        AppBgmManager.pause()
 
         setContent {
             val configuration = LocalConfiguration.current
@@ -145,7 +145,7 @@ class MainActivity : ComponentActivity() {
 
         val prefs = getSharedPreferences("bgm_prefs", Context.MODE_PRIVATE)
         val bgmOn = prefs.getBoolean("bgmOn", true)
-        if (bgmOn) AppBgmManager.play()
+//        if (bgmOn) AppBgmManager.play()
     }
 
     override fun onStop() {

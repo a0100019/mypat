@@ -49,9 +49,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.a0100019.mypat.presentation.daily.walk.RequestBatteryPermissionScreen
-import com.a0100019.mypat.presentation.daily.walk.RequestNotificationPermissionScreen
-import com.a0100019.mypat.presentation.daily.walk.RequestPermissionScreen
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
@@ -162,16 +159,11 @@ fun DailyScreen(
 
                 // 닫기 버튼을 아이콘 버튼으로 변경하여 세련되게 수정 가능
                 MainButton(
-                    text = "마을",
+                    text = "닫기",
                     onClick = popBackStack,
-                    modifier = Modifier.align(Alignment.CenterStart)
-                )
-
-                MainButton(
-                    text = "종료",
-                    onClick = {},
                     modifier = Modifier.align(Alignment.CenterEnd)
                 )
+
             }
 
             Text(

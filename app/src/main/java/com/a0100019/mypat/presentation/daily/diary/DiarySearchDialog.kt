@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -64,6 +65,12 @@ fun DiarySearchDialog(
                     modifier = Modifier.padding(8.dp),
                 )
 
+                Spacer(modifier = Modifier.size(6.dp))
+
+                Text(
+                    text = "검색어가 포함된 일기를 확인할 수 있어요"
+                )
+
                 OutlinedTextField(
                     value = searchString,
                     onValueChange = onSearchTextChange,
@@ -84,12 +91,12 @@ fun DiarySearchDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
-                    MainButton(
-                        text = " 지우기 ",
-                        onClick = onClose,
-                        modifier = Modifier
-                            .padding(16.dp)
-                    )
+//                    MainButton(
+//                        text = " 지우기 ",
+//                        onClick = onClose,
+//                        modifier = Modifier
+//                            .padding(16.dp)
+//                    )
 
                     Spacer(modifier = Modifier.weight(1f))
 

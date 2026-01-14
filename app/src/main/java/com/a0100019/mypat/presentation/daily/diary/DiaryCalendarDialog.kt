@@ -133,7 +133,7 @@ fun DiaryCalendarDialog(
                 )
 
                 Text(
-                    text = "하루 미션을 받지 못한 날짜의 일기도 작성할 수 있습니다",
+                    text = "지난 날짜의 일기도 작성할 수 있습니다",
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center,
                     modifier = Modifier

@@ -245,6 +245,7 @@ fun MainScreen(
     val context = LocalContext.current
     val prefs = context.getSharedPreferences("bgm_prefs", Context.MODE_PRIVATE)
     val bgm = prefs.getString("bgm", "area/forest.jpg")
+    val bgmOn = prefs.getBoolean("bgmOn", true)
 
     val intent = Intent(context, StepForegroundService::class.java)
     context.stopService(intent)
@@ -253,6 +254,10 @@ fun MainScreen(
         //노래 변경
         AppBgmManager.init(context, mapUrl) // ✅ context 전달
         prefs.edit().putString("bgm", mapUrl).apply()
+    }
+
+    if (bgmOn) {
+        AppBgmManager.play()
     }
 
     val tutorialPrefs = context.getSharedPreferences("tutorial_prefs", Context.MODE_PRIVATE)
@@ -384,7 +389,7 @@ fun MainScreen(
 
                     val users by userFlowDataList.collectAsState(initial = emptyList())
 
-// 2. 재화창 메인 디자인
+                    // 2. 재화창 메인 디자인
                     Row(
                         modifier = Modifier
                             // 유리 효과: 반투명 배경 + 블러 느낌의 그림자
@@ -405,7 +410,7 @@ fun MainScreen(
                                 shape = RoundedCornerShape(24.dp)
                             )
                             .padding(horizontal = 16.dp, vertical = 8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         // --- 햇살(Sun) 섹션 ---

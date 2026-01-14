@@ -102,6 +102,11 @@ fun LoginScreen(
                     popUpTo(MainRoute.LoginScreen.name) { inclusive = true } // 뒤로가기 방지
                 }
             }
+            is LoginSideEffect.NavigateToDiaryScreen -> {
+                navController.navigate(MainRoute.DiaryScreen.name) {
+                    popUpTo(MainRoute.LoginScreen.name) { inclusive = true } // 뒤로가기 방지
+                }
+            }
         }
     }
 
@@ -173,7 +178,7 @@ fun LoginScreen(
     reLoading: () -> Unit = {},
     onGuestLoginClick: () -> Unit = {},
 
-    loginState: String,
+    loginState: String = "loading",
     dialog: String = ""
 ) {
 
@@ -404,7 +409,7 @@ fun LoginScreen(
                 Spacer(modifier = Modifier.weight(1f))
 
                 MainButton(
-                    text = "게스트 로그인",
+                    text = "나중에 로그인할게요",
                     onClick = {
                         onGuestLoginClick()
                     },
@@ -594,12 +599,16 @@ fun LoginScreen(
                 )
                 Spacer(modifier = Modifier.size(70.dp))
 
+                LoginDownloadDialog(
+                    onClose = reLoading
+                )
+
             }
-            
-            "" -> LoginDownloadDialog(
-                onClose = reLoading
-            )
-            
+
+//            "" -> LoginDownloadDialog(
+//                onClose = reLoading
+//            )
+
         }
     }
 }

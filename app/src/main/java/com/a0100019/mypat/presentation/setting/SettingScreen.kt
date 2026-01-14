@@ -425,7 +425,7 @@ fun SettingScreen(
                                 modifier = Modifier.size(24.dp)
                             )
                             Spacer(modifier = Modifier.width(12.dp))
-                            Text("구글 로그인")
+                            Text("구글 로그인으로 데이터를 보호하세요")
                         }
                     }
                 }
