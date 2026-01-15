@@ -51,6 +51,8 @@ sealed class MainRoute(
 
     object KnowledgeScreen : MainRoute("KnowledgeScreen")
 
+    object ActivityScreen : MainRoute("ActivityScreen")
+
 }
 
 

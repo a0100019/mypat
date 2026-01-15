@@ -1,30 +1,148 @@
-import java.util.*
-import java.io.*
-
-fun main() {
-    val br = BufferedReader(InputStreamReader(System.`in`))
-    val n = br.readLine().toInt()
-
-    val list = mutableListOf<List<Int>>()
-
-    repeat(n) {
-        val st = StringTokenizer(br.readLine())
-        val num = st.nextToken().toInt()
-        val strike = st.nextToken().toInt()
-        val ball = st.nextToken().toInt()
-        list.add(listOf(num, strike, ball))
-    }
-
-    nextToken()	다음 토큰(조각)을 꺼냅니다.
-    hasMoreTokens()	다음 토큰이 더 남아있는지 확인합니다.
-    countTokens()	남은 토큰의 개수를 반환합니다.
-
-    StringTokenizer는 문자열을 공백(또는 지정한 구분자) 기준으로 잘라서 하나씩 꺼내 쓸 수 있게 해주는 클래스예요.
-}
-
-
-    val sb = StringBuilder()
-    for (x in arr) sb.append(x).append('\n')
-    print(sb.toString())        // 한 번에 출력
-
-    list.maxOrNull() 은 리스트에 사용, maxOf(a, b, c)는 개별 변수에 사용
+//                item {
+//                    //버튼 기본 설정
+//                    val interactionSource = remember { MutableInteractionSource() }
+//                    val isPressed by interactionSource.collectIsPressedAsState()
+//                    val scale by animateFloatAsState(
+//                        targetValue = if (isPressed) 0.95f else 1f,
+//                        label = "scale"
+//                    )
+//
+//                    Surface(
+//                        shape = RoundedCornerShape(16.dp),
+//                        color = MaterialTheme.colorScheme.scrim,
+//                        border = BorderStroke(3.dp, MaterialTheme.colorScheme.primaryContainer),
+//                        modifier = Modifier
+//                            .graphicsLayer {
+//                                scaleX = scale
+//                                scaleY = scale
+//                            }
+//                            .clickable(
+//                                interactionSource = interactionSource,
+//                                indication = null,
+//                                onClick = { onSimpleDialog("펫 공간을 늘리겠습니까?") }
+//                            )
+//                            .padding(top = 6.dp, bottom = 6.dp)
+//                    ) {
+//                        Box {
+//
+//
+//                            Column(
+//                                modifier = Modifier
+//                                    .padding(8.dp)
+//                                    .fillMaxWidth(),
+//                                verticalArrangement = Arrangement.Center,
+//                                horizontalAlignment = Alignment.CenterHorizontally
+//                            ) {
+//                                Text(
+//                                    text = "펫 공간 늘리기",
+//                                    style = MaterialTheme.typography.headlineMedium,
+//                                    modifier = Modifier
+//                                        .padding(bottom = 10.dp),
+//                                )
+//                                Text(
+//                                    text = "마을의 펫 공간이 한 칸 늘어납니다",
+//                                    style = MaterialTheme.typography.titleMedium,
+//                                    modifier = Modifier
+//                                        .padding(bottom = 10.dp),
+//                                )
+//                                Text(
+//                                    text = "(현재 ${userData.find { it.id == "pat" }?.value2}칸, 최대 ${userData.find { it.id == "pat" }?.value}칸)",
+//                                    style = MaterialTheme.typography.titleSmall,
+//                                    modifier = Modifier
+//                                        .padding(bottom = 10.dp),
+//                                )
+//
+//                                Row(
+//                                    verticalAlignment = Alignment.CenterVertically
+//                                ) {
+//                                    Text(
+//                                        text = if (userData.find { it.id == "pat" }?.value2 != userData.find { it.id == "pat" }?.value) "$patSpacePrice" else "-",
+//                                        style = MaterialTheme.typography.titleMedium,
+//                                        modifier = Modifier,
+//                                    )
+//                                    JustImage(
+//                                        filePath = "etc/moon.png",
+//                                        modifier = Modifier
+//                                            .size(20.dp)
+//                                            .padding(start = 3.dp)
+//                                    )
+//                                }
+//                            }
+//                        }
+//
+//                    }
+//                }
+//
+//                item {
+//                    //버튼 기본 설정
+//                    val interactionSource = remember { MutableInteractionSource() }
+//                    val isPressed by interactionSource.collectIsPressedAsState()
+//                    val scale by animateFloatAsState(
+//                        targetValue = if (isPressed) 0.95f else 1f,
+//                        label = "scale"
+//                    )
+//
+//                    Surface(
+//                        shape = RoundedCornerShape(16.dp),
+//                        color = MaterialTheme.colorScheme.scrim,
+//                        border = BorderStroke(3.dp, MaterialTheme.colorScheme.primaryContainer),
+//                        modifier = Modifier
+//                            .graphicsLayer {
+//                                scaleX = scale
+//                                scaleY = scale
+//                            }
+//                            .clickable(
+//                                interactionSource = interactionSource,
+//                                indication = null,
+//                                onClick = { onSimpleDialog("아이템 공간을 늘리겠습니까?") }
+//                            )
+//                            .padding(top = 6.dp, bottom = 6.dp)
+//                    ) {
+//                        Box {
+//
+//                            Column(
+//                                modifier = Modifier
+//                                    .padding(8.dp)
+//                                    .fillMaxWidth(),
+//                                verticalArrangement = Arrangement.Center,
+//                                horizontalAlignment = Alignment.CenterHorizontally
+//                            ) {
+//                                Text(
+//                                    text = "아이템 공간 늘리기",
+//                                    style = MaterialTheme.typography.headlineMedium,
+//                                    modifier = Modifier
+//                                        .padding(bottom = 10.dp),
+//                                )
+//                                Text(
+//                                    text = "마을의 아이템 공간이 한 칸 늘어납니다",
+//                                    style = MaterialTheme.typography.titleMedium,
+//                                    modifier = Modifier
+//                                        .padding(bottom = 10.dp),
+//                                )
+//                                Text(
+//                                    text = "(현재 ${userData.find { it.id == "item" }?.value2}칸, 최대 ${userData.find { it.id == "item" }?.value}칸)",
+//                                    style = MaterialTheme.typography.titleSmall,
+//                                    modifier = Modifier
+//                                        .padding(bottom = 10.dp),
+//                                )
+//
+//                                Row(
+//                                    verticalAlignment = Alignment.CenterVertically
+//                                ) {
+//                                    Text(
+//                                        text = if (userData.find { it.id == "item" }?.value2 != userData.find { it.id == "item" }?.value) "$itemSpacePrice" else "-",
+//                                        style = MaterialTheme.typography.titleMedium,
+//                                        modifier = Modifier,
+//                                    )
+//                                    JustImage(
+//                                        filePath = "etc/moon.png",
+//                                        modifier = Modifier
+//                                            .size(20.dp)
+//                                            .padding(start = 3.dp)
+//                                    )
+//                                }
+//                            }
+//                        }
+//
+//                    }
+//                }

@@ -61,7 +61,7 @@ fun CouponDialog(
 
                 Text(
                     text = "쿠폰 코드를 입력해주세요.",
-                    style = MaterialTheme.typography.headlineMedium,
+                    style = MaterialTheme.typography.headlineSmall,
                     modifier = Modifier.padding(10.dp),
                 )
 

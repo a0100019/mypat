@@ -64,13 +64,13 @@ fun AccountDeleteDialog(
 
                 Text(
                     text = "계정을 삭제하시겠습니까?",
-                    style = MaterialTheme.typography.headlineMedium,
+                    style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(13.dp),
                 )
 
                 Text(
                     text = "펫들이 슬퍼하고 있어요 다시 한번 생각해주세요... 모든 데이터가 삭제됩니다. 불편한 점이 있었다면 대나무 숲에 작성해주세요 반영하도록 노력하겠습니다",
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleSmall,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(7.dp),
                 )

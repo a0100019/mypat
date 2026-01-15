@@ -46,7 +46,6 @@ import androidx.compose.ui.text.style.TextAlign
 import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.letter.Letter
 import com.a0100019.mypat.domain.AppBgmManager
-import com.a0100019.mypat.presentation.daily.walk.StepForegroundService
 import com.a0100019.mypat.presentation.login.ExplanationDialog
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
 import com.a0100019.mypat.presentation.ui.component.MainButton
@@ -227,7 +226,7 @@ fun SettingScreen(
         "review" -> SimpleAlertDialog(
             onConfirmClick = onReviewClick,
             onDismissClick = onClose,
-            text = "리뷰는 개발자에게 큰 힘이 됩니다..! 리뷰를 작성하고 칭호를 획득하겠습니까?",
+            text = "리뷰는 개발자에게 큰 힘이 됩니다..! 리뷰를 작성하고 하루마을 응원단 칭호 및 10 햇살을 획득하겠습니까?",
         )
     }
 
@@ -292,7 +291,7 @@ fun SettingScreen(
             )
 
             MainButton(
-                text = "리뷰쓰고 칭호받기",
+                text = "리뷰쓰고 보상받기",
                 onClick = { onSituationChange("review") },
                 modifier = Modifier.fillMaxWidth()
             )

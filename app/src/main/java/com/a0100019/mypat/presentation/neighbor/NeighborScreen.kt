@@ -29,9 +29,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.a0100019.mypat.presentation.loading.LoadingSideEffect
-import com.a0100019.mypat.presentation.loading.LoadingState
-import com.a0100019.mypat.presentation.loading.LoadingViewModel
+import com.a0100019.mypat.presentation.main.management.loading.LoadingSideEffect
+import com.a0100019.mypat.presentation.main.management.loading.LoadingState
+import com.a0100019.mypat.presentation.main.management.loading.LoadingViewModel
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
@@ -46,6 +46,7 @@ fun NeighborScreen(
     onChatNavigateClick: () -> Unit = {},
     onCommunityNavigateClick: () -> Unit = {},
     onBoardNavigateClick: () -> Unit = {},
+    onPrivateRoomNavigateClick: () -> Unit = {},
 ) {
 
     val neighborState : NeighborState = neighborViewModel.collectAsState().value
@@ -64,7 +65,8 @@ fun NeighborScreen(
         popBackStack = popBackStack,
         onChatNavigateClick = onChatNavigateClick,
         onCommunityNavigateClick = onCommunityNavigateClick,
-        onBoardNavigateClick = onBoardNavigateClick
+        onBoardNavigateClick = onBoardNavigateClick,
+        onPrivateRoomNavigateClick = onPrivateRoomNavigateClick
 
     )
 }
@@ -78,7 +80,8 @@ fun NeighborScreen(
     popBackStack: () -> Unit = {},
     onCommunityNavigateClick: () -> Unit = {},
     onChatNavigateClick: () -> Unit = {},
-    onBoardNavigateClick: () -> Unit = {}
+    onBoardNavigateClick: () -> Unit = {},
+    onPrivateRoomNavigateClick: () -> Unit = {},
 
 ) {
     Surface(
@@ -306,6 +309,13 @@ fun NeighborScreen(
                         }
 
                     }
+                }
+
+                item {
+                    MainButton(
+                        text = "privateChat",
+                        onClick = onPrivateRoomNavigateClick
+                    )
                 }
 
             }

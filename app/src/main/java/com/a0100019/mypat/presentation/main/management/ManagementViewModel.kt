@@ -22,9 +22,8 @@ import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.walk.Walk
 import com.a0100019.mypat.data.room.walk.WalkDao
 import com.a0100019.mypat.data.room.world.WorldDao
-import com.a0100019.mypat.presentation.daily.walk.StepCounterManager
 import com.a0100019.mypat.presentation.login.LoginSideEffect
-import com.a0100019.mypat.presentation.store.StoreSideEffect
+import com.a0100019.mypat.presentation.activity.store.StoreSideEffect
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.SetOptions

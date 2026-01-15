@@ -28,7 +28,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.a0100019.mypat.domain.AppBgmManager
-import com.a0100019.mypat.presentation.store.BillingManager
+import com.a0100019.mypat.presentation.activity.store.BillingManager
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject

@@ -99,7 +99,7 @@ fun LetterViewDialog(
 
                             Text(
                                 text = clickLetterData.title,
-                                style = MaterialTheme.typography.headlineMedium,
+                                style = MaterialTheme.typography.headlineSmall,
                                 modifier = Modifier.padding(10.dp),
                                 color = Color.Black
                             )

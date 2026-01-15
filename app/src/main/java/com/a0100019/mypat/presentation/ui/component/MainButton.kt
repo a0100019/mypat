@@ -74,7 +74,7 @@ fun MainButton(
                 indication = null, // 👈 눌렀을 때 색 효과 완전히 제거
                 onClick = {
                     onClick()
-                    SfxPlayer.play(context, R.raw.bubble)
+//                    SfxPlayer.play(context, R.raw.bubble)
                 }
             )
     ) {

@@ -64,7 +64,7 @@ fun SettingTalkDialog(
 
                 Text(
                     text = "하고 싶은 말을 적어주세요",
-                    style = MaterialTheme.typography.headlineSmall,
+                    style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(10.dp),
                 )
 
@@ -80,12 +80,12 @@ fun SettingTalkDialog(
                     label = { Text("내용") },
                     placeholder = { Text(
                         textAlign = TextAlign.Center,
-                        text = "안녕하세요! 하루마을을 개발하고 있는 1인 대학생 개발자입니다. 첫 도전인 만큼 아직 미숙한 부분이 많으니 발견한 버그나 바라는 점이 있다면 편하게 적어주세요! 하루마을의 발전에 큰 도움이 됩니다.\n" +
-                                "또한 대나무 숲에 작성한 내용은 오직 개발자만 확인할 수 있으니 말 못할 고민이 있을 땐 언제든 편하게 적어주세요:)") },
+                        text = "안녕하세요! 하루마을을 개발하고 있는 1인 대학생 개발자입니다. 첫 개발이라 아직 미숙한 부분이 많으니 발견한 버그나 바라는 점이 있다면 편하게 적어주세요!\n" +
+                                "또한 대나무 숲에 작성한 내용은 오직 개발자만 확인할 수 있으니 말 못할 고민이 있을 땐 언제든 편하게 적어주세요. 편지로 답변을 보내드릴게요 :)") },
                     shape = RoundedCornerShape(8.dp), // 테두리를 둥글게
                     modifier = Modifier
                         .fillMaxWidth()
-                        .fillMaxHeight(0.5f)
+                        .fillMaxHeight(0.6f)
                         .padding(8.dp)
                 )
 

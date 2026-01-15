@@ -74,7 +74,7 @@ fun ExplanationDialog(
         Box(
             modifier = Modifier
                 .width(360.dp)
-                .fillMaxHeight(0.85f),
+                .fillMaxHeight(0.8f),
             contentAlignment = Alignment.Center
         ) {
             // 1. 배경 이미지
@@ -130,11 +130,13 @@ fun ExplanationDialog(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "아주 오래 전, 하루마을은 모두가 행복하게 지내는 따뜻한 마을이었습니다.\n\n" +
-                                "하지만 마을을 돌보던 부지런한 관리인이 세상을 떠난 뒤, 모든 게 멈춰 버렸습니다.\n\n" +
-                                "돌보는 손길이 사라지자, 펫들은 흩어졌고 잿빛 그림자만이 마을을 덮고 있었습니다.\n\n" +
-                                "하지만 마지막 희망이 남아있었습니다.\n\n" +
-                                "생기를 잃어가는 마을과 불쌍한 펫들을 발견한 당신은, 새로운 관리인이 되어 마을을 살리기로 결심했습니다.",
+                        text = "어느 날, 당신은 버려진 마을의 관리인으로 임명되었습니다.\n" +
+                                "\n당신에게 주어진 건 낡은 펜 한 자루와 빈 일기장뿐.. 하지만 이 마을에는 오래된 전설이 하나 전해져 내려옵니다.\n" +
+                                "\n" +
+                                "\"누군가의 진심 어린 하루가 기록될 때마다, 마을의 시간이 다시 흐르기 시작한다.\"\n\n" +
+                                "마을을 다시 살리는 방법은 거창하지 않습니다. 그저 하루를 꾸준히 기록하는 것.\n그것뿐입니다.\n"
+
+                        ,
                         style = MaterialTheme.typography.bodyMedium.copy(
                             lineHeight = 28.sp,
                             fontWeight = FontWeight.Bold, // 두껍게 하여 가독성 확보
@@ -147,10 +149,10 @@ fun ExplanationDialog(
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-// 1. 애니메이션 변수 정의 (기존 shimmer 코드 위에 추가)
+                // 1. 애니메이션 변수 정의 (기존 shimmer 코드 위에 추가)
                 val infiniteTransition = rememberInfiniteTransition(label = "daily_btn_anim")
 
-// 둥실둥실 뜨는 효과
+                // 둥실둥실 뜨는 효과
                 val floatingOffset by infiniteTransition.animateFloat(
                     initialValue = 0f,
                     targetValue = -8f,
@@ -237,8 +239,8 @@ fun ExplanationDialog(
                                 ) {
                                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                         Text(
-                                            text = "시작하기",
-                                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                                            text = "나의 위대한 역사 시작하기",
+                                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                                             color = Color(0xFF2F6F62)
                                         )
                                     }

@@ -4,34 +4,35 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.a0100019.mypat.presentation.activity.ActivityContainerScreen
+import com.a0100019.mypat.presentation.activity.daily.DailyScreen
+import com.a0100019.mypat.presentation.activity.daily.english.EnglishScreen
+import com.a0100019.mypat.presentation.activity.daily.knowledge.KnowledgeScreen
+import com.a0100019.mypat.presentation.activity.daily.korean.KoreanScreen
+import com.a0100019.mypat.presentation.activity.daily.walk.WalkScreen
 import com.a0100019.mypat.presentation.neighbor.chat.ChatScreen
 import com.a0100019.mypat.presentation.neighbor.community.CommunityScreen
-import com.a0100019.mypat.presentation.daily.DailyScreen
-import com.a0100019.mypat.presentation.daily.diary.DiaryScreen
-import com.a0100019.mypat.presentation.daily.diary.DiaryWriteScreen
-import com.a0100019.mypat.presentation.daily.english.EnglishScreen
-import com.a0100019.mypat.presentation.daily.knowledge.KnowledgeScreen
-import com.a0100019.mypat.presentation.daily.korean.KoreanScreen
-import com.a0100019.mypat.presentation.daily.walk.WalkScreen
+import com.a0100019.mypat.presentation.diary.DiaryScreen
+import com.a0100019.mypat.presentation.diary.DiaryWriteScreen
 import com.a0100019.mypat.presentation.game.firstGame.FirstGameScreen
 import com.a0100019.mypat.presentation.game.secondGame.SecondGameScreen
 import com.a0100019.mypat.presentation.game.thirdGame.ThirdGameScreen
-import com.a0100019.mypat.presentation.index.IndexScreen
-import com.a0100019.mypat.presentation.information.InformationScreen
+import com.a0100019.mypat.presentation.activity.index.IndexScreen
+import com.a0100019.mypat.presentation.activity.information.InformationScreen
 import com.a0100019.mypat.presentation.login.LoginScreen
 import com.a0100019.mypat.presentation.main.MainScreen
 import com.a0100019.mypat.presentation.setting.SettingScreen
-import com.a0100019.mypat.presentation.store.StoreScreen
+import com.a0100019.mypat.presentation.activity.store.StoreScreen
 import com.a0100019.mypat.presentation.main.world.WorldScreen
 import com.a0100019.mypat.presentation.neighbor.NeighborInformationScreen
 import com.a0100019.mypat.presentation.neighbor.NeighborScreen
 import com.a0100019.mypat.presentation.neighbor.board.BoardMessageScreen
 import com.a0100019.mypat.presentation.neighbor.board.BoardScreen
-import com.a0100019.mypat.presentation.operator.OperatorScreen
-import com.a0100019.mypat.presentation.privateChat.PrivateChatGameScreen
-import com.a0100019.mypat.presentation.privateChat.PrivateChatInScreen
-import com.a0100019.mypat.presentation.privateChat.PrivateRoomScreen
-import com.a0100019.mypat.presentation.store.BillingManager
+import com.a0100019.mypat.presentation.main.operator.OperatorScreen
+import com.a0100019.mypat.presentation.neighbor.privateChat.PrivateChatGameScreen
+import com.a0100019.mypat.presentation.neighbor.privateChat.PrivateChatInScreen
+import com.a0100019.mypat.presentation.neighbor.privateChat.PrivateRoomScreen
+import com.a0100019.mypat.presentation.activity.store.BillingManager
 
 @Composable
 fun MainNavHost(
@@ -82,7 +83,18 @@ fun MainNavHost(
                 },
                 onPrivateRoomNavigateClick = {
                     navController.navigate(route = MainRoute.PrivateRoomScreen.name)
+                },
+                onDiaryNavigateClick = {
+                    navController.navigate(route = MainRoute.DiaryScreen.name) {
+                        popUpTo(0) { inclusive = true } // 백스택 전체 제거
+                        launchSingleTop = true // 같은 화면 여러 번 안 쌓이게
+                    }
                 }
+                ,
+                onActivityNavigateClick = {
+                    navController.navigate(route = MainRoute.ActivityScreen.name)
+                },
+
 
             )
         }
@@ -180,7 +192,10 @@ fun MainNavHost(
                         launchSingleTop = true // 같은 화면 여러 번 안 쌓이게
                     }
                 },
-                popBackStack = { navController.popBackStack() }
+                popBackStack = { navController.popBackStack() },
+                onNavigateToSettingScreen = {
+                    navController.navigate(route = MainRoute.SettingScreen.name)
+                }
             )
         }
 
@@ -297,6 +312,9 @@ fun MainNavHost(
                 onBoardNavigateClick = {
                     navController.navigate(route = MainRoute.BoardScreen.name)
                 },
+                onPrivateRoomNavigateClick = {
+                    navController.navigate(route = MainRoute.PrivateRoomScreen.name)
+                },
             )
         }
 
@@ -341,6 +359,25 @@ fun MainNavHost(
                 popBackStack = { navController.popBackStack() }
             )
         }
+
+        composable(route = MainRoute.ActivityScreen.name) {
+            ActivityContainerScreen(
+                popBackStack = { navController.popBackStack() },
+                onDailyNavigateClick = {
+                    navController.navigate(route = MainRoute.DailyScreen.name)
+                },
+                onIndexNavigateClick = {
+                    navController.navigate(route = MainRoute.IndexScreen.name)
+                },
+                onInformationNavigateClick = {
+                    navController.navigate(route = MainRoute.InformationScreen.name)
+                },
+                onStoreNavigateClick = {
+                    navController.navigate(route = MainRoute.StoreScreen.name)
+                },
+            )
+        }
+
 
 
 //

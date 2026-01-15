@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -66,8 +67,8 @@ import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.domain.AppBgmManager
-import com.a0100019.mypat.presentation.daily.diary.DiarySideEffect
-import com.a0100019.mypat.presentation.daily.walk.StepForegroundService
+import com.a0100019.mypat.presentation.activity.daily.walk.StepForegroundService
+import com.a0100019.mypat.presentation.diary.DiarySideEffect
 import com.a0100019.mypat.presentation.main.mainDialog.LovePatDialog
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
 import com.a0100019.mypat.presentation.main.mainDialog.TutorialDialog
@@ -100,7 +101,9 @@ fun MainScreen(
     onThirdGameNavigateClick: () -> Unit,
     onOperatorNavigateClick: () -> Unit,
     onPrivateRoomNavigateClick: () -> Unit,
-    onNeighborNavigateClick: () -> Unit = {}
+    onNeighborNavigateClick: () -> Unit = {},
+    onDiaryNavigateClick: () -> Unit = {},
+    onActivityNavigateClick: () -> Unit = {}
 
     ) {
 
@@ -156,6 +159,8 @@ fun MainScreen(
         onOperatorNavigateClick = onOperatorNavigateClick,
         onPrivateRoomNavigateClick = onPrivateRoomNavigateClick,
         onNeighborNavigateClick = onNeighborNavigateClick,
+        onDiaryNavigateClick = onDiaryNavigateClick,
+        onActivityNavigateClick = onActivityNavigateClick,
 
         onLetterReadClick = mainViewModel::onLetterReadClick,
         onLetterLinkClick = mainViewModel::onLetterLinkClick,
@@ -207,6 +212,8 @@ fun MainScreen(
     onNeighborNavigateClick: () -> Unit = {},
     onOperatorNavigateClick: () -> Unit = {},
     onPrivateRoomNavigateClick: () -> Unit = {},
+    onDiaryNavigateClick: () -> Unit = {},
+    onActivityNavigateClick: () -> Unit = {},
 
     dialogPatIdChange: (String) -> Unit,
     onLetterReadClick: () -> Unit = {},
@@ -365,14 +372,19 @@ fun MainScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 10.dp, end = 10.dp, bottom = 10.dp, top = 5.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                        .padding(start = 16.dp, end = 16.dp, bottom = 10.dp, top = 5.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
 
-                    MainButton(
-                        text = "프로필",
-//                        iconResId = R.drawable.information,
-                        onClick = onInformationNavigateClick,
+                    JustImage(
+                        filePath = "etc/cog.png",
+                        modifier = Modifier
+                            .size(25.dp)
+                            .clickable {
+                                onSettingNavigateClick()
+                            }
+                        ,
                     )
 
                     // 1. 아이콘 애니메이션을 위한 Transition
@@ -405,7 +417,10 @@ fun MainScreen(
                             .border(
                                 width = 1.dp,
                                 brush = Brush.linearGradient(
-                                    colors = listOf(Color.White.copy(alpha = 0.5f), Color.Transparent)
+                                    colors = listOf(
+                                        Color.White.copy(alpha = 0.5f),
+                                        Color.Transparent
+                                    )
                                 ),
                                 shape = RoundedCornerShape(24.dp)
                             )
@@ -464,21 +479,14 @@ fun MainScreen(
                         }
                     }
 
-                    Row(
-//                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        MainButton(
-                            onClick = onSettingNavigateClick,
-                            text = "설정"
-                        )
-                        Spacer(modifier = Modifier.size(10.dp))
-                        MainButton(
-                            onClick = { onSituationChange("exit") },
-                            text = "종료",
-                            backgroundColor = MaterialTheme.colorScheme.tertiary,
-                            borderColor = MaterialTheme.colorScheme.onTertiary
-                        )
-                    }
+                    JustImage(
+                        filePath = "etc/switch.png",
+                        modifier = Modifier
+                            .size(30.dp)
+                            .clickable {
+                                onSituationChange("exit")
+                            }
+                    )
 
                 }
 
@@ -540,24 +548,16 @@ fun MainScreen(
                                 )
                         )
                     }
-                    MainButton(
-                        text = "상점",
-                        onClick = onStoreNavigateClick
-                    )
 
-                    Spacer(modifier = Modifier.size(10.dp))
+                    if(userDataList.find { it.id == "auth" }?.value2 ?: "" in listOf("1", "38", "75", "181") ) {
+                        MainButton(
+                            text = "관리자",
+                            modifier = Modifier
+                            ,
+                            onClick = onOperatorNavigateClick
+                        )
+                    }
 
-                    MainButton(
-                        text = "도감",
-                        onClick = onIndexNavigateClick
-                    )
-
-                    Spacer(modifier = Modifier.size(10.dp))
-
-                    MainButton(
-                        text = "꾸미기",
-                        onClick = onWorldNavigateClick
-                    )
                 }
 
                 WorldViewScreen(
@@ -576,174 +576,95 @@ fun MainScreen(
 
             }
 
-            Column(
+            Row(
                 modifier = Modifier
                     .height(150.dp)
-                    .padding(12.dp)
-                ,
-                verticalArrangement = Arrangement.Bottom
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp), // 버튼 사이 여백 확대
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                // 1. 애니메이션 변수 정의 (기존 shimmer 코드 위에 추가)
-                val infiniteTransition = rememberInfiniteTransition(label = "daily_btn_anim")
-
-// 둥실둥실 뜨는 효과
-                val floatingOffset by infiniteTransition.animateFloat(
-                    initialValue = 0f,
-                    targetValue = -8f,
-                    animationSpec = infiniteRepeatable(
-                        animation = tween(1500, easing = FastOutSlowInEasing),
-                        repeatMode = RepeatMode.Reverse
-                    ),
-                    label = "floating"
-                )
-
-                val interactionSource = remember { MutableInteractionSource() }
-                val isPressed by interactionSource.collectIsPressedAsState()
-
-// 눌렀을 때 내려가는 깊이 (isPressed일 때 floating 효과를 상쇄하며 바닥으로 붙음)
-                val pressOffset by animateFloatAsState(
-                    targetValue = if (isPressed) 4f else 0f,
-                    label = "pressOffset"
-                )
-
-                val scale by animateFloatAsState(
-                    targetValue = if (isPressed) 0.97f else 1f,
-                    label = "daily_mission_scale"
-                )
-
-                // ✨ 반짝임 애니메이션 (기존 유지)
-                val shimmerX by infiniteTransition.animateFloat(
-                    initialValue = -0.4f,
-                    targetValue = 1.4f,
-                    animationSpec = infiniteRepeatable(
-                        animation = tween(durationMillis = 2200, easing = LinearEasing),
-                        repeatMode = RepeatMode.Restart
-                    ),
-                    label = "shimmerX"
-                )
-
-                val shimmerColor = Color.White.copy(alpha = 0.4f)
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.Center
+                // --- 1. 마을 관리 (따스한 베이지-옐로우 테마) ---
+                Surface(
+                    onClick = { onActivityNavigateClick() },
+                    modifier = Modifier.weight(1f).height(100.dp),
+                    shape = RoundedCornerShape(28.dp),
+                    color = Color(0xFFFFF9C4), // 연노랑
+                    border = BorderStroke(2.5.dp, Color(0xFFFFD54F)),
+                    shadowElevation = 6.dp
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(100.dp) // 버튼 높이 고정
-                            .graphicsLayer {
-                                scaleX = scale
-                                scaleY = scale
-                                // 둥실둥실 효과 + 누를 때 바닥으로 내려가는 효과 합산
-                                translationY = (floatingOffset + pressOffset).dp.toPx()
-                            }
-                            .clickable(
-                                interactionSource = interactionSource,
-                                indication = null
-                            ) {
-                                if(userDataList.find { it.id == "name" }?.value3 == "1"){
-                                    adPrefs.edit().putString("banner", "2").apply()
-                                } else if(userDataList.find { it.id == "name" }?.value3 == "0"){
-                                    adPrefs.edit().putString("banner", "1").apply()
-                                }
-                                onDailyNavigateClick()
-                            }
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        // [Layer 1] 하단 그림자/바닥 (입체감 부여)
-                        Surface(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .offset(y = 6.dp),
-                            shape = RoundedCornerShape(22.dp),
-                            color = Color(0xFF2F6F62).copy(alpha = 0.2f)
-                        ) {}
-
-                        // [Layer 2] 메인 버튼 바디
-                        Surface(
-                            modifier = Modifier.fillMaxSize(),
-                            shape = RoundedCornerShape(22.dp),
-                            color = Color(0xFFEAF4F1),
-                            border = BorderStroke(2.dp, Color(0xFF9ECFC3))
-                        ) {
-                            Box(modifier = Modifier.fillMaxSize()) {
-
-                                // 🌿 버튼 내부 내용
-                                Row(
-                                    modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.Center
-                                ) {
-                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                        Text(
-                                            text = "✨ 하루 미션 ✨",
-                                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                                            color = Color(0xFF2F6F62)
-                                        )
-                                        Text(
-                                            text = "오늘의 작은 성장 기록",
-                                            style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 0.5.sp),
-                                            color = Color(0xFF6FA9A0)
-                                        )
-                                    }
-                                }
-
-                                // ✨ 반짝임 레이어 (유리 스윕 효과)
-                                Box(
-                                    modifier = Modifier
-                                        .matchParentSize()
-                                        .background(
-                                            brush = Brush.linearGradient(
-                                                colorStops = arrayOf(
-                                                    (shimmerX - 0.2f) to Color.Transparent,
-                                                    shimmerX to shimmerColor,
-                                                    (shimmerX + 0.2f) to Color.Transparent
-                                                )
-                                            )
-                                        )
-                                )
-                            }
-                        }
-                    }
-                }
-
-
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-
-                    MainButton(
-                        text = "친구",
-                        modifier = Modifier
-                            .fillMaxWidth(0.4f),
-                        onClick = onPrivateRoomNavigateClick
-                    )
-
-                    if(userDataList.find { it.id == "auth" }?.value2 ?: "" in listOf("1", "38", "75", "181") ) {
-                        MainButton(
-                            text = "관리자",
-                            modifier = Modifier
-                                .fillMaxWidth(0.4f),
-                            onClick = onOperatorNavigateClick
+                        Text("🏠", fontSize = 28.sp)
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(
+                            text = "마을 관리",
+                            style = MaterialTheme.typography.labelLarge.copy(
+                                fontWeight = FontWeight.ExtraBold,
+                                letterSpacing = (-0.5).sp
+                            ),
+                            color = Color(0xFF795548)
                         )
                     }
-
-                    MainButton(
-                        text = "커뮤니티",
-                        modifier = Modifier
-                            .fillMaxWidth(0.66f),
-                        onClick = onNeighborNavigateClick
-                    )
-
                 }
 
-            }
+                // --- 2. 내 일기 (포근한 핑크-라벤더 테마) ---
+                Surface(
+                    onClick = { onDiaryNavigateClick() },
+                    modifier = Modifier.weight(1f).height(100.dp),
+                    shape = RoundedCornerShape(28.dp),
+                    color = Color(0xFFFCE4EC), // 연분홍
+                    border = BorderStroke(2.5.dp, Color(0xFFF06292)),
+                    shadowElevation = 6.dp
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text("📖", fontSize = 28.sp)
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(
+                            text = "일기장",
+                            style = MaterialTheme.typography.labelLarge.copy(
+                                fontWeight = FontWeight.ExtraBold,
+                                letterSpacing = (-0.5).sp
+                            ),
+                            color = Color(0xFF880E4F)
+                        )
+                    }
+                }
 
+                // --- 3. 커뮤니티 (싱그러운 민트-그린 테마) ---
+                Surface(
+                    onClick = { onNeighborNavigateClick() },
+                    modifier = Modifier.weight(1f).height(100.dp),
+                    shape = RoundedCornerShape(28.dp),
+                    color = Color(0xFFE0F2F1), // 연한 민트
+                    border = BorderStroke(2.5.dp, Color(0xFF4DB6AC)),
+                    shadowElevation = 6.dp
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text("🎈", fontSize = 28.sp)
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(
+                            text = "커뮤니티",
+                            style = MaterialTheme.typography.labelLarge.copy(
+                                fontWeight = FontWeight.ExtraBold,
+                                letterSpacing = (-0.5).sp
+                            ),
+                            color = Color(0xFF00695C)
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -785,7 +706,6 @@ fun MainScreenPreview() {
             onLovePatNextClick = {},
             onLovePatStopClick = {},
             timer = "11:00"
-
 
         )
     }

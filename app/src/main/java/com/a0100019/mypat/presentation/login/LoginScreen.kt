@@ -54,18 +54,24 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.offset
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.RectangleShape
@@ -139,6 +145,7 @@ fun LoginScreen(
         dialogChange = loginViewModel::dialogChange,
         reLoading = loginViewModel::reLoading,
         onGuestLoginClick = loginViewModel::onGuestLoginClick,
+        onNavigateToDiaryScreen = loginViewModel::onNavigateToDiaryScreen,
 
         googleLoginClick = {
             if (!isInternetAvailable(context)) {
@@ -177,6 +184,7 @@ fun LoginScreen(
     dialogChange: (String) -> Unit = {},
     reLoading: () -> Unit = {},
     onGuestLoginClick: () -> Unit = {},
+    onNavigateToDiaryScreen: () -> Unit = {},
 
     loginState: String = "loading",
     dialog: String = ""
@@ -201,9 +209,10 @@ fun LoginScreen(
         }
         "explanation" -> {
             ExplanationDialog(
-                onClose = onNavigateToMainScreen
+                onClose = onNavigateToDiaryScreen
             )
         }
+
     }
 
     Box {
@@ -408,14 +417,47 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                MainButton(
-                    text = "나중에 로그인할게요",
-                    onClick = {
-                        onGuestLoginClick()
-                    },
+                TextButton(
+                    onClick = onGuestLoginClick,
                     modifier = Modifier
                         .fillMaxWidth()
-                )
+                        .height(54.dp)
+                        .shadow(
+                            elevation = 2.dp,
+                            shape = RoundedCornerShape(16.dp),
+                            ambientColor = Color(0xFFF6C1CC), // 핑크 계열 그림자
+                            spotColor = Color(0xFFF6C1CC)
+                        )
+                        .background(
+                            color = Color(0xFFFFF1F4), // 🌸 파스텔 핑크 배경
+                            shape = RoundedCornerShape(16.dp)
+                        ),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.textButtonColors(
+                        containerColor = Color.Transparent,
+                        contentColor = Color(0xFF8A4A5C) // 톤다운된 장밋빛 텍스트
+                    )
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp),
+                            tint = Color(0xFFB56A7A) // 아이콘도 파스텔 톤
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "나중에 로그인할게요",
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                fontWeight = FontWeight.SemiBold,
+                                letterSpacing = (-0.3).sp
+                            )
+                        )
+                    }
+                }
 
                 Spacer(modifier = Modifier.size(20.dp))
 
@@ -475,7 +517,8 @@ fun LoginScreen(
 
                             Column {
                                 Text(
-                                    text = "이용약관 및 개인정보 처리방침에 동의합니다.",
+                                    text = "  이용약관 및 개인정보 처리방침에 동의합니다.",
+                                    style = MaterialTheme.typography.bodyMedium
                                 )
                             }
 
@@ -608,6 +651,10 @@ fun LoginScreen(
 //            "" -> LoginDownloadDialog(
 //                onClose = reLoading
 //            )
+
+            "loginLoading" -> {
+                LoginLoadingDialog()
+            }
 
         }
     }

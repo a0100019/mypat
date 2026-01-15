@@ -186,7 +186,7 @@ class SettingViewModel @Inject constructor(
                 value2 = medalData
             )
 
-            if (getMedalActionCount(medalData, actionId = 18) >= 10) {
+            if (getMedalActionCount(medalData, actionId = 18) >= 3) {
                 //매달, medal, 칭호18
                 val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
 
@@ -630,6 +630,8 @@ class SettingViewModel @Inject constructor(
         val couponText = state.editText // 사용자가 입력한 쿠폰 코드
         val userId = state.userDataList.find { it.id == "auth" }!!.value
 
+        if (couponText.length <= 1) return@intent
+
         db.collection("users").document(userId).collection("code").document("coupon")
             .get()
             .addOnSuccessListener { couponDocument ->
@@ -746,6 +748,7 @@ class SettingViewModel @Inject constructor(
                 Log.e("Coupon", "사용자 쿠폰 조회 실패", e)
             }
 
+        loadData()
 
     }
 
@@ -798,6 +801,8 @@ class SettingViewModel @Inject constructor(
 
             postSideEffect(SettingSideEffect.Toast("칭호를 획득했습니다!"))
         }
+
+        loadData()
     }
 
 
@@ -995,6 +1000,8 @@ class SettingViewModel @Inject constructor(
             Log.e("recommendation", "처리 실패", e)
             postSideEffect(SettingSideEffect.Toast("처리 중 오류가 발생했습니다."))
         }
+
+        loadData()
     }
 
     //입력 가능하게 하는 코드
@@ -1077,6 +1084,13 @@ class SettingViewModel @Inject constructor(
                 value3 = updatedMedal
             )
 
+            val userDataList = userDao.getAllUserData()
+
+            userDao.update(
+                id = "money",
+                value2 = (userDataList.find { it.id == "money" }!!.value.toInt() + 10).toString()
+            )
+
             val url = "https://play.google.com/store/apps/details?id=com.a0100019.mypat"
             postSideEffect(SettingSideEffect.OpenUrl(url))
         } else {
@@ -1086,6 +1100,8 @@ class SettingViewModel @Inject constructor(
         reduce {
             state.copy(settingSituation = "")
         }
+
+        loadData()
 
     }
 

@@ -22,10 +22,10 @@ import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.data.room.world.WorldDao
-import com.a0100019.mypat.presentation.daily.diary.DiarySideEffect
+import com.a0100019.mypat.presentation.diary.DiarySideEffect
 import com.a0100019.mypat.presentation.main.management.ManagementSideEffect
 import com.a0100019.mypat.presentation.main.management.RewardAdManager
-import com.a0100019.mypat.presentation.privateChat.PrivateRoom
+import com.a0100019.mypat.presentation.neighbor.privateChat.PrivateRoom
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.Query

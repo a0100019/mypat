@@ -87,13 +87,13 @@ fun LetterDialog(
                             ) {
                                 Text(
                                     text = letter.title,
-                                    style = MaterialTheme.typography.bodyLarge,
+                                    style = MaterialTheme.typography.bodyMedium,
                                     fontWeight = FontWeight.Bold
                                 )
                                 Spacer(modifier = Modifier.weight(1f))
                                 Text(
                                     text = letter.date,
-                                    style = MaterialTheme.typography.bodyLarge,
+                                    style = MaterialTheme.typography.bodyMedium,
                                     fontWeight = FontWeight.Bold
                                 )
                             }
@@ -106,13 +106,13 @@ fun LetterDialog(
                                 Text(
                                     text = letter.title,
                                     modifier = Modifier,
-                                    style = MaterialTheme.typography.bodyLarge,
+                                    style = MaterialTheme.typography.bodyMedium,
                                     color = Color.Gray
                                 )
                                 Spacer(modifier = Modifier.weight(1f))
                                 Text(
                                     text = letter.date,
-                                    style = MaterialTheme.typography.bodyLarge,
+                                    style = MaterialTheme.typography.bodyMedium,
                                     color = Color.Gray,
                                 )
                             }

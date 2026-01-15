@@ -46,7 +46,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".presentation.loading.LoadingActivity" />
+        <activity android:name=".presentation.main.management.loading.LoadingActivity" />
 
         <!-- 🔥 Foreground Service 등록 추가 -->
         <service
@@ -56,12 +56,12 @@
             android:foregroundServiceType="health" />
 
         <receiver
-            android:name=".presentation.daily.diary.AlarmReceiver"
+            android:name=".presentation.diary.AlarmReceiver"
             android:enabled="true"
             android:exported="false" />
 
         <receiver
-            android:name=".presentation.daily.diary.BootReceiver"
+            android:name=".presentation.diary.BootReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
