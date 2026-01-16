@@ -181,9 +181,13 @@ fun BoardMessageScreen(
                     )
                 }
 
-                MainButton(
-                    onClick = popBackStack,
-                    text = "닫기"
+                JustImage(
+                    filePath = "etc/exit.png",
+                    modifier = Modifier
+                        .size(30.dp)
+                        .clickable {
+                            popBackStack()
+                        }
                 )
             }
 

@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -43,6 +44,7 @@ import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiom
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.component.SparkleText
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
+import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -131,21 +133,25 @@ fun KnowledgeScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(24.dp),
+                    .padding(start = 24.dp, end = 24.dp, bottom = 24.dp, top = 12.dp),
                 contentAlignment = Alignment.Center
             ) {
                 // Text in the center
                 Text(
                     text = "상식",
-                    style = MaterialTheme.typography.displayMedium, // Large font size
+                    style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier
                 )
 
-                // 오른쪽 버튼
-                MainButton(
-                    text = "닫기",
-                    onClick = popBackStack,
-                    modifier = Modifier.align(Alignment.CenterEnd)
+                JustImage(
+                    filePath = "etc/exit.png",
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .size(30.dp)
+                        .clickable {
+                            popBackStack()
+                        }
                 )
             }
 
@@ -252,7 +258,7 @@ fun KnowledgeScreen(
                                     modifier = Modifier.weight(1f)
                                 ) {
                                     Text(
-                                        text = "오늘의 상식을 확인하세요!",
+                                        text = "오늘의 상식",
                                         style = MaterialTheme.typography.titleMedium,
                                         color = MaterialTheme.colorScheme.primary,
                                     )

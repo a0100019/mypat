@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -36,6 +37,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
+import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -149,20 +151,15 @@ fun BoardScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(24.dp),
+                .padding(start = 24.dp, end = 24.dp, bottom = 24.dp, top = 12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
             Text(
                 text = "자유게시판",
-                style = MaterialTheme.typography.displayMedium,
-                modifier = Modifier.padding(bottom = 6.dp)
-            )
-
-            Text(
-                text = "축하받고 싶은 내용이나, 말 못했던 고민이 있다면 털어놓아봐요",
-                style = MaterialTheme.typography.labelLarge,
-                modifier = Modifier.padding(bottom = 8.dp)
+                style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.padding(bottom = 12.dp)
             )
 
             Row(
@@ -183,9 +180,13 @@ fun BoardScreen(
                     text = if (situation == "myBoard") "전체 게시물 보기" else "내 게시물 보기"
                 )
 
-                MainButton(
-                    onClick = onNavigateToMainScreen,
-                    text = "닫기"
+                JustImage(
+                    filePath = "etc/exit.png",
+                    modifier = Modifier
+                        .size(30.dp)
+                        .clickable {
+                            onNavigateToMainScreen()
+                        }
                 )
             }
 

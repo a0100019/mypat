@@ -204,7 +204,7 @@ fun CommunityScreen(
         BackGroundImage()
 
         Box(
-            modifier = Modifier.padding(6.dp)
+            modifier = Modifier.padding(top = 12.dp)
         ) {
             Column(
                 modifier = Modifier
@@ -215,22 +215,28 @@ fun CommunityScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
+                        .padding(start = 12.dp, end = 12.dp)
+                    ,
                     contentAlignment = Alignment.Center
                 ) {
 
                     Text(
                         text = "채팅",
-                        style = MaterialTheme.typography.displayMedium,
+                        style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier
                     )
 
-                    // 오른쪽 버튼
-                    MainButton(
-                        text = "닫기",
-                        onClick = popBackStack,
-                        modifier = Modifier.align(Alignment.CenterEnd)
+                    JustImage(
+                        filePath = "etc/exit.png",
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .size(30.dp)
+                            .clickable {
+                                popBackStack()
+                            }
                     )
+
                 }
 
                 Text(
@@ -601,7 +607,7 @@ fun CommunityScreen(
                             ) {
                                 Text(
                                     text = "익명",
-                                    style = MaterialTheme.typography.labelLarge
+                                    style = MaterialTheme.typography.labelMedium
                                 )
                                 
                                 Checkbox(

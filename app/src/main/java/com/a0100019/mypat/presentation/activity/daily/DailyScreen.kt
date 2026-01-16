@@ -28,7 +28,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -52,6 +54,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
+import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -143,10 +146,11 @@ fun DailyScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 20.dp)
+                .padding(start = 24.dp, end = 24.dp, bottom = 24.dp, top = 12.dp)
+            ,
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
             // 상단 헤더 영역
-            Spacer(modifier = Modifier.height(24.dp))
             Box(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center
@@ -157,17 +161,125 @@ fun DailyScreen(
                     color = MaterialTheme.colorScheme.onBackground
                 )
 
-                // 닫기 버튼을 아이콘 버튼으로 변경하여 세련되게 수정 가능
-                MainButton(
-                    text = "닫기",
-                    onClick = popBackStack,
-                    modifier = Modifier.align(Alignment.CenterEnd)
+                JustImage(
+                    filePath = "etc/exit.png",
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .size(30.dp)
+                        .clickable {
+                            popBackStack()
+                        }
                 )
 
             }
 
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                ,
+                verticalArrangement = Arrangement.spacedBy(16.dp) // 카드 사이 간격도 살짝 넓힘
+            ) {
+                val missionItems = listOf(
+                    Triple("상식", "💡", "필수 지식 배우기") to onKnowledgeNavigateClick,
+                    Triple("영단어", "🇬🇧", "목표 영단어 추측") to onEnglishNavigateClick,
+                    Triple("사자성어", "📜", "한자 카드 조합") to onKoreanNavigateClick
+                )
+
+                missionItems.forEach { (data, onClick) ->
+                    val (title, icon, description) = data
+                    val interactionSource = remember { MutableInteractionSource() }
+                    val isPressed by interactionSource.collectIsPressedAsState()
+                    val scale by animateFloatAsState(if (isPressed) 0.96f else 1f, label = "scale")
+
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .graphicsLayer { scaleX = scale; scaleY = scale }
+                            .clickable(interactionSource = interactionSource, indication = null, onClick = onClick),
+                        shape = RoundedCornerShape(24.dp), // 더 둥글게 해서 큰 카드에 어울리게 수정
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.outlineVariant)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(24.dp), // 패딩을 16 -> 24로 키워 카드 크기 확장
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(icon, fontSize = 32.sp) // 아이콘 크기도 살짝 업
+                            Spacer(modifier = Modifier.width(20.dp))
+
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.ExtraBold) // 제목 강조
+                                Text(description, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            }
+                            JustImage(
+                                filePath = "etc/moon.png",
+                                modifier = Modifier
+                                    .size(18.dp)
+
+                            )
+
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .padding(start = 4.dp)
+                            ) {
+
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text("+1000", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black, color = Color(0xFF673AB7))
+                            }
+                        }
+                    }
+                }
+
+                if (rewardAdReady) {
+                    val interactionAd = remember { MutableInteractionSource() }
+                    val isPressedAd by interactionAd.collectIsPressedAsState()
+                    val scaleAd by animateFloatAsState(if (isPressedAd) 0.96f else 1f, label = "scale")
+
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .graphicsLayer { scaleX = scaleAd; scaleY = scaleAd }
+                            .clickable(interactionSource = interactionAd, indication = null, onClick = { onSituationChange("adCheck") }),
+                        shape = RoundedCornerShape(24.dp),
+                        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.8f), // 광고 색상 조금 더 진하게
+                        border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.4f))
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(24.dp), // 패딩 동일하게 24로 확장
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text("☀️", fontSize = 32.sp)
+                            Spacer(modifier = Modifier.width(20.dp))
+
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text("보너스 햇살 받기", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.ExtraBold)
+                                Text("하루에 한 번만 가능합니다", style = MaterialTheme.typography.bodyMedium)
+                            }
+
+                            JustImage(
+                                filePath = "etc/sun.png",
+                                modifier = Modifier
+                                    .size(18.dp)
+
+                            )
+
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .padding(start = 4.dp)
+                            ) {
+
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text("+3", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black, color = Color(0xFF673AB7))
+                            }
+                        }
+                    }
+                }
+            }
+
             Text(
-                text = "매일 꾸준히 하루 미션을 완료하여 멋있는 사람이 되어보세요!\n미션을 완료할 때마다 햇살을 얻을 수 있습니다",
+                text = "매일 하루 미션을 완료하여 마을을 키워보세요",
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodyLarge,
                 lineHeight = 24.sp,
@@ -176,66 +288,8 @@ fun DailyScreen(
                     .padding(vertical = 32.dp)
             )
 
-            // 미션 리스트
-            LazyColumn(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(14.dp),
-                contentPadding = PaddingValues(bottom = 24.dp)
-            ) {
 
-                item {
-                    MissionCard(
-                        title = "상식",
-                        description = "필수 지식들을 공부해봐요",
-                        subDescription = "외워두면 언젠간 쓸 일이 있을 거에요",
-                        icon = "💡",
-                        onClick = onKnowledgeNavigateClick
-                    )
-                }
 
-                item {
-                    MissionCard(
-                        title = "영단어",
-                        description = "목표 영단어를 추측해보세요",
-                        subDescription = "어렵지만 끝까지 파이팅!",
-                        icon = "🇬🇧",
-                        onClick = onEnglishNavigateClick
-                    )
-                }
-
-                item {
-                    MissionCard(
-                        title = "사자성어",
-                        description = "한자 카드를 조합하여 맞춰보세요",
-                        subDescription = "매우 쉬우니 걱정하지 마세요",
-                        icon = "📜",
-                        onClick = onKoreanNavigateClick
-                    )
-                }
-
-                item {
-                    MissionCard(
-                        title = "일기",
-                        description = "오늘 하루를 정리하세요",
-                        subDescription = "길게 적지 않아도 돼요. 꾸준함이 중요합니다",
-                        icon = "✍️", // 이모지를 활용하거나 ImageVector 사용
-                        onClick = onDiaryNavigateClick
-                    )
-                }
-
-                if (rewardAdReady) {
-                    item {
-                        MissionCard(
-                            title = "보너스 햇살 받기",
-                            description = "광고 보고 1 햇살 얻기",
-                            subDescription = "하루에 한 번만 가능해요",
-                            icon = "☀️",
-                            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
-                            onClick = { onSituationChange("adCheck") }
-                        )
-                    }
-                }
-            }
         }
     }
 }
