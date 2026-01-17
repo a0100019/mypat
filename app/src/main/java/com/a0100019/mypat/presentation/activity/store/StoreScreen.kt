@@ -357,12 +357,14 @@ fun StoreScreen(
                     color = MaterialTheme.colorScheme.onBackground
                 )
 
-                MainButton(
-                    text = "닫기",
-                    onClick = popBackStack,
+                JustImage(
+                    filePath = "etc/exit.png",
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
-                        .padding(end = 4.dp)
+                        .size(30.dp)
+                        .clickable {
+                            popBackStack()
+                        }
                 )
             }
 

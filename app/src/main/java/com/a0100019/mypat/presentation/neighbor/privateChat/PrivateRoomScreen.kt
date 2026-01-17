@@ -144,7 +144,8 @@ fun PrivateRoomScreen(
                     .fillMaxWidth()
                     .padding(12.dp)
                 ,
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
 
                 MainButton(
@@ -175,10 +176,15 @@ fun PrivateRoomScreen(
                     )
                 }
 
-                MainButton(
-                    onClick = onNavigateToMainScreen,
-                    text = "닫기"
+                JustImage(
+                    filePath = "etc/exit.png",
+                    modifier = Modifier
+                        .size(30.dp)
+                        .clickable {
+                            onNavigateToMainScreen()
+                        }
                 )
+
             }
 
             if (roomList.isNotEmpty()) { // 🔥 방 목록
@@ -343,7 +349,7 @@ fun PrivateRoomScreen(
                     modifier = Modifier.fillMaxSize()
                 ) {
                     Text(
-                        text = "마음에 드는 이웃과 친구를 맺어보세요!\n친구와 개인 채팅을 할 수 있으며 같이 보스를 잡아 랭킹에 오를 수 있습니다!",
+                        text = "마음에 드는 이웃과 친구를 맺어보세요!\n친구와 개인 채팅을 할 수 있으며 같이 미니 게임 점수를 쌓아보세요!",
                         modifier = Modifier.align(Alignment.Center),
                         textAlign = TextAlign.Center
                     )

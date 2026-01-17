@@ -98,14 +98,9 @@ class WorldViewModel @Inject constructor(
         }
     }
 
-    fun onAddDialogChangeClick() = intent {
-        val newValue = when(state.addDialogChange) {
-            "pat" -> "item"
-            "item" -> "area"
-            else -> "pat"
-        }
+    fun onAddDialogChangeClick(dialog: String) = intent {
         reduce {
-            state.copy(addDialogChange = newValue) // true/false 토글
+            state.copy(addDialogChange = dialog) // true/false 토글
         }
     }
 

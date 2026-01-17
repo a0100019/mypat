@@ -53,6 +53,7 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 fun WorldScreen(
     worldViewModel: WorldViewModel = hiltViewModel(),
     onMainNavigateClick: () -> Unit,
+    popBackStack: () -> Unit = {},
 ) {
 
     val worldState : WorldState = worldViewModel.collectAsState().value
@@ -69,6 +70,7 @@ fun WorldScreen(
     WorldScreen(
         onWorldSelectClick = worldViewModel::onWorldSelectClick,
         onMainNavigateClick = onMainNavigateClick,
+        popBackStack = popBackStack,
 
         patDataList = worldState.patDataList,
         itemDataList = worldState.itemDataList,
@@ -103,13 +105,13 @@ fun WorldScreen(
         onPatEffectChangeClick = worldViewModel::onPatEffectChangeClick
     )
 
-
 }
 
 @Composable
 fun WorldScreen(
     onWorldSelectClick: () -> Unit,
     onMainNavigateClick: () -> Unit,
+    popBackStack: () -> Unit = {},
 
     patDataList : List<Pat>,
     itemDataList : List<Item>,
@@ -136,7 +138,7 @@ fun WorldScreen(
     onPatDrag: (String, Float, Float) -> Unit,
     worldDataDelete: (String, String) -> Unit,
     onShowAddDialogClick: () -> Unit,
-    onAddDialogChangeClick: () -> Unit,
+    onAddDialogChangeClick: (String) -> Unit,
     onSelectMapImageClick: (String) -> Unit,
     onAddPatClick: (String) -> Unit,
     onAddItemClick: (String) -> Unit,
@@ -201,6 +203,7 @@ fun WorldScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(start = 24.dp, end = 24.dp, bottom = 24.dp, top = 12.dp)
             ,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -209,18 +212,15 @@ fun WorldScreen(
                 text = "꾸미기",
                 style = MaterialTheme.typography.headlineLarge,
                 modifier = Modifier
-                    .padding(16.dp)
             )
-
-            Text(
-                text = "펫과 아이템을 드래그하여 위치를 옮길 수 있고, 클릭하여 크기를 수정할 수 있어요\n자기계발을 꾸준히 하여 나만의 멋진 마을을 만들어봐요",
-                style = MaterialTheme.typography.titleSmall,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .padding(16.dp)
-            )
-
-            Spacer(modifier = Modifier.size(32.dp))
+//
+//            Text(
+//                text = "",
+//                style = MaterialTheme.typography.titleSmall,
+//                textAlign = TextAlign.Center,
+//                modifier = Modifier
+//                    .padding(16.dp)
+//            )
 
             Column(
                 modifier = Modifier
@@ -234,7 +234,7 @@ fun WorldScreen(
                         .padding(bottom = 6.dp),
                 ) {
                     Text(
-                        text = "펫 ${userDataList.find { it.id == "pat" }?.value3} / ${userDataList.find { it.id == "pat" }?.value2}   " +
+                        text = "펫 ${userDataList.find { it.id == "pat" }?.value3} / ${userDataList.find { it.id == "pat" }?.value2}     " +
                                 "아이템 ${userDataList.find { it.id == "item" }?.value3} / ${userDataList.find { it.id == "item" }?.value2}",
                         style = MaterialTheme.typography.titleMedium
                     )
@@ -328,7 +328,7 @@ fun WorldScreen(
                 }
 
                 Text(
-                    text = "펫과 아이템을 클릭해보세요!",
+                    text = "펫과 아이템을 배치하고 맵을 바꿔봐요",
                     style = MaterialTheme.typography.labelLarge,
                     modifier = Modifier.padding(top = 6.dp)
                 )
@@ -337,7 +337,6 @@ fun WorldScreen(
 
             Column(
                 modifier = Modifier
-                    .weight(0.3f)
                 ,
                 verticalArrangement = Arrangement.Bottom
             ) {
@@ -370,7 +369,7 @@ fun WorldScreen(
                         MainButton(
                             modifier = Modifier
                                 .fillMaxWidth(0.6f),
-                            onClick = onMainNavigateClick,
+                            onClick = popBackStack,
                             text = "취소"
                         )
                     }

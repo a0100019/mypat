@@ -94,8 +94,6 @@ fun FirstGameScreen(
     )
 }
 
-
-
 @Composable
 fun FirstGameScreen(
     snowballX: Dp,

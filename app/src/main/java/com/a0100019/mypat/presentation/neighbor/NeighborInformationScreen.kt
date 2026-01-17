@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
@@ -12,6 +13,8 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -28,6 +31,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
@@ -44,6 +48,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -137,7 +142,7 @@ fun NeighborInformationScreen(
         "privateChat" -> SimpleAlertDialog(
             onConfirmClick = onAdClick,
             onDismissClick = onClose,
-            text = "친구가 되면 개인 채팅 및 친구와 함께 보스를 잡아 랭킹에 오를 수 있습니다.\n\n광고를 보고 친구가 되겠습니까?"
+            text = "친구가 되면 개인 채팅을 할 수 있습니다.\n\n광고를 보고 친구가 되겠습니까?"
         )
         "selfFriend" -> SimpleAlertDialog(
             onConfirmClick = {onSituationChange("")},
@@ -230,15 +235,24 @@ fun NeighborInformationScreen(
                         )
                     }
                     Spacer(modifier = Modifier.weight(1f))
+                    JustImage(
+                        filePath = "etc/like.png",
+                        modifier = Modifier
+                            .size(15.dp)
+                    )
                     Text(
-                        text = "좋아요 ${clickAllUserData.like}개",
+                        text = " ${clickAllUserData.like}",
                         style = MaterialTheme.typography.titleSmall,
                         modifier = Modifier
                             .padding(end = 10.dp)
                     )
-                    MainButton(
-                        text = "닫기",
-                        onClick = popBackStack
+                    JustImage(
+                        filePath = "etc/exit.png",
+                        modifier = Modifier
+                            .size(30.dp)
+                            .clickable {
+                                popBackStack()
+                            }
                     )
                 }
 
@@ -446,7 +460,7 @@ fun NeighborInformationScreen(
 
                         Row {
                             Text(
-                                text = "마을 탄생일",
+                                text = "시작일",
                                 style = MaterialTheme.typography.bodyMedium,
                                 modifier = Modifier
                                     .padding(end = 6.dp)
@@ -459,7 +473,7 @@ fun NeighborInformationScreen(
                         }
 
                         Text(
-                            text = "칭호 개수 ${medalList.size}/${totalMedalCount()}",
+                            text = "칭호 ${medalList.size}/${totalMedalCount()}",
                             style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier
                                 .padding(end = 6.dp)
@@ -488,6 +502,7 @@ fun NeighborInformationScreen(
                     Spacer(modifier = Modifier.size(12.dp))
 
                     Row(
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Spacer(modifier = Modifier.size(20.dp))
                         Text(
@@ -880,35 +895,69 @@ fun NeighborInformationScreen(
                         .fillMaxWidth()
                         .padding(start = 6.dp, end = 6.dp, top = 6.dp)
                 ) {
-
+                    // --- 신고 버튼 ---
                     JustImage(
                         filePath = "etc/ban.png",
                         modifier = Modifier
-                            .clickable {
-                                onBanClick(-1)
-                            }
+                            .clickable { onBanClick(-1) }
                             .size(15.dp)
                     )
 
-                    MainButton(
-                        text = "좋아요",
-                        onClick = onLikeClick
-                    )
+                    // --- 좋아요 버튼 (하트) ---
+                    val interactionLike = remember { MutableInteractionSource() }
+                    val isPressedLike by interactionLike.collectIsPressedAsState()
+                    val scaleLike by animateFloatAsState(if (isPressedLike) 0.85f else 1f, label = "")
 
-                    MainButton(
-                        text = "친구하기",
-                        onClick = {
-                            onSituationChange("privateChat")
-                        }
-                    )
+                    Box(
+                        modifier = Modifier
+                            .graphicsLayer { scaleX = scaleLike; scaleY = scaleLike }
+                            .size(50.dp) // 버튼 전체 크기 고정
+                            .background(Color(0xFFFFF0F3), CircleShape) // 연한 분홍색 원형 배경
+                            .border(1.5.dp, Color(0xFFFFC1CC), CircleShape) // 조금 더 진한 테두리
+                            .clickable(
+                                interactionSource = interactionLike,
+                                indication = null,
+                                onClick = onLikeClick
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        JustImage(
+                            filePath = "etc/like.png",
+                            modifier = Modifier.size(20.dp) // 아이콘 크기 살짝 조정
+                        )
+                    }
 
+                    // --- 친구하기 버튼 ---
+                    val interactionFriend = remember { MutableInteractionSource() }
+                    val isPressedFriend by interactionFriend.collectIsPressedAsState()
+                    val scaleFriend by animateFloatAsState(if (isPressedFriend) 0.85f else 1f, label = "")
+
+                    Box(
+                        modifier = Modifier
+                            .graphicsLayer { scaleX = scaleFriend; scaleY = scaleFriend }
+                            .size(50.dp) // 버튼 전체 크기 고정
+                            .background(Color(0xFFF0F7FF), CircleShape) // 연한 하늘색 원형 배경
+                            .border(1.5.dp, Color(0xFFD0E3FF), CircleShape) // 조금 더 진한 테두리
+                            .clickable(
+                                interactionSource = interactionFriend,
+                                indication = null,
+                                onClick = { onSituationChange("privateChat") }
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        JustImage(
+                            filePath = "etc/friend.png",
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+
+                    // --- 상세/메인 버튼 ---
                     MainButton(
-                        text = if (page == 0) "상세 페이지" else "메인 페이지",
+                        text = if (page == 0) "상세" else "메인",
                         onClick = {
                             if (page == 0) page = 1 else page = 0
                         },
                     )
-
                 }
 
             }

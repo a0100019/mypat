@@ -266,7 +266,7 @@ fun CommunityScreen(
                                 .padding(top = 4.dp, bottom = 40.dp)
                         ) {
                             Text("   ")
-//
+
 //                            Text(
 //                                text = "오늘의 첫 좋아요를 누르면 1000달빛을 획득합니다",
 //                                textAlign = TextAlign.Center

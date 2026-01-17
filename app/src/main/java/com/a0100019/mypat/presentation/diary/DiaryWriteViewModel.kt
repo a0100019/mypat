@@ -120,9 +120,9 @@ class DiaryWriteViewModel @Inject constructor(
                 Log.e("DiaryViewModel", state.userDataList.find { it.id == "money" }!!.value)
                 userDao.update(
                     id = "money",
-                    value = (state.userDataList.find { it.id == "money" }!!.value.toInt() + 1).toString()
+                    value = (state.userDataList.find { it.id == "money" }!!.value.toInt() + 3).toString()
                 )
-                postSideEffect(DiaryWriteSideEffect.Toast("보상을 획득했습니다"))
+                postSideEffect(DiaryWriteSideEffect.Toast("+3 햇살"))
             }
 
             diaryDao.update(state.writeDiaryData)

@@ -219,15 +219,24 @@ fun InformationScreen(
                     )
                 }
                 Spacer(modifier = Modifier.weight(1f))
+                JustImage(
+                    filePath = "etc/like.png",
+                    modifier = Modifier
+                        .size(15.dp)
+                )
                 Text(
-                    text = "좋아요 ${userDataList.find { it.id == "community" }?.value}개",
+                    text = " ${userDataList.find { it.id == "community" }?.value}",
                     style = MaterialTheme.typography.titleSmall,
                     modifier = Modifier
                         .padding(end = 10.dp)
                 )
-                MainButton(
-                    text = "닫기",
-                    onClick = popBackStack
+                JustImage(
+                    filePath = "etc/exit.png",
+                    modifier = Modifier
+                        .size(30.dp)
+                        .clickable {
+                            popBackStack()
+                        }
                 )
             }
 
@@ -431,7 +440,7 @@ fun InformationScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "마을 탄생일",
+                            text = "탄생일",
                             style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier
                                 .padding(end = 6.dp)
@@ -443,7 +452,7 @@ fun InformationScreen(
                     }
 
                     Text(
-                        text = "칭호 개수 ${myMedalList.size-1}/${totalMedalCount()}",
+                        text = "칭호 ${myMedalList.size-1}/${totalMedalCount()}",
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier
                             .padding(end = 6.dp)
@@ -470,6 +479,7 @@ fun InformationScreen(
                 Spacer(modifier = Modifier.size(12.dp))
 
                 Row(
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Spacer(modifier = Modifier.size(20.dp))
                     Text(
@@ -836,19 +846,19 @@ fun InformationScreen(
                 horizontalArrangement = Arrangement.SpaceBetween
             ){
                 MainButton(
-                    text = "칭호 변경",
+                    text = "칭호",
                     onClick = {
                         onSituationChange("medal")
                     }
                 )
                 MainButton(
-                    text = "인삿말 변경",
+                    text = "인삿말",
                     onClick = {
                         onSituationChange("introduction")
                     }
                 )
                 MainButton(
-                    text = if(page == 0) "상세 페이지" else "메인 페이지",
+                    text = if(page == 0) "상세" else "메인",
                     onClick = {
                         if(page == 0) page = 1 else page = 0
                     },

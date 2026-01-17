@@ -208,7 +208,7 @@ fun EnglishReadyDialog(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "오늘의 단어를 찾아주세요!\n정답에 포함된 알파벳이면 노란색, 위치까지 일치하면 초록색으로 표시됩니다\n\n5글자 영어 단어를 아무거나 입력해보세요!",
+                            text = "5글자 영어 단어를 아무거나 입력해보세요!\n정답에 포함된 알파벳이면 노란색, 위치까지 일치하면 초록색으로 표시됩니다",
                             textAlign = TextAlign.Center,
                             modifier = Modifier
                                 .padding(16.dp) // 여백은 보기 좋게 추가

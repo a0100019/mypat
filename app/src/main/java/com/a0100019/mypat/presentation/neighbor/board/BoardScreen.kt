@@ -50,6 +50,7 @@ fun BoardScreen(
     boardViewModel: BoardViewModel = hiltViewModel(),
     onNavigateToBoardMessageScreen: () -> Unit = {},
     onNavigateToMainScreen: () -> Unit = {},
+    onNavigateToNeighborScreen: () -> Unit = {},
 
     popBackStack: () -> Unit = {},
 
@@ -89,7 +90,8 @@ fun BoardScreen(
         loadBoardMessages = boardViewModel::loadBoardMessages,
         onNavigateToMainScreen = onNavigateToMainScreen,
         onAdClick = boardViewModel::onAdClick,
-        onBoardSubmitClick = boardViewModel::onBoardSubmitClick
+        onBoardSubmitClick = boardViewModel::onBoardSubmitClick,
+        onNavigateToNeighborScreen = onNavigateToNeighborScreen
     )
 }
 @Composable
@@ -111,7 +113,8 @@ fun BoardScreen(
     loadBoardMessages: () -> Unit = {},
     onNavigateToMainScreen: () -> Unit = {},
     onAdClick: () -> Unit = {},
-    onBoardSubmitClick: () -> Unit = {}
+    onBoardSubmitClick: () -> Unit = {},
+    onNavigateToNeighborScreen: () -> Unit = {},
 ) {
 
     when (situation) {
@@ -164,12 +167,15 @@ fun BoardScreen(
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
 
-                MainButton(
-                    onClick = { onSituationChange("boardSubmit") },
-                    text = "게시글 작성하기"
+                JustImage(
+                    filePath = "etc/write.png",
+                    modifier = Modifier
+                        .size(30.dp)
+                        .clickable { onSituationChange("boardSubmit") }
                 )
 
                 MainButton(
@@ -177,7 +183,7 @@ fun BoardScreen(
                         if (situation == "myBoard") onSituationChange("")
                         else onSituationChange("myBoard")
                     },
-                    text = if (situation == "myBoard") "전체 게시물 보기" else "내 게시물 보기"
+                    text = if (situation == "myBoard") "내 게시물" else "전체 게시물"
                 )
 
                 JustImage(
@@ -185,7 +191,7 @@ fun BoardScreen(
                     modifier = Modifier
                         .size(30.dp)
                         .clickable {
-                            onNavigateToMainScreen()
+                            onNavigateToNeighborScreen()
                         }
                 )
             }

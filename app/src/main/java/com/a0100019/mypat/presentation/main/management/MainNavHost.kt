@@ -95,7 +95,6 @@ fun MainNavHost(
                     navController.navigate(route = MainRoute.ActivityScreen.name)
                 },
 
-
             )
         }
 
@@ -131,7 +130,8 @@ fun MainNavHost(
                         popUpTo(0) { inclusive = true } // 백스택 전체 제거
                         launchSingleTop = true // 같은 화면 여러 번 안 쌓이게
                     }
-                }
+                },
+                popBackStack = { navController.popBackStack() },
             )
         }
 
@@ -315,6 +315,12 @@ fun MainNavHost(
                 onPrivateRoomNavigateClick = {
                     navController.navigate(route = MainRoute.PrivateRoomScreen.name)
                 },
+                onMainNavigateClick = {
+                    navController.navigate(route = MainRoute.MainScreen.name) {
+                        popUpTo(0) { inclusive = true } // 백스택 전체 제거
+                        launchSingleTop = true // 같은 화면 여러 번 안 쌓이게
+                    }
+                },
             )
         }
 
@@ -326,6 +332,12 @@ fun MainNavHost(
                 },
                 onNavigateToMainScreen = {
                     navController.navigate(route = MainRoute.MainScreen.name) {
+                        popUpTo(0) { inclusive = true } // 백스택 전체 제거
+                        launchSingleTop = true // 같은 화면 여러 번 안 쌓이게
+                    }
+                },
+                onNavigateToNeighborScreen = {
+                    navController.navigate(route = MainRoute.NeighborScreen.name) {
                         popUpTo(0) { inclusive = true } // 백스택 전체 제거
                         launchSingleTop = true // 같은 화면 여러 번 안 쌓이게
                     }
@@ -375,10 +387,11 @@ fun MainNavHost(
                 onStoreNavigateClick = {
                     navController.navigate(route = MainRoute.StoreScreen.name)
                 },
+                onWorldNavigateClick = {
+                    navController.navigate(route = MainRoute.WorldScreen.name)
+                },
             )
         }
-
-
 
 //
 //        composable(route = LoginRoute.SignUpScreen.name) {

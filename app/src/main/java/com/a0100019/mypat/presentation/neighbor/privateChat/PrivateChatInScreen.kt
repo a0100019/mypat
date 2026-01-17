@@ -161,7 +161,7 @@ fun PrivateChatInScreen(
         BackGroundImage()
 
         Box(
-            modifier = Modifier.padding(6.dp)
+            modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp, top = 12.dp)
         ) {
             Column(
                 modifier = Modifier
@@ -172,7 +172,7 @@ fun PrivateChatInScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
+                    ,
                     contentAlignment = Alignment.Center
                 ) {
 
@@ -208,11 +208,15 @@ fun PrivateChatInScreen(
                             modifier = Modifier
                         )
                     }
-                    // 오른쪽 버튼
-                    MainButton(
-                        text = "닫기",
-                        onClick = onNavigateToPrivateRoomScreen,
-                        modifier = Modifier.align(Alignment.CenterEnd)
+
+                    JustImage(
+                        filePath = "etc/exit.png",
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .size(30.dp)
+                            .clickable {
+                                onNavigateToPrivateRoomScreen()
+                            }
                     )
                 }
 
@@ -230,7 +234,7 @@ fun PrivateChatInScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(10.dp)
+                        .padding(top = 10.dp)
                         .background(
                             color = Color(0xFFF8FAFF),
                             shape = RoundedCornerShape(14.dp)
@@ -374,7 +378,7 @@ fun PrivateChatInScreen(
                 Column(
                     modifier = Modifier
                         .weight(1f)
-                        .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 16.dp)
+                        .padding(top = 12.dp, bottom = 8.dp)
                         .border(
                             width = 2.dp,
                             color = MaterialTheme.colorScheme.outline,

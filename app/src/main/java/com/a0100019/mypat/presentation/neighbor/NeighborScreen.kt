@@ -55,6 +55,7 @@ fun NeighborScreen(
     onCommunityNavigateClick: () -> Unit = {},
     onBoardNavigateClick: () -> Unit = {},
     onPrivateRoomNavigateClick: () -> Unit = {},
+    onMainNavigateClick: () -> Unit = {},
 ) {
 
     val neighborState : NeighborState = neighborViewModel.collectAsState().value
@@ -74,7 +75,8 @@ fun NeighborScreen(
         onChatNavigateClick = onChatNavigateClick,
         onCommunityNavigateClick = onCommunityNavigateClick,
         onBoardNavigateClick = onBoardNavigateClick,
-        onPrivateRoomNavigateClick = onPrivateRoomNavigateClick
+        onPrivateRoomNavigateClick = onPrivateRoomNavigateClick,
+        onMainNavigateClick = onMainNavigateClick,
 
     )
 }
@@ -90,8 +92,9 @@ fun NeighborScreen(
     onChatNavigateClick: () -> Unit = {},
     onBoardNavigateClick: () -> Unit = {},
     onPrivateRoomNavigateClick: () -> Unit = {},
+    onMainNavigateClick: () -> Unit = {},
 
-) {
+    ) {
     Surface(
         modifier = Modifier
             .fillMaxSize()
@@ -125,7 +128,7 @@ fun NeighborScreen(
                         .align(Alignment.CenterEnd)
                         .size(30.dp)
                         .clickable {
-                            popBackStack()
+                            onMainNavigateClick()
                         }
                 )
 
@@ -251,7 +254,7 @@ fun NeighborScreen(
                         ) {
                             Text("✉️", fontSize = 32.sp)
                             Spacer(modifier = Modifier.height(8.dp))
-                            Text("개인 채팅", fontWeight = FontWeight.Bold, color = Color(0xFFC2185B))
+                            Text("친구", fontWeight = FontWeight.Bold, color = Color(0xFFC2185B))
                             Text("1:1 메시지", fontSize = 12.sp, color = Color(0xFFC2185B).copy(0.7f))
                         }
                     }
@@ -259,7 +262,7 @@ fun NeighborScreen(
             }
 
             Text(
-                text = "하루마을 커뮤니티는 힐링과 평화로운 분위기를 소중히 여깁니다. 부정적인 표현은 삼가하고, 서로를 존중하며 따뜻함을 나눠보세요",
+                text = "하루마을 커뮤니티는 힐링과 평화로운 분위기를 지향합니다.",
                 textAlign = TextAlign.Center,
                 modifier = Modifier
             )

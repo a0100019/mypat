@@ -213,12 +213,12 @@ class KoreanViewModel @Inject constructor(
 
                 koreanDao.update(newClickKoreanData)
 
-                postSideEffect(KoreanSideEffect.Toast("정답입니다"))
+                postSideEffect(KoreanSideEffect.Toast("정답입니다 (달빛+1000)"))
 
                 //보상
                 userDao.update(
                     id = "money",
-                    value = (state.userData.find { it.id == "money" }!!.value.toInt() + 1).toString()
+                    value2 = (state.userData.find { it.id == "money" }!!.value2.toInt() + 1000).toString()
                 )
                 
                 reduce {

@@ -147,7 +147,7 @@ fun IndexScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(6.dp)
+                .padding(start = 6.dp, end = 6.dp, bottom = 6.dp)
         ) {
             Box(
                 modifier = Modifier
@@ -161,11 +161,14 @@ fun IndexScreen(
                     style = MaterialTheme.typography.displaySmall
                 )
 
-                // 오른쪽 버튼
-                MainButton(
-                    text = "닫기",
-                    onClick = popBackStack,
-                    modifier = Modifier.align(Alignment.CenterEnd)
+                JustImage(
+                    filePath = "etc/exit.png",
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .size(30.dp)
+                        .clickable {
+                            popBackStack()
+                        }
                 )
             }
 
@@ -616,18 +619,13 @@ fun IndexScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
 
-                    Surface(
+                    JustImage(
+                        filePath = "etc/arrow.png",
                         modifier = Modifier
-                            .padding(top = 6.dp),
-                        color = Color.Transparent, // ✅ 배경 투명
-                    ) {
-                        MainButton(
-                            onClick = { onPageChangeClick(false) },
-                            text = "   이전   ",
-                            modifier = Modifier
-                            ,
-                        )
-                    }
+                            .size(30.dp)
+                            .clickable { onPageChangeClick(false) }
+                            .graphicsLayer(rotationZ = 270f)
+                    )
 
                     Spacer(modifier = Modifier.weight(1f))
 
@@ -637,18 +635,13 @@ fun IndexScreen(
 
                     Spacer(modifier = Modifier.weight(1f))
 
-                    Surface(
+                    JustImage(
+                        filePath = "etc/arrow.png",
                         modifier = Modifier
-                            .padding(top = 6.dp),
-                        color = Color.Transparent, // ✅ 배경 투명
-                    ) {
-                        MainButton(
-                            onClick = { onPageChangeClick(true) },
-                            text = "   다음   ",
-                            modifier = Modifier
-                            ,
-                        )
-                    }
+                            .size(30.dp)
+                            .clickable { onPageChangeClick(true) }
+                            .graphicsLayer(rotationZ = 90f)
+                    )
 
                 }
 

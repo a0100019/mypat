@@ -129,7 +129,7 @@ class KnowledgeViewModel @Inject constructor(
 
             knowledgeDao.update(newClickKnowledgeData)
 
-            postSideEffect(KnowledgeSideEffect.Toast("수고하셨습니다 (+1 햇살)"))
+            postSideEffect(KnowledgeSideEffect.Toast("수고하셨습니다 (달빛 +1000)"))
 
             //매달, medal, 칭호31
             val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
@@ -160,7 +160,7 @@ class KnowledgeViewModel @Inject constructor(
             //보상
             userDao.update(
                 id = "money",
-                value = (state.userData.find { it.id == "money" }!!.value.toInt() + 1).toString()
+                value2 = (state.userData.find { it.id == "money" }!!.value2.toInt() + 1000).toString()
             )
 
             reduce {

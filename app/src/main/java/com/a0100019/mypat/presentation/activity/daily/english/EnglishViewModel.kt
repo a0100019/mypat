@@ -185,7 +185,7 @@ class EnglishViewModel @Inject constructor(
 
     }
 
-    fun onSubmitClick() = intent {
+    fun onHardSubmitClick() = intent {
 
         if(state.englishTextList[4] != " ") {
 
@@ -201,12 +201,12 @@ class EnglishViewModel @Inject constructor(
                     //보상
                     userDao.update(
                         id = "money",
-                        value = (state.userData.find { it.id == "money" }!!.value.toInt() + 2).toString()
+                        value2 = (state.userData.find { it.id == "money" }!!.value2.toInt() + 2000).toString()
                     )
 
                     englishDao.update(newClickEnglishData)
 
-                    postSideEffect(EnglishSideEffect.Toast("정답입니다 (+2햇살)"))
+                    postSideEffect(EnglishSideEffect.Toast("정답입니다 (달빛 +2000)"))
 
                     reduce {
                         state.copy(
@@ -290,12 +290,12 @@ class EnglishViewModel @Inject constructor(
                     //보상
                     userDao.update(
                         id = "money",
-                        value = (state.userData.find { it.id == "money" }!!.value.toInt() + 1).toString()
+                        value2 = (state.userData.find { it.id == "money" }!!.value2.toInt() + 1000).toString()
                     )
 
                     englishDao.update(newClickEnglishData)
 
-                    postSideEffect(EnglishSideEffect.Toast("정답입니다 (+1햇살)"))
+                    postSideEffect(EnglishSideEffect.Toast("정답입니다 (달빛 +1000)"))
 
                     reduce {
                         state.copy(

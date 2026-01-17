@@ -263,7 +263,6 @@ class DailyViewModel @Inject constructor(
         )
     }
 
-
     private fun onRewardEarned() = intent {
         // 햇살 +3
         // DB 저장
@@ -273,7 +272,7 @@ class DailyViewModel @Inject constructor(
             id = "money",
             value = (state.userData.find { it.id == "money" }!!.value.toInt() + 3).toString()
         )
-        postSideEffect(DailySideEffect.Toast("햇살 +3"))
+        postSideEffect(DailySideEffect.Toast("햇살+3"))
         walkDao.updateLastSuccess()
         reduce {
             state.copy(

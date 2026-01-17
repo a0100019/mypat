@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.a0100019.mypat.presentation.ui.component.MainButton
+import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
 @Composable
@@ -55,6 +57,21 @@ fun DiaryFinishDialog(
                     text = "일기 작성을 완료했습니다!",
                     style = MaterialTheme.typography.bodyLarge
                 )
+
+                Spacer( modifier = Modifier.size(10.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    JustImage(
+                        filePath = "etc/sun.png",
+                        modifier = Modifier
+                            .size(20.dp)
+                    )
+                    Text(
+                        text = " +3"
+                    )
+                }
 
                 Spacer( modifier = Modifier.size(30.dp))
 

@@ -113,7 +113,7 @@ fun CommunityWorldCard(
                     0 -> "칭호 없음"
                     else -> medalName(medal)
                 },
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodySmall,
                 color = Color(0xFF6B1F1F),
                 textAlign = TextAlign.Center,
                 maxLines = 1
@@ -199,12 +199,12 @@ fun CommunityWorldCard(
             ) {
                 Text(
                     text = userData.name,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodySmall,
                     textAlign = TextAlign.Center
                 )
                 Text(
                     text = " #" + userData.tag,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodySmall,
                     textAlign = TextAlign.Center
                 )
             }

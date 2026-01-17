@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -249,7 +250,7 @@ fun SettingScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -265,12 +266,16 @@ fun SettingScreen(
                     style = MaterialTheme.typography.displayMedium,
                 )
 
-                // 오른쪽 버튼
-                MainButton(
-                    text = "닫기",
-                    onClick = popBackStack,
-                    modifier = Modifier.align(Alignment.CenterEnd)
+                JustImage(
+                    filePath = "etc/exit.png",
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .size(30.dp)
+                        .clickable {
+                            popBackStack()
+                        }
                 )
+
             }
 
             Spacer(modifier = Modifier.height(12.dp))
