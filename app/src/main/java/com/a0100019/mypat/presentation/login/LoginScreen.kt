@@ -146,6 +146,7 @@ fun LoginScreen(
         reLoading = loginViewModel::reLoading,
         onGuestLoginClick = loginViewModel::onGuestLoginClick,
         onNavigateToDiaryScreen = loginViewModel::onNavigateToDiaryScreen,
+        todayAttendance = loginViewModel::todayAttendance,
 
         googleLoginClick = {
             if (!isInternetAvailable(context)) {
@@ -185,6 +186,7 @@ fun LoginScreen(
     reLoading: () -> Unit = {},
     onGuestLoginClick: () -> Unit = {},
     onNavigateToDiaryScreen: () -> Unit = {},
+    todayAttendance: () -> Unit = {},
 
     loginState: String = "loading",
     dialog: String = ""
@@ -208,8 +210,11 @@ fun LoginScreen(
             )
         }
         "explanation" -> {
-            ExplanationDialog(
-                onClose = onNavigateToDiaryScreen
+            LoginTutorialDialog(
+                onClose = {
+                    todayAttendance()
+                    onNavigateToDiaryScreen()
+                }
             )
         }
 
@@ -475,7 +480,7 @@ fun LoginScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(48.dp)
-                        .alpha(if(termsChecked) 1f else 0.7f) // 🔹 전체 투명도 (70% 불투명)
+                        .alpha(if (termsChecked) 1f else 0.7f) // 🔹 전체 투명도 (70% 불투명)
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically

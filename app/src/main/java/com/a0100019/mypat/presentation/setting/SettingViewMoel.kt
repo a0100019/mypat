@@ -1088,7 +1088,7 @@ class SettingViewModel @Inject constructor(
 
             userDao.update(
                 id = "money",
-                value2 = (userDataList.find { it.id == "money" }!!.value.toInt() + 10).toString()
+                value = (userDataList.find { it.id == "money" }!!.value.toInt() + 10).toString()
             )
 
             val url = "https://play.google.com/store/apps/details?id=com.a0100019.mypat"

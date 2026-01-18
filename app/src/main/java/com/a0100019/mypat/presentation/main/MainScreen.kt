@@ -69,6 +69,7 @@ import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.domain.AppBgmManager
 import com.a0100019.mypat.presentation.activity.daily.walk.StepForegroundService
 import com.a0100019.mypat.presentation.diary.DiarySideEffect
+import com.a0100019.mypat.presentation.login.ExplanationDialog
 import com.a0100019.mypat.presentation.main.mainDialog.LovePatDialog
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
 import com.a0100019.mypat.presentation.main.mainDialog.TutorialDialog
@@ -267,52 +268,23 @@ fun MainScreen(
         AppBgmManager.play()
     }
 
-    val tutorialPrefs = context.getSharedPreferences("tutorial_prefs", Context.MODE_PRIVATE)
-    val tutorial = tutorialPrefs.getString("tutorial", "미션")
-    var tutorialText by remember { mutableStateOf("진행") }
+    val explainPrefs = context.getSharedPreferences("explain_prefs", Context.MODE_PRIVATE)
+    val explain = explainPrefs.getString("explain", "0")
+    var explainText by remember { mutableStateOf("진행") }
 
-    //
     val adPrefs = context.getSharedPreferences("ad_prefs", Context.MODE_PRIVATE)
 
-    if(tutorialText == "진행"){
-        when (tutorial) {
+    if(explainText == "진행"){
+        if (explain == "0") {
 
-            "미션" -> TutorialDialog(
-                state = "미션",
-                onDailyClick = {
-                    tutorialText = "완료"
-                    onDailyNavigateClick()
-                    tutorialPrefs.edit().putString("tutorial", "커뮤니티").apply()
+            ExplanationDialog (
+                onClose = {
+                    explainText = "완료"
+                    explainPrefs.edit().putString("explain", "1").apply()
                     adPrefs.edit().putString("banner", "1").apply()
                 }
             )
 
-            "커뮤니티" -> TutorialDialog(
-                state = "커뮤니티",
-                onChatClick = {
-                    tutorialText = "완료"
-                    onNeighborNavigateClick()
-                    tutorialPrefs.edit().putString("tutorial", "상점").apply()
-                }
-            )
-
-            "상점" -> TutorialDialog(
-                state = "상점",
-                onStoreClick = {
-                    tutorialText = "완료"
-                    onStoreNavigateClick()
-                    tutorialPrefs.edit().putString("tutorial", "꾸미기").apply()
-                }
-            )
-
-            "꾸미기" -> TutorialDialog(
-                state = "꾸미기",
-                onWorldClick = {
-                    tutorialText = "완료"
-                    onWorldNavigateClick()
-                    tutorialPrefs.edit().putString("tutorial", "완료").apply()
-                }
-            )
         }
     }
 
@@ -586,7 +558,12 @@ fun MainScreen(
             ) {
                 // --- 1. 마을 관리 (따스한 베이지-옐로우 테마) ---
                 Surface(
-                    onClick = { onActivityNavigateClick() },
+                    onClick = {
+                        onActivityNavigateClick()
+                        if(userDataList.find { it.id == "name" }?.value3 == "1") {
+                            adPrefs.edit().putString("banner", "2").apply()
+                        }
+                    },
                     modifier = Modifier.weight(1f).height(100.dp),
                     shape = RoundedCornerShape(28.dp),
                     color = Color(0xFFFFF9C4), // 연노랑

@@ -2,6 +2,7 @@ package com.a0100019.mypat.presentation.diary
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.widget.Toast
@@ -45,6 +46,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -55,6 +57,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -125,7 +128,7 @@ fun DiaryScreen(
             if (granted) {
                 pendingTime?.let { time ->
                     scheduleDiaryAlarm(context, time)
-                    Toast.makeText(context, "매일 $time 에 알기 알림이 설정됐어요 ⏰", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "매일 $time 에 알림이 설정됐어요", Toast.LENGTH_SHORT).show()
                     diaryViewModel.onCloseClick()
                 }
             } else {
@@ -166,7 +169,7 @@ fun DiaryScreen(
                 if (isAlreadyGranted) {
                     // 이미 권한이 있으면 팝업 없이 바로 설정
                     scheduleDiaryAlarm(context, time)
-                    Toast.makeText(context, "매일 $time 에 알람이 설정됐어요 ⏰", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "매일 $time 에 알림이 설정됐어요", Toast.LENGTH_SHORT).show()
                     diaryViewModel.onCloseClick()
                 } else {
                     // 권한이 없으면 팝업을 띄우기 위해 시간을 저장하고 런처 실행
@@ -242,6 +245,29 @@ fun DiaryScreen(
 
     AppBgmManager.pause()
 
+    val context = LocalContext.current
+    val prefs = remember { context.getSharedPreferences("diary_prefs", Context.MODE_PRIVATE) }
+
+    // 상태로 관리하여 리컴포지션 시에도 유지되도록 함
+    var alarmState by remember { mutableStateOf(prefs.getString("alarm", "0")) }
+
+    if (alarmState == "1") {
+        DiaryAlarmDialog(
+            onClose = onCloseClick,
+            onConfirmClick = {
+                onDiaryAlarmChangeClick(it)
+                alarmState = "2"
+                             },
+            onCancelClick = onCancelAlarmClick
+        )
+
+        // 화면에 진입했을 때 딱 한 번만 실행됨
+        LaunchedEffect(Unit) {
+            prefs.edit().putString("alarm", "2").apply()
+            // 필요하다면 로컬 상태도 업데이트하여 일관성 유지
+            // alarmState = "2"
+        }
+    }
     if(clickDiaryData != null && dialogState == "") {
         DiaryReadDialog(
             onClose = onCloseClick,
@@ -323,29 +349,49 @@ fun DiaryScreen(
 
                 Surface(
                     onClick = onNavigateToMainScreen,
-                    shape = RoundedCornerShape(30.dp), // 아주 둥근 캡슐 모양
-                    color = Color(0xFFFFF9C4),        // 포근한 연노랑색 (마을의 따뜻한 느낌)
-                    border = BorderStroke(2.dp, Color(0xFFFFD54F)), // 조금 더 진한 노랑 테두리
+                    shape = RoundedCornerShape(30.dp),
+                    // 1. 단색 대신 아주 미세한 그라데이션 효과를 위해 컬러 살짝 조정
+                    color = Color(0xFFFFF9C4),
+                    border = BorderStroke(2.5.dp, Color(0xFFFFD54F)), // 테두리를 살짝 더 두껍게 해서 선명하게
                     modifier = Modifier
-                        .height(50.dp) // 적당히 도톰한 높이
-                        .padding(horizontal = 4.dp),
-                    shadowElevation = 6.dp // 바닥에서 살짝 떠 있는 귀여운 입체감
+                        .height(50.dp) // 조금 더 도톰하게 만들어 클릭감을 높임
+                        .padding(horizontal = 8.dp),
+                    shadowElevation = 8.dp, // 입체감을 조금 더 강조
+                    tonalElevation = 2.dp
                 ) {
                     Row(
                         modifier = Modifier
-                            .padding(horizontal = 20.dp), // 좌우 여백을 넉넉히 주어 귀여움 강조
+                            .background(
+                                // 2. 버튼 내부에 부드러운 빛 반사 효과 (상단이 조금 더 밝게)
+                                brush = Brush.verticalGradient(
+                                    colors = listOf(
+                                        Color(0xFFFFFEF0), // 상단부 밝은 노랑
+                                        Color(0xFFFFF9C4)  // 하단부 기본 노랑
+                                    )
+                                )
+                            )
+                            .padding(horizontal = 24.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
+                        // 3. 귀여운 아이콘 추가 (마을로 떠나는 느낌)
+                        JustImage(
+                            filePath = "etc/home.png",
+                            modifier = Modifier
+                                .size(20.dp)
+                        )
+
+                        Spacer(modifier = Modifier.width(8.dp))
 
                         Text(
                             text = "마을로 이동하기",
-                            style = MaterialTheme.typography.titleSmall.copy(
+                            style = MaterialTheme.typography.titleSmall.copy( // 크기를 살짝 키움
                                 fontWeight = FontWeight.ExtraBold,
-                                letterSpacing = (-0.5).sp // 자간을 살짝 좁혀서 옹기종기한 느낌
+                                letterSpacing = (-0.7).sp
                             ),
-                            color = Color(0xFF5D4037) // 가독성 좋은 따뜻한 갈색 글씨
+                            color = Color(0xFF5D4037)
                         )
+
                     }
                 }
 

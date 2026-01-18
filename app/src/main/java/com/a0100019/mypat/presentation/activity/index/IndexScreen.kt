@@ -2,7 +2,10 @@ package com.a0100019.mypat.presentation.activity.index
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -29,13 +32,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.item.Item
@@ -251,15 +261,17 @@ fun IndexScreen(
 
                                     val interactionSource = remember { MutableInteractionSource() }
                                     val isPressed by interactionSource.collectIsPressedAsState()
+                                    val isLocked = pat.date == "0"
                                     val scale by animateFloatAsState(
-                                        if (isPressed) 0.95f else 1f,
+                                        targetValue = if (isPressed) 0.96f else 1f,
+                                        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
                                         label = "scale"
                                     )
 
                                     Card(
                                         modifier = Modifier
                                             .weight(1f)
-                                            .padding(start = 8.dp, end = 8.dp, top = 4.dp, bottom = 4.dp)
+                                            .padding(horizontal = 8.dp, vertical = 6.dp)
                                             .graphicsLayer { scaleX = scale; scaleY = scale }
                                             .clickable(
                                                 interactionSource = interactionSource,
@@ -272,66 +284,61 @@ fun IndexScreen(
                                                     )
                                                 }
                                             )
-                                            .border(
-                                                2.dp,
-                                                MaterialTheme.colorScheme.primaryContainer,
-                                                RoundedCornerShape(16.dp)
-                                            )
                                             .aspectRatio(0.75f),
-                                        shape = RoundedCornerShape(16.dp),
-                                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.scrim),
+                                        shape = RoundedCornerShape(24.dp),
+                                        colors = CardDefaults.cardColors(
+                                            containerColor = if (!isLocked) MaterialTheme.colorScheme.surfaceVariant else Color(0xFFF2F2F2)
+                                        ),
+                                        elevation = CardDefaults.cardElevation(defaultElevation = if (isPressed) 2.dp else 6.dp)
                                     ) {
-                                        Box(Modifier.fillMaxSize()) {
+                                        Box(modifier = Modifier.fillMaxSize()) {
                                             Column(
                                                 modifier = Modifier
                                                     .fillMaxSize()
-                                                    .padding(12.dp),
-                                                verticalArrangement = Arrangement.SpaceBetween,
+                                                    .padding(10.dp),
+                                                verticalArrangement = Arrangement.spacedBy(8.dp),
                                                 horizontalAlignment = Alignment.CenterHorizontally
                                             ) {
+                                                // 펫 이미지 컨테이너
                                                 Box(
                                                     modifier = Modifier
                                                         .weight(1f)
                                                         .fillMaxWidth()
+                                                        .clip(RoundedCornerShape(18.dp))
                                                         .background(
-                                                            color = if (pat.date != "0") MaterialTheme.colorScheme.tertiaryContainer else Color.LightGray,
-                                                            shape = RoundedCornerShape(16.dp)
+                                                            if (isLocked) Color(0xFFE0E0E0)
+                                                            else MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f)
                                                         )
                                                         .border(
-                                                            2.dp,
-                                                            MaterialTheme.colorScheme.onTertiaryContainer,
-                                                            RoundedCornerShape(16.dp)
-                                                        ),
-                                                    contentAlignment = Alignment.Center
-                                                ) {
-                                                    JustImage(filePath = pat.url)
-                                                    if (pat.date == "0") {
-                                                        Box(
-                                                            modifier = Modifier
-                                                                .fillMaxSize()
-                                                                .background(
-                                                                    Color.LightGray.copy(
-                                                                        alpha = 0.5f
-                                                                    ),
-                                                                    shape = RoundedCornerShape(16.dp)
-                                                                )
+                                                            width = 1.dp,
+                                                            color = if (isLocked) Color.Transparent else MaterialTheme.colorScheme.outlineVariant,
+                                                            shape = RoundedCornerShape(18.dp)
                                                         )
-                                                    }
+                                                ) {
+                                                    // 펫 이미지 (잠금 시 블러 제거, 투명도만 조절)
+                                                    JustImage(
+                                                        filePath = pat.url,
+                                                        contentScale = ContentScale.Fit,
+                                                        modifier = Modifier
+                                                            .fillMaxSize()
+                                                            .padding(8.dp)
+                                                            .alpha(if (isLocked) 0.3f else 1f) // 블러가 없으므로 투명도를 살짝 올림(0.25 -> 0.3)
+                                                    )
+
                                                 }
 
-                                                TextAutoResizeSingleLine(
-                                                    text = pat.name,
-                                                    modifier = Modifier.padding(top = 10.dp)
+                                                // 하단 펫 이름 영역
+                                                Column(
+                                                    modifier = Modifier
                                                         .fillMaxWidth()
-                                                )
-                                            }
-
-                                            if (pat.date == "0") {
-                                                JustImage(
-                                                    filePath = "etc/lock.png",
-                                                    modifier = Modifier.size(35.dp)
-                                                        .align(Alignment.TopStart).padding(8.dp)
-                                                )
+                                                        .padding(bottom = 4.dp),
+                                                    horizontalAlignment = Alignment.CenterHorizontally
+                                                ) {
+                                                    TextAutoResizeSingleLine(
+                                                        text = pat.name, // 이름도 물음표로 할지 선택하세요!
+                                                        modifier = Modifier.fillMaxWidth(),
+                                                    )
+                                                }
                                             }
                                         }
                                     }
@@ -369,96 +376,109 @@ fun IndexScreen(
                             Row(modifier = Modifier.fillMaxWidth()) {
                                 rowItems.forEachIndexed { colIdx, item ->
                                     val originalIndex = start + rowIdx * 3 + colIdx
+                                    val isLocked = item.date == "0"
 
                                     val interactionSource = remember { MutableInteractionSource() }
                                     val isPressed by interactionSource.collectIsPressedAsState()
                                     val scale by animateFloatAsState(
-                                        targetValue = if (isPressed) 0.95f else 1f,
+                                        targetValue = if (isPressed) 0.96f else 1f,
+                                        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
                                         label = "scale"
                                     )
 
                                     Card(
                                         modifier = Modifier
                                             .weight(1f)
-                                            .padding(start = 8.dp, end = 8.dp, top = 4.dp, bottom = 4.dp)
-                                            .graphicsLayer { scaleX = scale; scaleY = scale }
+                                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                                            .graphicsLayer {
+                                                scaleX = scale
+                                                scaleY = scale
+                                            }
                                             .clickable(
                                                 interactionSource = interactionSource,
                                                 indication = null,
-                                                onClick = { onCardClick(originalIndex) } // ✅ 역순 계산 없음
-                                            )
-                                            .border(
-                                                width = 2.dp,
-                                                color = MaterialTheme.colorScheme.primaryContainer,
-                                                shape = RoundedCornerShape(16.dp)
+                                                onClick = { onCardClick(originalIndex) }
                                             )
                                             .aspectRatio(0.75f),
-                                        shape = RoundedCornerShape(16.dp),
+                                        shape = RoundedCornerShape(24.dp),
                                         colors = CardDefaults.cardColors(
-                                            containerColor = MaterialTheme.colorScheme.scrim
+                                            containerColor = if (!isLocked)
+                                                MaterialTheme.colorScheme.surfaceVariant
+                                            else
+                                                Color(0xFFF2F2F2)
                                         ),
+                                        elevation = CardDefaults.cardElevation(
+                                            defaultElevation = if (isPressed) 2.dp else 6.dp
+                                        )
                                     ) {
                                         Box(modifier = Modifier.fillMaxSize()) {
-
                                             Column(
                                                 modifier = Modifier
                                                     .fillMaxSize()
-                                                    .padding(12.dp),
-                                                verticalArrangement = Arrangement.SpaceBetween,
+                                                    .padding(10.dp),
+                                                verticalArrangement = Arrangement.spacedBy(8.dp),
                                                 horizontalAlignment = Alignment.CenterHorizontally
                                             ) {
+
+                                                // 🔹 이미지 컨테이너
                                                 Box(
                                                     modifier = Modifier
                                                         .weight(1f)
                                                         .fillMaxWidth()
+                                                        .clip(RoundedCornerShape(18.dp))
                                                         .background(
-                                                            color = if (item.date != "0")
-                                                                MaterialTheme.colorScheme.tertiaryContainer
-                                                            else
-                                                                Color.LightGray,
-                                                            shape = RoundedCornerShape(16.dp)
+                                                            if (isLocked) Color(0xFFE0E0E0)
+                                                            else MaterialTheme.colorScheme.secondaryContainer
                                                         )
                                                         .border(
-                                                            width = 2.dp,
-                                                            color = MaterialTheme.colorScheme.onTertiaryContainer,
-                                                            shape = RoundedCornerShape(16.dp)
+                                                            width = 1.dp,
+                                                            color = MaterialTheme.colorScheme.outlineVariant,
+                                                            shape = RoundedCornerShape(18.dp)
                                                         )
-                                                        .padding(6.dp),
-                                                    contentAlignment = Alignment.Center
                                                 ) {
-                                                    JustImage(filePath = item.url)
 
-                                                    if (item.date == "0") {
-                                                        Box(
-                                                            modifier = Modifier
-                                                                .fillMaxSize()
-                                                                .background(
-                                                                    Color.LightGray.copy(alpha = 0.5f),
-                                                                    shape = RoundedCornerShape(16.dp)
+                                                    // 🔹 아이템 이미지 (잠금 시 투명도만 적용)
+                                                    JustImage(
+                                                        filePath = item.url,
+                                                        contentScale = ContentScale.Fit,
+                                                        modifier = Modifier
+                                                            .fillMaxSize()
+                                                            .padding(12.dp)
+                                                            .alpha(if (isLocked) 0.3f else 1f)
+                                                    )
+
+                                                    // 🔹 하단 입체감 그라디언트 (유지)
+                                                    Box(
+                                                        modifier = Modifier
+                                                            .fillMaxSize()
+                                                            .background(
+                                                                brush = Brush.verticalGradient(
+                                                                    colors = listOf(
+                                                                        Color.Transparent,
+                                                                        Color.Black.copy(alpha = 0.05f)
+                                                                    ),
+                                                                    startY = 100f
                                                                 )
-                                                        )
-                                                    }
+                                                            )
+                                                    )
                                                 }
 
-                                                TextAutoResizeSingleLine(
-                                                    text = item.name,
+                                                // 🔹 하단 텍스트 영역
+                                                Column(
                                                     modifier = Modifier
-                                                        .padding(top = 10.dp)
                                                         .fillMaxWidth()
-                                                )
-                                            }
-
-                                            if (item.date == "0") {
-                                                JustImage(
-                                                    filePath = "etc/lock.png",
-                                                    modifier = Modifier
-                                                        .size(35.dp)
-                                                        .align(Alignment.TopStart)
-                                                        .padding(8.dp)
-                                                )
+                                                        .padding(horizontal = 4.dp, vertical = 2.dp),
+                                                    horizontalAlignment = Alignment.CenterHorizontally
+                                                ) {
+                                                    TextAutoResizeSingleLine(
+                                                        text = item.name,
+                                                        modifier = Modifier.fillMaxWidth(),
+                                                    )
+                                                }
                                             }
                                         }
                                     }
+
                                 }
 
                                 // 마지막 줄이 3칸 미만이면 빈 칸 채우기
@@ -498,101 +518,102 @@ fun IndexScreen(
                                     val interactionSource = remember { MutableInteractionSource() }
                                     val isPressed by interactionSource.collectIsPressedAsState()
                                     val scale by animateFloatAsState(
-                                        targetValue = if (isPressed) 0.95f else 1f,
+                                        targetValue = if (isPressed) 0.96f else 1f,
+                                        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
                                         label = "scale"
                                     )
 
                                     Card(
                                         modifier = Modifier
                                             .weight(1f)
-                                            .padding(start = 8.dp, end = 8.dp, top = 4.dp, bottom = 4.dp)
-                                            .graphicsLayer { scaleX = scale; scaleY = scale }
+                                            .padding(8.dp)
+                                            .graphicsLayer {
+                                                scaleX = scale
+                                                scaleY = scale
+                                            }
                                             .clickable(
                                                 interactionSource = interactionSource,
                                                 indication = null,
-                                                onClick = { onCardClick(originalIndex) } // ✅ 역순 계산 없음
+                                                onClick = { onCardClick(originalIndex) }
                                             )
-                                            .border(
-                                                width = 2.dp,
-                                                color = MaterialTheme.colorScheme.primaryContainer,
-                                                shape = RoundedCornerShape(16.dp)
-                                            )
-                                            .aspectRatio(1f/1.35f)
-                                        ,
-                                        shape = RoundedCornerShape(16.dp),
+                                            .aspectRatio(1f / 1.4f),
+                                        shape = RoundedCornerShape(24.dp),
                                         colors = CardDefaults.cardColors(
-                                            containerColor = MaterialTheme.colorScheme.scrim
+                                            containerColor =
+                                            if (area.date != "0")
+                                                MaterialTheme.colorScheme.surfaceVariant
+                                            else
+                                                Color(0xFFF2F2F2)
                                         ),
+                                        elevation = CardDefaults.cardElevation(
+                                            defaultElevation = if (isPressed) 2.dp else 6.dp
+                                        )
                                     ) {
-                                        Box(
-                                            Modifier
-//                                                .fillMaxSize()
-                                        ) {
+                                        Box(modifier = Modifier.fillMaxSize()) {
                                             Column(
                                                 modifier = Modifier
                                                     .fillMaxSize()
-                                                    .padding(12.dp),
-                                                verticalArrangement = Arrangement.SpaceBetween,
+                                                    .padding(10.dp),
+                                                verticalArrangement = Arrangement.spacedBy(8.dp),
                                                 horizontalAlignment = Alignment.CenterHorizontally
                                             ) {
+
+                                                // 🔹 이미지 컨테이너
                                                 Box(
                                                     modifier = Modifier
-                                                        .aspectRatio(1f/1.2f)
+                                                        .weight(1f)
                                                         .fillMaxWidth()
-                                                        .background(
-                                                            color = if (area.date != "0")
-                                                                MaterialTheme.colorScheme.tertiaryContainer
-                                                            else
-                                                                Color.LightGray,
-                                                            shape = RoundedCornerShape(16.dp)
-                                                        )
+                                                        .clip(RoundedCornerShape(18.dp))
+                                                        .background(MaterialTheme.colorScheme.secondaryContainer)
                                                         .border(
-                                                            width = 2.dp,
-                                                            color = MaterialTheme.colorScheme.onTertiaryContainer,
-                                                            shape = RoundedCornerShape(16.dp)
-                                                        ),
-                                                    contentAlignment = Alignment.Center
+                                                            width = 1.dp,
+                                                            color = MaterialTheme.colorScheme.outlineVariant,
+                                                            shape = RoundedCornerShape(18.dp)
+                                                        )
                                                 ) {
+
+                                                    // 🔹 메인 이미지 (잠금 시 투명도만)
                                                     JustImage(
                                                         filePath = area.url,
-                                                        contentScale = ContentScale.FillBounds,
-                                                        modifier = Modifier.clip(
-                                                            RoundedCornerShape(
-                                                                16.dp
-                                                            )
-                                                        )
+                                                        contentScale = ContentScale.Crop,
+                                                        modifier = Modifier
+                                                            .fillMaxSize()
+                                                            .alpha(if (area.date == "0") 0.4f else 1f)
                                                     )
-                                                    if (area.date == "0") {
-                                                        Box(
-                                                            modifier = Modifier
-                                                                .fillMaxWidth()
-                                                                .aspectRatio(1f/1.2f)
-                                                                .background(
-                                                                    Color.LightGray.copy(alpha = 0.8f),
-                                                                    shape = RoundedCornerShape(16.dp)
+
+                                                    // 🔹 하단 은은한 그라디언트
+                                                    Box(
+                                                        modifier = Modifier
+                                                            .fillMaxSize()
+                                                            .background(
+                                                                brush = Brush.verticalGradient(
+                                                                    colors = listOf(
+                                                                        Color.Transparent,
+                                                                        Color.Black.copy(alpha = 0.2f)
+                                                                    ),
+                                                                    startY = 300f
                                                                 )
-                                                        )
-                                                    }
+                                                            )
+                                                    )
+
                                                 }
 
-                                                TextAutoResizeSingleLine(
-                                                    text = area.name,
+                                                // 🔹 하단 텍스트 영역
+                                                Column(
                                                     modifier = Modifier
                                                         .fillMaxWidth()
-                                                )
-                                            }
-
-                                            if (area.date == "0") {
-                                                JustImage(
-                                                    filePath = "etc/lock.png",
-                                                    modifier = Modifier
-                                                        .size(35.dp)
-                                                        .align(Alignment.TopStart)
-                                                        .padding(8.dp)
-                                                )
+                                                        .padding(horizontal = 4.dp, vertical = 2.dp),
+                                                    horizontalAlignment = Alignment.CenterHorizontally
+                                                ) {
+                                                    TextAutoResizeSingleLine(
+                                                        text = area.name,
+                                                        modifier = Modifier.fillMaxWidth()
+                                                    )
+                                                }
                                             }
                                         }
                                     }
+
                                 }
 
                                 // 마지막 줄이 3칸 미만이면 빈 칸 채우기

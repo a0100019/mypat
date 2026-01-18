@@ -143,11 +143,20 @@ fun ActivityScreen(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // 첫 번째 줄: 일일미션 & 도감
+                // 첫 번째 줄: 상점 & 하루 미션
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
+                    MenuCard(
+                        title = "상점",
+                        subTitle = "아이템 구매",
+                        icon = "🛒",
+                        backgroundColor = Color(0xFFFCE4EC),
+                        textColor = Color(0xFFC2185B),
+                        onClick = onStoreNavigateClick,
+                        modifier = Modifier.weight(1f)
+                    )
                     MenuCard(
                         title = "하루 미션",
                         subTitle = "꾸준한 성장",
@@ -157,18 +166,9 @@ fun ActivityScreen(
                         onClick = onDailyNavigateClick,
                         modifier = Modifier.weight(1f)
                     )
-                    MenuCard(
-                        title = "도감",
-                        subTitle = "모험의 기록",
-                        icon = "📖",
-                        backgroundColor = Color(0xFFE8F5E9),
-                        textColor = Color(0xFF2E7D32),
-                        onClick = onIndexNavigateClick,
-                        modifier = Modifier.weight(1f)
-                    )
                 }
 
-                // 두 번째 줄: 내정보 & 상점
+                // 두 번째 줄: 내정보 & 도감
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -183,12 +183,12 @@ fun ActivityScreen(
                         modifier = Modifier.weight(1f)
                     )
                     MenuCard(
-                        title = "상점",
-                        subTitle = "아이템 구매",
-                        icon = "🛒",
-                        backgroundColor = Color(0xFFFCE4EC),
-                        textColor = Color(0xFFC2185B),
-                        onClick = onStoreNavigateClick,
+                        title = "도감",
+                        subTitle = "모험의 기록",
+                        icon = "📖",
+                        backgroundColor = Color(0xFFE8F5E9),
+                        textColor = Color(0xFF2E7D32),
+                        onClick = onIndexNavigateClick,
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -197,14 +197,13 @@ fun ActivityScreen(
                 val interactionWorld = remember { MutableInteractionSource() }
                 val isPressedWorld by interactionWorld.collectIsPressedAsState()
 
-                // 눌렀을 때 크기 변화와 동시에 아래로 살짝 내려가는 효과 (물리 버튼 느낌)
                 val scaleWorld by animateFloatAsState(if (isPressedWorld) 0.96f else 1f, label = "scale")
                 val translateY by animateFloatAsState(if (isPressedWorld) 4f else 0f, label = "translateY")
 
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(64.dp) // 그림자 공간을 위해 높이 살짝 증가
+                        .height(64.dp)
                         .graphicsLayer {
                             scaleX = scaleWorld
                             scaleY = scaleWorld
@@ -217,12 +216,12 @@ fun ActivityScreen(
                         ),
                     contentAlignment = Alignment.TopCenter
                 ) {
-                    // 1. 버튼 하단 입체감 (짙은 그림자/두께감)
+                    // 1. 버튼 하단 입체감
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(56.dp)
-                            .offset(y = 4.dp) // 배경보다 살짝 아래 배치
+                            .offset(y = 4.dp)
                             .background(Color(0xFFB39DDB), RoundedCornerShape(20.dp))
                     )
 
@@ -232,17 +231,16 @@ fun ActivityScreen(
                             .fillMaxWidth()
                             .height(56.dp),
                         shape = RoundedCornerShape(20.dp),
-                        color = Color(0xFFF3E5F5), // 기본 파스텔 보라
-                        border = BorderStroke(2.dp, Color.White.copy(alpha = 0.5f)) // 반짝이는 외곽선
+                        color = Color(0xFFF3E5F5),
+                        border = BorderStroke(2.dp, Color.White.copy(alpha = 0.5f))
                     ) {
-                        // 은은한 그라데이션 추가를 위해 Box 사용
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .background(
                                     brush = Brush.verticalGradient(
                                         colors = listOf(
-                                            Color.White.copy(alpha = 0.3f), // 상단 하이라이트
+                                            Color.White.copy(alpha = 0.3f),
                                             Color.Transparent
                                         )
                                     )
@@ -253,7 +251,6 @@ fun ActivityScreen(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.Center
                             ) {
-                                // 아이콘에 은은한 후광 효과
                                 Box(
                                     modifier = Modifier
                                         .size(32.dp)
@@ -269,7 +266,7 @@ fun ActivityScreen(
                                     text = "마을 꾸미기",
                                     fontSize = 18.sp,
                                     fontWeight = FontWeight.ExtraBold,
-                                    color = Color(0xFF673AB7), // 깊이감 있는 보라색
+                                    color = Color(0xFF673AB7),
                                     style = androidx.compose.ui.text.TextStyle(
                                         shadow = Shadow(
                                             color = Color.Black.copy(alpha = 0.1f),
@@ -282,8 +279,6 @@ fun ActivityScreen(
                         }
                     }
                 }
-
-
             }
 
             Text(

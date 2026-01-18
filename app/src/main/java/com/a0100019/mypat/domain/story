@@ -10,7 +10,6 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -28,7 +27,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -46,14 +44,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -72,101 +67,84 @@ import kotlin.random.Random
 fun ExplanationDialog(
     onClose: () -> Unit,
 ) {
-    androidx.compose.ui.window.Dialog(
-        onDismissRequest = { onClose() },
-        properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false)
+    Dialog(
+        onDismissRequest = { },
+        properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
         Box(
             modifier = Modifier
-                .width(340.dp)
-                .shadow(20.dp, RoundedCornerShape(32.dp))
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            Color(0xFFFCF8F5), // 연한 베이지
-                            Color(0xFFF3E5DC)  // 따뜻한 흙색 느낌
-                        )
-                    ),
-                    shape = RoundedCornerShape(32.dp)
-                )
-                .border(
-                    width = 2.dp,
-                    color = Color(0xFF4E342E).copy(alpha = 0.3f),
-                    shape = RoundedCornerShape(32.dp)
-                ),
+                .width(360.dp)
+                .fillMaxHeight(0.8f),
             contentAlignment = Alignment.Center
         ) {
-            // 배경 장식 (패턴 느낌)
+            // 1. 배경 이미지
+            JustImage(
+                filePath = "etc/story.webp",
+                contentScale = ContentScale.FillBounds,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .shadow(15.dp, shape = RoundedCornerShape(8.dp))
+            )
+
+            // 2. 가독성을 위한 은은한 덮개 (0.3f 정도가 적당합니다)
             Box(
                 modifier = Modifier
-                    .padding(12.dp)
-                    .border(
-                        width = 1.dp,
-                        color = Color(0xFF4E342E).copy(alpha = 0.1f),
-                        shape = RoundedCornerShape(22.dp)
+                    .fillMaxSize()
+                    .background(
+                        color = Color.White.copy(alpha = 0.7f),
+                        shape = RoundedCornerShape(8.dp)
                     )
             )
 
+            // 3. 내부 콘텐츠
             Column(
                 modifier = Modifier
-                    .padding(horizontal = 28.dp, vertical = 30.dp),
+                    .fillMaxSize()
+                    .padding(horizontal = 35.dp, vertical = 35.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // 상단 아이콘 (포인트)
                 Text(
-                    text = "🏡",
-                    fontSize = 32.sp,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-
-                Text(
-                    text = "하루마을 설명서",
-                    style = MaterialTheme.typography.headlineSmall.copy(
-                        fontWeight = FontWeight.Black,
-                        letterSpacing = 1.5.sp,
+                    text = "스토리",
+                    style = MaterialTheme.typography.headlineMedium.copy(
+                        fontWeight = FontWeight.ExtraBold, // 제목은 더 강조
+                        letterSpacing = 2.sp,
+                        fontFamily = FontFamily.Serif // 세리프체 적용
                     ),
-                    color = Color(0xFF4E342E)
+                    color = Color(0xFF2E1A16)
                 )
 
-                // 세련된 구분선
-                Row(
-                    modifier = Modifier.padding(vertical = 32.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(modifier = Modifier.weight(1f).height(1.dp).background(Color(0xFF4E342E).copy(alpha = 0.2f)))
-                    Box(modifier = Modifier.padding(horizontal = 8.dp).size(6.dp).background(Color(0xFF4E342E), CircleShape))
-                    Box(modifier = Modifier.weight(1f).height(1.dp).background(Color(0xFF4E342E).copy(alpha = 0.2f)))
-                }
+                Box(
+                    modifier = Modifier
+                        .padding(top = 8.dp, bottom = 20.dp)
+                        .width(60.dp)
+                        .height(2.dp)
+                        .background(Color(0xFF4E342E))
+                )
 
-                // 스크롤 가능한 본문 영역
                 Column(
                     modifier = Modifier
+                        .weight(1f)
                         .fillMaxWidth()
-                        .verticalScroll(rememberScrollState())
-                        .padding(vertical = 8.dp),
-                    horizontalAlignment = Alignment.Start
+                        .verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                 ) {
-                    val contentColor = Color(0xFF3E2723)
-                    val bodyStyle = MaterialTheme.typography.bodyLarge.copy(
-                        lineHeight = 26.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = contentColor,
-                        textAlign = TextAlign.Center
-                    )
+                    Text(
+                        text = "어느 날, 당신은 버려진 마을의 관리인으로 임명되었습니다.\n" +
+                                "\n당신에게 주어진 건 낡은 펜 한 자루와 빈 일기장뿐.. 하지만 이 마을에는 오래된 전설이 하나 전해져 내려옵니다.\n" +
+                                "\n" +
+                                "\"누군가의 진심 어린 하루가 기록될 때마다, 마을의 시간이 다시 흐르기 시작한다.\"\n\n" +
+                                "마을을 다시 살리는 방법은 거창하지 않습니다. 그저 하루를 꾸준히 기록하는 것.\n그것뿐입니다.\n"
 
-                    // 불렛 포인트 스타일로 가독성 업그레이드
-                    val items = listOf(
-                        "매일 일기를 작성해 햇살을 모으고, 하루 미션과 펫을 통해 달빛을 모아보세요.",
-                        "모은 햇살과 달빛으로 상점에서 귀여운 펫과 아이템을 가질 수 있어요.",
-                        "마을 꾸미기에서 나만의 마을을 꾸며보아요.",
-                        "그 외에 다양한 커뮤니티 기능을 통해 이웃들과 소통하고, 펫을 키우며 바쁜 하루를 힐링해요"
+                        ,
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            lineHeight = 28.sp,
+                            fontWeight = FontWeight.Bold, // 두껍게 하여 가독성 확보
+                            fontFamily = FontFamily.Serif // 아까 좋아하셨던 세리프체 적용
+                        ),
+                        textAlign = TextAlign.Center,
+                        color = Color(0xFF1B0C0A)
                     )
-
-                    items.forEach { text ->
-                        Row(modifier = Modifier.padding(bottom = 32.dp)) {
-                            Text(text = text, style = bodyStyle)
-                        }
-                    }
                 }
 
                 Spacer(modifier = Modifier.height(20.dp))
@@ -174,7 +152,7 @@ fun ExplanationDialog(
                 // 1. 애니메이션 변수 정의 (기존 shimmer 코드 위에 추가)
                 val infiniteTransition = rememberInfiniteTransition(label = "daily_btn_anim")
 
-// 둥실둥실 뜨는 효과
+                // 둥실둥실 뜨는 효과
                 val floatingOffset by infiniteTransition.animateFloat(
                     initialValue = 0f,
                     targetValue = -8f,
@@ -199,7 +177,7 @@ fun ExplanationDialog(
                     label = "daily_mission_scale"
                 )
 
-// ✨ 반짝임 애니메이션 (기존 유지)
+                // ✨ 반짝임 애니메이션 (기존 유지)
                 val shimmerX by infiniteTransition.animateFloat(
                     initialValue = -0.4f,
                     targetValue = 1.4f,
@@ -261,8 +239,8 @@ fun ExplanationDialog(
                                 ) {
                                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                         Text(
-                                            text = "가장 먼저 마을 관리를 눌러봅시다!",
-                                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                                            text = "나의 위대한 역사 시작하기",
+                                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                                             color = Color(0xFF2F6F62)
                                         )
                                     }
@@ -301,4 +279,3 @@ fun ExplanationDialogPreview() {
         )
     }
 }
-

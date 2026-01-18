@@ -1,5 +1,6 @@
 package com.a0100019.mypat.presentation.diary
 
+import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.BorderStroke
@@ -59,6 +60,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.sp
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
 import com.a0100019.mypat.presentation.main.management.BannerAd
+import com.a0100019.mypat.presentation.main.management.ManagementViewModel
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -68,6 +70,7 @@ import java.util.Locale
 @Composable
 fun DiaryWriteScreen(
     diaryWriteViewModel: DiaryWriteViewModel = hiltViewModel(),
+    managementViewModel: ManagementViewModel = hiltViewModel(),
     popBackStack: () -> Unit
 ) {
     val diaryWriteState: DiaryWriteState = diaryWriteViewModel.collectAsState().value
@@ -146,6 +149,13 @@ fun DiaryWriteScreen(
     writeFinish: Boolean = false,
     onLastFinishClick: () -> Unit = {},
 ) {
+
+    val context = LocalContext.current
+    val prefs = context.getSharedPreferences("diary_prefs", Context.MODE_PRIVATE)
+    val alarm = prefs.getString("alarm", "0")
+    if(alarm == "0") {
+        prefs.edit().putString("alarm", "1").apply()
+    }
 
     val bringIntoViewRequester = remember { BringIntoViewRequester() }
     val coroutineScope = rememberCoroutineScope()

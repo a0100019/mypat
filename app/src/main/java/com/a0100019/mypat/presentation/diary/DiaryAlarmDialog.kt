@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,6 +22,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -29,6 +34,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -47,106 +53,151 @@ fun DiaryAlarmDialog(
     onCancelClick: () -> Unit = {}
 ) {
     val context = LocalContext.current
-    val prefs = context.getSharedPreferences("diary_alarm", Context.MODE_PRIVATE)
-    val savedAlarmTime: String = prefs.getString("alarm_time", "00:00") ?: "00:00"
+    val prefs = remember { context.getSharedPreferences("diary_alarm", Context.MODE_PRIVATE) }
+    val savedAlarmTime = prefs.getString("alarm_time", "00:00") ?: "00:00"
 
-    // 1. 초기값 파싱
     val timeParts = savedAlarmTime.split(":")
     val initialHour = timeParts.getOrNull(0)?.toIntOrNull() ?: 0
     val initialMinute = timeParts.getOrNull(1)?.toIntOrNull() ?: 0
 
     val hours = (0..23).toList()
     val minutes = (0..50 step 10).toList()
-
-    // 초기 인덱스 계산 (10분 단위 내림 처리)
     val initialMinuteIndex = (initialMinute / 10).coerceIn(0, minutes.lastIndex)
 
-    // LazyListState 설정
     val hourState = rememberLazyListState(initialFirstVisibleItemIndex = initialHour)
     val minuteState = rememberLazyListState(initialFirstVisibleItemIndex = initialMinuteIndex)
 
     Dialog(onDismissRequest = onClose) {
         Box(
             modifier = Modifier
-                .width(340.dp)
-                .shadow(12.dp, RoundedCornerShape(24.dp))
-                .border(2.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(24.dp))
-                .background(MaterialTheme.colorScheme.background, RoundedCornerShape(24.dp))
-                .padding(16.dp)
+                .width(320.dp) // 조금 더 컴팩트하게 조절
+                .clip(RoundedCornerShape(28.dp))
+                .background(MaterialTheme.colorScheme.surface)
+                .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(28.dp))
+                .padding(24.dp)
         ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    text = "일기 알림 시간 설정",
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(top = 10.dp)
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // 상단 아이콘 (선택 사항)
+                Icon(
+                    imageVector = Icons.Default.Notifications,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(32.dp)
                 )
 
-                Spacer(modifier = Modifier.height(20.dp))
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = "오늘의 기억, 잊지 않도록",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "매일 같은 시간에 알림을 보내드릴게요",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
 
-                // 휠 피커 영역
+                // 휠 피커 영역 (중앙 강조 가이드 추가)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(160.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    // 선택 영역 하이라이트 배경
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(0.8f)
+                            .height(40.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f))
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        WheelPicker(
+                            items = hours,
+                            state = hourState,
+                            modifier = Modifier.weight(1f)
+                        )
+
+                        Text(
+                            text = ":",
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            modifier = Modifier.padding(bottom = 2.dp),
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+
+                        WheelPicker(
+                            items = minutes,
+                            state = minuteState,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(150.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
+                        .padding(top = 8.dp), // 상단 영역과 약간의 거리두기
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    WheelPicker(
-                        items = hours,
-                        state = hourState,
-                        modifier = Modifier.weight(1f)
-                    )
+                    // 1. 취소 (또는 알람 끄기) 버튼: 테두리만 있거나 투명한 스타일
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(52.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                            .clickable { onCancelClick() },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "나중에 할래요",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
 
-                    Text(
-                        text = ":",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(bottom = 4.dp)
-                    )
+                    // 2. 설정 완료 버튼: 메인 컬러로 강조
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(52.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(MaterialTheme.colorScheme.primary) // 하루마을 포인트 컬러
+                            .clickable {
+                                fun getCenteredIndex(state: LazyListState): Int {
+                                    val layoutInfo = state.layoutInfo
+                                    val containerCenter = (layoutInfo.viewportEndOffset + layoutInfo.viewportStartOffset) / 2
+                                    return layoutInfo.visibleItemsInfo.minByOrNull {
+                                        kotlin.math.abs((it.offset + it.size / 2) - containerCenter)
+                                    }?.index ?: state.firstVisibleItemIndex
+                                }
 
-                    WheelPicker(
-                        items = minutes,
-                        state = minuteState,
-                        modifier = Modifier.weight(1f)
-                    )
+                                val h = hours[getCenteredIndex(hourState).coerceIn(0, hours.lastIndex)]
+                                val m = minutes[getCenteredIndex(minuteState).coerceIn(0, minutes.lastIndex)]
+                                onConfirmClick(String.format("%02d:%02d", h, m))
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "설정하기", // '설정'보다 훨씬 부드러운 표현
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
 
-                Spacer(modifier = Modifier.height(20.dp))
-
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    MainButton(
-                        text = " 끄기 ",
-                        onClick = onCancelClick,
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .weight(1f)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    MainButton(
-                        text = " 확인 ",
-                        onClick = {
-                            // 중앙에 있는 아이템의 인덱스를 계산하는 헬퍼 함수
-                            fun getCenteredIndex(state: LazyListState): Int {
-                                val layoutInfo = state.layoutInfo
-                                val containerCenter = (layoutInfo.viewportEndOffset + layoutInfo.viewportStartOffset) / 2
-                                return layoutInfo.visibleItemsInfo.minByOrNull {
-                                    kotlin.math.abs((it.offset + it.size / 2) - containerCenter)
-                                }?.index ?: state.firstVisibleItemIndex
-                            }
-
-                            val hIdx = getCenteredIndex(hourState)
-                            val mIdx = getCenteredIndex(minuteState)
-
-                            val h = hours[hIdx.coerceIn(0, hours.lastIndex)]
-                            val m = minutes[mIdx.coerceIn(0, minutes.lastIndex)]
-
-                            onConfirmClick(String.format("%02d:%02d", h, m))
-                        },
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .weight(1f)
-                    )
-                }
             }
         }
     }

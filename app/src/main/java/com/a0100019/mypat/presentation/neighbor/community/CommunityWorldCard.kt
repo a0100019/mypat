@@ -204,7 +204,7 @@ fun CommunityWorldCard(
                 )
                 Text(
                     text = " #" + userData.tag,
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.labelMedium,
                     textAlign = TextAlign.Center
                 )
             }

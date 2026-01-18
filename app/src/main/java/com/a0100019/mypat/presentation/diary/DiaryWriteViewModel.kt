@@ -2,10 +2,15 @@ package com.a0100019.mypat.presentation.diary
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import com.a0100019.mypat.data.room.area.AreaDao
 import com.a0100019.mypat.data.room.diary.Diary
 import com.a0100019.mypat.data.room.diary.DiaryDao
+import com.a0100019.mypat.data.room.item.ItemDao
+import com.a0100019.mypat.data.room.letter.LetterDao
+import com.a0100019.mypat.data.room.pat.PatDao
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
+import com.a0100019.mypat.data.room.world.WorldDao
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import org.orbitmvi.orbit.Container
@@ -21,8 +26,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DiaryWriteViewModel @Inject constructor(
-    private val userDao: UserDao,
     private val diaryDao: DiaryDao,
+    private val userDao: UserDao,
+    private val worldDao: WorldDao,
+    private val patDao: PatDao,
+    private val itemDao: ItemDao,
+    private val letterDao: LetterDao,
+    private val areaDao: AreaDao,
 ) : ViewModel(), ContainerHost<DiaryWriteState, DiaryWriteSideEffect> {
 
     override val container: Container<DiaryWriteState, DiaryWriteSideEffect> = container(

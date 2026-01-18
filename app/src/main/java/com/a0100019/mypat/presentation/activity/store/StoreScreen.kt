@@ -435,127 +435,6 @@ fun StoreScreen(
 
                 }
 
-                if(pay == "0") {
-                    item {
-                        val interactionSource = remember { MutableInteractionSource() }
-                        val isPressed by interactionSource.collectIsPressedAsState()
-                        val scale by animateFloatAsState(
-                            targetValue = if (isPressed) 0.96f else 1f,
-                            label = "scale"
-                        )
-
-                        Surface(
-                            shape = RoundedCornerShape(28.dp), // 더 둥글고 부드럽게
-                            color = Color(0xFFFFF1F1),        // 맑고 연한 핑크 배경
-                            border = BorderStroke(2.dp, Color(0xFFFFB2B2)), // 테두리는 살짝 얇게
-                            shadowElevation = 8.dp,            // 입체감 부여
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 10.dp)
-                                .graphicsLayer {
-                                    scaleX = scale
-                                    scaleY = scale
-                                }
-                                .clickable(
-                                    interactionSource = interactionSource,
-                                    indication = null,
-                                    onClick = { onShowDialogChange("donate") }
-                                )
-                        ) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(20.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                // 🔹 상단: 타이틀 및 방명록 버튼
-                                Box(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    // 메인 타이틀
-                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                        Text(
-                                            text = "광고 제거",
-                                            style = MaterialTheme.typography.headlineSmall.copy(
-                                                fontWeight = FontWeight.ExtraBold,
-                                                letterSpacing = 1.sp
-                                            ),
-                                            color = Color(0xFFD32F2F)
-                                        )
-                                    }
-
-                                    // 방명록 버튼을 작고 예쁜 카드 형태로 우측 배치
-                                    Surface(
-                                        onClick = { onShowDialogChange("donation") },
-                                        shape = RoundedCornerShape(12.dp),
-                                        color = Color.White.copy(alpha = 0.6f),
-                                        border = BorderStroke(1.dp, Color(0xFFFF9A9A)),
-                                        modifier = Modifier.align(Alignment.CenterEnd)
-                                    ) {
-                                        Row(
-                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Text("📝", fontSize = 14.sp)
-                                            Spacer(modifier = Modifier.width(4.dp))
-                                            Text(
-                                                text = "방명록",
-                                                style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
-                                                color = Color(0xFFD32F2F)
-                                            )
-                                        }
-                                    }
-                                }
-
-                                Spacer(modifier = Modifier.height(16.dp))
-
-                                // 🔹 중단: 메시지 (카드 형태의 말풍선 느낌)
-                                Surface(
-                                    color = Color.White.copy(alpha = 0.4f),
-                                    shape = RoundedCornerShape(16.dp),
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    Text(
-                                        text = "방명록을 남길 수 있으며,\n후원은 개발자에게 큰 힘이 됩니다.",
-                                        style = MaterialTheme.typography.bodyMedium.copy(
-                                            lineHeight = 20.sp,
-                                            fontWeight = FontWeight.Medium
-                                        ),
-                                        textAlign = TextAlign.Center,
-                                        modifier = Modifier.padding(12.dp),
-                                        color = Color(0xFF634D4D)
-                                    )
-                                }
-
-                                Spacer(modifier = Modifier.height(20.dp))
-
-                                // 🔹 하단: 가격 버튼 (더욱 강조된 디자인)
-                                Surface(
-                                    shape = CircleShape,
-                                    color = Color(0xFFFF7070), // 명도가 높은 레드
-                                    shadowElevation = 4.dp
-                                ) {
-                                    Row(
-                                        modifier = Modifier.padding(horizontal = 32.dp, vertical = 10.dp),
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Text(
-                                            text = "₩ 2,200",
-                                            style = MaterialTheme.typography.titleMedium.copy(
-                                                fontWeight = FontWeight.Bold
-                                            ),
-                                            color = Color.White
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-
-                }
-
                 item {
                     Row(
                         modifier = Modifier
@@ -833,6 +712,127 @@ fun StoreScreen(
                             }
                         }
                     }
+                }
+
+                if(pay == "0") {
+                    item {
+                        val interactionSource = remember { MutableInteractionSource() }
+                        val isPressed by interactionSource.collectIsPressedAsState()
+                        val scale by animateFloatAsState(
+                            targetValue = if (isPressed) 0.96f else 1f,
+                            label = "scale"
+                        )
+
+                        Surface(
+                            shape = RoundedCornerShape(28.dp), // 더 둥글고 부드럽게
+                            color = Color(0xFFFFF1F1),        // 맑고 연한 핑크 배경
+                            border = BorderStroke(2.dp, Color(0xFFFFB2B2)), // 테두리는 살짝 얇게
+                            shadowElevation = 8.dp,            // 입체감 부여
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 10.dp)
+                                .graphicsLayer {
+                                    scaleX = scale
+                                    scaleY = scale
+                                }
+                                .clickable(
+                                    interactionSource = interactionSource,
+                                    indication = null,
+                                    onClick = { onShowDialogChange("donate") }
+                                )
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(20.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                // 🔹 상단: 타이틀 및 방명록 버튼
+                                Box(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    // 메인 타이틀
+                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                        Text(
+                                            text = "광고 제거",
+                                            style = MaterialTheme.typography.headlineSmall.copy(
+                                                fontWeight = FontWeight.ExtraBold,
+                                                letterSpacing = 1.sp
+                                            ),
+                                            color = Color(0xFFD32F2F)
+                                        )
+                                    }
+
+                                    // 방명록 버튼을 작고 예쁜 카드 형태로 우측 배치
+                                    Surface(
+                                        onClick = { onShowDialogChange("donation") },
+                                        shape = RoundedCornerShape(12.dp),
+                                        color = Color.White.copy(alpha = 0.6f),
+                                        border = BorderStroke(1.dp, Color(0xFFFF9A9A)),
+                                        modifier = Modifier.align(Alignment.CenterEnd)
+                                    ) {
+                                        Row(
+                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Text("📝", fontSize = 14.sp)
+                                            Spacer(modifier = Modifier.width(4.dp))
+                                            Text(
+                                                text = "방명록",
+                                                style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+                                                color = Color(0xFFD32F2F)
+                                            )
+                                        }
+                                    }
+                                }
+
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                // 🔹 중단: 메시지 (카드 형태의 말풍선 느낌)
+                                Surface(
+                                    color = Color.White.copy(alpha = 0.4f),
+                                    shape = RoundedCornerShape(16.dp),
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Text(
+                                        text = "방명록을 남길 수 있으며,\n후원은 개발자에게 큰 힘이 됩니다.",
+                                        style = MaterialTheme.typography.bodyMedium.copy(
+                                            lineHeight = 20.sp,
+                                            fontWeight = FontWeight.Medium
+                                        ),
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier.padding(12.dp),
+                                        color = Color(0xFF634D4D)
+                                    )
+                                }
+
+                                Spacer(modifier = Modifier.height(20.dp))
+
+                                // 🔹 하단: 가격 버튼 (더욱 강조된 디자인)
+                                Surface(
+                                    shape = CircleShape,
+                                    color = Color(0xFFFF7070), // 명도가 높은 레드
+                                    shadowElevation = 4.dp
+                                ) {
+                                    Row(
+                                        modifier = Modifier.padding(horizontal = 32.dp, vertical = 10.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = "₩ 2,200",
+                                            style = MaterialTheme.typography.titleMedium.copy(
+                                                fontWeight = FontWeight.Bold
+                                            ),
+                                            color = Color.White
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+
                 }
 
 

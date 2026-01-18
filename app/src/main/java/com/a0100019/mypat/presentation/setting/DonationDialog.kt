@@ -79,8 +79,7 @@ fun DonationDialog(
                 // ── 📜 방명록 리스트 (인라인 카드) ──
                 LazyColumn(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(max = 320.dp),
+                        .fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
 

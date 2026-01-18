@@ -168,7 +168,7 @@ fun CommunityScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 16.dp, end = 16.dp, bottom = 16.dp, top = 5.dp),
+                        .padding(start = 6.dp, end = 6.dp, bottom = 6.dp, top = 5.dp),
                     contentAlignment = Alignment.Center
                 ) {
 
@@ -201,7 +201,7 @@ fun CommunityScreen(
                     "world" -> Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(16.dp),
+                            .padding(8.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         // 🔹 위쪽 두 Row: 남는 공간 꽉 채우기
@@ -267,10 +267,10 @@ fun CommunityScreen(
                         ) {
                             Text("   ")
 
-//                            Text(
-//                                text = "오늘의 첫 좋아요를 누르면 1000달빛을 획득합니다",
-//                                textAlign = TextAlign.Center
-//                            )
+                            Text(
+                                text = "로딩 중..",
+                                textAlign = TextAlign.Center
+                            )
 
                             MainButton(
                                 onClick = onPageUpClick,
@@ -383,30 +383,30 @@ fun CommunityScreen(
                     "스도쿠" to "thirdGameEasy", // 대표 키만 지정
                 )
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.Bottom
-                ) {
-                    buttons.forEach { (label, key) ->
-                        val isSelected = when (key) {
-                            "thirdGameEasy" -> false // situation in thirdGameKeys
-                            else -> situation == key
-                        }
-
-                        Surface(
-                            modifier = Modifier.weight(1f),
-                            color = Color.Transparent, // ✅ 배경 투명
-                        ) {
-                            MainButton(
-                                onClick = { onSituationChange(key) },
-                                text = label,
-                                iconResId = if (isSelected) R.drawable.check else null,
-                                imageSize = 16.dp,
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                        }
-                    }
-                }
+//                Row(
+//                    modifier = Modifier.fillMaxWidth(),
+//                    verticalAlignment = Alignment.Bottom
+//                ) {
+//                    buttons.forEach { (label, key) ->
+//                        val isSelected = when (key) {
+//                            "thirdGameEasy" -> false // situation in thirdGameKeys
+//                            else -> situation == key
+//                        }
+//
+//                        Surface(
+//                            modifier = Modifier.weight(1f),
+//                            color = Color.Transparent, // ✅ 배경 투명
+//                        ) {
+//                            MainButton(
+//                                onClick = { onSituationChange(key) },
+//                                text = label,
+//                                iconResId = if (isSelected) R.drawable.check else null,
+//                                imageSize = 16.dp,
+//                                modifier = Modifier.fillMaxWidth()
+//                            )
+//                        }
+//                    }
+//                }
             }
         }
 

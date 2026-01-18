@@ -707,7 +707,6 @@ class LoginViewModel @Inject constructor(
         postSideEffect(LoginSideEffect.NavigateToDiaryScreen)
     }
 
-
     fun dialogChange(string: String) = intent {
         reduce {
             state.copy(
@@ -716,7 +715,7 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    private fun todayAttendance() = intent {
+    fun todayAttendance() = intent {
         val lastData = userDao.getValueById("date")
         val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
 

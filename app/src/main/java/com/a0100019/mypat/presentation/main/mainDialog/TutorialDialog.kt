@@ -65,13 +65,6 @@ fun TutorialDialog(
                     .fillMaxWidth()
             ) {
 
-                // 편지 이미지 (내용 높이에 맞게 늘어남)
-                JustImage(
-                    filePath = "etc/letter.webp",
-                    contentScale = ContentScale.FillBounds,
-                    modifier = Modifier
-                        .matchParentSize()    // Box의 높이에 자동 맞춤
-                )
 
                 Row {
                     Spacer(modifier = Modifier.weight(1f))
