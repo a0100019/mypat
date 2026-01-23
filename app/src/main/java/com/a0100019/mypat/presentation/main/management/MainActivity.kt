@@ -109,23 +109,23 @@ class MainActivity : ComponentActivity() {
                             val adPrefs = getSharedPreferences("ad_prefs", Context.MODE_PRIVATE)
                             val banner = adPrefs.getString("banner", "0")
 
-                            if(banner == "1") {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(50.dp)
-                                        .background(Color(0xFFBCE8E3))
-                                ) {
-                                    BannerAd()
-                                }
-                            } else {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(20.dp)
-                                ) {
-                                }
-                            }
+//                            if(banner == "1") {
+//                                Row(
+//                                    modifier = Modifier
+//                                        .fillMaxWidth()
+//                                        .height(50.dp)
+//                                        .background(Color(0xFFBCE8E3))
+//                                ) {
+//                                    BannerAd()
+//                                }
+//                            } else {
+//                                Row(
+//                                    modifier = Modifier
+//                                        .fillMaxWidth()
+//                                        .height(20.dp)
+//                                ) {
+//                                }
+//                            }
 
                             Box(modifier = contentModifier) {
                                 MainNavHost(
@@ -141,7 +141,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        hideSystemUI() // 🔹 상태바는 보이고, 네비게이션 바 숨김
+        showStatusBarHideNavBar() // 🔹 상태바는 보이고, 네비게이션 바 숨김
 
         val prefs = getSharedPreferences("bgm_prefs", Context.MODE_PRIVATE)
         val bgmOn = prefs.getBoolean("bgmOn", true)
@@ -168,7 +168,6 @@ class MainActivity : ComponentActivity() {
         controller.systemBarsBehavior =
             WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
     }
-
 
     private fun hideSystemUI() {
             WindowCompat.setDecorFitsSystemWindows(window, false)

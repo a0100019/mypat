@@ -72,9 +72,9 @@ import kotlin.random.Random
 fun ExplanationDialog(
     onClose: () -> Unit,
 ) {
-    androidx.compose.ui.window.Dialog(
+    Dialog(
         onDismissRequest = { onClose() },
-        properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false)
+        properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
         Box(
             modifier = Modifier

@@ -39,7 +39,8 @@
             android:name=".presentation.main.management.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.Mypat"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

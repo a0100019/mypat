@@ -12,4 +12,3 @@ data class Diary(
     var state: String = "대기",
     var contents: String = "내용",
 )
-

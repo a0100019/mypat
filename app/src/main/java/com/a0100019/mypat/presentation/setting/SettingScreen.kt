@@ -229,6 +229,10 @@ fun SettingScreen(
             onDismissClick = onClose,
             text = "리뷰는 개발자에게 큰 힘이 됩니다..! 리뷰를 작성하고 하루마을 응원단 칭호 및 10 햇살을 획득하겠습니까?",
         )
+
+        "font" -> FontChangeDialog(
+            onClose = onClose
+        )
     }
 
     if (clickLetterData.id != 0) {
@@ -296,8 +300,14 @@ fun SettingScreen(
             )
 
             MainButton(
-                text = "리뷰쓰고 보상받기",
+                text = "응원하고 보상받기",
                 onClick = { onSituationChange("review") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            MainButton(
+                text = "글씨체 변경하기",
+                onClick = { onSituationChange("font") },
                 modifier = Modifier.fillMaxWidth()
             )
 

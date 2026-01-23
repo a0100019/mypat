@@ -300,6 +300,7 @@ fun DiaryWriteScreen(
                     .clip(RoundedCornerShape(16.dp))
                     .background(Color(0xFFF2F2F2).copy(alpha = 0.85f))
                     .padding(16.dp)
+                    .imePadding() // ⬅️ 키보드가 점유하는 공간만큼 하단 여백을 자동으로 만듭니다.
                     .bringIntoViewRequester(bringIntoViewRequester)
             ) {
                 BasicTextField(
@@ -336,6 +337,7 @@ fun DiaryWriteScreen(
                     }
                 )
             }
+
         }
     }
 }
