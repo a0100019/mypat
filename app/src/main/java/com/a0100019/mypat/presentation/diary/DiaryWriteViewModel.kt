@@ -1,18 +1,26 @@
 package com.a0100019.mypat.presentation.diary
 
+import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.a0100019.mypat.data.room.area.AreaDao
 import com.a0100019.mypat.data.room.diary.Diary
 import com.a0100019.mypat.data.room.diary.DiaryDao
 import com.a0100019.mypat.data.room.item.ItemDao
 import com.a0100019.mypat.data.room.letter.LetterDao
 import com.a0100019.mypat.data.room.pat.PatDao
+import com.a0100019.mypat.data.room.photo.Photo
+import com.a0100019.mypat.data.room.photo.PhotoDao
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.world.WorldDao
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.annotation.OrbitExperimental
@@ -21,6 +29,8 @@ import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
+import java.io.File
+import java.io.FileOutputStream
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 
@@ -33,6 +43,7 @@ class DiaryWriteViewModel @Inject constructor(
     private val itemDao: ItemDao,
     private val letterDao: LetterDao,
     private val areaDao: AreaDao,
+    private val photoDao: PhotoDao
 ) : ViewModel(), ContainerHost<DiaryWriteState, DiaryWriteSideEffect> {
 
     override val container: Container<DiaryWriteState, DiaryWriteSideEffect> = container(
@@ -56,9 +67,10 @@ class DiaryWriteViewModel @Inject constructor(
         val userDataList = userDao.getAllUserData()
         val userDataEtc2Value = userDao.getValueById("etc2")
         val allDiaryData = diaryDao.getAllDiaryData()
+        val photoDataList = photoDao.getPhotosByDate(userDataEtc2Value)
 
         if(!userDataEtc2Value.startsWith("0")){
-            //0있으면 하루 미션 아닌 일기
+            //0있으면 하루 미션아닌 일기?
             val clickDiaryData = allDiaryData.find { it.date == userDataEtc2Value }
             if (clickDiaryData!!.state == "대기") {
                 reduce {
@@ -106,10 +118,66 @@ class DiaryWriteViewModel @Inject constructor(
             state.copy(
                 dialogState = "",
                 writeFinish = false,
-                userDataList = userDataList
+                userDataList = userDataList,
+                photoDataList = photoDataList
             )
         }
 
+    }
+
+    fun handleImageSelection(context: Context, uri: Uri) = intent {
+        // 1. (선택사항) 로딩 상태 표시
+        // reduce { state.copy(isLoading = true) }
+
+        // 비동기 작업 시작 (Dispatcher.IO 권장)
+        val localPath = withContext(Dispatchers.IO) {
+            saveImageToInternalStorage(context, uri)
+        }
+
+        if (localPath != null) {
+            // 2. Photo 테이블에 데이터 삽입 (IO 스레드에서 실행되도록 DAO 설계 확인)
+            val photoEntry = Photo(
+                date = state.writeDiaryData.date,
+                localPath = localPath,
+                isSynced = false
+            )
+            photoDao.insert(photoEntry)
+            val photoDataList = photoDao.getPhotosByDate(state.writeDiaryData.date)
+            reduce {
+                state.copy(
+                    photoDataList = photoDataList
+                )
+            }
+
+            // 3. UI 갱신 (선택된 사진 리스트에 추가 등)
+            // reduce { state.copy(selectedPhotos = state.selectedPhotos + photoEntry) }
+        } else {
+            // 4. 실패 시 알림
+//            postSideEffect(DiaryWriteSideEffect.ShowToast("사진을 저장하지 못했습니다."))
+        }
+    }
+
+    private fun saveImageToInternalStorage(context: Context, uri: Uri): String? {
+        return try {
+            // 1. 파일 이름 만들기 (중복 방지를 위해 현재 시간 사용)
+            val fileName = "haru_photo_${System.currentTimeMillis()}.jpg"
+
+            // 2. 앱 전용 내부 폴더(filesDir)에 파일 객체 생성
+            val file = File(context.filesDir, fileName)
+
+            // 3. 갤러리 사진(uri)을 읽어서 내 파일로 복사하기
+            context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                FileOutputStream(file).use { outputStream ->
+                    inputStream.copyTo(outputStream)
+                }
+            }
+
+            // 4. 저장된 파일의 '진짜 주소(경로)'를 반환 (이걸 DB에 넣을 거예요)
+            file.absolutePath
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null // 실패하면 null 반환
+        }
     }
 
     fun onCloseClick() = intent {
@@ -204,6 +272,7 @@ data class DiaryWriteState(
     val userDataList: List<User> = emptyList(),
     val diaryDataList: List<Diary> = emptyList(),
     val diaryFilterDataList: List<Diary> = emptyList(),
+    val photoDataList: List<Photo> = emptyList(),
 
     val writeDiaryData: Diary = Diary(date = "", contents = "", emotion = ""),
     val writePossible: Boolean = false,

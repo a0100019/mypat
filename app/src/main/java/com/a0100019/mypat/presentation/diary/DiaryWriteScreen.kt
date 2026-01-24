@@ -1,7 +1,10 @@
 package com.a0100019.mypat.presentation.diary
 
 import android.content.Context
+import android.net.Uri
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -39,6 +42,8 @@ import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.CircleShape
@@ -54,10 +59,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.*
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import com.a0100019.mypat.data.room.photo.Photo
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
 import com.a0100019.mypat.presentation.main.management.BannerAd
 import com.a0100019.mypat.presentation.main.management.ManagementViewModel
@@ -126,11 +134,16 @@ fun DiaryWriteScreen(
         isError = diaryWriteState.isError,
         dialogState = diaryWriteState.dialogState,
         writeFinish = diaryWriteState.writeFinish,
+        photoDataList = diaryWriteState.photoDataList,
         onContentsTextChange = diaryWriteViewModel::onContentsTextChange,
         onDiaryFinishClick = diaryWriteViewModel::onDiaryFinishClick,
         popBackStack = popBackStack,
         emotionChangeClick = diaryWriteViewModel::emotionChangeClick,
         onDialogStateChange = diaryWriteViewModel::onDialogStateChange,
+        onImageSelected = { uri ->
+            // ✅ 여기서 뷰모델 호출!
+            diaryWriteViewModel.handleImageSelection(context, uri)
+        }
     )
 }
 
@@ -141,6 +154,8 @@ fun DiaryWriteScreen(
     writePossible: Boolean,
     isError: Boolean,
     dialogState: String,
+    photoDataList: List<Photo> = emptyList(),
+
     onDiaryFinishClick: () -> Unit,
     onContentsTextChange: (String) -> Unit,
     popBackStack: () -> Unit,
@@ -148,14 +163,10 @@ fun DiaryWriteScreen(
     onDialogStateChange: (String) -> Unit,
     writeFinish: Boolean = false,
     onLastFinishClick: () -> Unit = {},
+    onImageSelected: (Uri) -> Unit = {}, // ✅ 사진 선택 콜백 추가
 ) {
 
     val context = LocalContext.current
-    val prefs = context.getSharedPreferences("diary_prefs", Context.MODE_PRIVATE)
-    val alarm = prefs.getString("alarm", "0")
-    if(alarm == "0") {
-        prefs.edit().putString("alarm", "1").apply()
-    }
 
     val bringIntoViewRequester = remember { BringIntoViewRequester() }
     val coroutineScope = rememberCoroutineScope()
@@ -193,8 +204,6 @@ fun DiaryWriteScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .statusBarsPadding()
-                .imePadding() // ✅ 키보드 즉시 대응
                 .padding(start = 24.dp, end = 24.dp, bottom = 24.dp, top = 12.dp)
         ) {
 
@@ -230,6 +239,27 @@ fun DiaryWriteScreen(
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
 
+                    // ✅ 갤러리 런처 정의
+                    val galleryLauncher = rememberLauncherForActivityResult(
+                        contract = ActivityResultContracts.GetContent()
+                    ) { uri: Uri? ->
+                        uri?.let { onImageSelected(it) }
+                    }
+
+                    Text(
+                        text = "사진",
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(20.dp)) // 예쁘게 깎기
+                            .background(Color(0xFFEAEAEA))
+                            .clickable {
+                                // 2. 갤러리 열기 (이미지 파일만 필터링)
+                                galleryLauncher.launch("image/*")
+                            }
+                            .padding(horizontal = 12.dp, vertical = 8.dp),
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+
                     Text(
                         text = "닫기",
                         modifier = Modifier
@@ -247,7 +277,7 @@ fun DiaryWriteScreen(
 
                     Spacer(modifier = Modifier.width(6.dp))
 
-                // 💾 저장 버튼 (파스텔톤)
+                    // 💾 저장 버튼 (파스텔톤)
                     val backgroundColor by animateColorAsState(
                         targetValue = if (writePossible) Color(0xFFB7E4C7) else Color(0xFFEAEAEA),
                         label = "buttonBackground"
@@ -260,7 +290,14 @@ fun DiaryWriteScreen(
                             .background(backgroundColor)
                             .clickable(
                                 enabled = writePossible,
-                                onClick = onDiaryFinishClick
+                                onClick = {
+                                    val prefs = context.getSharedPreferences("diary_prefs", Context.MODE_PRIVATE)
+                                    val alarm = prefs.getString("alarm", "0")
+                                    if(alarm == "0") {
+                                        prefs.edit().putString("alarm", "1").apply()
+                                    }
+                                    onDiaryFinishClick()
+                                }
                             )
                             .padding(horizontal = 18.dp, vertical = 8.dp),
                         color = if (writePossible) Color(0xFF2D6A4F) else Color(0xFF9E9E9E),
@@ -293,7 +330,7 @@ fun DiaryWriteScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             /* ───────── 일기 입력 영역 ───────── */
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
@@ -303,6 +340,58 @@ fun DiaryWriteScreen(
                     .imePadding() // ⬅️ 키보드가 점유하는 공간만큼 하단 여백을 자동으로 만듭니다.
                     .bringIntoViewRequester(bringIntoViewRequester)
             ) {
+
+                // 📸 사진 리스트 영역 (Box 바로 밑에 추가)
+                if (photoDataList.isNotEmpty()) {
+                    Box(
+                        modifier = Modifier
+                            .padding(bottom = 24.dp), // 하단 여백 조절
+                        contentAlignment = Alignment.BottomCenter
+                    ) {
+                        LazyRow(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp), // 사진 사이 간격
+                            contentPadding = PaddingValues(horizontal = 4.dp)
+                        ) {
+                            items(photoDataList) { photo ->
+                                Box(
+                                    modifier = Modifier
+                                        .size(84.dp) // 사진 크기
+                                        .clip(RoundedCornerShape(12.dp))
+                                        .border(
+                                            1.dp,
+                                            Color.LightGray.copy(alpha = 0.5f),
+                                            RoundedCornerShape(12.dp)
+                                        )
+                                ) {
+                                    // 로컬 경로에 있는 이미지를 불러옵니다.
+                                    AsyncImage(
+                                        model = photo.localPath, // 파일 경로를 그대로 넣으면 됩니다
+                                        contentDescription = "일기 사진",
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentScale = ContentScale.Crop
+                                    )
+
+                                    // ❌ 삭제 버튼 (선택 사항)
+                                    Box(
+                                        modifier = Modifier
+                                            .align(Alignment.TopEnd)
+                                            .padding(4.dp)
+                                            .size(20.dp)
+                                            .background(Color.Black.copy(alpha = 0.5f), CircleShape)
+                                            .clickable {
+                                                /* TODO: diaryWriteViewModel.deletePhoto(photo) */
+                                            },
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text("✕", color = Color.White, fontSize = 10.sp)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
                 BasicTextField(
                     value = writeDiaryData.contents,
                     onValueChange = onContentsTextChange,
@@ -338,6 +427,8 @@ fun DiaryWriteScreen(
                 )
             }
 
+
+
         }
     }
 }
@@ -350,7 +441,9 @@ fun DiaryWriteScreenPreview() {
             writeDiaryData = Diary(
                 date = "2025-02-06",
                 emotion = "emotion/smile.png",
-                contents = ""
+                contents = "11",
+                id = 1,
+                state = "open",
             ),
             onContentsTextChange = {},
             onDiaryFinishClick = {},

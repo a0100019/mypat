@@ -20,8 +20,13 @@
     <!-- Android 13 이상: 알림 표시 권한 필요 -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
+    <!-- 사진 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+
     <!-- 폰 다시 켜도 알림 유지 -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
 
     <application
         android:name=".App"

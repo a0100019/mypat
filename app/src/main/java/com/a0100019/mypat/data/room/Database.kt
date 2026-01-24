@@ -21,6 +21,8 @@ import com.a0100019.mypat.data.room.letter.LetterDao
 import com.a0100019.mypat.data.room.area.AreaDao
 import com.a0100019.mypat.data.room.knowledge.Knowledge
 import com.a0100019.mypat.data.room.knowledge.KnowledgeDao
+import com.a0100019.mypat.data.room.photo.Photo
+import com.a0100019.mypat.data.room.photo.PhotoDao
 import com.a0100019.mypat.data.room.sudoku.Sudoku
 import com.a0100019.mypat.data.room.sudoku.SudokuDao
 import com.a0100019.mypat.data.room.user.User
@@ -30,7 +32,7 @@ import com.a0100019.mypat.data.room.walk.WalkDao
 import com.a0100019.mypat.data.room.world.World
 import com.a0100019.mypat.data.room.world.WorldDao
 
-@Database(entities = [User::class, Walk::class, Diary::class, English::class, KoreanIdiom::class, Pat::class, Item::class, World::class, Sudoku::class, Letter::class, AllUser::class, Area::class, Knowledge::class], version = 3, exportSchema = false)
+@Database(entities = [User::class, Walk::class, Diary::class, English::class, KoreanIdiom::class, Pat::class, Item::class, World::class, Sudoku::class, Letter::class, AllUser::class, Area::class, Knowledge::class, Photo::class], version = 4, exportSchema = false)
 abstract class Database : RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun walkDao(): WalkDao
@@ -45,5 +47,6 @@ abstract class Database : RoomDatabase() {
     abstract fun allUserDao() : AllUserDao
     abstract fun areaDao() : AreaDao
     abstract fun knowledgeDao() : KnowledgeDao
+    abstract fun photoDao() : PhotoDao
 
 }

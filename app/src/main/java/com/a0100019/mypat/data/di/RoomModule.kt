@@ -26,6 +26,7 @@ import com.a0100019.mypat.data.room.area.getAreaInitialData
 import com.a0100019.mypat.data.room.knowledge.KnowledgeDao
 import com.a0100019.mypat.data.room.knowledge.getKnowledgeInitialData
 import com.a0100019.mypat.data.room.pat.getPatInitialData
+import com.a0100019.mypat.data.room.photo.PhotoDao
 import com.a0100019.mypat.data.room.sudoku.SudokuDao
 import com.a0100019.mypat.data.room.sudoku.getSudokuInitialData
 import com.a0100019.mypat.data.room.user.getUserInitialData
@@ -59,7 +60,7 @@ object RoomModule {
             Database::class.java,
             "database"
         )
-            .addMigrations(MIGRATION_2_3)
+            .addMigrations(MIGRATION_2_3, MIGRATION_3_4)
             .addCallback(object : RoomDatabase.Callback() {
 
                 override fun onCreate(db: SupportSQLiteDatabase) {
@@ -105,6 +106,24 @@ object RoomModule {
         }
     }
 
+    // 1. Migration 변수 정의 (버전 3 -> 4)
+    private val MIGRATION_3_4 = object : Migration(3, 4) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL(
+                """
+            CREATE TABLE IF NOT EXISTS photo_table (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                date TEXT NOT NULL,
+                localPath TEXT NOT NULL,
+                firebaseUrl TEXT NOT NULL,
+                isSynced INTEGER NOT NULL DEFAULT 0
+            )
+            """.trimIndent()
+            )
+        }
+    }
+
+
     // ===== DAO Providers =====
     @Provides fun provideUserDao(db: Database): UserDao = db.userDao()
     @Provides fun provideWalkDao(db: Database): WalkDao = db.walkDao()
@@ -119,4 +138,6 @@ object RoomModule {
     @Provides fun provideAllUserDao(db: Database): AllUserDao = db.allUserDao()
     @Provides fun provideAreaDao(db: Database): AreaDao = db.areaDao()
     @Provides fun provideKnowledgeDao(db: Database): KnowledgeDao = db.knowledgeDao()
+    @Provides fun providePhotoDao(db: Database): PhotoDao = db.photoDao()
+
 }
