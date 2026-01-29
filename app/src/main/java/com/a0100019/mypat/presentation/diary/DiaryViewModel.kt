@@ -14,6 +14,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.a0100019.mypat.data.room.diary.Diary
 import com.a0100019.mypat.data.room.diary.DiaryDao
+import com.a0100019.mypat.data.room.photo.Photo
+import com.a0100019.mypat.data.room.photo.PhotoDao
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.presentation.game.secondGame.SecondGameSideEffect
@@ -45,6 +47,7 @@ import javax.inject.Inject
 class DiaryViewModel @Inject constructor(
     private val userDao: UserDao,
     private val diaryDao: DiaryDao,
+    private val photoDao: PhotoDao,
     @ApplicationContext private val context: Context,
 ) : ViewModel(), ContainerHost<DiaryState, DiarySideEffect> {
 
@@ -147,17 +150,34 @@ class DiaryViewModel @Inject constructor(
         }
 
 //        // 2. Flow인 일기 데이터는 collect로 가져와야 실시간 반영됨
+// ViewModel 내부 로직
         viewModelScope.launch {
-            diaryDao.getAllFlowDiaryData().collect { diaryList ->
-                reduce {
-                    state.copy(
-                        diaryDataList = diaryList,
-                        diaryFilterDataList = diaryList,
-                        dialogState = "",
-                        clickDiaryData = null,
-                        today = currentDate,
-                        calendarMonth = currentDate.substring(0, 7),
-                    )
+            // 1. 일기 데이터 감시 (독립적 코루틴)
+            launch {
+                diaryDao.getAllFlowDiaryData().collect { diaryList ->
+                    reduce {
+                        state.copy(
+                            diaryDataList = diaryList,
+                            diaryFilterDataList = diaryList,
+                            // 주의: collect 안에서 dialogState를 초기화하면
+                            // DB가 바뀔 때마다 팝업이 닫힐 수 있으니 기획 의도를 확인하세요!
+                            dialogState = "",
+                            clickDiaryData = null,
+                            today = currentDate,
+                            calendarMonth = currentDate.substring(0, 7),
+                        )
+                    }
+                }
+            }
+
+            // 2. 사진 데이터 감시 (이제 정상적으로 실행됩니다!)
+            launch {
+                photoDao.getAllFlowPhotoData().collect { photoList ->
+                    reduce {
+                        state.copy(
+                            photoDataList = photoList
+                        )
+                    }
                 }
             }
         }
@@ -359,6 +379,15 @@ class DiaryViewModel @Inject constructor(
         }
     }
 
+    fun clickPhotoChange(path: String) = intent {
+        reduce {
+            state.copy(
+                clickPhoto = path
+            )
+        }
+    }
+
+
 }
 
 @Immutable
@@ -366,6 +395,8 @@ data class DiaryState(
     val userDataList: List<User> = emptyList(),
     val diaryDataList: List<Diary> = emptyList(),
     val diaryFilterDataList: List<Diary> = emptyList(),
+    val photoDataList: List<Photo> = emptyList(),
+    val clickPhoto: String = "",
 
     val clickDiaryData: Diary? = null,
     val writeDiaryData: Diary = Diary(date = "", contents = "", emotion = ""),

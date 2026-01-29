@@ -143,7 +143,7 @@ fun BoardMessageScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(24.dp),
+                .padding(start = 20.dp, end = 20.dp, top = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
@@ -287,12 +287,12 @@ fun BoardMessageScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(start = 8.dp, end = 8.dp, top = 8.dp, bottom = 20.dp)
+                    .padding(start = 8.dp, end = 8.dp, top = 8.dp, bottom = 12.dp)
                     .border(
                         width = 2.dp,
                         color = MaterialTheme.colorScheme.outline,
@@ -456,7 +456,7 @@ fun BoardMessageScreen(
                     ) {
                         Text(
                             text = "익명",
-                            style = MaterialTheme.typography.labelLarge
+                            style = MaterialTheme.typography.labelMedium
                         )
 
                         Checkbox(

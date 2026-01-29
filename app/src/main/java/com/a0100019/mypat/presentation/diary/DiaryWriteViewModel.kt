@@ -1,6 +1,8 @@
 package com.a0100019.mypat.presentation.diary
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -155,29 +157,66 @@ class DiaryWriteViewModel @Inject constructor(
             // 4. 실패 시 알림
 //            postSideEffect(DiaryWriteSideEffect.ShowToast("사진을 저장하지 못했습니다."))
         }
+
     }
 
     private fun saveImageToInternalStorage(context: Context, uri: Uri): String? {
         return try {
-            // 1. 파일 이름 만들기 (중복 방지를 위해 현재 시간 사용)
             val fileName = "haru_photo_${System.currentTimeMillis()}.jpg"
-
-            // 2. 앱 전용 내부 폴더(filesDir)에 파일 객체 생성
             val file = File(context.filesDir, fileName)
 
-            // 3. 갤러리 사진(uri)을 읽어서 내 파일로 복사하기
+            // 1. InputStream으로 비트맵 불러오기
             context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                val bitmap = BitmapFactory.decodeStream(inputStream)
+
+                // 2. 파일 출력 스트림 준비
                 FileOutputStream(file).use { outputStream ->
-                    inputStream.copyTo(outputStream)
+                    // 3. 압축하기 (JPEG, 품질 70~80% 권장)
+                    // 품질을 100에서 80으로만 낮춰도 용량이 획기적으로 줄어듭니다.
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 80, outputStream)
                 }
             }
 
-            // 4. 저장된 파일의 '진짜 주소(경로)'를 반환 (이걸 DB에 넣을 거예요)
             file.absolutePath
         } catch (e: Exception) {
             e.printStackTrace()
-            null // 실패하면 null 반환
+            null
         }
+
+    }
+
+    fun deleteImage(photo: Photo) = intent {
+        // 1. 비동기 작업으로 파일과 DB 데이터 삭제
+        val isDeleted = withContext(Dispatchers.IO) {
+            try {
+                // (1) 내부 저장소에서 실제 파일 삭제
+                val file = File(photo.localPath)
+                if (file.exists()) {
+                    file.delete()
+                }
+
+                // (2) DB에서 해당 포토 엔티티 삭제
+                photoDao.delete(photo) // DAO에 delete 메서드가 있다고 가정합니다.
+                true
+            } catch (e: Exception) {
+                e.printStackTrace()
+                false
+            }
+        }
+
+        if (isDeleted) {
+            // 2. 최신 리스트로 UI 상태 갱신
+            val updatedList = photoDao.getPhotosByDate(state.writeDiaryData.date)
+            reduce {
+                state.copy(
+                    photoDataList = updatedList
+                )
+            }
+        } else {
+            // 실패 시 에러 처리 (선택 사항)
+            // postSideEffect(DiaryWriteSideEffect.ShowToast("사진 삭제에 실패했습니다."))
+        }
+
     }
 
     fun onCloseClick() = intent {
@@ -212,13 +251,6 @@ class DiaryWriteViewModel @Inject constructor(
 
         } else {
 
-//            postSideEffect(DiarySideEffect.Toast("10자 이상 작성해주세요"))
-
-            reduce {
-                state.copy(
-                    isError = true
-                )
-            }
 
         }
     }
@@ -234,7 +266,6 @@ class DiaryWriteViewModel @Inject constructor(
             reduce {
                 state.copy(
                     writePossible = true,
-                    isError = false
                 )
             }
         } else {
@@ -242,7 +273,6 @@ class DiaryWriteViewModel @Inject constructor(
             reduce {
                 state.copy(
                     writePossible = false,
-                    isError = false
                 )
             }
         }
@@ -265,6 +295,14 @@ class DiaryWriteViewModel @Inject constructor(
         }
     }
 
+    fun clickPhotoChange(path: String) = intent {
+        reduce {
+            state.copy(
+                clickPhoto = path
+            )
+        }
+    }
+
 }
 
 @Immutable
@@ -273,10 +311,10 @@ data class DiaryWriteState(
     val diaryDataList: List<Diary> = emptyList(),
     val diaryFilterDataList: List<Diary> = emptyList(),
     val photoDataList: List<Photo> = emptyList(),
+    val clickPhoto: String = "",
 
     val writeDiaryData: Diary = Diary(date = "", contents = "", emotion = ""),
     val writePossible: Boolean = false,
-    val isError: Boolean = false,
     val searchText: String = "",
     val dialogState: String = "",
     val emotionFilter: String = "emotion/allEmotion.png",

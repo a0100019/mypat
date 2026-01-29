@@ -131,11 +131,13 @@ fun DiaryWriteScreen(
     DiaryWriteScreen(
         writeDiaryData = diaryWriteState.writeDiaryData,
         writePossible = diaryWriteState.writePossible,
-        isError = diaryWriteState.isError,
         dialogState = diaryWriteState.dialogState,
         writeFinish = diaryWriteState.writeFinish,
         photoDataList = diaryWriteState.photoDataList,
+        clickPhoto = diaryWriteState.clickPhoto,
+
         onContentsTextChange = diaryWriteViewModel::onContentsTextChange,
+        clickPhotoChange = diaryWriteViewModel::clickPhotoChange,
         onDiaryFinishClick = diaryWriteViewModel::onDiaryFinishClick,
         popBackStack = popBackStack,
         emotionChangeClick = diaryWriteViewModel::emotionChangeClick,
@@ -143,7 +145,8 @@ fun DiaryWriteScreen(
         onImageSelected = { uri ->
             // ✅ 여기서 뷰모델 호출!
             diaryWriteViewModel.handleImageSelection(context, uri)
-        }
+        },
+        deleteImage = diaryWriteViewModel::deleteImage
     )
 }
 
@@ -152,9 +155,9 @@ fun DiaryWriteScreen(
 fun DiaryWriteScreen(
     writeDiaryData: Diary,
     writePossible: Boolean,
-    isError: Boolean,
     dialogState: String,
     photoDataList: List<Photo> = emptyList(),
+    clickPhoto: String = "",
 
     onDiaryFinishClick: () -> Unit,
     onContentsTextChange: (String) -> Unit,
@@ -164,6 +167,8 @@ fun DiaryWriteScreen(
     writeFinish: Boolean = false,
     onLastFinishClick: () -> Unit = {},
     onImageSelected: (Uri) -> Unit = {}, // ✅ 사진 선택 콜백 추가
+    deleteImage: (Photo) -> Unit = {},
+    clickPhotoChange: (String) -> Unit = {}
 ) {
 
     val context = LocalContext.current
@@ -191,6 +196,13 @@ fun DiaryWriteScreen(
         )
     }
 
+    if(clickPhoto != "") {
+        DiaryPhotoDialog(
+            onClose = { clickPhotoChange("") },
+            clickPhoto = clickPhoto
+        )
+    }
+
     // 🔹 작성 완료 다이얼로그
     if (writeFinish) {
         DiaryFinishDialog(onClose = { popBackStack() })
@@ -213,6 +225,15 @@ fun DiaryWriteScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+
+                JustImage(
+                    filePath = "etc/exit.png",
+                    modifier = Modifier
+                        .size(30.dp)
+                        .clickable(
+                            onClick = { onDialogStateChange("exit") }
+                        )
+                )
 
                 // 날짜
                 Column {
@@ -246,33 +267,15 @@ fun DiaryWriteScreen(
                         uri?.let { onImageSelected(it) }
                     }
 
-                    Text(
-                        text = "사진",
+                    // [오른쪽] 종료 버튼 (🚪 나가기 아이콘 스타일)
+                    JustImage(
+                        filePath = "etc/camera.png",
                         modifier = Modifier
-                            .clip(RoundedCornerShape(20.dp)) // 예쁘게 깎기
-                            .background(Color(0xFFEAEAEA))
+                            .size(30.dp)
                             .clickable {
                                 // 2. 갤러리 열기 (이미지 파일만 필터링)
                                 galleryLauncher.launch("image/*")
                             }
-                            .padding(horizontal = 12.dp, vertical = 8.dp),
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-
-                    Text(
-                        text = "닫기",
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(20.dp))
-                            .background(Color(0xFFEAEAEA))
-                            .clickable(
-                                onClick = { onDialogStateChange("exit") }
-                            )
-                            .padding(horizontal = 8.dp, vertical = 8.dp),
-                        color = Color(0xFF2D6A4F),
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        textAlign = TextAlign.Center
                     )
 
                     Spacer(modifier = Modifier.width(6.dp))
@@ -291,10 +294,16 @@ fun DiaryWriteScreen(
                             .clickable(
                                 enabled = writePossible,
                                 onClick = {
-                                    val prefs = context.getSharedPreferences("diary_prefs", Context.MODE_PRIVATE)
+                                    val prefs = context.getSharedPreferences(
+                                        "diary_prefs",
+                                        Context.MODE_PRIVATE
+                                    )
                                     val alarm = prefs.getString("alarm", "0")
-                                    if(alarm == "0") {
-                                        prefs.edit().putString("alarm", "1").apply()
+                                    if (alarm == "0") {
+                                        prefs
+                                            .edit()
+                                            .putString("alarm", "1")
+                                            .apply()
                                     }
                                     onDiaryFinishClick()
                                 }
@@ -327,7 +336,7 @@ fun DiaryWriteScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             /* ───────── 일기 입력 영역 ───────── */
             Column(
@@ -345,7 +354,7 @@ fun DiaryWriteScreen(
                 if (photoDataList.isNotEmpty()) {
                     Box(
                         modifier = Modifier
-                            .padding(bottom = 24.dp), // 하단 여백 조절
+                            .padding(bottom = 12.dp), // 하단 여백 조절
                         contentAlignment = Alignment.BottomCenter
                     ) {
                         LazyRow(
@@ -368,11 +377,16 @@ fun DiaryWriteScreen(
                                     AsyncImage(
                                         model = photo.localPath, // 파일 경로를 그대로 넣으면 됩니다
                                         contentDescription = "일기 사진",
-                                        modifier = Modifier.fillMaxSize(),
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .clickable {
+                                                clickPhotoChange(photo.localPath)
+                                            }
+                                        ,
                                         contentScale = ContentScale.Crop
                                     )
 
-                                    // ❌ 삭제 버튼 (선택 사항)
+                                    // ❌ 삭제 버튼 부분
                                     Box(
                                         modifier = Modifier
                                             .align(Alignment.TopEnd)
@@ -380,7 +394,8 @@ fun DiaryWriteScreen(
                                             .size(20.dp)
                                             .background(Color.Black.copy(alpha = 0.5f), CircleShape)
                                             .clickable {
-                                                /* TODO: diaryWriteViewModel.deletePhoto(photo) */
+                                                // 여기에 아래 코드를 작성하세요!
+                                                deleteImage(photo)
                                             },
                                         contentAlignment = Alignment.Center
                                     ) {
@@ -427,8 +442,6 @@ fun DiaryWriteScreen(
                 )
             }
 
-
-
         }
     }
 }
@@ -449,7 +462,6 @@ fun DiaryWriteScreenPreview() {
             onDiaryFinishClick = {},
             popBackStack = {},
             writePossible = false,
-            isError = false,
             emotionChangeClick = {},
             dialogState = "",
             onDialogStateChange = {}

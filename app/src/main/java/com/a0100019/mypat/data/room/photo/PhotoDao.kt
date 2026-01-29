@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import com.a0100019.mypat.data.room.diary.Diary
 import com.a0100019.mypat.data.room.english.English
 import kotlinx.coroutines.flow.Flow
 
@@ -28,6 +29,9 @@ interface PhotoDao {
 
     @Query("SELECT * FROM photo_table ORDER BY id DESC")
     suspend fun getAllPhotoData(): List<Photo>
+
+    @Query("SELECT * FROM photo_table ORDER BY id DESC")
+    fun getAllFlowPhotoData(): Flow<List<Photo>>
 
     // ✅ 특정 날짜의 사진 리스트 가져오기 (날짜가 일치하는 것들만)
     @Query("SELECT * FROM photo_table WHERE date = :date ORDER BY id ASC")

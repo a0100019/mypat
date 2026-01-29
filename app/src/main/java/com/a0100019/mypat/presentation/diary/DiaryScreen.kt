@@ -41,6 +41,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -73,6 +75,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
@@ -87,8 +90,10 @@ import androidx.compose.ui.unit.sp
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
 import com.a0100019.mypat.R
 import com.a0100019.mypat.data.room.diary.Diary
+import com.a0100019.mypat.data.room.photo.Photo
 import com.a0100019.mypat.domain.AppBgmManager
 import com.a0100019.mypat.presentation.main.MainSideEffect
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
@@ -192,10 +197,13 @@ fun DiaryScreen(
         emotionFilter = diaryState.emotionFilter,
         today = diaryState.today,
         calendarMonth = diaryState.calendarMonth,
+        photoDataList = diaryState.photoDataList,
+        clickPhoto = diaryState.clickPhoto,
 
         onDiaryClick = diaryViewModel::onDiaryClick,
         onCloseClick = diaryViewModel::onCloseClick,
         onDiaryChangeClick = diaryViewModel::onDiaryChangeClick,
+        clickPhotoChange = diaryViewModel::clickPhotoChange,
         onSearchClick = diaryViewModel::onSearchClick,
         onSearchTextChange = diaryViewModel::onSearchTextChange,
         onDialogStateChange = diaryViewModel::onDialogStateChange,
@@ -223,6 +231,8 @@ fun DiaryScreen(
     emotionFilter: String,
     today: String = "2025-07-15",
     calendarMonth: String = "2025-07",
+    photoDataList: List<Photo> = emptyList(),
+    clickPhoto: String = "",
 
     onSearchTextChange: (String) -> Unit,
     onSearchClick: () -> Unit,
@@ -240,7 +250,8 @@ fun DiaryScreen(
     onNavigateToMainScreen: () -> Unit = {},
     onDiaryAlarmChangeClick: (String) -> Unit = {},
     onCancelAlarmClick: () -> Unit = {},
-    onNavigateToSettingScreen: () -> Unit = {}
+    onNavigateToSettingScreen: () -> Unit = {},
+    clickPhotoChange: (String) -> Unit = {}
 ) {
 
     AppBgmManager.pause()
@@ -279,6 +290,13 @@ fun DiaryScreen(
             onClose = onCalendarDiaryCloseClick,
             diaryData = clickDiaryData,
             onDiaryChangeClick = onDiaryChangeClick
+        )
+    }
+
+    if(clickPhoto != "") {
+        DiaryPhotoDialog(
+            onClose = { clickPhotoChange("") },
+            clickPhoto = clickPhoto
         )
     }
 
@@ -481,6 +499,11 @@ fun DiaryScreen(
                             onDialogStateChange("검색")
                         }
                 )
+            }
+
+            // 1. 전체 사진 리스트를 날짜별로 묶어버립니다 (일기 리스트 밖에서 한 번만 수행)
+            val photosByDate = remember(photoDataList) {
+                photoDataList.groupBy { it.date }
             }
 
             LazyColumn(
@@ -737,9 +760,53 @@ fun DiaryScreen(
                                         overflow = TextOverflow.Ellipsis
                                     )
                                 }
+
+                                val filteredPhotos = photosByDate[diaryData.date] ?: emptyList()
+
+                                // 2. 걸러낸 사진이 있을 때만 영역을 렌더링합니다.
+                                if (filteredPhotos.isNotEmpty()) {
+                                    Column( // LazyRow를 감싸는 여백 처리를 위해 Column으로 변경 제안
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(bottom = 8.dp)
+                                    ) {
+                                        LazyRow(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                            contentPadding = PaddingValues(horizontal = 16.dp) // 카드 좌우 여백과 맞춤
+                                        ) {
+                                            // 전체 리스트가 아닌 필터링된 리스트를 사용하세요!
+                                            items(filteredPhotos) { photo ->
+                                                Box(
+                                                    modifier = Modifier
+                                                        .size(84.dp)
+                                                        .clip(RoundedCornerShape(12.dp))
+                                                        .border(
+                                                            1.dp,
+                                                            Color.LightGray.copy(alpha = 0.5f),
+                                                            RoundedCornerShape(12.dp)
+                                                        )
+                                                ) {
+                                                    AsyncImage(
+                                                        model = photo.localPath,
+                                                        contentDescription = "일기 사진",
+                                                        modifier = Modifier
+                                                            .fillMaxSize()
+                                                            .clickable {
+                                                                // 아까 만든 확대 함수 호출
+                                                                clickPhotoChange(photo.localPath)
+                                                            },
+                                                        contentScale = ContentScale.Crop
+                                                    )
+
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
                             }
                         }
-
 
                     }
                 }
