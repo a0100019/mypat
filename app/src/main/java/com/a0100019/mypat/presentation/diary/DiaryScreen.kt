@@ -337,7 +337,26 @@ fun DiaryScreen(
             .fillMaxSize()
     ) {
 
-        BackGroundImage()
+//        BackGroundImage()
+
+        Surface(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                Color(0xFFE0C3FC), // 연한 보라
+                                Color(0xFF8EC5FC)  // 연한 하늘
+                            )
+                        )
+                    )
+            ) {
+                // 컨텐츠 공간
+            }
+        }
 
         // Fullscreen container
         Column(
@@ -776,7 +795,7 @@ fun DiaryScreen(
                                             contentPadding = PaddingValues(horizontal = 16.dp) // 카드 좌우 여백과 맞춤
                                         ) {
                                             // 전체 리스트가 아닌 필터링된 리스트를 사용하세요!
-                                            items(filteredPhotos) { photo ->
+                                            items(filteredPhotos.reversed()) { photo ->
                                                 Box(
                                                     modifier = Modifier
                                                         .size(84.dp)

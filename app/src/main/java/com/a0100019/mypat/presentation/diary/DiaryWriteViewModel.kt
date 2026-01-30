@@ -3,6 +3,8 @@ package com.a0100019.mypat.presentation.diary
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -18,6 +20,9 @@ import com.a0100019.mypat.data.room.photo.PhotoDao
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.world.WorldDao
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
+import com.google.firebase.storage.storage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -127,37 +132,97 @@ class DiaryWriteViewModel @Inject constructor(
 
     }
 
-    fun handleImageSelection(context: Context, uri: Uri) = intent {
-        // 1. (선택사항) 로딩 상태 표시
-        // reduce { state.copy(isLoading = true) }
+    private fun isNetworkAvailable(context: Context): Boolean {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork
+        val capabilities = connectivityManager.getNetworkCapabilities(network)
 
-        // 비동기 작업 시작 (Dispatcher.IO 권장)
+        val isAvailable = capabilities != null && (
+                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
+                        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
+                )
+
+        Log.d("NetworkCheck", "Is Network Available: $isAvailable") // 로그 추가
+        return isAvailable
+    }
+
+    fun handleImageSelection(context: Context, uri: Uri) = intent {
+        // 로딩 시작
+        reduce { state.copy(isPhotoLoading = true) }
+
+        if (!isNetworkAvailable(context)) {
+            postSideEffect(DiaryWriteSideEffect.Toast("인터넷 연결을 확인해주세요."))
+            reduce { state.copy(isPhotoLoading = false) } // 종료
+            return@intent
+        }
+
         val localPath = withContext(Dispatchers.IO) {
             saveImageToInternalStorage(context, uri)
         }
 
         if (localPath != null) {
-            // 2. Photo 테이블에 데이터 삽입 (IO 스레드에서 실행되도록 DAO 설계 확인)
-            val photoEntry = Photo(
-                date = state.writeDiaryData.date,
-                localPath = localPath,
-                isSynced = false
-            )
-            photoDao.insert(photoEntry)
-            val photoDataList = photoDao.getPhotosByDate(state.writeDiaryData.date)
-            reduce {
-                state.copy(
-                    photoDataList = photoDataList
-                )
+            uploadToFirebase(localPath) { firebaseUrl ->
+                // 콜백 안에서 다시 intent 블록을 열어 상태 변경
+                intent {
+                    if (firebaseUrl != null) {
+                        viewModelScope.launch(Dispatchers.IO) {
+                            val photoEntry = Photo(
+                                date = state.writeDiaryData.date,
+                                localPath = localPath,
+                                firebaseUrl = firebaseUrl,
+                                isSynced = true
+                            )
+                            photoDao.insert(photoEntry)
+                            val updatedPhotos = photoDao.getPhotosByDate(state.writeDiaryData.date)
+
+                            intent {
+                                reduce { state.copy(
+                                    photoDataList = updatedPhotos,
+                                    isPhotoLoading = false // 성공 시 종료
+                                )}
+                            }
+                        }
+                    } else {
+                        File(localPath).delete()
+                        postSideEffect(DiaryWriteSideEffect.Toast("업로드 실패"))
+                        reduce { state.copy(isPhotoLoading = false) } // 실패 시 종료
+                    }
+                }
             }
-
-            // 3. UI 갱신 (선택된 사진 리스트에 추가 등)
-            // reduce { state.copy(selectedPhotos = state.selectedPhotos + photoEntry) }
         } else {
-            // 4. 실패 시 알림
-//            postSideEffect(DiaryWriteSideEffect.ShowToast("사진을 저장하지 못했습니다."))
+            postSideEffect(DiaryWriteSideEffect.Toast("저장 오류"))
+            reduce { state.copy(isPhotoLoading = false) } // 종료
         }
+    }
 
+    private fun uploadToFirebase(localPath: String, onComplete: (String?) -> Unit) {
+        val user = Firebase.auth.currentUser ?: return onComplete(null)
+
+        val file = File(localPath)
+        if (!file.exists()) return onComplete(null)
+
+        val storageRef = Firebase.storage.reference
+        // 보안을 위해 파일명 앞에 UID를 섞거나 랜덤값을 추가하는 것이 좋습니다.
+        val imageRef = storageRef.child("users/${user.uid}/${file.name}")
+
+        // 파일 읽기 -> XOR 뒤섞기 -> 업로드
+        try {
+            val compressedBytes = file.readBytes()
+            val scrambledBytes = togglePrivacy(compressedBytes)
+
+            imageRef.putBytes(scrambledBytes)
+                .addOnSuccessListener {
+                    imageRef.downloadUrl.addOnSuccessListener { uri ->
+                        onComplete(uri.toString())
+                    }
+                }
+                .addOnFailureListener {
+                    onComplete(null)
+                }
+        } catch (e: Exception) {
+            onComplete(null)
+        }
     }
 
     private fun saveImageToInternalStorage(context: Context, uri: Uri): String? {
@@ -183,6 +248,11 @@ class DiaryWriteViewModel @Inject constructor(
             null
         }
 
+    }
+
+    private fun togglePrivacy(data: ByteArray): ByteArray {
+        val key = 0xAF.toByte()
+        return ByteArray(data.size) { i -> (data[i].toInt() xor key.toInt()).toByte() }
     }
 
     fun deleteImage(photo: Photo) = intent {
@@ -230,7 +300,7 @@ class DiaryWriteViewModel @Inject constructor(
     fun onDiaryFinishClick() = intent {
         println("내용 길이: ${state.writeDiaryData.contents.length}")
 
-        if(state.writeDiaryData.contents.length > 0){
+        if(state.writeDiaryData.contents.isNotEmpty()){
 
             //보상
             if(state.firstWrite && state.writeDiaryData.id < 10000){
@@ -248,9 +318,6 @@ class DiaryWriteViewModel @Inject constructor(
                     writeFinish = true
                 )
             }
-
-        } else {
-
 
         }
     }
@@ -311,8 +378,8 @@ data class DiaryWriteState(
     val diaryDataList: List<Diary> = emptyList(),
     val diaryFilterDataList: List<Diary> = emptyList(),
     val photoDataList: List<Photo> = emptyList(),
-    val clickPhoto: String = "",
 
+    val clickPhoto: String = "",
     val writeDiaryData: Diary = Diary(date = "", contents = "", emotion = ""),
     val writePossible: Boolean = false,
     val searchText: String = "",
@@ -320,6 +387,8 @@ data class DiaryWriteState(
     val emotionFilter: String = "emotion/allEmotion.png",
     val firstWrite: Boolean = true,
     val writeFinish: Boolean = false,
+    val isPhotoLoading: Boolean = false, // 로딩 상태 추가
+
 )
 
 //상태와 관련없는 것

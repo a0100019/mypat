@@ -2,6 +2,7 @@ package com.a0100019.mypat.presentation.main.management
 
 import android.content.Context
 import android.util.Log
+import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.yml.charts.common.extensions.isNotNull
@@ -16,6 +17,7 @@ import com.a0100019.mypat.data.room.koreanIdiom.KoreanIdiomDao
 import com.a0100019.mypat.data.room.letter.Letter
 import com.a0100019.mypat.data.room.letter.LetterDao
 import com.a0100019.mypat.data.room.pat.PatDao
+import com.a0100019.mypat.data.room.photo.PhotoDao
 import com.a0100019.mypat.data.room.sudoku.SudokuDao
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
@@ -61,6 +63,7 @@ class ManagementViewModel @Inject constructor(
     private val areaDao: AreaDao,
     private val allUserDao: AllUserDao,
     private val knowledgeDao: KnowledgeDao,
+    private val photoDao: PhotoDao,
     @ApplicationContext private val context: Context
 
 ) : ViewModel(), ContainerHost<ManagementState, ManagementSideEffect> {
@@ -154,7 +157,6 @@ class ManagementViewModel @Inject constructor(
         }
     }
 
-
     private fun onCommunityLoad() = intent {
 
         viewModelScope.launch {
@@ -197,7 +199,6 @@ class ManagementViewModel @Inject constructor(
             }
         }
     }
-
 
     private fun dataSave() = intent {
 
@@ -414,19 +415,27 @@ class ManagementViewModel @Inject constructor(
                 .document(userId)
                 .collection("daily")
 
+            val photosByDate = photoDao.getAllPhotoData().groupBy { it.date }
+
             diaryDataList.forEach { diary ->
                 val docRef = dailyCollectionRef.document(diary.id.toString())
-
                 val date = diary.date
 
-                val walk = walkDataList.find { it.id == diary.id }?.success
+                // 1. 해당 일기의 날짜와 일치하는 모든 사진 가져오기
+                // photoList는 Room 등에서 미리 전체 리스트를 뽑아온 것으로 가정합니다.
+                val photosForDate = photosByDate[date] ?: emptyList()
 
-                // state 구성 (둘 중 하나라도 null이면 제외)
-                val englishState = englishDataList.find { it.id == diary.id }?.state
-                val idiomState = koreanIdiomDataList.find { it.id == diary.id }?.state
+                // 2. 사진 데이터를 Map 형태로 변환 (키값은 1, 2, 3... 순서대로)
+                val photoMap = mutableMapOf<String, Any>()
+                photosForDate.forEachIndexed { index, photo ->
+                    photoMap[(index + 1).toString()] = mapOf(
+                        "firebaseUrl" to photo.firebaseUrl,
+                        "localPath" to photo.localPath
+                    )
+                }
 
                 val data = mutableMapOf<String, Any>(
-                    "date" to diary.date,
+                    "date" to date,
                     "diary" to mapOf(
                         "emotion" to diary.emotion,
                         "state" to diary.state,
@@ -434,21 +443,23 @@ class ManagementViewModel @Inject constructor(
                     )
                 )
 
-                if(walk != null) {
-                    data["walk"] = walk
+                // 3. 사진 데이터가 있으면 추가
+                if (photoMap.isNotEmpty()) {
+                    data["photo"] = photoMap
                 }
 
+                // --- 기존의 walk, state, knowledge 처리 ---
+                val walk = walkDataList.find { it.id == diary.id }?.success
+                if (walk != null) data["walk"] = walk
+
+                val englishState = englishDataList.find { it.id == diary.id }?.state
+                val idiomState = koreanIdiomDataList.find { it.id == diary.id }?.state
                 if (englishState != null && idiomState != null) {
-                    data["state"] = mapOf(
-                        "english" to englishState,
-                        "koreanIdiom" to idiomState
-                    )
+                    data["state"] = mapOf("english" to englishState, "koreanIdiom" to idiomState)
                 }
 
-                val knowledgeState = knowledgeList.find {it.date == date}?.state
-                if(knowledgeState != null) {
-                    data["knowledge"] = knowledgeState
-                }
+                val knowledgeState = knowledgeList.find { it.date == date }?.state
+                if (knowledgeState != null) data["knowledge"] = knowledgeState
 
                 batch.set(docRef, data)
             }

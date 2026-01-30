@@ -256,7 +256,6 @@ class DiaryViewModel @Inject constructor(
         }
     }
 
-
     fun onEmotionFilterClick(emotion: String) = intent {
         var newDiaryDataList = state.diaryDataList.filter { it.contents.contains(state.searchText) }
         if(emotion != "emotion/allEmotion.png") {

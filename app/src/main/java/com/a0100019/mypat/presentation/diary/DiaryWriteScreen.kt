@@ -1,7 +1,9 @@
 package com.a0100019.mypat.presentation.diary
 
+import android.app.Activity
 import android.content.Context
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -50,6 +52,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Surface
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.getValue
@@ -59,6 +62,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.*
 import androidx.compose.ui.text.font.FontWeight
@@ -66,11 +70,14 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.a0100019.mypat.data.room.photo.Photo
+import com.a0100019.mypat.presentation.activity.daily.DailySideEffect
+import com.a0100019.mypat.presentation.activity.information.InformationSideEffect
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
 import com.a0100019.mypat.presentation.main.management.BannerAd
 import com.a0100019.mypat.presentation.main.management.ManagementViewModel
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
 import kotlinx.coroutines.launch
+import org.orbitmvi.orbit.compose.collectSideEffect
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -83,6 +90,14 @@ fun DiaryWriteScreen(
 ) {
     val diaryWriteState: DiaryWriteState = diaryWriteViewModel.collectAsState().value
     val context = LocalContext.current
+
+    val activity = context as Activity
+
+    diaryWriteViewModel.collectSideEffect { sideEffect ->
+        when (sideEffect) {
+            is DiaryWriteSideEffect.Toast -> Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
+        }
+    }
 
     // 뒤로가기 다이얼로그 상태
     var showExitDialog by remember { mutableStateOf(false) }
@@ -135,6 +150,7 @@ fun DiaryWriteScreen(
         writeFinish = diaryWriteState.writeFinish,
         photoDataList = diaryWriteState.photoDataList,
         clickPhoto = diaryWriteState.clickPhoto,
+        isPhotoLoading = diaryWriteState.isPhotoLoading,
 
         onContentsTextChange = diaryWriteViewModel::onContentsTextChange,
         clickPhotoChange = diaryWriteViewModel::clickPhotoChange,
@@ -158,6 +174,7 @@ fun DiaryWriteScreen(
     dialogState: String,
     photoDataList: List<Photo> = emptyList(),
     clickPhoto: String = "",
+    isPhotoLoading: Boolean = false,
 
     onDiaryFinishClick: () -> Unit,
     onContentsTextChange: (String) -> Unit,
@@ -211,7 +228,26 @@ fun DiaryWriteScreen(
     Box(modifier = Modifier.fillMaxSize()) {
 
         // 🌿 배경 이미지
-        BackGroundImage(modifier = Modifier.fillMaxSize())
+//        BackGroundImage(modifier = Modifier.fillMaxSize())
+
+        Surface(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                Color(0xFFE0C3FC), // 연한 보라
+                                Color(0xFF8EC5FC)  // 연한 하늘
+                            )
+                        )
+                    )
+            ) {
+                // 컨텐츠 공간
+            }
+        }
 
         Column(
             modifier = Modifier
@@ -258,31 +294,31 @@ fun DiaryWriteScreen(
 
                 }
 
+                // ✅ 갤러리 런처 정의
+                val galleryLauncher = rememberLauncherForActivityResult(
+                    contract = ActivityResultContracts.GetContent()
+                ) { uri: Uri? ->
+                    uri?.let { onImageSelected(it) }
+                }
+
+                // [오른쪽] 종료 버튼 (🚪 나가기 아이콘 스타일)
+                JustImage(
+                    filePath = "etc/camera.png",
+                    modifier = Modifier
+                        .size(30.dp)
+                        .clickable {
+                            // 2. 갤러리 열기 (이미지 파일만 필터링)
+                            galleryLauncher.launch("image/*")
+                        }
+                )
+
                 Row(verticalAlignment = Alignment.CenterVertically) {
 
-                    // ✅ 갤러리 런처 정의
-                    val galleryLauncher = rememberLauncherForActivityResult(
-                        contract = ActivityResultContracts.GetContent()
-                    ) { uri: Uri? ->
-                        uri?.let { onImageSelected(it) }
-                    }
-
-                    // [오른쪽] 종료 버튼 (🚪 나가기 아이콘 스타일)
-                    JustImage(
-                        filePath = "etc/camera.png",
-                        modifier = Modifier
-                            .size(30.dp)
-                            .clickable {
-                                // 2. 갤러리 열기 (이미지 파일만 필터링)
-                                galleryLauncher.launch("image/*")
-                            }
-                    )
-
-                    Spacer(modifier = Modifier.width(6.dp))
+                    val realSave = writePossible && !isPhotoLoading
 
                     // 💾 저장 버튼 (파스텔톤)
                     val backgroundColor by animateColorAsState(
-                        targetValue = if (writePossible) Color(0xFFB7E4C7) else Color(0xFFEAEAEA),
+                        targetValue = if (realSave) Color(0xFFB7E4C7) else Color(0xFFEAEAEA),
                         label = "buttonBackground"
                     )
 
@@ -292,7 +328,7 @@ fun DiaryWriteScreen(
                             .clip(RoundedCornerShape(20.dp))
                             .background(backgroundColor)
                             .clickable(
-                                enabled = writePossible,
+                                enabled = realSave,
                                 onClick = {
                                     val prefs = context.getSharedPreferences(
                                         "diary_prefs",
@@ -309,7 +345,7 @@ fun DiaryWriteScreen(
                                 }
                             )
                             .padding(horizontal = 18.dp, vertical = 8.dp),
-                        color = if (writePossible) Color(0xFF2D6A4F) else Color(0xFF9E9E9E),
+                        color = if (realSave) Color(0xFF2D6A4F) else Color(0xFF9E9E9E),
                         fontSize = 13.sp,
                         fontWeight = FontWeight.SemiBold,
                         textAlign = TextAlign.Center
@@ -350,56 +386,72 @@ fun DiaryWriteScreen(
                     .bringIntoViewRequester(bringIntoViewRequester)
             ) {
 
-                // 📸 사진 리스트 영역 (Box 바로 밑에 추가)
-                if (photoDataList.isNotEmpty()) {
+                // 📸 사진 리스트 영역 (사진이 있거나, 혹은 업로드 중일 때 표시)
+                if (photoDataList.isNotEmpty() || isPhotoLoading) {
                     Box(
                         modifier = Modifier
-                            .padding(bottom = 12.dp), // 하단 여백 조절
+                            .padding(bottom = 12.dp),
                         contentAlignment = Alignment.BottomCenter
                     ) {
                         LazyRow(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp), // 사진 사이 간격
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
                             contentPadding = PaddingValues(horizontal = 4.dp)
                         ) {
+                            // 1. 기존 사진 리스트 출력
                             items(photoDataList) { photo ->
                                 Box(
                                     modifier = Modifier
-                                        .size(84.dp) // 사진 크기
+                                        .size(84.dp)
                                         .clip(RoundedCornerShape(12.dp))
-                                        .border(
-                                            1.dp,
-                                            Color.LightGray.copy(alpha = 0.5f),
-                                            RoundedCornerShape(12.dp)
-                                        )
+                                        .border(1.dp, Color.LightGray.copy(alpha = 0.5f), RoundedCornerShape(12.dp))
                                 ) {
-                                    // 로컬 경로에 있는 이미지를 불러옵니다.
                                     AsyncImage(
-                                        model = photo.localPath, // 파일 경로를 그대로 넣으면 됩니다
+                                        model = photo.localPath,
                                         contentDescription = "일기 사진",
-                                        modifier = Modifier
-                                            .fillMaxSize()
-                                            .clickable {
-                                                clickPhotoChange(photo.localPath)
-                                            }
-                                        ,
+                                        modifier = Modifier.fillMaxSize().clickable { clickPhotoChange(photo.localPath) },
                                         contentScale = ContentScale.Crop
                                     )
 
-                                    // ❌ 삭제 버튼 부분
+                                    // 삭제 버튼
                                     Box(
                                         modifier = Modifier
                                             .align(Alignment.TopEnd)
                                             .padding(4.dp)
-                                            .size(20.dp)
+                                            .size(25.dp)
                                             .background(Color.Black.copy(alpha = 0.5f), CircleShape)
-                                            .clickable {
-                                                // 여기에 아래 코드를 작성하세요!
-                                                deleteImage(photo)
-                                            },
+                                            .clickable { deleteImage(photo) },
                                         contentAlignment = Alignment.Center
                                     ) {
                                         Text("✕", color = Color.White, fontSize = 10.sp)
+                                    }
+                                }
+                            }
+
+                            // 2. ⭐ 사진 업로드 중일 때 로딩 아이템 (첫 사진 추가 시에도 여기서 표시됨)
+                            if (isPhotoLoading) {
+                                item {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(84.dp)
+                                            .clip(RoundedCornerShape(12.dp))
+                                            .background(Color.LightGray.copy(alpha = 0.3f))
+                                            .border(1.dp, Color.LightGray, RoundedCornerShape(12.dp)),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                            CircularProgressIndicator(
+                                                modifier = Modifier.size(24.dp),
+                                                strokeWidth = 2.dp,
+                                                color = Color.Gray
+                                            )
+                                            Spacer(modifier = Modifier.height(4.dp))
+                                            Text(
+                                                "업로드 중..",
+                                                fontSize = 10.sp,
+                                                color = Color.Gray
+                                            )
+                                        }
                                     }
                                 }
                             }

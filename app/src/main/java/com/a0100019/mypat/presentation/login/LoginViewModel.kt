@@ -16,6 +16,8 @@ import com.a0100019.mypat.data.room.area.AreaDao
 import com.a0100019.mypat.data.room.knowledge.KnowledgeDao
 import com.a0100019.mypat.data.room.knowledge.getKnowledgeInitialData
 import com.a0100019.mypat.data.room.pat.PatDao
+import com.a0100019.mypat.data.room.photo.Photo
+import com.a0100019.mypat.data.room.photo.PhotoDao
 import com.a0100019.mypat.data.room.sudoku.SudokuDao
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
@@ -31,6 +33,7 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.firestore
+import com.google.firebase.storage.storage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -44,8 +47,10 @@ import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
+import java.io.File
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.UUID
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 
@@ -64,6 +69,7 @@ class LoginViewModel @Inject constructor(
     private val areaDao: AreaDao,
     private val allUserDao: AllUserDao,
     private val knowledgeDao: KnowledgeDao,
+    private val photoDao: PhotoDao,
     @ApplicationContext private val context: Context
 ) : ViewModel(), ContainerHost<LoginState, LoginSideEffect> {
 
@@ -479,6 +485,42 @@ class LoginViewModel @Inject constructor(
                                     )
                                 )
 
+// dailyDocs를 처리하는 부모 코루틴(intent 블록 등) 내부라고 가정
+// dailyDocs 반복문 내부
+                                val photoMap = dailyDoc.get("photo") as? Map<*, *>
+                                if (photoMap != null) {
+                                    // ⭐ 키(1, 2, 3...)를 숫자로 바꿔서 오름차순 정렬 후 순서대로 처리
+                                    val sortedPhotos = photoMap.toList().sortedByDescending { (key, _) ->
+                                        key.toString().toIntOrNull() ?: Int.MAX_VALUE
+                                    }
+
+                                    sortedPhotos.forEach { (key, value) ->
+                                        val photoData = value as? Map<*, *>
+                                        val firebaseUrl = photoData?.get("firebaseUrl") as? String
+
+                                        if (firebaseUrl != null) {
+                                            // launch를 지우고 순서대로(suspend) 실행하면 DB에도 순서대로 쌓입니다.
+                                            val newLocalPath = downloadImageToLocal(context, firebaseUrl)
+                                            photoDao.insert(
+                                                Photo(
+                                                    date = date,
+                                                    firebaseUrl = firebaseUrl,
+                                                    localPath = newLocalPath.toString(),
+                                                    isSynced = true
+                                                )
+                                            )
+
+                                            // 변수 증가 대신 reduce 내부에서 최신 state 값을 활용
+                                            reduce {
+                                                state.copy(
+                                                    downloadPhotoCount = state.downloadPhotoCount + 1
+                                                )
+                                            }
+                                            Log.d("LoginViewModel", "다운로드 완료: ${state.downloadPhotoCount + 1}개")
+                                        }
+                                    }
+                                }
+
                                 // ✅ state 필드가 존재할 경우에만 처리
                                 val stateMap = dailyDoc.get("state") as? Map<*, *>
                                 val englishState = stateMap?.get("english") as? String
@@ -699,6 +741,36 @@ class LoginViewModel @Inject constructor(
         }
     }
 
+    private suspend fun downloadImageToLocal(context: Context, firebaseUrl: String): String? {
+        return withContext(Dispatchers.IO) {
+            try {
+                // 1. UUID를 사용하여 고유한 파일명 생성
+                val uniqueId = UUID.randomUUID().toString()
+                val fileName = "haru_photo_${uniqueId}.jpg"
+                val localFile = File(context.filesDir, fileName)
+
+                val storageRef = Firebase.storage.getReferenceFromUrl(firebaseUrl)
+                storageRef.getFile(localFile).await()
+
+                // 2. 복호화 로직 (기존과 동일)
+                val scrambledBytes = localFile.readBytes()
+                val originalBytes = togglePrivacy(scrambledBytes)
+                localFile.writeBytes(originalBytes)
+
+                localFile.absolutePath
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
+        }
+    }
+
+    private fun togglePrivacy(data: ByteArray): ByteArray {
+        val key = 0xAF.toByte()
+        return ByteArray(data.size) { i -> (data[i].toInt() xor key.toInt()).toByte() }
+    }
+
+
     fun onNavigateToMainScreen() = intent {
         postSideEffect(LoginSideEffect.NavigateToMainScreen)
     }
@@ -743,7 +815,7 @@ class LoginViewModel @Inject constructor(
 
                 //출석 일수 확인해서 편지 전송
                 when (userData.find { it.id == "date" }!!.value2.toInt() + 1) {
-                    7 -> letterDao.updateDateByTitle(title = "7일 출석 감사 편지", todayDate = currentDate)
+                    3 -> letterDao.updateDateByTitle(title = "3일 출석 감사 편지", todayDate = currentDate)
                     30 -> letterDao.updateDateByTitle(
                         title = "30일 출석 감사 편지",
                         todayDate = currentDate
@@ -873,7 +945,8 @@ data class LoginState(
     val userData: List<User> = emptyList(),
     val isLoggingIn:Boolean = false,
     val loginState: String = "",
-    val dialog: String = "loading"
+    val dialog: String = "loading",
+    val downloadPhotoCount: Int = 0
 )
 
 //상태와 관련없는 것

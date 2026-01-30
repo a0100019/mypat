@@ -26,7 +26,9 @@ import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
 @Composable
-fun LoginLoadingDialog() {
+fun LoginLoadingDialog(
+    downloadPhotoCount: Int = 0,
+) {
 
     Dialog(
         onDismissRequest = { }
@@ -65,6 +67,18 @@ fun LoginLoadingDialog() {
                     ),
                     color = MaterialTheme.colorScheme.onBackground
                 )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                if(downloadPhotoCount != 0) {
+                    Text(
+                        text = "사진 $downloadPhotoCount 장 다운로드 중.. 앱을 떠나지 마세요!",
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            fontWeight = FontWeight.Medium
+                        ),
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                }
 
             }
         }

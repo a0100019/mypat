@@ -140,6 +140,7 @@ fun LoginScreen(
     LoginScreen(
         loginState = loginState.loginState,
         dialog = loginState.dialog,
+        downloadPhotoCount = loginState.downloadPhotoCount,
 
         onNavigateToMainScreen = loginViewModel::onNavigateToMainScreen,
         dialogChange = loginViewModel::dialogChange,
@@ -189,7 +190,8 @@ fun LoginScreen(
     todayAttendance: () -> Unit = {},
 
     loginState: String = "loading",
-    dialog: String = ""
+    dialog: String = "",
+    downloadPhotoCount: Int = 0,
 ) {
 
     // 상태를 remember로 관리해야 UI가 갱신됨
@@ -658,7 +660,9 @@ fun LoginScreen(
 //            )
 
             "loginLoading" -> {
-                LoginLoadingDialog()
+                LoginLoadingDialog(
+                    downloadPhotoCount = downloadPhotoCount
+                )
             }
 
         }

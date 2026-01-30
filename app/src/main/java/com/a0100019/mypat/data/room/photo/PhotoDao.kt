@@ -33,6 +33,9 @@ interface PhotoDao {
     @Query("SELECT * FROM photo_table ORDER BY id DESC")
     fun getAllFlowPhotoData(): Flow<List<Photo>>
 
+    @Query("UPDATE photo_table SET firebaseUrl = :url, isSynced = :synced WHERE localPath = :path")
+    suspend fun updateFirebaseInfo(path: String, url: String, synced: Boolean)
+
     // ✅ 특정 날짜의 사진 리스트 가져오기 (날짜가 일치하는 것들만)
     @Query("SELECT * FROM photo_table WHERE date = :date ORDER BY id ASC")
     suspend fun getPhotosByDate(date: String): List<Photo>
