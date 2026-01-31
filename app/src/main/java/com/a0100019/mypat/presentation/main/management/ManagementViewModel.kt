@@ -85,7 +85,6 @@ class ManagementViewModel @Inject constructor(
         dataSave()
     }
 
-
     private fun newLetterGet() = intent {
 
         val letterDocRef = Firebase.firestore

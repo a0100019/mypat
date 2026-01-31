@@ -40,57 +40,52 @@ fun DiaryPhotoDialog(
     Dialog(
         onDismissRequest = onClose
     ) {
-        Box(
-            modifier = Modifier
-                .shadow(12.dp, RoundedCornerShape(24.dp))
-                .border(
-                    width = 2.dp,
-                    color = MaterialTheme.colorScheme.outline,
-                    shape = RoundedCornerShape(24.dp)
-                )
-                .background(
-                    color = MaterialTheme.colorScheme.background,
-                    shape = RoundedCornerShape(24.dp)
-                )
-                .padding(12.dp)
-        ) {
 
-            Column(
+        Column(horizontalAlignment = Alignment.End) {
+
+            Box(
                 modifier = Modifier
-                ,
-                horizontalAlignment = Alignment.End
+                    .shadow(12.dp, RoundedCornerShape(24.dp))
+                    .border(
+                        width = 2.dp,
+                        color = MaterialTheme.colorScheme.outline,
+                        shape = RoundedCornerShape(24.dp)
+                    )
+                    .background(
+                        color = MaterialTheme.colorScheme.background,
+                        shape = RoundedCornerShape(24.dp)
+                    )
+                    .padding(12.dp)
+                    .clickable {
+                        onClose()
+                    }
             ) {
 
-                JustImage(
-                    filePath = "etc/exit.png",
-                    modifier = Modifier
-                        .padding(bottom = 6.dp)
-                        .size(30.dp)
-                        .clickable {
-                            onClose()
-                        }
-                )
-
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(12.dp))
-                        .border(
-                            1.dp,
-                            Color.LightGray.copy(alpha = 0.5f),
-                            RoundedCornerShape(12.dp)
-                        )
+                Column(
+                    modifier = Modifier,
+                    horizontalAlignment = Alignment.End
                 ) {
-                    // 로컬 경로에 있는 이미지를 불러옵니다.
-                    AsyncImage(
-                        model = clickPhoto, // 파일 경로를 그대로 넣으면 됩니다
-                        contentDescription = "일기 사진",
+
+                    Box(
                         modifier = Modifier
-                        ,
-                        contentScale = ContentScale.Inside
-                    )
+                            .clip(RoundedCornerShape(12.dp))
+                            .border(
+                                1.dp,
+                                Color.LightGray.copy(alpha = 0.5f),
+                                RoundedCornerShape(12.dp)
+                            )
+                    ) {
+                        // 로컬 경로에 있는 이미지를 불러옵니다.
+                        AsyncImage(
+                            model = clickPhoto, // 파일 경로를 그대로 넣으면 됩니다
+                            contentDescription = "일기 사진",
+                            modifier = Modifier,
+                            contentScale = ContentScale.Inside
+                        )
+
+                    }
 
                 }
-
             }
         }
     }

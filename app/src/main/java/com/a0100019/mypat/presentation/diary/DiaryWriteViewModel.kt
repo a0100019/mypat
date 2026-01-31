@@ -38,6 +38,7 @@ import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
 import java.io.File
 import java.io.FileOutputStream
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 
@@ -148,51 +149,79 @@ class DiaryWriteViewModel @Inject constructor(
     }
 
     fun handleImageSelection(context: Context, uri: Uri) = intent {
-        // 로딩 시작
+        // 1. 상태 초기화
         reduce { state.copy(isPhotoLoading = true) }
 
-        if (!isNetworkAvailable(context)) {
-            postSideEffect(DiaryWriteSideEffect.Toast("인터넷 연결을 확인해주세요."))
-            reduce { state.copy(isPhotoLoading = false) } // 종료
-            return@intent
+        val isUploadFinished = AtomicBoolean(false)
+        val isAdClosed = AtomicBoolean(false)
+
+        // 로딩 종료 여부를 판단하는 함수
+        fun tryFinishLoading() = intent {
+            if (isUploadFinished.get() && isAdClosed.get()) {
+                reduce { state.copy(isPhotoLoading = false) }
+            }
         }
 
-        val localPath = withContext(Dispatchers.IO) {
-            saveImageToInternalStorage(context, uri)
+        // --- 광고 분기 처리 로직 ---
+        // 기존에 사진이 하나라도 있으면(photoDataList가 비어있지 않으면) 광고를 띄움
+        val shouldShowAd = state.photoDataList.isNotEmpty()
+
+        if (shouldShowAd) {
+            // [광고를 보여주는 경우]
+            postSideEffect(DiaryWriteSideEffect.ShowInterstitialAd {
+                isAdClosed.set(true)
+                tryFinishLoading()
+            })
+        } else {
+            // [첫 사진이라 광고를 안 보여주는 경우]
+            // 광고가 이미 닫힌 것으로 간주하여 true로 설정
+            isAdClosed.set(true)
+            // tryFinishLoading은 호출할 필요 없음 (업로드 끝나면 알아서 종료됨)
         }
 
-        if (localPath != null) {
-            uploadToFirebase(localPath) { firebaseUrl ->
-                // 콜백 안에서 다시 intent 블록을 열어 상태 변경
-                intent {
-                    if (firebaseUrl != null) {
-                        viewModelScope.launch(Dispatchers.IO) {
-                            val photoEntry = Photo(
-                                date = state.writeDiaryData.date,
-                                localPath = localPath,
-                                firebaseUrl = firebaseUrl,
-                                isSynced = true
-                            )
-                            photoDao.insert(photoEntry)
-                            val updatedPhotos = photoDao.getPhotosByDate(state.writeDiaryData.date)
+        // 2. [병렬 실행] 이미지 처리 및 업로드 (백그라운드)
+        viewModelScope.launch(Dispatchers.IO) {
+            if (!isNetworkAvailable(context)) {
+                postSideEffect(DiaryWriteSideEffect.Toast("인터넷 연결을 확인해주세요."))
+                isUploadFinished.set(true)
+                tryFinishLoading()
+                return@launch
+            }
 
-                            intent {
-                                reduce { state.copy(
-                                    photoDataList = updatedPhotos,
-                                    isPhotoLoading = false // 성공 시 종료
-                                )}
+            val localPath = saveImageToInternalStorage(context, uri)
+            if (localPath != null) {
+                uploadToFirebase(localPath) { firebaseUrl ->
+                    intent {
+                        if (firebaseUrl != null) {
+                            viewModelScope.launch(Dispatchers.IO) {
+                                val photoEntry = Photo(
+                                    date = state.writeDiaryData.date,
+                                    localPath = localPath,
+                                    firebaseUrl = firebaseUrl,
+                                    isSynced = true
+                                )
+                                photoDao.insert(photoEntry)
+                                val updatedPhotos = photoDao.getPhotosByDate(state.writeDiaryData.date)
+
+                                intent {
+                                    reduce { state.copy(photoDataList = updatedPhotos) }
+                                    isUploadFinished.set(true)
+                                    tryFinishLoading()
+                                }
                             }
+                        } else {
+                            File(localPath).delete()
+                            postSideEffect(DiaryWriteSideEffect.Toast("업로드 실패"))
+                            isUploadFinished.set(true)
+                            tryFinishLoading()
                         }
-                    } else {
-                        File(localPath).delete()
-                        postSideEffect(DiaryWriteSideEffect.Toast("업로드 실패"))
-                        reduce { state.copy(isPhotoLoading = false) } // 실패 시 종료
                     }
                 }
+            } else {
+                postSideEffect(DiaryWriteSideEffect.Toast("저장 오류"))
+                isUploadFinished.set(true)
+                tryFinishLoading()
             }
-        } else {
-            postSideEffect(DiaryWriteSideEffect.Toast("저장 오류"))
-            reduce { state.copy(isPhotoLoading = false) } // 종료
         }
     }
 
@@ -395,4 +424,6 @@ data class DiaryWriteState(
 sealed interface DiaryWriteSideEffect{
     class Toast(val message:String): DiaryWriteSideEffect
 
+    // 광고 시청을 요청하는 SideEffect (광고 종료 후 실행할 액션을 넘겨줌)
+    data class ShowInterstitialAd(val onAdClosed: () -> Unit) : DiaryWriteSideEffect
 }

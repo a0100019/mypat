@@ -2,6 +2,7 @@ package com.a0100019.mypat.presentation.diary
 
 import android.app.Activity
 import android.content.Context
+import android.content.ContextWrapper
 import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
@@ -74,6 +75,7 @@ import com.a0100019.mypat.presentation.activity.daily.DailySideEffect
 import com.a0100019.mypat.presentation.activity.information.InformationSideEffect
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
 import com.a0100019.mypat.presentation.main.management.BannerAd
+import com.a0100019.mypat.presentation.main.management.InterstitialAdManager
 import com.a0100019.mypat.presentation.main.management.ManagementViewModel
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
 import kotlinx.coroutines.launch
@@ -91,11 +93,40 @@ fun DiaryWriteScreen(
     val diaryWriteState: DiaryWriteState = diaryWriteViewModel.collectAsState().value
     val context = LocalContext.current
 
-    val activity = context as Activity
+    // Activity를 안전하게 가져오는 헬퍼 함수
+    fun Context.findActivity(): Activity? {
+        var context = this
+        while (context is ContextWrapper) {
+            if (context is Activity) return context
+            context = context.baseContext
+        }
+        return null
+    }
 
+    // UI (Compose 등)에서의 적용
+    val activity = remember(context) { context.findActivity() }
+
+    // Orbit의 collectSideEffect 사용
     diaryWriteViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
-            is DiaryWriteSideEffect.Toast -> Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
+            is DiaryWriteSideEffect.ShowInterstitialAd -> {
+                // 1. 광고 실행 시도
+                if (activity != null) {
+                    InterstitialAdManager.showAd(activity) {
+                        // 광고가 닫히거나 실패했을 때 ViewModel의 콜백 실행
+                        sideEffect.onAdClosed()
+                    }
+                } else {
+                    // Activity를 찾을 수 없는 예외 상황 처리
+                    sideEffect.onAdClosed()
+                }
+            }
+
+            is DiaryWriteSideEffect.Toast -> {
+                Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
+            }
+
+            // 기타 SideEffect 처리...
         }
     }
 
@@ -252,7 +283,7 @@ fun DiaryWriteScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 24.dp, end = 24.dp, bottom = 24.dp, top = 12.dp)
+                .padding(start = 12.dp, end = 12.dp, bottom = 12.dp, top = 12.dp)
         ) {
 
             /* ───────── 상단 헤더 ───────── */

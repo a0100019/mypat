@@ -595,7 +595,7 @@ fun DiaryScreen(
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 14.dp, vertical = 12.dp)
+                                .padding(horizontal = 10.dp, vertical = 12.dp)
                                 .graphicsLayer {
                                     scaleX = scale
                                     scaleY = scale
@@ -697,7 +697,7 @@ fun DiaryScreen(
                         Surface(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 6.dp)
+                                .padding(horizontal = 10.dp, vertical = 6.dp)
                                 .graphicsLayer {
                                     scaleX = scale
                                     scaleY = scale
