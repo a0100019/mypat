@@ -45,16 +45,6 @@ fun DiaryPhotoDialog(
 
             Box(
                 modifier = Modifier
-                    .shadow(12.dp, RoundedCornerShape(24.dp))
-                    .border(
-                        width = 2.dp,
-                        color = MaterialTheme.colorScheme.outline,
-                        shape = RoundedCornerShape(24.dp)
-                    )
-                    .background(
-                        color = MaterialTheme.colorScheme.background,
-                        shape = RoundedCornerShape(24.dp)
-                    )
                     .padding(12.dp)
                     .clickable {
                         onClose()
@@ -69,11 +59,6 @@ fun DiaryPhotoDialog(
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(12.dp))
-                            .border(
-                                1.dp,
-                                Color.LightGray.copy(alpha = 0.5f),
-                                RoundedCornerShape(12.dp)
-                            )
                     ) {
                         // 로컬 경로에 있는 이미지를 불러옵니다.
                         AsyncImage(

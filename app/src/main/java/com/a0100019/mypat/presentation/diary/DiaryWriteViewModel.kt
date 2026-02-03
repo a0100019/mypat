@@ -24,6 +24,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.storage.storage
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -38,6 +39,8 @@ import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
 import java.io.File
 import java.io.FileOutputStream
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
@@ -51,7 +54,8 @@ class DiaryWriteViewModel @Inject constructor(
     private val itemDao: ItemDao,
     private val letterDao: LetterDao,
     private val areaDao: AreaDao,
-    private val photoDao: PhotoDao
+    private val photoDao: PhotoDao,
+    @ApplicationContext private val context: Context
 ) : ViewModel(), ContainerHost<DiaryWriteState, DiaryWriteSideEffect> {
 
     override val container: Container<DiaryWriteState, DiaryWriteSideEffect> = container(
@@ -74,8 +78,39 @@ class DiaryWriteViewModel @Inject constructor(
         // 1. suspend로 바로 가져오는 유저 정보
         val userDataList = userDao.getAllUserData()
         val userDataEtc2Value = userDao.getValueById("etc2")
-        val allDiaryData = diaryDao.getAllDiaryData()
         val photoDataList = photoDao.getPhotosByDate(userDataEtc2Value)
+
+        // 1. 데이터 가져오기 (이미 하신 부분)
+        val allDiaryData = diaryDao.getAllDiaryData()
+
+        // 2. 날짜 형식 지정을 위한 포맷터
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+        // 3. 오늘을 제외한 어제부터의 연속 일수 계산
+        val diarySequence = run {
+            val yesterday = LocalDate.now().minusDays(1)
+
+            // DB의 날짜 문자열들을 LocalDate 세트로 변환 (검색 속도를 위해 Set 사용)
+            val writtenDates = allDiaryData.map {
+                LocalDate.parse(it.date, formatter)
+            }.toSet()
+
+            var count = 0
+            var checkDate = yesterday
+
+            // 어제부터 하루씩 뒤로 가면서 기록이 있는지 확인
+            while (writtenDates.contains(checkDate)) {
+                count++
+                checkDate = checkDate.minusDays(1) // 하루 더 과거로
+            }
+
+            count // 최종 연속 일수 반환
+        }
+
+        val prefs = context.getSharedPreferences("diary_prefs", Context.MODE_PRIVATE)
+        prefs.edit()
+            .putInt("diarySequence", diarySequence)
+            .apply()
 
         if(!userDataEtc2Value.startsWith("0")){
             //0있으면 하루 미션아닌 일기?
@@ -127,7 +162,8 @@ class DiaryWriteViewModel @Inject constructor(
                 dialogState = "",
                 writeFinish = false,
                 userDataList = userDataList,
-                photoDataList = photoDataList
+                photoDataList = photoDataList,
+                diarySequence = diarySequence
             )
         }
 
@@ -365,7 +401,6 @@ class DiaryWriteViewModel @Inject constructor(
                 )
             }
         } else {
-            postSideEffect(DiaryWriteSideEffect.Toast("10자 이상 입력해주세요"))
             reduce {
                 state.copy(
                     writePossible = false,
@@ -407,6 +442,7 @@ data class DiaryWriteState(
     val diaryDataList: List<Diary> = emptyList(),
     val diaryFilterDataList: List<Diary> = emptyList(),
     val photoDataList: List<Photo> = emptyList(),
+    val diarySequence: Int = 0,
 
     val clickPhoto: String = "",
     val writeDiaryData: Diary = Diary(date = "", contents = "", emotion = ""),

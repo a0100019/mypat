@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -71,14 +72,14 @@ class MainActivity : ComponentActivity() {
 
             MypatTheme {
                 Surface(
-                    modifier = Modifier
-                        .fillMaxSize()
-//                        .systemBarsPadding()
+                    modifier = Modifier.fillMaxSize(), // 1. 패딩을 여기서 제거 (배경이 끝까지 차도록)
+                    color = Color.Black
                     , // ✅ 상태바와 겹치지 않도록 패딩
-                    color = MaterialTheme.colorScheme.background
                 ) {
                     Box(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .statusBarsPadding(), // 3. 실제 콘텐츠에만 상태바 패딩 적용
                         contentAlignment = Alignment.Center
                     ) {
                         // 검은 배경
@@ -157,7 +158,7 @@ class MainActivity : ComponentActivity() {
 
     // 상태바는 보이고, 네비게이션 바만 숨기기
     private fun showStatusBarHideNavBar() {
-        WindowCompat.setDecorFitsSystemWindows(window, true)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         val controller = WindowInsetsControllerCompat(window, window.decorView)
 
         // 상태바 보이기

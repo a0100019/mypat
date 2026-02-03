@@ -18,6 +18,11 @@ class AlarmReceiver : BroadcastReceiver() {
         val savedTime = prefs.getString("alarm_time", null)
         if (savedTime == null) return
 
+        // 🔹 연속 일수 SharedPreferences
+        val streakPrefs =
+            context.getSharedPreferences("diary_prefs", Context.MODE_PRIVATE)
+        val diarySequence = streakPrefs.getInt("diarySequence", 0)
+
         val channelId = "diary_alarm_channel"
         val notificationId = 1001 // 고정 ID 사용 (너무 큰 랜덤값 방지)
 
@@ -48,10 +53,20 @@ class AlarmReceiver : BroadcastReceiver() {
             PendingIntent.FLAG_IMMUTABLE
         )
 
+        val contentText =
+            if (diarySequence > -1) {
+                "${diarySequence + 1}일 연속 일기 작성 중!"
+            } else {
+                "펫들이 이웃님을 기다리고 있어요 ㅠㅠ"
+            }
+
+        // SharedPreferences에 -1 저장하기
+        streakPrefs.edit().putInt("diarySequence", -1).apply()
+
         val notification = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.pet)
-            .setContentTitle("오늘의 일기를 작성할 시간이에요 ✍️")
-            .setContentText("오늘 하루를 기록해보세요.")
+            .setContentTitle("일기를 작성할 시간이에요 🐶")
+            .setContentText(contentText)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(contentPendingIntent)
             .setAutoCancel(true)

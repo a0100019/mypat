@@ -33,8 +33,9 @@ import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 
 @Composable
-fun DiaryFinishDialog(
+fun DiaryFirstFinishDialog(
     onClose: () -> Unit,
+    diarySequence: Int = 0
 ) {
 
     Dialog(
@@ -77,7 +78,40 @@ fun DiaryFinishDialog(
                     )
                 )
 
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // 3. 보상 정보 (말풍선 느낌)
+                Surface(
+                    color = Color(0xFFFFEFA1), // 따뜻한 햇살색
+                    shape = CircleShape,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        JustImage(
+                            filePath = "etc/sun.png",
+                            modifier = Modifier.size(22.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = " +3",
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color(0xFF8B6B00)
+                            )
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "${diarySequence + 1}일 연속 일기를 작성했어요!"
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
 
                 // 4. 새로운 스타일의 닫기 버튼
                 Button(
@@ -107,9 +141,9 @@ fun DiaryFinishDialog(
 
 @Preview(showBackground = true)
 @Composable
-fun DiaryFinishDialogPreview() {
+fun DiaryFirstFinishDialogPreview() {
     MypatTheme {
-        DiaryFinishDialog(
+        DiaryFirstFinishDialog(
             onClose = {},
         )
     }

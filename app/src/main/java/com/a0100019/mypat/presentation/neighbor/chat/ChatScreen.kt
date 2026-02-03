@@ -2,6 +2,7 @@ package com.a0100019.mypat.presentation.neighbor.chat
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -13,11 +14,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,9 +32,11 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -51,6 +57,7 @@ import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
+import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 import java.text.SimpleDateFormat
@@ -111,7 +118,7 @@ fun ChatScreen(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun CommunityScreen(
     situation : String = "",
@@ -149,6 +156,8 @@ fun CommunityScreen(
     val context = LocalContext.current
     val prefs = context.getSharedPreferences("bgm_prefs", Context.MODE_PRIVATE)
     val bgmOn = prefs.getBoolean("bgmOn", true)
+
+    val bringIntoViewRequester = remember { BringIntoViewRequester() }
 
     when(situation) {
         "chatSubmitCheck" -> SimpleAlertDialog(
@@ -257,6 +266,8 @@ fun CommunityScreen(
                                 color = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.7f),
                                 shape = RoundedCornerShape(16.dp)
                             )
+                            .imePadding() // ⬅️ 키보드가 점유하는 공간만큼 하단 여백을 자동으로 만듭니다.
+                            .bringIntoViewRequester(bringIntoViewRequester)
                     ) {
 
                         val authTag = userDataList.find { it.id == "auth" }?.value2
@@ -632,7 +643,8 @@ fun CommunityScreen(
                                     .background(
                                         color = MaterialTheme.colorScheme.background,
                                         shape = RoundedCornerShape(16.dp)
-                                    ),
+                                    )
+                                ,
                                 shape = RoundedCornerShape(16.dp),
                                 placeholder = { Text("메시지를 입력하세요") },
                                 maxLines = 4,

@@ -197,15 +197,46 @@ fun LovePatDialog(
                                 .align(Alignment.Center) // ⭐ 중앙 정렬
                         )
 
-                        Text(
-                            text = "애정도 +${loveAmount}, 달빛 +${cashAmount}"
-                            ,
-                            style = MaterialTheme.typography.titleMedium,
-                            textAlign = TextAlign.Center,
+                        Row(
                             modifier = Modifier
-                                .align(Alignment.BottomCenter)
                                 .padding(10.dp)
-                        )
+                                .align(Alignment.BottomCenter)
+                            ,
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+
+                            Image(
+                                painter = painterResource(id = R.drawable.heart),
+                                contentDescription = "Sample Vector Image",
+                                modifier = Modifier
+                                    .size(20.dp)
+                                ,
+                            )
+
+                            Text(
+                                text = "+${loveAmount}",
+                                style = MaterialTheme.typography.titleMedium,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                            )
+
+                            Spacer(modifier = Modifier.size(30.dp))
+
+                            JustImage(
+                                filePath = "etc/moon.png",
+                                modifier = Modifier
+                                    .size(20.dp)
+                            )
+
+                            Text(
+                                text = "+${cashAmount}",
+                                style = MaterialTheme.typography.titleMedium,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                            )
+
+                        }
                     }
 
                     "lovePatFail" -> Box(

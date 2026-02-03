@@ -13,10 +13,12 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -66,6 +68,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.rotate
@@ -74,6 +77,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -330,6 +334,11 @@ fun DiaryScreen(
             onDismissClick = onCloseClick,
             text = "하루마을을 종료하시겠습니까?",
         )
+        "사진" -> DiaryPhotoCollectionDialog(
+            onClose = onCloseClick,
+            onPhotoClick = clickPhotoChange,
+            photoDataList = photoDataList
+        )
     }
 
     Surface(
@@ -348,8 +357,8 @@ fun DiaryScreen(
                     .background(
                         brush = Brush.verticalGradient(
                             colors = listOf(
-                                Color(0xFFE0C3FC), // 연한 보라
-                                Color(0xFF8EC5FC)  // 연한 하늘
+                                Color(0xFFF3E5F5),
+                                Color(0xFFE3F2FD)
                             )
                         )
                     )
@@ -386,49 +395,68 @@ fun DiaryScreen(
 
                 Surface(
                     onClick = onNavigateToMainScreen,
-                    shape = RoundedCornerShape(30.dp),
-                    // 1. 단색 대신 아주 미세한 그라데이션 효과를 위해 컬러 살짝 조정
-                    color = Color(0xFFFFF9C4),
-                    border = BorderStroke(2.5.dp, Color(0xFFFFD54F)), // 테두리를 살짝 더 두껍게 해서 선명하게
+                    // 1. 비대칭 곡률로 몽글몽글한 조약돌/젤리 느낌 연출
+                    shape = RoundedCornerShape(
+                        topStart = 24.dp,
+                        bottomEnd = 24.dp,
+                        topEnd = 12.dp,
+                        bottomStart = 12.dp
+                    ),
+                    color = Color(0xFFFFF9C4), // 따뜻한 버터 옐로우
                     modifier = Modifier
-                        .height(50.dp) // 조금 더 도톰하게 만들어 클릭감을 높임
-                        .padding(horizontal = 8.dp),
-                    shadowElevation = 8.dp, // 입체감을 조금 더 강조
-                    tonalElevation = 2.dp
+                        .height(52.dp) // 존재감 있는 높이
+                        .padding(horizontal = 6.dp),
+                    // 2. 테두리를 조금 더 도톰하고 부드러운 색상으로 설정
+                    border = BorderStroke(3.dp, Color(0xFFFFE082)),
+                    shadowElevation = 4.dp
                 ) {
                     Row(
                         modifier = Modifier
                             .background(
-                                // 2. 버튼 내부에 부드러운 빛 반사 효과 (상단이 조금 더 밝게)
                                 brush = Brush.verticalGradient(
                                     colors = listOf(
-                                        Color(0xFFFFFEF0), // 상단부 밝은 노랑
-                                        Color(0xFFFFF9C4)  // 하단부 기본 노랑
+                                        Color(0xFFFFFEF9), // 상단 광택
+                                        Color(0xFFFFF9C4)  // 하단 베이스
                                     )
                                 )
                             )
-                            .padding(horizontal = 24.dp),
+                            .padding(horizontal = 20.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        // 3. 귀여운 아이콘 추가 (마을로 떠나는 느낌)
-                        JustImage(
-                            filePath = "etc/home.png",
+                        // 3. 아이콘에 살짝 '통통' 튀는 듯한 효과
+                        Box(
                             modifier = Modifier
-                                .size(20.dp)
-                        )
+                                .graphicsLayer {
+                                    rotationZ = -5f
+                                    scaleX = 1.1f
+                                    scaleY = 1.1f
+                                }
+                        ) {
+                            JustImage(
+                                filePath = "etc/home.png",
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
 
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(10.dp))
 
                         Text(
-                            text = "마을로 이동하기",
-                            style = MaterialTheme.typography.titleSmall.copy( // 크기를 살짝 키움
-                                fontWeight = FontWeight.ExtraBold,
-                                letterSpacing = (-0.7).sp
+                            text = "마을로 이동", // 조금 더 어린아이 같은 귀여운 말투
+                            style = MaterialTheme.typography.titleSmall.copy(
+                                fontWeight = FontWeight.Black,
+                                letterSpacing = (-0.8).sp
                             ),
-                            color = Color(0xFF5D4037)
+                            color = Color(0xFF6D4C41) // 진한 코코아 브라운
                         )
 
+                        Spacer(modifier = Modifier.width(6.dp))
+
+                        // 4. 버튼 끝에 작은 포인트
+                        Text(
+                            text = "🐾",
+                            fontSize = 16.sp
+                        )
                     }
                 }
 
@@ -458,17 +486,29 @@ fun DiaryScreen(
 //                    text = " 달력 보기 "
 //                )
 
-                JustImage(
-                    filePath = emotionFilter,
-                    modifier = Modifier
-                        .size(25.dp)
-                        .clickable(
-//                            indication = null, // 🔕 클릭 효과 제거
-//                            interactionSource = remember { MutableInteractionSource() }
-                        ) {
-                            onDialogStateChange("감정")
-                        }
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    JustImage(
+                        filePath = emotionFilter,
+                        modifier = Modifier
+                            .size(25.dp)
+                            .clickable {
+                                onDialogStateChange("감정")
+                            }
+                    )
+
+                    Spacer(modifier = Modifier.size(10.dp))
+
+                    JustImage(
+                        filePath = "etc/picture.png",
+                        modifier = Modifier
+                            .size(28.dp)
+                            .clickable {
+                                onDialogStateChange("사진")
+                            }
+                    )
+                }
 
                 Spacer(modifier = Modifier.weight(1f))
 
@@ -528,7 +568,8 @@ fun DiaryScreen(
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(8.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp) // 카드 사이 간격 추가
+                verticalArrangement = Arrangement.spacedBy(4.dp), // 카드 사이 간격 추가
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 itemsIndexed(diaryDataList) { index, diaryData ->
 
@@ -545,27 +586,43 @@ fun DiaryScreen(
                     ) != diaryDataList[index - 1].date.substring(5, 7)
 
                     if (monthChange) {
-                        Text(
-                            text = diaryData.date.substring(0, 7).split("-").let {
-                                "${it[0]}년 ${it[1]}월"
-                            },
+                        Surface(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 24.dp),
-                            style = MaterialTheme.typography.titleLarge.copy(
-                                letterSpacing = 1.sp
-                            )
-                        )
+                                .padding(12.dp)
+                                .fillMaxWidth(0.4f), // 1. 가로 사이즈를 화면의 절반 정도로 키움 (조절 가능)
+                            shape = RoundedCornerShape(24.dp), // 2. 더 둥글게 해서 귀여운 느낌 강조
+                            color = Color(0xFFFDFDFD),
+                            border = BorderStroke(1.5.dp, Color(0xFFEFEFEF)), // 3. 아주 연한 회색 테두리 추가
+                            shadowElevation = 2.dp
+                        ) {
+                            Box(
+                                contentAlignment = Alignment.Center // 4. 텍스트를 박스 중앙에 배치
+                            ) {
+                                Text(
+                                    text = diaryData.date.substring(0, 7).split("-").let {
+                                        "${it[0]}년 ${it[1]}월"
+                                    },
+                                    modifier = Modifier
+                                        .padding(horizontal = 12.dp, vertical = 12.dp), // 5. 안쪽 여백도 넓혀서 시원하게
+                                    style = androidx.compose.ui.text.TextStyle(
+                                        color = Color(0xFF444444),
+                                        fontWeight = FontWeight.ExtraBold, // 6. 글씨체를 더 두껍게
+                                        fontSize = 16.sp, // 7. 폰트 사이즈 업
+                                        letterSpacing = 0.5.sp // 글자 간격 살짝 벌림
+                                    )
+                                )
+                            }
+                        }
                     }
 
                     if (diaryData.state == "대기") {
-                        // 1. 애니메이션 설정 (기존 로직 유지)
-                        val infiniteTransition = rememberInfiniteTransition(label = "new_diary_anim")
+                        // 1. 애니메이션 설정 (기존 로직 유지 및 최적화)
+                        val infiniteTransition = rememberInfiniteTransition(label = "diary_anim")
                         val floatingOffset by infiniteTransition.animateFloat(
                             initialValue = 0f,
-                            targetValue = -10f,
+                            targetValue = -6f, // 둥둥 뜨는 범위를 조금 줄여 차분하게
                             animationSpec = infiniteRepeatable(
-                                animation = tween(1800, easing = EaseInOutSine),
+                                animation = tween(2000, easing = EaseInOutSine),
                                 repeatMode = RepeatMode.Reverse
                             ),
                             label = "floating"
@@ -573,29 +630,28 @@ fun DiaryScreen(
 
                         val interactionSource = remember { MutableInteractionSource() }
                         val isPressed by interactionSource.collectIsPressedAsState()
-                        val scale by animateFloatAsState(targetValue = if (isPressed) 0.96f else 1f)
-
-                        val shimmerX by infiniteTransition.animateFloat(
-                            initialValue = -0.5f,
-                            targetValue = 1.5f,
-                            animationSpec = infiniteRepeatable(
-                                animation = tween(3000, easing = LinearEasing)
-                            ),
-                            label = "shimmer"
+                        val scale by animateFloatAsState(
+                            targetValue = if (isPressed) 0.97f else 1f,
+                            animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+                            label = "scale"
                         )
 
-                        // 2. 색상 정의 (세련된 파스텔 테마)
-                        val baseColor = Color(0xFFF1F8E9) // 아주 연한 민트 크림
-                        val accentColor = Color(0xFF81C784) // 부드러운 초록
-                        val textColor = Color(0xFF2E7D32) // 깊은 초록 (글씨용)
-
+// 날짜 계산
                         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                         val date = LocalDate.parse(diaryData.date, formatter)
+                        val dayName = date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.KOREAN)
+
+// 2. 색상 정의 (더 깨끗한 톤으로 변경)
+                        val cardBg = Color(0xFFFFFFFF) // 깨끗한 화이트
+                        val borderColor = Color(0xFFE8F5E9) // 아주 연한 초록 테두리
+                        val mainAccent = Color(0xFF66BB6A) // 포인트 초록
+                        val textPrimary = Color(0xFF2C3E50) // 차분한 다크 그레이
+                        val textSecondary = Color(0xFF90A4AE) // 보조 텍스트 그레이
 
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 10.dp, vertical = 12.dp)
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
                                 .graphicsLayer {
                                     scaleX = scale
                                     scaleY = scale
@@ -607,75 +663,74 @@ fun DiaryScreen(
                                     onClick = { onDiaryClick(diaryData) }
                                 )
                         ) {
-                            // [하단 그림자 층] - 실제 물리적 버튼처럼 보이게 함
+                            // [메인 카드] - 그림자 대신 얇은 테두리와 은은한 Tonal Elevation 사용
                             Surface(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(100.dp)
-                                    .offset(y = 8.dp),
-                                shape = RoundedCornerShape(28.dp),
-                                color = accentColor.copy(alpha = 0.2f)
-                            ) {}
-
-                            // [메인 카드 층]
-                            Surface(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(100.dp),
-                                shape = RoundedCornerShape(28.dp),
-                                color = baseColor,
-                                border = BorderStroke(2.dp, accentColor.copy(alpha = 0.4f))
+                                    .height(90.dp), // 높이를 살짝 줄여 더 슬림하게
+                                shape = RoundedCornerShape(24.dp),
+                                color = cardBg,
+                                border = BorderStroke(1.dp, borderColor),
+                                shadowElevation = 2.dp // 과하지 않은 그림자
                             ) {
-                                Box(modifier = Modifier.fillMaxSize()) {
-
-                                    // 왼쪽 상단 작은 포인트 (날짜 표식)
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(horizontal = 20.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    // [왼쪽 포인트 컬러 바] - 수직으로 배치해 가이드라인 역할
                                     Box(
                                         modifier = Modifier
-                                            .size(width = 60.dp, height = 4.dp)
-                                            .align(Alignment.TopStart)
-                                            .padding(start = 24.dp, top = 12.dp)
-                                            .background(accentColor.copy(alpha = 0.3f), CircleShape)
+                                            .width(4.dp)
+                                            .height(30.dp)
+                                            .background(mainAccent.copy(alpha = 0.6f), CircleShape)
                                     )
 
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxSize()
-                                            .padding(horizontal = 24.dp),
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Column(modifier = Modifier.weight(1f)) {
-                                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                                Text(
-                                                    text = diaryData.date,
-                                                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                                                    color = textColor.copy(alpha = 0.6f)
-                                                )
-                                                Text(
-                                                    text = " ${date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.KOREAN)}요일",
-                                                    style = MaterialTheme.typography.bodyMedium,
-                                                    color = textColor.copy(alpha = 0.4f),
-                                                    modifier = Modifier.padding(start = 4.dp)
-                                                )
-                                            }
+                                    Spacer(modifier = Modifier.width(16.dp))
 
-                                            val isPreview = LocalInspectionMode.current // 프리뷰 감지
-                                            // 폰트 설정
-                                            val customFont = FontFamily(Font(R.font.fish))
-                                            val safeFont = if (isPreview) FontFamily.SansSerif else customFont
-
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        // 날짜 정보 영역
+                                        Row(verticalAlignment = Alignment.Bottom) {
                                             Text(
-                                                text = "오늘 어떤 하루를 보냈나요?",
-                                                fontFamily = safeFont,
-                                                style = MaterialTheme.typography.titleMedium.copy(
-                                                    letterSpacing = (-0.5).sp
+                                                text = diaryData.date.replace("-", "."), // 2026.02.03 스타일
+                                                style = MaterialTheme.typography.labelMedium.copy(
+                                                    fontWeight = FontWeight.Bold,
+                                                    letterSpacing = 0.5.sp
                                                 ),
-                                                color = textColor,
-                                                modifier = Modifier.padding(top = 4.dp)
+                                                color = textSecondary
+                                            )
+                                            Text(
+                                                text = "${dayName}요일",
+                                                style = MaterialTheme.typography.labelSmall,
+                                                color = textSecondary.copy(alpha = 0.7f),
+                                                modifier = Modifier.padding(start = 6.dp, bottom = 1.dp)
                                             )
                                         }
 
+                                        Spacer(modifier = Modifier.height(4.dp))
+
+                                        // 메인 텍스트
+                                        val customFont = FontFamily(Font(R.font.fish))
+                                        val safeFont = if (LocalInspectionMode.current) FontFamily.SansSerif else customFont
+
+                                        Text(
+                                            text = "오늘 어떤 하루를 보냈나요?",
+                                            fontFamily = safeFont,
+                                            style = MaterialTheme.typography.titleMedium.copy(
+                                                fontSize = 17.sp,
+                                                lineHeight = 22.sp
+                                            ),
+                                            color = textPrimary
+                                        )
                                     }
 
+                                    // [오른쪽 장식] - 마을 느낌을 주는 작은 화살표나 이모지
+                                    Text(
+                                        text = "🌿",
+                                        fontSize = 18.sp,
+                                        modifier = Modifier.alpha(0.5f)
+                                    )
                                 }
                             }
                         }

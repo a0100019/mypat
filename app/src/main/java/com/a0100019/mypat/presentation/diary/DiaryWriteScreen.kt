@@ -9,7 +9,6 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -23,13 +22,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import java.time.format.TextStyle
@@ -40,7 +35,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a0100019.mypat.data.room.diary.Diary
-import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
 import com.a0100019.mypat.presentation.ui.theme.MypatTheme
 import org.orbitmvi.orbit.compose.collectAsState
@@ -51,7 +45,6 @@ import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Surface
@@ -65,19 +58,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.*
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.a0100019.mypat.data.room.photo.Photo
-import com.a0100019.mypat.presentation.activity.daily.DailySideEffect
-import com.a0100019.mypat.presentation.activity.information.InformationSideEffect
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
-import com.a0100019.mypat.presentation.main.management.BannerAd
 import com.a0100019.mypat.presentation.main.management.InterstitialAdManager
 import com.a0100019.mypat.presentation.main.management.ManagementViewModel
-import com.a0100019.mypat.presentation.ui.image.etc.BackGroundImage
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.compose.collectSideEffect
 import java.time.LocalDate
@@ -182,6 +169,8 @@ fun DiaryWriteScreen(
         photoDataList = diaryWriteState.photoDataList,
         clickPhoto = diaryWriteState.clickPhoto,
         isPhotoLoading = diaryWriteState.isPhotoLoading,
+        diarySequence = diaryWriteState.diarySequence,
+        firstWrite = diaryWriteState.firstWrite,
 
         onContentsTextChange = diaryWriteViewModel::onContentsTextChange,
         clickPhotoChange = diaryWriteViewModel::clickPhotoChange,
@@ -206,6 +195,8 @@ fun DiaryWriteScreen(
     photoDataList: List<Photo> = emptyList(),
     clickPhoto: String = "",
     isPhotoLoading: Boolean = false,
+    diarySequence: Int = 0,
+    firstWrite: Boolean = true,
 
     onDiaryFinishClick: () -> Unit,
     onContentsTextChange: (String) -> Unit,
@@ -222,7 +213,6 @@ fun DiaryWriteScreen(
     val context = LocalContext.current
 
     val bringIntoViewRequester = remember { BringIntoViewRequester() }
-    val coroutineScope = rememberCoroutineScope()
 
     // 🔹 감정 선택 다이얼로그
     if (dialogState == "emotion") {
@@ -252,7 +242,12 @@ fun DiaryWriteScreen(
     }
 
     // 🔹 작성 완료 다이얼로그
-    if (writeFinish) {
+    if (writeFinish && firstWrite) {
+        DiaryFirstFinishDialog(
+            onClose = { popBackStack() },
+            diarySequence = diarySequence
+        )
+    } else if(writeFinish) {
         DiaryFinishDialog(onClose = { popBackStack() })
     }
 
@@ -270,8 +265,8 @@ fun DiaryWriteScreen(
                     .background(
                         brush = Brush.verticalGradient(
                             colors = listOf(
-                                Color(0xFFE0C3FC), // 연한 보라
-                                Color(0xFF8EC5FC)  // 연한 하늘
+                                Color(0xFFE1BEE7),
+                                Color(0xFFBBDEFB)
                             )
                         )
                     )
@@ -284,6 +279,8 @@ fun DiaryWriteScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(start = 12.dp, end = 12.dp, bottom = 12.dp, top = 12.dp)
+                .imePadding() // ⬅️ 키보드가 점유하는 공간만큼 하단 여백을 자동으로 만듭니다.
+                .bringIntoViewRequester(bringIntoViewRequester)
         ) {
 
             /* ───────── 상단 헤더 ───────── */
@@ -319,7 +316,8 @@ fun DiaryWriteScreen(
                     Text(
                         text = dateText,
                         style = MaterialTheme.typography.titleLarge.copy(
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black // 👈 글자색을 검정으로 고정
                         )
                     )
 
@@ -413,8 +411,7 @@ fun DiaryWriteScreen(
                     .clip(RoundedCornerShape(16.dp))
                     .background(Color(0xFFF2F2F2).copy(alpha = 0.85f))
                     .padding(16.dp)
-                    .imePadding() // ⬅️ 키보드가 점유하는 공간만큼 하단 여백을 자동으로 만듭니다.
-                    .bringIntoViewRequester(bringIntoViewRequester)
+
             ) {
 
                 // 📸 사진 리스트 영역 (사진이 있거나, 혹은 업로드 중일 때 표시)
@@ -495,13 +492,7 @@ fun DiaryWriteScreen(
                     onValueChange = onContentsTextChange,
                     modifier = Modifier
                         .fillMaxSize()
-                        .onFocusChanged { focusState ->
-                            if (focusState.isFocused) {
-                                coroutineScope.launch {
-                                    bringIntoViewRequester.bringIntoView()
-                                }
-                            }
-                        },
+                    ,
                     textStyle = MaterialTheme.typography.bodyLarge.copy(
                         fontSize = 16.sp,
                         lineHeight = 28.sp,

@@ -1,5 +1,6 @@
 package com.a0100019.mypat.presentation.diary
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -7,9 +8,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -17,9 +21,11 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -79,116 +85,96 @@ fun DiaryEmotionDialog(
 
                 Box(
                     modifier = Modifier
+                        // 그림자를 먼저 넣어 바닥에서 떠 있는 느낌 유도
+                        .shadow(
+                            elevation = 8.dp,
+                            shape = RoundedCornerShape(24.dp),
+                            ambientColor = Color.Black.copy(alpha = 0.1f),
+                            spotColor = Color.Black.copy(alpha = 0.1f)
+                        )
                         .background(
-                            color = MaterialTheme.colorScheme.scrim,
-                            shape = RoundedCornerShape(16.dp)
+                            color = Color(0xFFFDFDFD), // 아주 깨끗한 미색
+                            shape = RoundedCornerShape(24.dp)
                         )
                         .border(
-                            width = 2.dp,
-                            color = MaterialTheme.colorScheme.primaryContainer,
-                            shape = RoundedCornerShape(16.dp)
+                            width = 1.dp,
+                            color = Color(0xFFE0E0E0).copy(alpha = 0.5f), // 거의 보이지 않는 연한 회색 선
+                            shape = RoundedCornerShape(24.dp)
                         )
-                        .padding(16.dp)
-                    //.fillMaxHeight(0.5f)
+                        .padding(12.dp)
                 ) {
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(4),
-                        contentPadding = PaddingValues(4.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp),    // 세로 간격
-                        horizontalArrangement = Arrangement.spacedBy(24.dp),  // 가로 간격
+                        contentPadding = PaddingValues(16.dp), // 여백을 조금 더 줘서 시원하게
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
+                        // 리스트로 관리하면 코드가 훨씬 깔끔해집니다
+                        val emotions = listOf(
+                            "smile", "exciting", "love", "thinking",
+                            "neutral", "sad", "cry", "angry"
+                        )
 
-                        item {
-                            JustImage(
-                                filePath = "emotion/smile.png",
-                                modifier = Modifier.clickable {
-                                    onEmotionClick("emotion/smile.png")
-                                }
-                            )
-                        }
+                        items(emotions) { emotion ->
+                            val filePath = "emotion/$emotion.png"
 
-                        item {
-                            JustImage(
-                                filePath = "emotion/exciting.png",
-                                modifier = Modifier.clickable {
-                                    onEmotionClick("emotion/exciting.png")
-                                }
-                            )
-                        }
-
-                        item {
-                            JustImage(
-                                filePath = "emotion/love.png",
-                                modifier = Modifier.clickable {
-                                    onEmotionClick("emotion/love.png")
-                                }
-                            )
-                        }
-
-                        item {
-                            JustImage(
-                                filePath = "emotion/thinking.png",
-                                modifier = Modifier.clickable {
-                                    onEmotionClick("emotion/thinking.png")
-                                }
-                            )
-                        }
-
-                        item {
-                            JustImage(
-                                filePath = "emotion/neutral.png",
-                                modifier = Modifier.clickable {
-                                    onEmotionClick("emotion/neutral.png")
-                                }
-                            )
-                        }
-
-                        item {
-                            JustImage(
-                                filePath = "emotion/sad.png",
-                                modifier = Modifier.clickable {
-                                    onEmotionClick("emotion/sad.png")
-                                }
-                            )
-                        }
-
-                        item {
-                            JustImage(
-                                filePath = "emotion/cry.png",
-                                modifier = Modifier.clickable {
-                                    onEmotionClick("emotion/cry.png")
-                                }
-                            )
-                        }
-
-                        item {
-                            JustImage(
-                                filePath = "emotion/angry.png",
-                                modifier = Modifier.clickable {
-                                    onEmotionClick("emotion/angry.png")
-                                }
-                            )
+                            // [감정 아이콘 개별 아이템]
+                            Box(
+                                modifier = Modifier
+                                    .aspectRatio(1f) // 정사각형 유지
+                                    .shadow(elevation = 2.dp, shape = CircleShape) // 아주 살짝 입체감
+                                    .background(Color.White.copy(alpha = 0.8f), CircleShape) // 뽀얀 배경
+                                    .border(1.dp, Color.White, CircleShape) // 깨끗한 테두리
+                                    .clickable { onEmotionClick(filePath) }
+                                    .padding(8.dp), // 아이콘과 배경 사이 간격
+                                contentAlignment = Alignment.Center
+                            ) {
+                                JustImage(
+                                    filePath = filePath,
+                                    modifier = Modifier.fillMaxSize() // 박스 안에 꽉 차게
+                                )
+                            }
                         }
 
                         if (removeEmotion) {
                             item(span = { GridItemSpan(4) }) {
-                                Box(
+                                Column(
                                     modifier = Modifier
-                                        .fillMaxWidth(),
-                                    contentAlignment = Alignment.Center
+                                        .fillMaxWidth()
+                                        .padding(top = 8.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
-                                    JustImage(
-                                        filePath = "emotion/allEmotion.png",
+                                    // 구분선 하나 넣어주면 더 깔끔해요
+                                    Box(
                                         modifier = Modifier
-                                            .size(40.dp) // ← 크기 고정
-                                            .clickable {
-                                                onEmotionClick("emotion/allEmotion.png")
-                                            }
+                                            .width(40.dp)
+                                            .height(3.dp)
+                                            .background(Color.Gray.copy(alpha = 0.2f), CircleShape)
                                     )
+
+                                    Spacer(modifier = Modifier.height(16.dp))
+
+                                    // [전체보기/취소 버튼]
+                                    Surface(
+                                        onClick = { onEmotionClick("emotion/allEmotion.png") },
+                                        shape = CircleShape,
+                                        color = Color.White.copy(alpha = 0.9f),
+                                        border = BorderStroke(1.dp, Color(0xFFE0E0E0)),
+                                        shadowElevation = 4.dp
+                                    ) {
+                                        Box(
+                                            modifier = Modifier.padding(8.dp),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            JustImage(
+                                                filePath = "emotion/allEmotion.png",
+                                                modifier = Modifier.size(32.dp)
+                                            )
+                                        }
+                                    }
                                 }
                             }
                         }
-
                     }
 
                 }
