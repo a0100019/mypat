@@ -709,11 +709,27 @@ class LoginViewModel @Inject constructor(
                         } else {
                             Log.w("login", "Firestore에 유저 문서가 없습니다")
                             postSideEffect(LoginSideEffect.Toast("유저 정보를 찾을 수 없습니다"))
+
+                            reduce {
+                                state.copy(
+                                    dialog = "",
+                                    loginState = "unLogin"
+                                )
+                            }
+
                             return@intent
                         }
                     } catch (e: Exception) {
                         Log.e("login", "Firestore에서 유저 문서 가져오기 실패", e)
                         postSideEffect(LoginSideEffect.Toast("유저 정보 로딩 실패"))
+
+                        reduce {
+                            state.copy(
+                                dialog = "",
+                                loginState = "unLogin"
+                            )
+                        }
+
                         return@intent
                     }
 

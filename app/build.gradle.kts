@@ -16,8 +16,8 @@ android {
         applicationId = "com.a0100019.mypat"
         minSdk = 26
         targetSdk = 35
-        versionCode = 20
-        versionName = "26.3"
+        versionCode = 22
+        versionName = "26.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -25,8 +25,21 @@ android {
         }
     }
 
+    // 1. 추가: 16KB 페이지 크기 지원을 위한 패키징 설정
+    packaging {
+        jniLibs {
+            // jni 라이브러리를 압축하지 않고 저장하여 16KB 정렬을 지원하도록 합니다.
+            useLegacyPackaging = false
+        }
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+
+    // 2. 추가: 네이티브 라이브러리 정렬 설정 (혹시 모를 네이티브 종속성 대비)
+    // 이 코드는 필수는 아니지만, 16KB 오류가 지속될 때 큰 도움이 됩니다.
     buildTypes {
-        release {
+        getByName("release") {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -34,6 +47,7 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
