@@ -231,51 +231,51 @@ fun DailyScreen(
                     }
                 }
 
-                if (rewardAdReady) {
-                    val interactionAd = remember { MutableInteractionSource() }
-                    val isPressedAd by interactionAd.collectIsPressedAsState()
-                    val scaleAd by animateFloatAsState(if (isPressedAd) 0.96f else 1f, label = "scale")
-
-                    Surface(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .graphicsLayer { scaleX = scaleAd; scaleY = scaleAd }
-                            .clickable(interactionSource = interactionAd, indication = null, onClick = { onSituationChange("adCheck") }),
-                        shape = RoundedCornerShape(24.dp),
-                        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.8f), // 광고 색상 조금 더 진하게
-                        border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.4f))
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(24.dp), // 패딩 동일하게 24로 확장
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text("☀️", fontSize = 32.sp)
-                            Spacer(modifier = Modifier.width(20.dp))
-
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text("보너스 햇살 받기", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.ExtraBold)
-                                Text("하루에 한 번만 가능합니다", style = MaterialTheme.typography.bodyMedium)
-                            }
-
-                            JustImage(
-                                filePath = "etc/sun.png",
-                                modifier = Modifier
-                                    .size(18.dp)
-
-                            )
-
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .padding(start = 4.dp)
-                            ) {
-
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text("+3", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black, color = Color(0xFF673AB7))
-                            }
-                        }
-                    }
-                }
+//                if (rewardAdReady) {
+//                    val interactionAd = remember { MutableInteractionSource() }
+//                    val isPressedAd by interactionAd.collectIsPressedAsState()
+//                    val scaleAd by animateFloatAsState(if (isPressedAd) 0.96f else 1f, label = "scale")
+//
+//                    Surface(
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .graphicsLayer { scaleX = scaleAd; scaleY = scaleAd }
+//                            .clickable(interactionSource = interactionAd, indication = null, onClick = { onSituationChange("adCheck") }),
+//                        shape = RoundedCornerShape(24.dp),
+//                        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.8f), // 광고 색상 조금 더 진하게
+//                        border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.4f))
+//                    ) {
+//                        Row(
+//                            modifier = Modifier.padding(24.dp), // 패딩 동일하게 24로 확장
+//                            verticalAlignment = Alignment.CenterVertically
+//                        ) {
+//                            Text("☀️", fontSize = 32.sp)
+//                            Spacer(modifier = Modifier.width(20.dp))
+//
+//                            Column(modifier = Modifier.weight(1f)) {
+//                                Text("보너스 햇살 받기", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.ExtraBold)
+//                                Text("하루에 한 번만 가능합니다", style = MaterialTheme.typography.bodyMedium)
+//                            }
+//
+//                            JustImage(
+//                                filePath = "etc/sun.png",
+//                                modifier = Modifier
+//                                    .size(18.dp)
+//
+//                            )
+//
+//                            Row(
+//                                verticalAlignment = Alignment.CenterVertically,
+//                                modifier = Modifier
+//                                    .padding(start = 4.dp)
+//                            ) {
+//
+//                                Spacer(modifier = Modifier.width(4.dp))
+//                                Text("+3", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black, color = Color(0xFF673AB7))
+//                            }
+//                        }
+//                    }
+//                }
             }
 
             Text(

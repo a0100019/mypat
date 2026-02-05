@@ -309,33 +309,33 @@ class BoardViewModel @Inject constructor(
     }
 
 
-    fun onAdClick() = intent {
+//    fun onAdClick() = intent {
+//
+//        if(state.removeAd == "0") {
+//            postSideEffect(BoardSideEffect.ShowRewardAd)
+//        } else {
+//            onRewardEarned()
+//        }
+//
+//    }
 
-        if(state.removeAd == "0") {
-            postSideEffect(BoardSideEffect.ShowRewardAd)
-        } else {
-            onRewardEarned()
-        }
-
-    }
-
-    fun showRewardAd(activity: Activity) {
-        rewardAdManager.show(
-            activity = activity,
-            onReward = {
-                onRewardEarned()
-            },
-            onNotReady = {
-                intent {
-                    postSideEffect(
-                        BoardSideEffect.Toast(
-                            "광고를 불러오는 중이에요. 잠시 후 다시 시도해주세요."
-                        )
-                    )
-                }
-            }
-        )
-    }
+//    fun showRewardAd(activity: Activity) {
+//        rewardAdManager.show(
+//            activity = activity,
+//            onReward = {
+//                onRewardEarned()
+//            },
+//            onNotReady = {
+//                intent {
+//                    postSideEffect(
+//                        BoardSideEffect.Toast(
+//                            "광고를 불러오는 중이에요. 잠시 후 다시 시도해주세요."
+//                        )
+//                    )
+//                }
+//            }
+//        )
+//    }
 
     private fun onRewardEarned() = intent {
 
@@ -382,6 +382,6 @@ sealed interface BoardSideEffect{
     class Toast(val message:String): BoardSideEffect
     data object NavigateToBoardMessageScreen: BoardSideEffect
 
-    data object ShowRewardAd : BoardSideEffect
+//    data object ShowRewardAd : BoardSideEffect
 
 }

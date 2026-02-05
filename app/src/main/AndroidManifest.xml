@@ -27,7 +27,6 @@
     <!-- 폰 다시 켜도 알림 유지 -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
-
     <application
         android:name=".App"
         android:allowBackup="false"
@@ -75,10 +74,6 @@
             </intent-filter>
         </receiver>
 
-        <!-- AdMob App ID -->
-        <meta-data
-            android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-5556462457265216~3620148323"/>
 
     </application>
 

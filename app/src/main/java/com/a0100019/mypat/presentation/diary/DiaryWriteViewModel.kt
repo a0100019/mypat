@@ -202,12 +202,12 @@ class DiaryWriteViewModel @Inject constructor(
         // 기존에 사진이 하나라도 있으면(photoDataList가 비어있지 않으면) 광고를 띄움
         val shouldShowAd = state.photoDataList.isNotEmpty()
 
-        if (shouldShowAd) {
+        if (false) {
             // [광고를 보여주는 경우]
-            postSideEffect(DiaryWriteSideEffect.ShowInterstitialAd {
-                isAdClosed.set(true)
-                tryFinishLoading()
-            })
+//            postSideEffect(DiaryWriteSideEffect.ShowInterstitialAd {
+//                isAdClosed.set(true)
+//                tryFinishLoading()
+//            })
         } else {
             // [첫 사진이라 광고를 안 보여주는 경우]
             // 광고가 이미 닫힌 것으로 간주하여 true로 설정
@@ -461,5 +461,5 @@ sealed interface DiaryWriteSideEffect{
     class Toast(val message:String): DiaryWriteSideEffect
 
     // 광고 시청을 요청하는 SideEffect (광고 종료 후 실행할 액션을 넘겨줌)
-    data class ShowInterstitialAd(val onAdClosed: () -> Unit) : DiaryWriteSideEffect
+//    data class ShowInterstitialAd(val onAdClosed: () -> Unit) : DiaryWriteSideEffect
 }

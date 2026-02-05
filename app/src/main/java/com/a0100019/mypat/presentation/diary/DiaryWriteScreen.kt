@@ -96,18 +96,18 @@ fun DiaryWriteScreen(
     // Orbit의 collectSideEffect 사용
     diaryWriteViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
-            is DiaryWriteSideEffect.ShowInterstitialAd -> {
-                // 1. 광고 실행 시도
-                if (activity != null) {
-                    InterstitialAdManager.showAd(activity) {
-                        // 광고가 닫히거나 실패했을 때 ViewModel의 콜백 실행
-                        sideEffect.onAdClosed()
-                    }
-                } else {
-                    // Activity를 찾을 수 없는 예외 상황 처리
-                    sideEffect.onAdClosed()
-                }
-            }
+//            is DiaryWriteSideEffect.ShowInterstitialAd -> {
+//                // 1. 광고 실행 시도
+//                if (activity != null) {
+//                    InterstitialAdManager.showAd(activity) {
+//                        // 광고가 닫히거나 실패했을 때 ViewModel의 콜백 실행
+//                        sideEffect.onAdClosed()
+//                    }
+//                } else {
+//                    // Activity를 찾을 수 없는 예외 상황 처리
+//                    sideEffect.onAdClosed()
+//                }
+//            }
 
             is DiaryWriteSideEffect.Toast -> {
                 Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()

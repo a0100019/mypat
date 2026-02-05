@@ -718,59 +718,59 @@ class NeighborInformationViewModel @Inject constructor(
     }
 
     fun showRewardAd(activity: Activity) {
-        rewardAdManager.show(
-            activity = activity,
-            onReward = {
-                onRewardEarned()
-            },
-            onNotReady = {
-                intent {
-                    postSideEffect(
-                        NeighborInformationSideEffect.Toast(
-                            "광고를 불러오는 중이에요. 잠시 후 다시 시도해주세요."
-                        )
-                    )
-                }
-            }
-        )
+//        rewardAdManager.show(
+//            activity = activity,
+//            onReward = {
+//                onRewardEarned()
+//            },
+//            onNotReady = {
+//                intent {
+//                    postSideEffect(
+//                        NeighborInformationSideEffect.Toast(
+//                            "광고를 불러오는 중이에요. 잠시 후 다시 시도해주세요."
+//                        )
+//                    )
+//                }
+//            }
+//        )
     }
 
-    private fun onRewardEarned() = intent {
+    fun onRewardEarned() = intent {
 
         //@@@@@@@@@@@@@@@@@@@@칭호
-        var medalData = userDao.getAllUserData().find { it.id == "name" }!!.value2
-        medalData = addMedalAction(medalData, actionId = 27)
-        userDao.update(
-            id = "name",
-            value2 = medalData
-        )
-
-        if(getMedalActionCount(medalData, actionId = 27) == 15) {
-            //매달, medal, 칭호27
-            val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
-
-            val myMedalList: MutableList<Int> =
-                myMedal
-                    .split("/")
-                    .mapNotNull { it.toIntOrNull() }
-                    .toMutableList()
-
-            // 🔥 여기 숫자 두개랑 위에 // 바꾸면 됨
-            if (!myMedalList.contains(27)) {
-                myMedalList.add(27)
-
-                // 다시 문자열로 합치기
-                val updatedMedal = myMedalList.joinToString("/")
-
-                // DB 업데이트
-                userDao.update(
-                    id = "etc",
-                    value3 = updatedMedal
-                )
-
-                postSideEffect(NeighborInformationSideEffect.Toast("칭호를 획득했습니다!"))
-            }
-        }
+//        var medalData = userDao.getAllUserData().find { it.id == "name" }!!.value2
+//        medalData = addMedalAction(medalData, actionId = 27)
+//        userDao.update(
+//            id = "name",
+//            value2 = medalData
+//        )
+//
+//        if(getMedalActionCount(medalData, actionId = 27) == 15) {
+//            //매달, medal, 칭호27
+//            val myMedal = userDao.getAllUserData().find { it.id == "etc" }!!.value3
+//
+//            val myMedalList: MutableList<Int> =
+//                myMedal
+//                    .split("/")
+//                    .mapNotNull { it.toIntOrNull() }
+//                    .toMutableList()
+//
+//            // 🔥 여기 숫자 두개랑 위에 // 바꾸면 됨
+//            if (!myMedalList.contains(27)) {
+//                myMedalList.add(27)
+//
+//                // 다시 문자열로 합치기
+//                val updatedMedal = myMedalList.joinToString("/")
+//
+//                // DB 업데이트
+//                userDao.update(
+//                    id = "etc",
+//                    value3 = updatedMedal
+//                )
+//
+//                postSideEffect(NeighborInformationSideEffect.Toast("칭호를 획득했습니다!"))
+//            }
+//        }
 
         if(userDao.getAllUserData().find { it.id == "auth" }!!.value2 != state.clickAllUserData.tag) {
             onPrivateChatStartClick()

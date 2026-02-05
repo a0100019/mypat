@@ -87,7 +87,7 @@ class MainViewModel @Inject constructor(
     init {
         loadData()
         startTenMinuteCountdown()
-        rewardAdManager.load()
+//        rewardAdManager.load()
     }
 
     fun loadData() = intent {

@@ -66,9 +66,9 @@ fun BoardScreen(
             is BoardSideEffect.Toast -> Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
             BoardSideEffect.NavigateToBoardMessageScreen -> onNavigateToBoardMessageScreen()
 
-            BoardSideEffect.ShowRewardAd -> {
-                boardViewModel.showRewardAd(activity)
-            }
+//            BoardSideEffect.ShowRewardAd -> {
+//                boardViewModel.showRewardAd(activity)
+//            }
         }
     }
 
@@ -89,7 +89,7 @@ fun BoardScreen(
         onTextChange = boardViewModel::onTextChange,
         loadBoardMessages = boardViewModel::loadBoardMessages,
         onNavigateToMainScreen = onNavigateToMainScreen,
-        onAdClick = boardViewModel::onAdClick,
+//        onAdClick = boardViewModel::onAdClick,
         onBoardSubmitClick = boardViewModel::onBoardSubmitClick,
         onNavigateToNeighborScreen = onNavigateToNeighborScreen
     )

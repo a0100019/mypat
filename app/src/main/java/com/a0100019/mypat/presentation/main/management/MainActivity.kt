@@ -43,7 +43,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        InterstitialAdManager.loadAd(this)
+//        InterstitialAdManager.loadAd(this)
 
         // ✅ 시스템 윈도우 영역 사용 (상단 상태바 보이게)
 //        WindowCompat.setDecorFitsSystemWindows(window, true)

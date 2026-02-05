@@ -505,7 +505,7 @@ class StoreViewModel @Inject constructor(
     }
 
     fun onDonateClick() = intent {
-        postSideEffect(StoreSideEffect.StartDonatePurchase)
+//        postSideEffect(StoreSideEffect.StartDonatePurchase)
     }
 
     fun onPurchaseSuccess() = intent {
@@ -667,5 +667,5 @@ data class StoreState(
 
 sealed interface StoreSideEffect {
     class Toast(val message: String) : StoreSideEffect
-    data object StartDonatePurchase : StoreSideEffect
+//    data object StartDonatePurchase : StoreSideEffect
 }

@@ -112,7 +112,8 @@ fun NeighborInformationScreen(
         onBanClick = neighborInformationViewModel::onBanClick,
         onPrivateChatStartClick = neighborInformationViewModel::onPrivateChatStartClick,
         onSituationChange = neighborInformationViewModel::onSituationChange,
-        onAdClick = neighborInformationViewModel::onAdClick
+        onAdClick = neighborInformationViewModel::onAdClick,
+        onRewardEarned = neighborInformationViewModel::onRewardEarned
 
     )
 }
@@ -132,7 +133,8 @@ fun NeighborInformationScreen(
     onBanClick: (Int) -> Unit = {},
     onPrivateChatStartClick: () -> Unit = {},
     onSituationChange: (String) -> Unit = {},
-    onAdClick: () -> Unit = {}
+    onAdClick: () -> Unit = {},
+    onRewardEarned: () -> Unit = {}
 
     ) {
 
@@ -140,9 +142,9 @@ fun NeighborInformationScreen(
 
     when(situation) {
         "privateChat" -> SimpleAlertDialog(
-            onConfirmClick = onAdClick,
+            onConfirmClick = onRewardEarned,
             onDismissClick = onClose,
-            text = "친구가 되면 개인 채팅을 할 수 있습니다.\n\n광고를 보고 친구가 되겠습니까?"
+            text = "친구가 되어 이야기를 나눠보세요.\n\n친구가 되겠습니까?"
         )
         "selfFriend" -> SimpleAlertDialog(
             onConfirmClick = {onSituationChange("")},

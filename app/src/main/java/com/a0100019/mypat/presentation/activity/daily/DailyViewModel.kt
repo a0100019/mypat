@@ -246,21 +246,21 @@ class DailyViewModel @Inject constructor(
     }
 
     fun showRewardAd(activity: Activity) {
-        rewardAdManager.show(
-            activity = activity,
-            onReward = {
-                onRewardEarned()
-            },
-            onNotReady = {
-                intent {
-                    postSideEffect(
-                        DailySideEffect.Toast(
-                            "광고가 모두 소진되었습니다.. 잠시 후 다시 시도해주세요."
-                        )
-                    )
-                }
-            }
-        )
+//        rewardAdManager.show(
+//            activity = activity,
+//            onReward = {
+//                onRewardEarned()
+//            },
+//            onNotReady = {
+//                intent {
+//                    postSideEffect(
+//                        DailySideEffect.Toast(
+//                            "광고가 모두 소진되었습니다.. 잠시 후 다시 시도해주세요."
+//                        )
+//                    )
+//                }
+//            }
+//        )
     }
 
     private fun onRewardEarned() = intent {

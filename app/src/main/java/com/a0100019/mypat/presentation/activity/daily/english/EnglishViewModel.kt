@@ -198,15 +198,22 @@ class EnglishViewModel @Inject constructor(
                     val newClickEnglishData = state.clickEnglishData
                     newClickEnglishData!!.state = "완료"
 
-                    //보상
-                    userDao.update(
-                        id = "money",
-                        value2 = (state.userData.find { it.id == "money" }!!.value2.toInt() + 2000).toString()
-                    )
+                    if(state.clickEnglishDataState == "어려움") {//보상
+                        userDao.update(
+                            id = "money",
+                            value2 = (state.userData.find { it.id == "money" }!!.value2.toInt() + 2000).toString()
+                        )
+                        postSideEffect(EnglishSideEffect.Toast("정답입니다 (달빛 +2000)"))
+                    } else {
+                        //보상
+                        userDao.update(
+                            id = "money",
+                            value2 = (state.userData.find { it.id == "money" }!!.value2.toInt() + 500).toString()
+                        )
+                        postSideEffect(EnglishSideEffect.Toast("정답입니다 (달빛 +500)"))
+                    }
 
                     englishDao.update(newClickEnglishData)
-
-                    postSideEffect(EnglishSideEffect.Toast("정답입니다 (달빛 +2000)"))
 
                     reduce {
                         state.copy(
@@ -287,15 +294,22 @@ class EnglishViewModel @Inject constructor(
                     val newClickEnglishData = state.clickEnglishData
                     newClickEnglishData!!.state = "완료"
 
-                    //보상
-                    userDao.update(
-                        id = "money",
-                        value2 = (state.userData.find { it.id == "money" }!!.value2.toInt() + 1000).toString()
-                    )
+                    if(state.clickEnglishDataState == "쉬움") {//보상
+                        userDao.update(
+                            id = "money",
+                            value2 = (state.userData.find { it.id == "money" }!!.value2.toInt() + 1000).toString()
+                        )
+                        postSideEffect(EnglishSideEffect.Toast("정답입니다 (달빛 +1000)"))
+                    } else {
+                        //보상
+                        userDao.update(
+                            id = "money",
+                            value2 = (state.userData.find { it.id == "money" }!!.value2.toInt() + 250).toString()
+                        )
+                        postSideEffect(EnglishSideEffect.Toast("정답입니다 (달빛 +250)"))
+                    }
 
                     englishDao.update(newClickEnglishData)
-
-                    postSideEffect(EnglishSideEffect.Toast("정답입니다 (달빛 +1000)"))
 
                     reduce {
                         state.copy(
@@ -424,31 +438,31 @@ class EnglishViewModel @Inject constructor(
 
     fun onAdClick() = intent {
 
-        if(state.removeAd == "0") {
-            postSideEffect(EnglishSideEffect.ShowRewardAd)
-        } else {
-            onRewardEarned()
-        }
+//        if(state.removeAd == "0") {
+//            postSideEffect(EnglishSideEffect.ShowRewardAd)
+//        } else {
+//            onRewardEarned()
+//        }
 
     }
 
-    fun showRewardAd(activity: Activity) {
-        rewardAdManager.show(
-            activity = activity,
-            onReward = {
-                onRewardEarned()
-            },
-            onNotReady = {
-                intent {
-                    postSideEffect(
-                        EnglishSideEffect.Toast(
-                            "광고를 불러오는 중이에요. 잠시 후 다시 시도해주세요."
-                        )
-                    )
-                }
-            }
-        )
-    }
+//    fun showRewardAd(activity: Activity) {
+//        rewardAdManager.show(
+//            activity = activity,
+//            onReward = {
+//                onRewardEarned()
+//            },
+//            onNotReady = {
+//                intent {
+//                    postSideEffect(
+//                        EnglishSideEffect.Toast(
+//                            "광고를 불러오는 중이에요. 잠시 후 다시 시도해주세요."
+//                        )
+//                    )
+//                }
+//            }
+//        )
+//    }
 
     fun onSituationChange(situation: String) = intent {
 
@@ -459,8 +473,7 @@ class EnglishViewModel @Inject constructor(
         }
     }
 
-
-    private fun onRewardEarned() = intent {
+    fun onRewardEarned() = intent {
 
         postSideEffect(EnglishSideEffect.Toast("힌트를 얻었습니다!"))
 
@@ -659,6 +672,6 @@ sealed interface EnglishSideEffect{
     class Toast(val message:String): EnglishSideEffect
 //    data object NavigateToDailyActivity: LoadingSideEffect
 
-    data object ShowRewardAd : EnglishSideEffect
+//    data object ShowRewardAd : EnglishSideEffect
 
 }

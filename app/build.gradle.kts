@@ -16,8 +16,8 @@ android {
         applicationId = "com.a0100019.mypat"
         minSdk = 26
         targetSdk = 35
-        versionCode = 23
-        versionName = "26.5"
+        versionCode = 24
+        versionName = "26.6"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -148,12 +148,5 @@ dependencies {
 
     //삼성 헬스
     implementation("androidx.health.connect:connect-client:1.1.0-alpha04")
-
-    //광고
-    implementation("com.google.android.gms:play-services-ads:23.2.0")
-
-    //결제
-    implementation("com.android.billingclient:billing-ktx:8.0.0")
-    implementation("com.google.ads.mediation:applovin:12.4.3.0")
 
 }

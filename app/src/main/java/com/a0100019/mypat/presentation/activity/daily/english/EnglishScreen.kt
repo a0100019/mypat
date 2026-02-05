@@ -68,9 +68,9 @@ fun EnglishScreen(
         when (sideEffect) {
             is EnglishSideEffect.Toast -> Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
 
-            EnglishSideEffect.ShowRewardAd -> {
-                englishViewModel.showRewardAd(activity)
-            }
+//            EnglishSideEffect.ShowRewardAd -> {
+//                englishViewModel.showRewardAd(activity)
+//            }
 
         }
     }
@@ -100,7 +100,8 @@ fun EnglishScreen(
         popBackStack = popBackStack,
         onPracticeSubmitClick = englishViewModel::onPracticeSubmitClick,
         onLevelClick = englishViewModel::onLevelClick,
-        onEasySubmitClick = englishViewModel::onEasySubmitClick
+        onEasySubmitClick = englishViewModel::onEasySubmitClick,
+        onRewardEarned = englishViewModel::onRewardEarned
 
     )
 }
@@ -132,18 +133,19 @@ fun EnglishScreen(
     onPracticeSubmitClick: () -> Unit = {},
     onLevelClick: (String) -> Unit = {},
     onEasySubmitClick: () -> Unit = {},
+    onRewardEarned: () -> Unit = {},
 
 ) {
 
     when(situation) {
         "hint" -> SimpleAlertDialog(
             onConfirmClick = {
-                onAdClick()
+                onRewardEarned()
             },
             onDismissClick = {
                 onSituationChange("")
             },
-            text = "광고를 보고 영어 단어의 뜻을 보겠습니까?",
+            text = "영어 단어의 뜻을 보겠습니까? 보상이 1/4로 줄어듭니다.",
         )
         "practice" -> EnglishPracticeDialog(
             englishTextList = englishTextList,

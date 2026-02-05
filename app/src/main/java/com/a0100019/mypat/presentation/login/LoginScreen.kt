@@ -568,68 +568,68 @@ fun LoginScreen(
 // 버튼이 눌렸을 때 아래로 살짝 내려가는 효과
                 val offsetY by animateFloatAsState(targetValue = if (isPressed) 4f else 0f, label = "offset")
 
-                Box(
-                    modifier = Modifier
-                        .graphicsLayer {
-                            scaleX = scale
-                            scaleY = scale
-                        }
-                        .padding(12.dp)
-                        .clickable(
-                            interactionSource = interactionSource,
-                            indication = null
-                        ) {
-                            onNavigateToMainScreen() // 클릭 이벤트
-                            SfxPlayer.play(context, R.raw.bubble)
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    // [그림자 레이어] 버튼 뒤에 깔리는 짙은 바닥
-                    Surface(
-                        modifier = Modifier
-                            .fillMaxWidth(0.8f) // 원하는 너비 조절
-                            .height(64.dp)
-                            .offset(y = 4.dp), // 살짝 아래로 배치해서 입체감 부여
-                        shape = RoundedCornerShape(20.dp),
-                        color = Color(0xFF2F6F62).copy(alpha = 0.5f) // 버튼보다 진한 색
-                    ) {}
-
-                    // [메인 버튼 레이어] 실제 보이는 버튼
-                    Surface(
-                        modifier = Modifier
-                            .fillMaxWidth(0.8f)
-                            .height(64.dp)
-                            .offset(y = offsetY.dp), // 누를 때 아래로 슥 내려감
-                        shape = RoundedCornerShape(20.dp),
-                        color = Color(0xFFEAF4F1), // 배경색
-                        border = BorderStroke(2.dp, Color(0xFF9ECFC3)) // 테두리
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center,
-                            modifier = Modifier.padding(horizontal = 24.dp)
-                        ) {
-                            // 아이콘 (원하면 추가)
-                            Text(text = "🏡", modifier = Modifier.padding(end = 8.dp))
-
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text(
-                                    text = "마을로 들어가기",
-                                    style = MaterialTheme.typography.titleLarge.copy(
-                                        letterSpacing = 1.sp
-                                    ),
-                                    color = Color(0xFF2F6F62)
-                                )
-                                Text(
-                                    text = "펫들이 기다리고 있어요!",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = Color(0xFF6FA9A0)
-                                )
-                            }
-                        }
-                    }
-                }
-                Spacer(modifier = Modifier.size(70.dp))
+//                Box(
+//                    modifier = Modifier
+//                        .graphicsLayer {
+//                            scaleX = scale
+//                            scaleY = scale
+//                        }
+//                        .padding(12.dp)
+//                        .clickable(
+//                            interactionSource = interactionSource,
+//                            indication = null
+//                        ) {
+//                            onNavigateToMainScreen() // 클릭 이벤트
+//                            SfxPlayer.play(context, R.raw.bubble)
+//                        },
+//                    contentAlignment = Alignment.Center
+//                ) {
+//                    // [그림자 레이어] 버튼 뒤에 깔리는 짙은 바닥
+//                    Surface(
+//                        modifier = Modifier
+//                            .fillMaxWidth(0.8f) // 원하는 너비 조절
+//                            .height(64.dp)
+//                            .offset(y = 4.dp), // 살짝 아래로 배치해서 입체감 부여
+//                        shape = RoundedCornerShape(20.dp),
+//                        color = Color(0xFF2F6F62).copy(alpha = 0.5f) // 버튼보다 진한 색
+//                    ) {}
+//
+//                    // [메인 버튼 레이어] 실제 보이는 버튼
+//                    Surface(
+//                        modifier = Modifier
+//                            .fillMaxWidth(0.8f)
+//                            .height(64.dp)
+//                            .offset(y = offsetY.dp), // 누를 때 아래로 슥 내려감
+//                        shape = RoundedCornerShape(20.dp),
+//                        color = Color(0xFFEAF4F1), // 배경색
+//                        border = BorderStroke(2.dp, Color(0xFF9ECFC3)) // 테두리
+//                    ) {
+//                        Row(
+//                            verticalAlignment = Alignment.CenterVertically,
+//                            horizontalArrangement = Arrangement.Center,
+//                            modifier = Modifier.padding(horizontal = 24.dp)
+//                        ) {
+//                            // 아이콘 (원하면 추가)
+//                            Text(text = "🏡", modifier = Modifier.padding(end = 8.dp))
+//
+//                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+//                                Text(
+//                                    text = "마을로 들어가기",
+//                                    style = MaterialTheme.typography.titleLarge.copy(
+//                                        letterSpacing = 1.sp
+//                                    ),
+//                                    color = Color(0xFF2F6F62)
+//                                )
+//                                Text(
+//                                    text = "펫들이 기다리고 있어요!",
+//                                    style = MaterialTheme.typography.labelSmall,
+//                                    color = Color(0xFF6FA9A0)
+//                                )
+//                            }
+//                        }
+//                    }
+//                }
+//                Spacer(modifier = Modifier.size(70.dp))
 
             }
 
