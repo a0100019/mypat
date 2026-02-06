@@ -3,6 +3,7 @@ package com.a0100019.mypat.presentation.main.management
 import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.addCallback
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -47,6 +48,14 @@ class MainActivity : ComponentActivity() {
 
         // ✅ 시스템 윈도우 영역 사용 (상단 상태바 보이게)
 //        WindowCompat.setDecorFitsSystemWindows(window, true)
+
+        // ✅ 뒤로가기 버튼 클릭 시 앱을 완전히 종료하는 콜백
+        onBackPressedDispatcher.addCallback(this) {
+            // 모든 액티비티를 종료하고 프로세스를 완전히 죽입니다.
+            finishAffinity()
+            // 선택사항: 시스템적으로 프로세스까지 즉시 종료하고 싶을 때 사용
+            // android.os.Process.killProcess(android.os.Process.myPid())
+        }
 
         // 🔹 SharedPreferences에서 배경음악 설정 불러오기
         val prefs = getSharedPreferences("bgm_prefs", Context.MODE_PRIVATE)

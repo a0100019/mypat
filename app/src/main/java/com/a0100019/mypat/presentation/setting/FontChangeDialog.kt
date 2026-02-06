@@ -124,6 +124,55 @@ fun FontChangeDialog(
                         },
                 )
 
+                Spacer(modifier = Modifier.size(12.dp))
+
+                Text(
+                    text = "긱블 말랑체",
+                    style = MaterialTheme.typography.titleLarge.copy(fontFamily = FontFamily(Font(R.font.geekble))),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .clickable {
+                            // 2. 프리퍼런스에 "letter" 저장
+                            prefs.edit().putString("font_key", "geekble").apply()
+                            currentFont = "geekble"
+                            Toast.makeText(context, "긱블 말랑체로 설정되었습니다. (재시작 시 적용)", Toast.LENGTH_SHORT).show()
+                        },
+                )
+
+                Spacer(modifier = Modifier.size(12.dp))
+
+                Text(
+                    text = "넷마블체",
+                    style = MaterialTheme.typography.titleLarge.copy(fontFamily = FontFamily(Font(R.font.netmarble))),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .clickable {
+                            // 2. 프리퍼런스에 "letter" 저장
+                            prefs.edit().putString("font_key", "netmarble").apply()
+                            currentFont = "netmarble"
+                            Toast.makeText(context, "넷마블체로 설정되었습니다. (재시작 시 적용)", Toast.LENGTH_SHORT).show()
+                        },
+                )
+
+                Spacer(modifier = Modifier.size(12.dp))
+
+                Text(
+                    text = "강원 교육 서체",
+                    style = MaterialTheme.typography.titleLarge.copy(fontFamily = FontFamily(Font(R.font.gangwon))),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .clickable {
+                            // 2. 프리퍼런스에 "letter" 저장
+                            prefs.edit().putString("font_key", "gangwon").apply()
+                            currentFont = "gangwon"
+                            Toast.makeText(context, "강원 교육 서체로 설정되었습니다. (재시작 시 적용)", Toast.LENGTH_SHORT).show()
+                        },
+                )
+
+
                 MainButton(
                     text = " 닫기 ",
                     onClick = onClose,

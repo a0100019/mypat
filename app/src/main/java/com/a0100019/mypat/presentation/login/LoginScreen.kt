@@ -641,7 +641,6 @@ fun LoginScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Spacer(modifier = Modifier.size(20.dp))
-                TextFlash("하루마을에 오신 것을 환영합니다!")
                 Spacer(modifier = Modifier.weight(1f))
                 Text(
                     text = "로딩 중..",
@@ -667,35 +666,6 @@ fun LoginScreen(
 
         }
     }
-}
-
-@Composable
-fun TextFlash(text: String) {
-    // 무한 반복 애니메이션
-    val infiniteTransition = rememberInfiniteTransition(label = "blink")
-    val alpha by infiniteTransition.animateFloat(
-        initialValue = 1f,
-        targetValue = 0f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 1000, easing = LinearEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "alphaAnim"
-    )
-
-    val isPreview = LocalInspectionMode.current // 프리뷰 감지
-
-    val customFont = FontFamily(Font(R.font.outline))
-    val safeFont = if (isPreview) FontFamily.SansSerif else customFont
-
-    Text(
-        text = text,
-        style = MaterialTheme.typography.titleMedium.copy(
-            fontFamily = safeFont // ✅ 프리뷰 모드에서는 SansSerif
-        ),
-        modifier = Modifier.alpha(alpha),
-        color = Color(0xFF2196F3)
-    )
 }
 
 @Preview(showBackground = true)

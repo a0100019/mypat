@@ -25,6 +25,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -78,6 +79,16 @@ fun DiaryFinishDialog(
                 )
 
                 Spacer(modifier = Modifier.height(32.dp))
+//
+//                Text(
+//                    text = "일기가 서버에 자동 저장됩니다.\n\n오직 본인만이 백업할 수 있으며 사진은 암호화되어 서버에 저장됩니다."
+//                    ,
+//                    textAlign = TextAlign.Center
+//                    ,
+//                    style = MaterialTheme.typography.titleMedium
+//                )
+//
+//                Spacer(modifier = Modifier.height(32.dp))
 
                 // 4. 새로운 스타일의 닫기 버튼
                 Button(

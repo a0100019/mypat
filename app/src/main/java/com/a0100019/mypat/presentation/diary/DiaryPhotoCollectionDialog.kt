@@ -100,7 +100,7 @@ fun DiaryPhotoCollectionDialog(
                     Spacer(modifier = Modifier.height(20.dp))
 
                     // 1. 데이터를 날짜별로 그룹화
-                    val groupedPhotos = photoDataList.groupBy { it.date }
+                    val groupedPhotos = photoDataList.sortedByDescending { it.date }.groupBy { it.date }
 
                     if(photoDataList.isNotEmpty()){
                         LazyVerticalGrid(
@@ -162,7 +162,7 @@ fun DiaryPhotoCollectionDialog(
                         Spacer(modifier = Modifier.height(20.dp))
 
                         Text(
-                            text = "저장된 사진이 없습니다. 추억을 안전하게 저장해보세요",
+                            text = "저장된 사진이 없습니다.\n\n사진은 서버에 안전하게 암호화되어 저장됩니다.\n\n로그인 된 본인만 확인할 수 있으니, 걱정 없이 오늘 하루를 남겨보세요!",
                             textAlign = TextAlign.Center
                         )
 

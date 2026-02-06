@@ -16,8 +16,8 @@ android {
         applicationId = "com.a0100019.mypat"
         minSdk = 26
         targetSdk = 35
-        versionCode = 24
-        versionName = "26.6"
+        versionCode = 26
+        versionName = "26.8"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -148,5 +148,9 @@ dependencies {
 
     //삼성 헬스
     implementation("androidx.health.connect:connect-client:1.1.0-alpha04")
+
+    // 구글 플레이 인앱 리뷰 라이브러리
+    implementation("com.google.android.play:review:2.0.1")
+    implementation("com.google.android.play:review-ktx:2.0.1") // Kotlin 확장 라이브러리
 
 }

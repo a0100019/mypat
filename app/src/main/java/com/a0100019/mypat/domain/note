@@ -1,13 +1,9 @@
 @@즉시
-사진저장 안전문자
-상점 확인
 
 @@긴급
-일주일째 리뷰 요청
-개인정보변경
-썸네일
 갤탭관리
 글씨체
+필터 웃음일때 안쓴일기나옴
 
 @@지금 할일
 보석, 돈 순위
@@ -33,6 +29,10 @@ bgm 자기마음대로
 전체편지
 설명서
 마을2개
+
+First select which image you want to add and copy it (Ctrl + Alt + C)
+Now click on the image (Ctrl + Mouse Click). And Past (Ctrl + Alt + v).
+피그마 사진 수정
 
 google-services.json 이거 깃에 안올라가서 직접 컴터마다 넣어야 됨 !!
 

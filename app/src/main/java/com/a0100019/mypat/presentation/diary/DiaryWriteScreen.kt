@@ -65,6 +65,7 @@ import com.a0100019.mypat.data.room.photo.Photo
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
 import com.a0100019.mypat.presentation.main.management.InterstitialAdManager
 import com.a0100019.mypat.presentation.main.management.ManagementViewModel
+import com.google.android.play.core.review.ReviewManagerFactory
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.compose.collectSideEffect
 import java.time.LocalDate
@@ -111,6 +112,22 @@ fun DiaryWriteScreen(
 
             is DiaryWriteSideEffect.Toast -> {
                 Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
+            }
+
+            is DiaryWriteSideEffect.ShowReviewDialog -> {
+                if (activity != null) {
+
+                    val manager = ReviewManagerFactory.create(activity)
+
+                    val request = manager.requestReviewFlow()
+
+                    request.addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            val reviewInfo = task.result
+                            manager.launchReviewFlow(activity, reviewInfo)
+                        }
+                    }
+                }
             }
 
             // 기타 SideEffect 처리...

@@ -384,6 +384,10 @@ class DiaryWriteViewModel @Inject constructor(
                 )
             }
 
+            if(state.photoDataList.isNotEmpty()) {
+                postSideEffect(DiaryWriteSideEffect.ShowReviewDialog)
+            }
+
         }
     }
 
@@ -459,6 +463,8 @@ data class DiaryWriteState(
 //상태와 관련없는 것
 sealed interface DiaryWriteSideEffect{
     class Toast(val message:String): DiaryWriteSideEffect
+
+    object ShowReviewDialog : DiaryWriteSideEffect // ⬅️ 추가
 
     // 광고 시청을 요청하는 SideEffect (광고 종료 후 실행할 액션을 넘겨줌)
 //    data class ShowInterstitialAd(val onAdClosed: () -> Unit) : DiaryWriteSideEffect

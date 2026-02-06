@@ -28,6 +28,9 @@ fun getAppTypography(context: Context): Typography {
     // 설정값에 따라 FontFamily 결정
     val fontFamily = when (fontName) {
         "letter" -> FontFamily(Font(R.font.letter))
+        "gangwon" -> FontFamily(Font(R.font.gangwon))
+        "geekble" -> FontFamily(Font(R.font.geekble))
+        "netmarble" -> FontFamily(Font(R.font.netmarble))
         else -> FontFamily(Font(R.font.pretendard))
     }
 
