@@ -162,7 +162,7 @@ fun DiaryPhotoCollectionDialog(
                         Spacer(modifier = Modifier.height(20.dp))
 
                         Text(
-                            text = "저장된 사진이 없습니다.\n\n사진은 서버에 안전하게 암호화되어 저장됩니다.\n\n로그인 된 본인만 확인할 수 있으니, 걱정 없이 오늘 하루를 남겨보세요!",
+                            text = "저장된 사진이 없습니다.\n\n사진은 서버에 안전하게 암호화되어 저장됩니다.\n\n로그인 된 본인 외엔 아무도 확인할 수 없으니, 걱정 없이 나만의 앨범을 만들어보세요!",
                             textAlign = TextAlign.Center
                         )
 

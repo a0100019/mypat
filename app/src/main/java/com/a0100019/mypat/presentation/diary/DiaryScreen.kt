@@ -268,12 +268,18 @@ fun DiaryScreen(
 
     if (alarmState == "1") {
         DiaryAlarmDialog(
-            onClose = onCloseClick,
+            onClose = {
+                onCloseClick()
+                alarmState = "2"
+                      },
             onConfirmClick = {
                 onDiaryAlarmChangeClick(it)
                 alarmState = "2"
                              },
-            onCancelClick = onCancelAlarmClick
+            onCancelClick = {
+                onCancelAlarmClick()
+                alarmState = "2"
+            }
         )
 
         // 화면에 진입했을 때 딱 한 번만 실행됨
@@ -283,6 +289,7 @@ fun DiaryScreen(
             // alarmState = "2"
         }
     }
+
     if(clickDiaryData != null && dialogState == "") {
         DiaryReadDialog(
             onClose = onCloseClick,
