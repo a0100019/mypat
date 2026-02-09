@@ -78,7 +78,7 @@ class DiaryWriteViewModel @Inject constructor(
         // 1. suspend로 바로 가져오는 유저 정보
         val userDataList = userDao.getAllUserData()
         val userDataEtc2Value = userDao.getValueById("etc2")
-        val photoDataList = photoDao.getPhotosByDate(userDataEtc2Value)
+        val photoDataList = photoDao.getSyncedPhotosByDate(userDataEtc2Value)
 
         // 1. 데이터 가져오기 (이미 하신 부분)
         val allDiaryData = diaryDao.getAllDiaryData()
@@ -237,7 +237,7 @@ class DiaryWriteViewModel @Inject constructor(
                                     isSynced = true
                                 )
                                 photoDao.insert(photoEntry)
-                                val updatedPhotos = photoDao.getPhotosByDate(state.writeDiaryData.date)
+                                val updatedPhotos = photoDao.getSyncedPhotosByDate(state.writeDiaryData.date)
 
                                 intent {
                                     reduce { state.copy(photoDataList = updatedPhotos) }
@@ -341,7 +341,7 @@ class DiaryWriteViewModel @Inject constructor(
 
         if (isDeleted) {
             // 2. 최신 리스트로 UI 상태 갱신
-            val updatedList = photoDao.getPhotosByDate(state.writeDiaryData.date)
+            val updatedList = photoDao.getSyncedPhotosByDate(state.writeDiaryData.date)
             reduce {
                 state.copy(
                     photoDataList = updatedList

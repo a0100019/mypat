@@ -10,6 +10,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,12 +22,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -38,8 +42,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -48,8 +54,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
 import com.a0100019.mypat.R
+import com.a0100019.mypat.data.room.photo.Photo
 import com.a0100019.mypat.data.room.user.User
+import com.a0100019.mypat.presentation.diary.DiaryPhotoDialog
 import com.a0100019.mypat.presentation.main.mainDialog.SimpleAlertDialog
 import com.a0100019.mypat.presentation.neighbor.chat.getPastelColorForTag
 import com.a0100019.mypat.presentation.neighbor.community.CommunitySideEffect
@@ -102,6 +111,11 @@ fun BoardMessageScreen(
         onNavigateToBoardScreen = onNavigateToBoardScreen,
         onBoardChatDelete = boardMessageViewModel::onBoardChatDelete,
         onNeighborInformationClick = boardMessageViewModel::onNeighborInformationClick,
+
+        photoDataList = boardMessageState.photoDataList,
+        isPhotoLoading = boardMessageState.isPhotoLoading,
+        clickPhotoChange = boardMessageViewModel::clickPhotoChange,
+        clickPhoto = boardMessageState.clickPhoto
     )
 }
 
@@ -125,7 +139,13 @@ fun BoardMessageScreen(
     onNavigateToBoardScreen: () -> Unit = {},
     onBoardChatDelete: (String) -> Unit = {},
     onNeighborInformationClick: (String) -> Unit = {},
-) {
+
+    photoDataList: List<Photo> = emptyList(),
+    isPhotoLoading: Boolean = false,
+    clickPhotoChange: (String) -> Unit = {},
+    clickPhoto: String = "",
+
+    ) {
 
     val bringIntoViewRequester = remember { BringIntoViewRequester() }
 
@@ -140,6 +160,13 @@ fun BoardMessageScreen(
             onDismissOn = false,
             onConfirmClick = onNavigateToBoardScreen,
             text = "게시물이 삭제되었습니다."
+        )
+    }
+
+    if(clickPhoto != "") {
+        DiaryPhotoDialog(
+            onClose = { clickPhotoChange("") },
+            clickPhoto = clickPhoto
         )
     }
 
@@ -285,12 +312,87 @@ fun BoardMessageScreen(
                 item { Spacer(modifier = Modifier.height(12.dp)) }
 
                 item {
-                    Text(
-                        text = boardData.message,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color(0xFF333333),
-                        lineHeight = 20.sp
-                    )
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = boardData.message,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color(0xFF333333),
+                            lineHeight = 20.sp
+                        )
+
+                        if(boardData.photoLocalPath != "0"){
+                            Box(
+                                modifier = Modifier
+                                    .padding(bottom = 12.dp),
+                                contentAlignment = Alignment.BottomCenter
+                            ) {
+                                LazyRow(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    contentPadding = PaddingValues(horizontal = 4.dp)
+                                ) {
+                                    // 1. 기존 사진 리스트 출력
+                                    items(photoDataList) { photo ->
+                                        Box(
+                                            modifier = Modifier
+                                                .size(84.dp)
+                                                .clip(RoundedCornerShape(12.dp))
+                                                .border(
+                                                    1.dp,
+                                                    Color.LightGray.copy(alpha = 0.5f),
+                                                    RoundedCornerShape(12.dp)
+                                                )
+                                        ) {
+                                            AsyncImage(
+                                                model = photo.localPath,
+                                                contentDescription = "일기 사진",
+                                                modifier = Modifier
+                                                    .fillMaxSize()
+                                                    .clickable { clickPhotoChange(photo.localPath) },
+                                                contentScale = ContentScale.Crop
+                                            )
+
+                                        }
+                                    }
+
+                                    // 2. ⭐ 사진 업로드 중일 때 로딩 아이템 (첫 사진 추가 시에도 여기서 표시됨)
+                                    if (isPhotoLoading) {
+                                        item {
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(84.dp)
+                                                    .clip(RoundedCornerShape(12.dp))
+                                                    .background(Color.LightGray.copy(alpha = 0.3f))
+                                                    .border(
+                                                        1.dp,
+                                                        Color.LightGray,
+                                                        RoundedCornerShape(12.dp)
+                                                    ),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                                    CircularProgressIndicator(
+                                                        modifier = Modifier.size(24.dp),
+                                                        strokeWidth = 2.dp,
+                                                        color = Color.Gray
+                                                    )
+                                                    Spacer(modifier = Modifier.height(4.dp))
+                                                    Text(
+                                                        "업로드 중..",
+                                                        fontSize = 10.sp,
+                                                        color = Color.Gray
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                    }
                 }
             }
 

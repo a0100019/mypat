@@ -347,7 +347,6 @@ fun DiaryWriteScreen(
                     uri?.let { onImageSelected(it) }
                 }
 
-                // [오른쪽] 종료 버튼 (🚪 나가기 아이콘 스타일)
                 JustImage(
                     filePath = "etc/camera.png",
                     modifier = Modifier

@@ -1,23 +1,33 @@
 package com.a0100019.mypat.presentation.neighbor.board
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,12 +43,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import coil.compose.AsyncImage
+import com.a0100019.mypat.data.room.photo.Photo
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.presentation.ui.component.MainButton
 import com.a0100019.mypat.presentation.ui.image.etc.JustImage
@@ -55,6 +71,10 @@ fun BoardSubmitDialog(
     onChangeTypeClick: (String) -> Unit = {},
     onTextChange: (String) -> Unit = {},
     onConfirmClick: () -> Unit = {},
+    onImageSelected: (Uri) -> Unit = {}, // ✅ 사진 선택 콜백 추가
+    photoDataList: List<Photo> = emptyList(),
+    deleteImage: (Photo) -> Unit = {},
+    photoLocalPath: String = "0"
 ) {
     // 드롭다운 펼침 상태 관리
     var expanded by remember { mutableStateOf(false) }
@@ -67,7 +87,7 @@ fun BoardSubmitDialog(
         "friend" to "친구 구하기"
     )
 
-    Dialog(onDismissRequest = onClose) {
+    Dialog(onDismissRequest = {}) {
         Box(
             modifier = Modifier
                 .width(340.dp)
@@ -95,7 +115,9 @@ fun BoardSubmitDialog(
 
                 // --- 익명 여부 및 카테고리 선택 Row ---
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
@@ -106,6 +128,69 @@ fun BoardSubmitDialog(
                             onCheckedChange = { onChangeAnonymousClick(if (it) "1" else "0") }
                         )
                         Text(text = "익명")
+                    }
+
+                    // ✅ 갤러리 런처 정의
+                    val galleryLauncher = rememberLauncherForActivityResult(
+                        contract = ActivityResultContracts.GetContent()
+                    ) { uri: Uri? ->
+                        uri?.let { onImageSelected(it) }
+                    }
+
+                    if(photoLocalPath == "0") {
+                        JustImage(
+                            filePath = "etc/camera.png",
+                            modifier = Modifier
+                                .size(30.dp)
+                                .clickable {
+                                    // 2. 갤러리 열기 (이미지 파일만 필터링)
+                                    galleryLauncher.launch("image/*")
+                                }
+                        )
+                    } else {
+                        //사진
+                        Box(
+                            modifier = Modifier,
+                            contentAlignment = Alignment.BottomCenter
+                        ) {
+                            // 1. 마지막 사진 1개만 가져오기
+                            val lastPhoto = photoDataList.lastOrNull()
+
+                            if (lastPhoto != null) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(84.dp)
+                                        .clip(RoundedCornerShape(12.dp))
+                                        .border(1.dp, Color.LightGray.copy(alpha = 0.5f), RoundedCornerShape(12.dp))
+                                ) {
+                                    AsyncImage(
+                                        model = lastPhoto.localPath,
+                                        contentDescription = "마지막 일기 사진",
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .clickable {
+                                                // clickPhotoChange(lastPhoto.localPath)
+                                            },
+                                        contentScale = ContentScale.Crop
+                                    )
+
+                                    // 삭제 버튼
+                                    Box(
+                                        modifier = Modifier
+                                            .align(Alignment.TopEnd)
+                                            .padding(4.dp)
+                                            .size(25.dp)
+                                            .background(Color.Black.copy(alpha = 0.5f), CircleShape)
+                                            .clickable {
+                                                deleteImage(lastPhoto)
+                                            },
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text("✕", color = Color.White, fontSize = 10.sp)
+                                    }
+                                }
+                            }
+                        }
                     }
 
                     // --- 드롭다운 영역 ---
@@ -157,7 +242,7 @@ fun BoardSubmitDialog(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(6.dp))
 
                 OutlinedTextField(
                     value = text,

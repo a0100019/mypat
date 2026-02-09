@@ -1,6 +1,12 @@
 package com.a0100019.mypat.presentation.neighbor.board
 
 import android.app.Activity
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,19 +17,26 @@ import com.a0100019.mypat.data.room.item.Item
 import com.a0100019.mypat.data.room.item.ItemDao
 import com.a0100019.mypat.data.room.pat.Pat
 import com.a0100019.mypat.data.room.pat.PatDao
+import com.a0100019.mypat.data.room.photo.Photo
+import com.a0100019.mypat.data.room.photo.PhotoDao
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.world.WorldDao
+import com.a0100019.mypat.presentation.diary.DiaryWriteSideEffect
 import com.a0100019.mypat.presentation.main.management.RewardAdManager
 import com.a0100019.mypat.presentation.main.management.addMedalAction
 import com.a0100019.mypat.presentation.main.management.getMedalActionCount
 import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
+import com.google.firebase.storage.storage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.annotation.OrbitExperimental
@@ -32,6 +45,11 @@ import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
+import java.io.File
+import java.io.FileOutputStream
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 
@@ -43,7 +61,8 @@ class BoardViewModel @Inject constructor(
     private val itemDao: ItemDao,
     private val allUserDao: AllUserDao,
     private val areaDao: AreaDao,
-    private val rewardAdManager: RewardAdManager
+    private val rewardAdManager: RewardAdManager,
+    private val photoDao: PhotoDao,
 ) : ViewModel(), ContainerHost<BoardState, BoardSideEffect> {
 
     override val container: Container<BoardState, BoardSideEffect> = container(
@@ -92,6 +111,8 @@ class BoardViewModel @Inject constructor(
                 situation = "",
                 boardAnonymous = "0",
                 boardType = "free",
+                photoFirebaseUrl = "0",
+                photoLocalPath = "0"
             )
         }
     }
@@ -120,7 +141,7 @@ class BoardViewModel @Inject constructor(
         // 1️⃣ 전체 게시글 100개 (ban == "1" 제외)
         boardRef
             .orderBy(FieldPath.documentId(), Query.Direction.DESCENDING)
-            .limit(100)
+            .limit(50)
             .get()
             .addOnSuccessListener { snapshot ->
 
@@ -140,8 +161,10 @@ class BoardViewModel @Inject constructor(
                         uid = data["uid"] as? String ?: "",
                         type = data["type"] as? String ?: "free",
                         anonymous = data["anonymous"] as? String ?: "0",
-                        answerCount = (data["answer"] as? Map<*, *>)?.size ?: 0
-                    )
+                        answerCount = (data["answer"] as? Map<*, *>)?.size ?: 0,
+                        photoFirebaseUrl = data["photoFirebaseUrl"] as? String ?: "0",
+                        photoLocalPath = data["photoLocalPath"] as? String ?: "0",
+                        )
                 }.sortedBy { it.timestamp }
 
                 // 2️⃣ 내 게시글 전부 (ban == "1" 제외)
@@ -166,7 +189,10 @@ class BoardViewModel @Inject constructor(
                                 ban = ban,
                                 uid = data["uid"] as? String ?: "",
                                 type = data["type"] as? String ?: "free",
-                                anonymous = data["anonymous"] as? String ?: "0"
+                                anonymous = data["anonymous"] as? String ?: "0",
+                                answerCount = (data["answer"] as? Map<*, *>)?.size ?: 0,
+                                photoFirebaseUrl = data["photoFirebaseUrl"] as? String ?: "0",
+                                photoLocalPath = data["photoLocalPath"] as? String ?: "0",
                             )
                         }.sortedBy { it.timestamp }
 
@@ -252,7 +278,9 @@ class BoardViewModel @Inject constructor(
             "uid" to userId,
             "like" to 0,
             "type" to state.boardType,
-            "anonymous" to state.boardAnonymous
+            "anonymous" to state.boardAnonymous,
+            "photoFirebaseUrl" to state.photoFirebaseUrl,
+            "photoLocalPath" to state.photoLocalPath
         )
 
         Firebase.firestore
@@ -336,10 +364,207 @@ class BoardViewModel @Inject constructor(
 //            }
 //        )
 //    }
+//
+//    private fun onRewardEarned() = intent {
+//
+//        onBoardSubmitClick()
+//
+//    }
 
-    private fun onRewardEarned() = intent {
+    private fun isNetworkAvailable(context: Context): Boolean {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork
+        val capabilities = connectivityManager.getNetworkCapabilities(network)
 
-        onBoardSubmitClick()
+        val isAvailable = capabilities != null && (
+                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
+                        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
+                )
+
+        Log.d("NetworkCheck", "Is Network Available: $isAvailable") // 로그 추가
+        return isAvailable
+    }
+
+    fun handleImageSelection(context: Context, uri: Uri) = intent {
+        // 1. 상태 초기화
+        reduce { state.copy(isPhotoLoading = true) }
+
+        val isUploadFinished = AtomicBoolean(false)
+        val isAdClosed = AtomicBoolean(false)
+
+        // 로딩 종료 여부를 판단하는 함수
+        fun tryFinishLoading() = intent {
+            if (isUploadFinished.get() && isAdClosed.get()) {
+                reduce { state.copy(isPhotoLoading = false) }
+            }
+        }
+
+        // --- 광고 분기 처리 로직 ---
+        // 기존에 사진이 하나라도 있으면(photoDataList가 비어있지 않으면) 광고를 띄움
+        val shouldShowAd = state.photoDataList.isNotEmpty()
+
+        if (false) {
+            // [광고를 보여주는 경우]
+//            postSideEffect(DiaryWriteSideEffect.ShowInterstitialAd {
+//                isAdClosed.set(true)
+//                tryFinishLoading()
+//            })
+        } else {
+            // [첫 사진이라 광고를 안 보여주는 경우]
+            // 광고가 이미 닫힌 것으로 간주하여 true로 설정
+            isAdClosed.set(true)
+            // tryFinishLoading은 호출할 필요 없음 (업로드 끝나면 알아서 종료됨)
+        }
+
+        // 2. [병렬 실행] 이미지 처리 및 업로드 (백그라운드)
+        viewModelScope.launch(Dispatchers.IO) {
+            if (!isNetworkAvailable(context)) {
+                postSideEffect(BoardSideEffect.Toast("인터넷 연결을 확인해주세요."))
+                isUploadFinished.set(true)
+                tryFinishLoading()
+                return@launch
+            }
+
+            val today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+
+            val localPath = saveImageToInternalStorage(context, uri)
+            if (localPath != null) {
+                uploadToFirebase(localPath) { firebaseUrl ->
+                    intent {
+                        if (firebaseUrl != null) {
+                            viewModelScope.launch(Dispatchers.IO) {
+                                val photoEntry = Photo(
+                                    date = today,
+                                    localPath = localPath,
+                                    firebaseUrl = firebaseUrl,
+                                    isSynced = false
+                                )
+                                photoDao.insert(photoEntry)
+                                val updatedPhotos = photoDao.getUnsyncedPhotosByDate(today)
+
+                                intent {
+                                    reduce {
+                                        state.copy(
+                                            photoDataList = updatedPhotos,
+                                            photoFirebaseUrl = firebaseUrl,
+                                            photoLocalPath = localPath
+                                        )
+                                    }
+                                    isUploadFinished.set(true)
+                                    tryFinishLoading()
+                                }
+                            }
+                        } else {
+                            File(localPath).delete()
+                            postSideEffect(BoardSideEffect.Toast("업로드 실패"))
+                            isUploadFinished.set(true)
+                            tryFinishLoading()
+                        }
+                    }
+                }
+            } else {
+                postSideEffect(BoardSideEffect.Toast("저장 오류"))
+                isUploadFinished.set(true)
+                tryFinishLoading()
+            }
+        }
+    }
+
+    private fun uploadToFirebase(localPath: String, onComplete: (String?) -> Unit) {
+        val user = Firebase.auth.currentUser ?: return onComplete(null)
+
+        val file = File(localPath)
+        if (!file.exists()) return onComplete(null)
+
+        val storageRef = Firebase.storage.reference
+        // 보안을 위해 파일명 앞에 UID를 섞거나 랜덤값을 추가하는 것이 좋습니다.
+        val imageRef = storageRef.child("board/${file.name}")
+
+        // 파일 읽기 -> XOR 뒤섞기 -> 업로드
+        try {
+            val compressedBytes = file.readBytes()
+            val scrambledBytes = togglePrivacy(compressedBytes)
+
+            imageRef.putBytes(scrambledBytes)
+                .addOnSuccessListener {
+                    imageRef.downloadUrl.addOnSuccessListener { uri ->
+                        onComplete(uri.toString())
+                    }
+                }
+                .addOnFailureListener {
+                    onComplete(null)
+                }
+        } catch (e: Exception) {
+            onComplete(null)
+        }
+    }
+
+    private fun saveImageToInternalStorage(context: Context, uri: Uri): String? {
+        return try {
+            val fileName = "haru_photo_${System.currentTimeMillis()}.jpg"
+            val file = File(context.filesDir, fileName)
+
+            // 1. InputStream으로 비트맵 불러오기
+            context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                val bitmap = BitmapFactory.decodeStream(inputStream)
+
+                // 2. 파일 출력 스트림 준비
+                FileOutputStream(file).use { outputStream ->
+                    // 3. 압축하기 (JPEG, 품질 70~80% 권장)
+                    // 품질을 100에서 80으로만 낮춰도 용량이 획기적으로 줄어듭니다.
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 80, outputStream)
+                }
+            }
+
+            file.absolutePath
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+
+    }
+
+    private fun togglePrivacy(data: ByteArray): ByteArray {
+        val key = 0xAF.toByte()
+        return ByteArray(data.size) { i -> (data[i].toInt() xor key.toInt()).toByte() }
+    }
+
+    fun deleteImage(photo: Photo) = intent {
+        // 1. 비동기 작업으로 파일과 DB 데이터 삭제
+        val isDeleted = withContext(Dispatchers.IO) {
+            try {
+                // (1) 내부 저장소에서 실제 파일 삭제
+                val file = File(photo.localPath)
+                if (file.exists()) {
+                    file.delete()
+                }
+
+                // (2) DB에서 해당 포토 엔티티 삭제
+                photoDao.delete(photo) // DAO에 delete 메서드가 있다고 가정합니다.
+                true
+            } catch (e: Exception) {
+                e.printStackTrace()
+                false
+            }
+        }
+
+        val today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+
+        if (isDeleted) {
+            // 2. 최신 리스트로 UI 상태 갱신
+            val updatedList = photoDao.getUnsyncedPhotosByDate(today)
+            reduce {
+                state.copy(
+                    photoDataList = updatedList,
+                    photoLocalPath = "0",
+                    photoFirebaseUrl = "0"
+                )
+            }
+        } else {
+            // 실패 시 에러 처리 (선택 사항)
+            // postSideEffect(DiaryWriteSideEffect.ShowToast("사진 삭제에 실패했습니다."))
+        }
 
     }
 
@@ -361,7 +586,12 @@ data class BoardState(
     val boardType: String = "free",
     val boardAnonymous: String = "0",
     val removeAd: String = "0",
-    val isSubmitting: Boolean = false
+    val isSubmitting: Boolean = false,
+
+    val photoDataList: List<Photo> = emptyList(),
+    val isPhotoLoading: Boolean = false, // 로딩 상태 추가
+    val photoFirebaseUrl: String = "0",
+    val photoLocalPath: String = "0"
     )
 
 @Immutable
@@ -374,7 +604,9 @@ data class BoardMessage(
     val uid: String = "",
     val type: String = "",
     val anonymous: String = "0",
-    val answerCount: Int = 0
+    val answerCount: Int = 0,
+    val photoFirebaseUrl: String = "0",
+    val photoLocalPath: String = "0"
 )
 
 //상태와 관련없는 것

@@ -172,7 +172,7 @@ class DiaryViewModel @Inject constructor(
 
             // 2. 사진 데이터 감시 (이제 정상적으로 실행됩니다!)
             launch {
-                photoDao.getAllFlowPhotoData().collect { photoList ->
+                photoDao.getSyncedFlowPhotoData().collect { photoList ->
                     reduce {
                         state.copy(
                             photoDataList = photoList

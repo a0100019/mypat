@@ -7,6 +7,7 @@ import com.a0100019.mypat.data.room.allUser.AllUserDao
 import com.a0100019.mypat.data.room.area.AreaDao
 import com.a0100019.mypat.data.room.item.ItemDao
 import com.a0100019.mypat.data.room.pat.PatDao
+import com.a0100019.mypat.data.room.photo.Photo
 import com.a0100019.mypat.data.room.user.User
 import com.a0100019.mypat.data.room.user.UserDao
 import com.a0100019.mypat.data.room.world.WorldDao
@@ -336,6 +337,14 @@ class BoardMessageViewModel @Inject constructor(
 
     }
 
+    fun clickPhotoChange(path: String) = intent {
+        reduce {
+            state.copy(
+                clickPhoto = path
+            )
+        }
+    }
+
 
 }
 
@@ -348,6 +357,9 @@ data class BoardMessageState(
     val anonymous: String = "0",
     val situation: String = "",
 
+    val isPhotoLoading: Boolean = false, // 로딩 상태 추가
+    val clickPhoto: String = "",
+    val photoDataList: List<Photo> = emptyList(),
     )
 
 @Immutable
@@ -358,7 +370,9 @@ data class BoardChatMessage(
     val tag: String = "0",
     val ban: String = "0",
     val uid: String = "0",
-    val anonymous: String = "0"
+    val anonymous: String = "0",
+    val photoFirebaseUrl: String = "0",
+    val photoLocalPath: String = "0"
 )
 
 

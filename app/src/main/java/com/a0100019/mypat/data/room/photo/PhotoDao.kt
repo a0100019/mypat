@@ -30,15 +30,19 @@ interface PhotoDao {
     @Query("SELECT * FROM photo_table ORDER BY id DESC")
     suspend fun getAllPhotoData(): List<Photo>
 
-    @Query("SELECT * FROM photo_table ORDER BY id DESC")
-    fun getAllFlowPhotoData(): Flow<List<Photo>>
+    @Query("SELECT * FROM photo_table WHERE isSynced = 1 ORDER BY id DESC")
+    fun getSyncedFlowPhotoData(): Flow<List<Photo>>
 
     @Query("UPDATE photo_table SET firebaseUrl = :url, isSynced = :synced WHERE localPath = :path")
     suspend fun updateFirebaseInfo(path: String, url: String, synced: Boolean)
 
-    // ✅ 특정 날짜의 사진 리스트 가져오기 (날짜가 일치하는 것들만)
-    @Query("SELECT * FROM photo_table WHERE date = :date ORDER BY id ASC")
-    suspend fun getPhotosByDate(date: String): List<Photo>
+    // ✅ 특정 날짜이면서 동기화가 완료된(true) 사진 리스트만 가져오기
+    @Query("SELECT * FROM photo_table WHERE date = :date AND isSynced = 1 ORDER BY id ASC")
+    suspend fun getSyncedPhotosByDate(date: String): List<Photo>
+
+    // ✅ 특정 날짜이면서 아직 동기화되지 않은(false) 사진 리스트만 가져오기
+    @Query("SELECT * FROM photo_table WHERE date = :date AND isSynced = 0 ORDER BY id ASC")
+    suspend fun getUnsyncedPhotosByDate(date: String): List<Photo>
 
     //초기에 데이터 한번에 넣기 위한 코드
     @Insert(onConflict = OnConflictStrategy.REPLACE)

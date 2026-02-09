@@ -16,7 +16,9 @@ import com.a0100019.mypat.data.room.world.WorldDao
 import com.a0100019.mypat.presentation.main.management.addMedalAction
 import com.a0100019.mypat.presentation.main.management.getMedalActionCount
 import com.google.firebase.Firebase
+import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.firestore
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -100,6 +102,8 @@ class ChatViewModel @Inject constructor(
             .collection("chatting")
             .document("totalChat")
             .collection("totalChat")
+            .orderBy(FieldPath.documentId(), Query.Direction.DESCENDING) // 문서명(날짜) 내림차순 정렬
+            .limit(12) // 최근 7개 문서만
             .addSnapshotListener { snapshot, error ->
                 Log.d("CommunityViewModel", "전체 채팅 스냅샷 수신됨")
 
