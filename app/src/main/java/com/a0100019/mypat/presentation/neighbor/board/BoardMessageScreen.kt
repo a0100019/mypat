@@ -312,32 +312,69 @@ fun BoardMessageScreen(
                 item { Spacer(modifier = Modifier.height(12.dp)) }
 
                 item {
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = boardData.message,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color(0xFF333333),
-                            lineHeight = 20.sp
-                        )
-
-                        if(boardData.photoLocalPath != "0"){
-                            Box(
+                    if(boardData.photoLocalPath == "0"){
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        ) {
+                            Text(
+                                text = boardData.message,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color(0xFF333333),
+                                lineHeight = 20.sp,
                                 modifier = Modifier
-                                    .padding(bottom = 12.dp),
-                                contentAlignment = Alignment.BottomCenter
+                                    .weight(1f)
+                            )
+
+                        }
+                    } else {
+
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        ) {
+                            Text(
+                                text = boardData.message,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color(0xFF333333),
+                                lineHeight = 20.sp,
+                                modifier = Modifier
+                                    .weight(1f)
+                            )
+
+                            Box(
+                                modifier = Modifier.size(84.dp),
+                                contentAlignment = Alignment.Center
                             ) {
-                                LazyRow(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                    contentPadding = PaddingValues(horizontal = 4.dp)
-                                ) {
-                                    // 1. 기존 사진 리스트 출력
-                                    items(photoDataList) { photo ->
+                                // 1. 로딩 중일 때 표시 (로딩 우선순위)
+                                if (isPhotoLoading) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .clip(RoundedCornerShape(12.dp))
+                                            .background(Color.LightGray.copy(alpha = 0.3f))
+                                            .border(
+                                                1.dp,
+                                                Color.LightGray,
+                                                RoundedCornerShape(12.dp)
+                                            ),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        CircularProgressIndicator(
+                                            modifier = Modifier.size(24.dp),
+                                            strokeWidth = 2.dp,
+                                            color = Color.Gray
+                                        )
+                                    }
+                                }
+                                // 2. 로딩 중이 아닐 때 첫 번째 사진 표시
+                                else {
+                                    photoDataList.firstOrNull()?.let { photo ->
                                         Box(
                                             modifier = Modifier
-                                                .size(84.dp)
+                                                .fillMaxSize()
                                                 .clip(RoundedCornerShape(12.dp))
                                                 .border(
                                                     1.dp,
@@ -353,46 +390,14 @@ fun BoardMessageScreen(
                                                     .clickable { clickPhotoChange(photo.localPath) },
                                                 contentScale = ContentScale.Crop
                                             )
-
-                                        }
-                                    }
-
-                                    // 2. ⭐ 사진 업로드 중일 때 로딩 아이템 (첫 사진 추가 시에도 여기서 표시됨)
-                                    if (isPhotoLoading) {
-                                        item {
-                                            Box(
-                                                modifier = Modifier
-                                                    .size(84.dp)
-                                                    .clip(RoundedCornerShape(12.dp))
-                                                    .background(Color.LightGray.copy(alpha = 0.3f))
-                                                    .border(
-                                                        1.dp,
-                                                        Color.LightGray,
-                                                        RoundedCornerShape(12.dp)
-                                                    ),
-                                                contentAlignment = Alignment.Center
-                                            ) {
-                                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                                    CircularProgressIndicator(
-                                                        modifier = Modifier.size(24.dp),
-                                                        strokeWidth = 2.dp,
-                                                        color = Color.Gray
-                                                    )
-                                                    Spacer(modifier = Modifier.height(4.dp))
-                                                    Text(
-                                                        "업로드 중..",
-                                                        fontSize = 10.sp,
-                                                        color = Color.Gray
-                                                    )
-                                                }
-                                            }
                                         }
                                     }
                                 }
                             }
                         }
-
                     }
+
+
                 }
             }
 

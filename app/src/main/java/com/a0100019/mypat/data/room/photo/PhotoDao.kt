@@ -44,6 +44,10 @@ interface PhotoDao {
     @Query("SELECT * FROM photo_table WHERE date = :date AND isSynced = 0 ORDER BY id ASC")
     suspend fun getUnsyncedPhotosByDate(date: String): List<Photo>
 
+    // ✅ 로컬 경로가 동일한 데이터가 있는지 확인 (결과가 있으면 해당 객체 반환, 없으면 null)
+    @Query("SELECT * FROM photo_table WHERE localPath = :path LIMIT 1")
+    suspend fun getPhotoByPath(path: String): Photo?
+
     //초기에 데이터 한번에 넣기 위한 코드
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(users: List<Photo>)

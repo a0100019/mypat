@@ -556,6 +556,62 @@ fun MainScreen(
                 horizontalArrangement = Arrangement.spacedBy(10.dp), // 버튼 사이 여백 확대
                 verticalAlignment = Alignment.CenterVertically
             ) {
+
+
+                // --- 3. 커뮤니티 (싱그러운 민트-그린 테마) ---
+                Surface(
+                    onClick = { onNeighborNavigateClick() },
+                    modifier = Modifier.weight(1f).height(100.dp),
+                    shape = RoundedCornerShape(28.dp),
+                    color = Color(0xFFE0F2F1), // 연한 민트
+                    border = BorderStroke(2.5.dp, Color(0xFF4DB6AC)),
+                    shadowElevation = 6.dp
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text("🎈", fontSize = 28.sp)
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(
+                            text = "커뮤니티",
+                            style = MaterialTheme.typography.labelLarge.copy(
+                                fontWeight = FontWeight.ExtraBold,
+                                letterSpacing = (-0.5).sp
+                            ),
+                            color = Color(0xFF00695C)
+                        )
+                    }
+                }
+
+                // --- 2. 내 일기 (포근한 핑크-라벤더 테마) ---
+                Surface(
+                    onClick = { onDiaryNavigateClick() },
+                    modifier = Modifier.weight(1f).height(100.dp),
+                    shape = RoundedCornerShape(28.dp),
+                    color = Color(0xFFFCE4EC), // 연분홍
+                    border = BorderStroke(2.5.dp, Color(0xFFF06292)),
+                    shadowElevation = 6.dp
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text("📖", fontSize = 28.sp)
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(
+                            text = "일기장",
+                            style = MaterialTheme.typography.labelLarge.copy(
+                                fontWeight = FontWeight.ExtraBold,
+                                letterSpacing = (-0.5).sp
+                            ),
+                            color = Color(0xFF880E4F)
+                        )
+                    }
+                }
+
                 // --- 1. 마을 관리 (따스한 베이지-옐로우 테마) ---
                 Surface(
                     onClick = {
@@ -590,59 +646,6 @@ fun MainScreen(
                     }
                 }
 
-                // --- 2. 내 일기 (포근한 핑크-라벤더 테마) ---
-                Surface(
-                    onClick = { onDiaryNavigateClick() },
-                    modifier = Modifier.weight(1f).height(100.dp),
-                    shape = RoundedCornerShape(28.dp),
-                    color = Color(0xFFFCE4EC), // 연분홍
-                    border = BorderStroke(2.5.dp, Color(0xFFF06292)),
-                    shadowElevation = 6.dp
-                ) {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text("📖", fontSize = 28.sp)
-                        Spacer(modifier = Modifier.height(6.dp))
-                        Text(
-                            text = "일기장",
-                            style = MaterialTheme.typography.labelLarge.copy(
-                                fontWeight = FontWeight.ExtraBold,
-                                letterSpacing = (-0.5).sp
-                            ),
-                            color = Color(0xFF880E4F)
-                        )
-                    }
-                }
-
-                // --- 3. 커뮤니티 (싱그러운 민트-그린 테마) ---
-                Surface(
-                    onClick = { onNeighborNavigateClick() },
-                    modifier = Modifier.weight(1f).height(100.dp),
-                    shape = RoundedCornerShape(28.dp),
-                    color = Color(0xFFE0F2F1), // 연한 민트
-                    border = BorderStroke(2.5.dp, Color(0xFF4DB6AC)),
-                    shadowElevation = 6.dp
-                ) {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text("🎈", fontSize = 28.sp)
-                        Spacer(modifier = Modifier.height(6.dp))
-                        Text(
-                            text = "커뮤니티",
-                            style = MaterialTheme.typography.labelLarge.copy(
-                                fontWeight = FontWeight.ExtraBold,
-                                letterSpacing = (-0.5).sp
-                            ),
-                            color = Color(0xFF00695C)
-                        )
-                    }
-                }
             }
         }
     }

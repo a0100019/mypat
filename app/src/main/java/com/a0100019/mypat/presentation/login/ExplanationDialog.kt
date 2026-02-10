@@ -261,7 +261,7 @@ fun ExplanationDialog(
                                 ) {
                                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                         Text(
-                                            text = "가장 먼저 마을 관리를 눌러봅시다!",
+                                            text = "자유롭게 기능들을 둘러보아요!",
                                             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                                             color = Color(0xFF2F6F62)
                                         )

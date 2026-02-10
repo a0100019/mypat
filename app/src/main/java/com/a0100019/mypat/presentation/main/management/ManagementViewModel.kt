@@ -414,7 +414,7 @@ class ManagementViewModel @Inject constructor(
                 .document(userId)
                 .collection("daily")
 
-            val photosByDate = photoDao.getAllPhotoData().groupBy { it.date }
+            val photosByDate = photoDao.getAllPhotoData().filter { it.isSynced }.groupBy { it.date }
 
             diaryDataList.forEach { diary ->
                 val docRef = dailyCollectionRef.document(diary.id.toString())
